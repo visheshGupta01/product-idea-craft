@@ -54,7 +54,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <card.icon className="w-6 h-6 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground">{card.text}</p>
+              <p className="text-sm font-medium text-card-foreground">{card.text}</p>
             </div>
           ))}
         </div>
@@ -62,7 +62,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
         {/* Main Input Section */}
         <div className="bg-card border border-border rounded-3xl p-8 shadow-lg">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold mb-2">What's your idea?</h2>
+            <h2 className="text-2xl font-semibold mb-2 text-card-foreground">What's your idea?</h2>
             <p className="text-muted-foreground">
               We'll help turn this into a real product—sit tight.
             </p>
