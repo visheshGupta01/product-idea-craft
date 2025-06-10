@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -34,6 +34,23 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
     { id: '2', name: 'E-commerce Store', status: 'completed' },
     { id: '3', name: 'Social Platform', status: 'draft' }
   ]);
+
+  // Check for existing dark mode preference
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setDarkMode(isDark);
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   return (
     <div className={`${collapsed ? 'w-16' : 'w-64'} bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col`}>
@@ -92,8 +109,8 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
         </div>
       )}
 
-      {/* Bottom Section */}
-      <div className="p-4 border-t border-sidebar-border space-y-3">
+      {/* Bottom Section - Fixed positioning */}
+      <div className="mt-auto p-4 border-t border-sidebar-border space-y-3">
         {!collapsed && (
           <>
             {/* Integration Buttons */}
@@ -120,14 +137,14 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
           </>
         )}
 
-        {/* User & Settings */}
+        {/* User & Settings - Always at bottom */}
         <div className="space-y-2">
           {!collapsed && (
             <div className="flex items-center justify-between">
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setDarkMode(!darkMode)}
+                onClick={toggleDarkMode}
                 className="h-8 w-8 p-0"
               >
                 {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -141,7 +158,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
             </div>
           )}
           
-          <div className="flex items-center space-x-3">
+          <div className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'}`}>
             <Avatar className="h-8 w-8">
               <AvatarFallback className="text-xs">JD</AvatarFallback>
             </Avatar>
