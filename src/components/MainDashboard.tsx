@@ -40,7 +40,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
         </div>
 
         {/* Task Tracker Panel */}
-        <div className="w-80 min-w-0 bg-card hidden xl:block">
+        <div className="w-80 min-w-0 bg-card xl:block">
           <TaskTracker />
         </div>
       </div>
