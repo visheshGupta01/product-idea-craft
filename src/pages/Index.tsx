@@ -1,12 +1,24 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from 'react';
+import IdeaSubmissionScreen from '../components/IdeaSubmissionScreen';
+import MainDashboard from '../components/MainDashboard';
 
 const Index = () => {
+  const [hasSubmittedIdea, setHasSubmittedIdea] = useState(false);
+  const [userIdea, setUserIdea] = useState('');
+
+  const handleIdeaSubmit = (idea: string) => {
+    setUserIdea(idea);
+    setHasSubmittedIdea(true);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {!hasSubmittedIdea ? (
+        <IdeaSubmissionScreen onIdeaSubmit={handleIdeaSubmit} />
+      ) : (
+        <MainDashboard userIdea={userIdea} />
+      )}
     </div>
   );
 };
