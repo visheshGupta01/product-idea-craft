@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Lightbulb, Sparkles, Rocket, Code, ArrowRight } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
@@ -25,6 +26,11 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary/20 p-6">
+      {/* Theme Toggle Button */}
+      <div className="fixed top-6 right-6 z-10">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
