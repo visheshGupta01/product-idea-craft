@@ -34,12 +34,13 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
       <div className="w-full max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-primary-foreground" />
+          <div className="flex items-center justify-center mt-2 mb-4">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+              <img
+                src="logo.png" alt="Logo" className="w-32 text-primary-foreground" />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold md:h-14 h-12 mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Imagine.bo
           </h1>
           <p className="text-xl text-muted-foreground mb-2">
