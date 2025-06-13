@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Eye, Code, Maximize2, Minimize2 } from 'lucide-react';
 
 const PreviewCodePanel = () => {
@@ -69,7 +70,7 @@ const App = () => {
 export default App;`;
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background">
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -105,7 +106,7 @@ export default App;`;
           </div>
 
           <TabsContent value="preview" className="flex-1 m-0 p-4 overflow-auto">
-            <div className="w-full h-full border border-border rounded-lg overflow-hidden bg-white">
+            <AspectRatio ratio={16 / 9} className="w-full">
               <iframe
                 srcDoc={`
                   <!DOCTYPE html>
@@ -118,10 +119,10 @@ export default App;`;
                     </body>
                   </html>
                 `}
-                className="w-full h-full border-0"
+                className="w-full h-full border border-border rounded-lg"
                 title="App Preview"
               />
-            </div>
+            </AspectRatio>
           </TabsContent>
 
           <TabsContent value="code" className="flex-1 m-0 p-4 overflow-auto">
