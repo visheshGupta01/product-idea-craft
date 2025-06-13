@@ -64,22 +64,24 @@ const TaskTracker = () => {
 
   return (
     <div className="h-full bg-card flex flex-col">
+      {/* Progress Bar at Top */}
+      <div className="p-4 border-b border-border bg-muted/30">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-foreground">Task Progress</h3>
+          <span className="text-sm text-muted-foreground">{Math.round(progress)}% complete</span>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Progress value={progress} className="flex-1 h-2" />
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
+            {completedTasks} of {tasks.length} completed
+          </span>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div>
-              <h3 className="font-semibold text-foreground">Task Progress</h3>
-              <p className="text-sm text-muted-foreground">
-                {completedTasks} of {tasks.length} completed
-              </p>
-            </div>
-            {/* Progress Bar */}
-            <div className="flex-1 max-w-xs">
-              <Progress value={progress} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-1">{Math.round(progress)}% complete</p>
-            </div>
-          </div>
+          <h3 className="font-semibold text-foreground">Tasks</h3>
           <Button
             variant="ghost"
             size="sm"
