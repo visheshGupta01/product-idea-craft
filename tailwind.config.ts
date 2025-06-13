@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,8 +19,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'impact': ['Impact', 'Arial Black', 'sans-serif'],
-				'satoshi': ['Satoshi', 'system-ui', 'sans-serif'],
+				'impact': ['"Et Mono"', 'Impact', 'sans-serif'],
+				'satoshi': ['"Satoshi Variable"', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
