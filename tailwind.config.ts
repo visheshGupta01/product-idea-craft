@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'impact': ['"Et Mono"', 'Impact', 'sans-serif'],
+				'satoshi': ['"Satoshi Variable"', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',

@@ -29,9 +29,6 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <div className="h-64 border-t border-border bg-card">
-          <TaskTracker />
-        </div>
         {/* Top Section - Chat and Preview */}
         <div className="flex flex-1 min-h-0">
           {/* AI Chat Panel */}
@@ -46,6 +43,9 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
         </div>
 
         {/* Bottom Section - Task Tracker */}
+        <div className="h-64 border-t border-border bg-card">
+          <TaskTracker />
+        </div>
       </div>
     </div>
   );
