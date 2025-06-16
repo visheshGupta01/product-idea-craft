@@ -107,7 +107,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
           <div className="flex items-center justify-center mt-2 mb-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center animate-pulse-glow">
               <img
-                src="logo.png" alt="Logo" className="w-32 text-primary-foreground animate-bounce-subtle" />
+                src="logo.png" alt="Logo" className="w-8 mt-1 ml-1 text-primary-foreground animate-bounce-subtle" />
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold md:h-14 h-12 mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent animate-gradient">
@@ -117,7 +117,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
             Turn your ideas into revenue-ready apps & websites
           </p>
           <p className="text-sm text-muted-foreground">
-            Powered by AI • No coding required
+            Powered by AI & SDE • No coding required
           </p>
         </div>
 
