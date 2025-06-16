@@ -63,7 +63,7 @@ const TaskTracker = () => {
   };
 
   return (
-    <div className={`bg-card flex flex-col transition-all duration-300 ${isCollapsed ? 'h-auto' : 'h-64'}`}>
+    <div className="h-full bg-card flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
@@ -92,49 +92,47 @@ const TaskTracker = () => {
       </div>
 
       {/* Task List - Horizontal Scrollable */}
-      {!isCollapsed && (
-        <div className="flex-1 overflow-hidden">
-          <div className="p-4 h-full overflow-x-auto">
-            <div className="flex space-x-3 h-full">
-              {tasks.map((task, index) => (
-                <Card key={task.id} className="flex-shrink-0 w-64 transition-all hover:shadow-md">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getStatusIcon(task.status)}
-                        <CardTitle className="text-sm font-medium leading-tight">
-                          {task.title}
-                        </CardTitle>
-                      </div>
-                      {getStatusBadge(task.status)}
+      <div className={`flex-1 overflow-hidden ${isCollapsed ? 'hidden' : ''}`}>
+        <div className="p-4 h-full overflow-x-auto">
+          <div className="flex space-x-3 h-full">
+            {tasks.map((task, index) => (
+              <Card key={task.id} className="flex-shrink-0 w-64 transition-all hover:shadow-md">
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-2">
+                      {getStatusIcon(task.status)}
+                      <CardTitle className="text-sm font-medium leading-tight">
+                        {task.title}
+                      </CardTitle>
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                      {task.description}
-                    </p>
-                    
-                    {/* Assignment Toggle */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getAssignmentIcon(task.assignedTo)}
-                        <span className="text-xs text-muted-foreground">
-                          {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                        </span>
-                      </div>
-                      <Switch
-                        checked={task.assignedTo === 'sde'}
-                        onCheckedChange={() => toggleAssignment(task.id)}
-                        className="scale-75"
-                      />
+                    {getStatusBadge(task.status)}
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                    {task.description}
+                  </p>
+                  
+                  {/* Assignment Toggle */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      {getAssignmentIcon(task.assignedTo)}
+                      <span className="text-xs text-muted-foreground">
+                        {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
+                      </span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <Switch
+                      checked={task.assignedTo === 'sde'}
+                      onCheckedChange={() => toggleAssignment(task.id)}
+                      className="scale-75"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
