@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   Menu, 
@@ -197,7 +198,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
 
   if (collapsed) {
     return (
-      <div className="w-16 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+      <div className="w-16 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col h-screen">
         {/* Header */}
         <div className="p-4 border-b border-sidebar-border">
           <Button
@@ -262,9 +263,9 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
   }
 
   return (
-    <div className="w-80 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    <div className="w-80 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col h-screen">
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border">
+      <div className="p-4 border-b border-sidebar-border flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
           <Button
             variant="ghost"
@@ -288,101 +289,103 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
         </div>
       </div>
 
-      {/* Tasks Section */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="space-y-3">
-          {tasks.map((task) => {
-            const isExpanded = expandedTasks.includes(task.id);
-            const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
-            const totalSubtasks = task.subtasks?.length || 0;
-            
-            return (
-              <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-2 flex-1">
-                    {getStatusIcon(task.status)}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-sidebar-foreground truncate">
-                        {task.title}
-                      </h4>
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {task.description}
-                      </p>
+      {/* Tasks Section with Fixed Height and Scroll */}
+      <div className="flex-1 min-h-0">
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-3">
+            {tasks.map((task) => {
+              const isExpanded = expandedTasks.includes(task.id);
+              const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
+              const totalSubtasks = task.subtasks?.length || 0;
+              
+              return (
+                <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-2 flex-1">
+                      {getStatusIcon(task.status)}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium text-sidebar-foreground truncate">
+                          {task.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {task.description}
+                        </p>
+                      </div>
                     </div>
+                    {getStatusBadge(task.status)}
                   </div>
-                  {getStatusBadge(task.status)}
-                </div>
 
-                {/* Assignment and Actions */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    {getAssignmentIcon(task.assignedTo)}
-                    <span className="text-xs text-muted-foreground">
-                      {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {task.assignedTo === 'ai' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => assignToDev(task.id)}
-                        className="text-xs h-6 px-2"
-                      >
-                        Assign to Dev
-                      </Button>
-                    )}
-                    {task.subtasks && task.subtasks.length > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleTaskExpanded(task.id)}
-                        className="h-6 w-6 p-0"
-                      >
-                        {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Subtasks Progress */}
-                {task.subtasks && task.subtasks.length > 0 && (
-                  <div className="text-xs text-muted-foreground">
-                    Subtasks: {completedSubtasks}/{totalSubtasks} completed
-                  </div>
-                )}
-
-                {/* Expanded Subtasks */}
-                {isExpanded && task.subtasks && (
-                  <div className="mt-3 space-y-2 pl-4 border-l-2 border-sidebar-border">
-                    {task.subtasks.map((subtask) => (
-                      <div key={subtask.id} className="flex items-center space-x-2">
+                  {/* Assignment and Actions */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      {getAssignmentIcon(task.assignedTo)}
+                      <span className="text-xs text-muted-foreground">
+                        {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {task.assignedTo === 'ai' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => assignToDev(task.id)}
+                          className="text-xs h-6 px-2"
+                        >
+                          Assign to Dev
+                        </Button>
+                      )}
+                      {task.subtasks && task.subtasks.length > 0 && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => toggleSubtask(task.id, subtask.id)}
-                          className="h-4 w-4 p-0"
+                          onClick={() => toggleTaskExpanded(task.id)}
+                          className="h-6 w-6 p-0"
                         >
-                          {subtask.completed ? 
-                            <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
-                            <Circle className="h-3 w-3 text-gray-400" />
-                          }
+                          {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                         </Button>
-                        <span className={`text-xs ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
-                          {subtask.title}
-                        </span>
-                      </div>
-                    ))}
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+
+                  {/* Subtasks Progress */}
+                  {task.subtasks && task.subtasks.length > 0 && (
+                    <div className="text-xs text-muted-foreground">
+                      Subtasks: {completedSubtasks}/{totalSubtasks} completed
+                    </div>
+                  )}
+
+                  {/* Expanded Subtasks */}
+                  {isExpanded && task.subtasks && (
+                    <div className="mt-3 space-y-2 pl-4 border-l-2 border-sidebar-border">
+                      {task.subtasks.map((subtask) => (
+                        <div key={subtask.id} className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleSubtask(task.id, subtask.id)}
+                            className="h-4 w-4 p-0"
+                          >
+                            {subtask.completed ? 
+                              <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
+                              <Circle className="h-3 w-3 text-gray-400" />
+                            }
+                          </Button>
+                          <span className={`text-xs ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
+                            {subtask.title}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* Bottom Section */}
-      <div className="mt-auto p-4 border-t border-sidebar-border space-y-3">
+      <div className="p-4 border-t border-sidebar-border space-y-3 flex-shrink-0">
         {/* Integration Buttons */}
         <div className="space-y-2">
           <Button 

@@ -18,7 +18,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
   });
 
   return (
-    <div className="min-h-screen bg-background flex overflow-hidden">
+    <div className="h-screen bg-background flex overflow-hidden">
       {/* Sidebar with Tasks */}
       <Sidebar 
         collapsed={sidebarCollapsed}
