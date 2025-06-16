@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Lightbulb, Sparkles, Rocket, Code, ArrowRight } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Lightbulb, Sparkles, Rocket, Code, ArrowRight, ExternalLink, Heart, Eye } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
 interface IdeaSubmissionScreenProps {
@@ -23,14 +25,72 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
     { icon: Rocket, text: "Launch together" }
   ];
 
+  const communityProjects = [
+    {
+      id: 1,
+      title: "TaskFlow Pro",
+      description: "A productivity app that helps teams manage projects with AI-powered insights and automated workflows.",
+      author: "Sarah Chen",
+      category: "Productivity",
+      likes: 142,
+      views: 2340,
+      status: "Live",
+      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=200&fit=crop"
+    },
+    {
+      id: 2,
+      title: "Local Artisan Hub",
+      description: "A marketplace connecting local artists with customers, featuring secure payments and community reviews.",
+      author: "Marcus Rodriguez",
+      category: "E-commerce",
+      likes: 89,
+      views: 1560,
+      status: "Live",
+      image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=200&fit=crop"
+    },
+    {
+      id: 3,
+      title: "EcoTrack",
+      description: "Personal carbon footprint tracker with gamification elements and sustainability challenges.",
+      author: "Emma Thompson",
+      category: "Sustainability",
+      likes: 76,
+      views: 980,
+      status: "Beta",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&h=200&fit=crop"
+    },
+    {
+      id: 4,
+      title: "MindfulMoments",
+      description: "AI-powered meditation and mindfulness app with personalized sessions and progress tracking.",
+      author: "David Kim",
+      category: "Health & Wellness",
+      likes: 203,
+      views: 3200,
+      status: "Live",
+      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop"
+    }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Live':
+        return 'bg-green-100 text-green-700';
+      case 'Beta':
+        return 'bg-blue-100 text-blue-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary/20 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
       {/* Theme Toggle Button */}
       <div className="fixed top-6 right-6 z-10">
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mt-2 mb-4">
@@ -66,7 +126,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
         </div>
 
         {/* Main Input Section */}
-        <div className="bg-card border border-border rounded-3xl p-8 shadow-lg">
+        <div className="bg-card border border-border rounded-3xl p-8 shadow-lg mb-16">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-semibold mb-2 text-card-foreground">What's your idea?</h2>
             <p className="text-muted-foreground">
@@ -100,8 +160,75 @@ For example: 'A marketplace for local artists to sell their digital artwork, wit
           </div>
         </div>
 
+        {/* Community Section */}
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-3 text-foreground">Built by Our Community</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              See what amazing projects other builders have created with Imagine.bo. 
+              Get inspired and join thousands of successful entrepreneurs.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {communityProjects.map((project) => (
+              <Card key={project.id} className="group hover:shadow-lg transition-all duration-200 hover:scale-105 overflow-hidden">
+                <div className="relative">
+                  <img 
+                    src={project.image} 
+                    alt={project.title}
+                    className="w-full h-32 object-cover"
+                  />
+                  <Badge 
+                    className={`absolute top-2 right-2 text-xs ${getStatusColor(project.status)}`}
+                  >
+                    {project.status}
+                  </Badge>
+                </div>
+                
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-sm font-semibold leading-tight mb-1">
+                        {project.title}
+                      </CardTitle>
+                      <Badge variant="outline" className="text-xs">
+                        {project.category}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="pt-0">
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-3 line-clamp-2">
+                    {project.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                    <span>by {project.author}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 text-xs text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Heart className="w-3 h-3" />
+                        <span>{project.likes}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Eye className="w-3 h-3" />
+                        <span>{project.views}</span>
+                      </div>
+                    </div>
+                    <ExternalLink className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
         {/* Footer */}
-        <div className="text-center mt-12 text-sm text-muted-foreground">
+        <div className="text-center text-sm text-muted-foreground">
           <p>Join thousands of builders who have launched their ideas with Imagine.bo</p>
         </div>
       </div>
