@@ -3,11 +3,19 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Eye, Code, Maximize2, Minimize2 } from 'lucide-react';
+import { Eye, Code, Maximize2, Minimize2, Smartphone, Tablet, Monitor } from 'lucide-react';
+
+type DeviceType = 'desktop' | 'tablet' | 'phone';
 
 const PreviewCodePanel = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
+
+  const deviceSizes = {
+    desktop: { width: '100%', height: '100%' },
+    tablet: { width: '768px', height: '1024px' },
+    phone: { width: '375px', height: '667px' }
+  };
 
   const mockPreview = `
     <div class="min-h-screen bg-gray-50 p-8">
@@ -69,10 +77,22 @@ const App = () => {
 
 export default App;`;
 
+  const DeviceButton = ({ device, icon: Icon, label }: { device: DeviceType, icon: any, label: string }) => (
+    <Button
+      variant={activeDevice === device ? "default" : "ghost"}
+      size="sm"
+      onClick={() => setActiveDevice(device)}
+      className="flex items-center space-x-1"
+    >
+      <Icon className="w-4 h-4" />
+      <span className="hidden sm:inline">{label}</span>
+    </Button>
+  );
+
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-border flex items-center justify-between">
+      <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-3">
           <h3 className="font-semibold">Preview & Code</h3>
           <Badge variant="secondary" className="text-xs">
@@ -92,37 +112,57 @@ export default App;`;
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="preview" className="h-full flex flex-col">
-          <div className="px-4 pt-2">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="preview" className="flex items-center space-x-2">
-                <Eye className="w-4 h-4" />
-                <span>Preview</span>
-              </TabsTrigger>
-              <TabsTrigger value="code" className="flex items-center space-x-2">
-                <Code className="w-4 h-4" />
-                <span>Code</span>
-              </TabsTrigger>
-            </TabsList>
+          <div className="px-4 pt-2 shrink-0">
+            <div className="flex items-center justify-between">
+              <TabsList className="grid grid-cols-2 w-fit">
+                <TabsTrigger value="preview" className="flex items-center space-x-2">
+                  <Eye className="w-4 h-4" />
+                  <span>Preview</span>
+                </TabsTrigger>
+                <TabsTrigger value="code" className="flex items-center space-x-2">
+                  <Code className="w-4 h-4" />
+                  <span>Code</span>
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Device Preview Buttons - Only show on preview tab */}
+              <div className="flex items-center space-x-1">
+                <DeviceButton device="phone" icon={Smartphone} label="Phone" />
+                <DeviceButton device="tablet" icon={Tablet} label="Tablet" />
+                <DeviceButton device="desktop" icon={Monitor} label="Desktop" />
+              </div>
+            </div>
           </div>
 
-          <TabsContent value="preview" className="flex-1 m-0 p-4 overflow-auto">
-            <AspectRatio ratio={16 / 9} className="w-full">
-              <iframe
-                srcDoc={`
-                  <!DOCTYPE html>
-                  <html>
-                    <head>
-                      <script src="https://cdn.tailwindcss.com"></script>
-                    </head>
-                    <body>
-                      ${mockPreview}
-                    </body>
-                  </html>
-                `}
-                className="w-full h-full border border-border rounded-lg"
-                title="App Preview"
-              />
-            </AspectRatio>
+          <TabsContent value="preview" className="flex-1 m-0 p-4 overflow-hidden">
+            <div className="h-full flex items-center justify-center bg-muted/30 rounded-lg">
+              <div 
+                className="bg-background border border-border rounded-lg shadow-lg overflow-hidden transition-all duration-300"
+                style={{
+                  width: deviceSizes[activeDevice].width,
+                  height: deviceSizes[activeDevice].height,
+                  maxWidth: '100%',
+                  maxHeight: '100%'
+                }}
+              >
+                <iframe
+                  srcDoc={`
+                    <!DOCTYPE html>
+                    <html>
+                      <head>
+                        <script src="https://cdn.tailwindcss.com"></script>
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      </head>
+                      <body>
+                        ${mockPreview}
+                      </body>
+                    </html>
+                  `}
+                  className="w-full h-full"
+                  title="App Preview"
+                />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="code" className="flex-1 m-0 p-4 overflow-auto">
