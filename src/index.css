@@ -48,60 +48,48 @@
   }
 
   .dark {
-    /* Primary Background: #22282a (dark charcoal) */
-    --background: 195 13% 16.1%;
-    /* Primary Text: #d5e1e7 (light blue-gray) */
-    --foreground: 202 20% 87.8%;
+    /* Refined dark background colors */
+    --background: 210 24% 8%;
+    --foreground: 213 31% 91%;
 
-    /* Secondary Background: #394247 (darker gray-blue) */
-    --card: 203 12% 26.1%;
-    /* Primary Text: #d5e1e7 (light blue-gray) */
-    --card-foreground: 202 20% 87.8%;
+    --card: 211 23% 11%;
+    --card-foreground: 213 31% 91%;
 
-    /* Secondary Background: #394247 (darker gray-blue) */
-    --popover: 203 12% 26.1%;
-    /* Primary Text: #d5e1e7 (light blue-gray) */
-    --popover-foreground: 202 20% 87.8%;
+    --popover: 211 23% 11%;
+    --popover-foreground: 213 31% 91%;
 
-    /* Primary Accent: #66e8fa (bright cyan) */
-    --primary: 184 97% 69.4%;
-    /* Button Text: #22282a (dark charcoal) */
-    --primary-foreground: 195 13% 16.1%;
+    /* Vibrant cyan primary accent */
+    --primary: 188 100% 65%;
+    --primary-foreground: 210 24% 8%;
 
-    /* Faded Background: #3b4144 (muted dark gray) */
-    --secondary: 202 10% 26.7%;
-    /* Primary Text: #d5e1e7 (light blue-gray) */
-    --secondary-foreground: 202 20% 87.8%;
+    /* Subtle secondary colors */
+    --secondary: 211 20% 16%;
+    --secondary-foreground: 213 27% 84%;
 
-    /* Faded Background: #3b4144 (muted dark gray) */
-    --muted: 202 10% 26.7%;
-    /* Body Text: #b1c5ce (medium blue-gray) */
-    --muted-foreground: 203 21% 74.1%;
+    --muted: 211 20% 16%;
+    --muted-foreground: 213 19% 64%;
 
-    /* Index/Navigation: #5f6f77 (medium gray) */
-    --accent: 205 11% 42.9%;
-    /* Primary Text: #d5e1e7 (light blue-gray) */
-    --accent-foreground: 202 20% 87.8%;
+    /* Medium accent color */
+    --accent: 212 18% 32%;
+    --accent-foreground: 213 31% 91%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 73% 58%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Button Border: #394247 (darker gray-blue) */
-    --border: 203 12% 26.1%;
-    /* Button Border: #394247 (darker gray-blue) */
-    --input: 203 12% 26.1%;
-    /* Primary Accent: #66e8fa (bright cyan) */
-    --ring: 184 97% 69.4%;
+    /* Borders and inputs */
+    --border: 211 20% 20%;
+    --input: 211 20% 20%;
+    --ring: 188 100% 65%;
 
-    /* Sidebar using the same color scheme */
-    --sidebar-background: 195 13% 16.1%;
-    --sidebar-foreground: 202 20% 87.8%;
-    --sidebar-primary: 184 97% 69.4%;
-    --sidebar-primary-foreground: 195 13% 16.1%;
-    --sidebar-accent: 202 10% 26.7%;
-    --sidebar-accent-foreground: 202 20% 87.8%;
-    --sidebar-border: 203 12% 26.1%;
-    --sidebar-ring: 184 97% 69.4%;
+    /* Sidebar colors matching the theme */
+    --sidebar-background: 210 24% 8%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 188 100% 65%;
+    --sidebar-primary-foreground: 210 24% 8%;
+    --sidebar-accent: 211 20% 16%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border: 211 20% 20%;
+    --sidebar-ring: 188 100% 65%;
   }
 }
 
@@ -118,3 +106,141 @@
     @apply font-satoshi;
   }
 }
+
+/* Scroll animations */
+@layer utilities {
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .animate-on-scroll.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .animate-fade-up {
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  
+  .animate-bounce-subtle {
+    animation: bounceSubtle 2s ease-in-out infinite;
+  }
+  
+  .animate-gradient {
+    animation: gradient 3s ease infinite;
+    background-size: 200% 200%;
+  }
+}
+
+/* Keyframes for animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(102, 232, 250, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(102, 232, 250, 0.6);
+  }
+}
+
+@keyframes bounceSubtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Stagger animation delays */
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
+.animate-delay-500 { animation-delay: 0.5s; }

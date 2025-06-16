@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb, Sparkles, Rocket, Code, ArrowRight, ExternalLink, Heart, Eye } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
@@ -13,6 +13,11 @@ interface IdeaSubmissionScreenProps {
 
 const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
   const [idea, setIdea] = useState('');
+
+  const headerAnimation = useScrollAnimation();
+  const cardsAnimation = useScrollAnimation();
+  const inputAnimation = useScrollAnimation();
+  const communityAnimation = useScrollAnimation();
 
   const handleSubmit = () => {
     if (idea.trim()) {
@@ -76,31 +81,36 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Live':
-        return 'bg-green-100 text-green-700';
+        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
       case 'Beta':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
-      {/* Theme Toggle Button */}
-      <div className="fixed top-6 right-6 z-10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-x-hidden">
+      {/* Theme Toggle Button - with float animation */}
+      <div className="fixed top-6 right-6 z-10 animate-float">
         <ThemeToggle />
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
+        {/* Header - with fade up animation */}
+        <div 
+          ref={headerAnimation.ref}
+          className={`text-center mb-12 transition-all duration-800 ${
+            headerAnimation.isVisible ? 'animate-fade-up' : 'opacity-0 translate-y-8'
+          }`}
+        >
           <div className="flex items-center justify-center mt-2 mb-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center animate-pulse-glow">
               <img
-                src="logo.png" alt="Logo" className="w-32 text-primary-foreground" />
+                src="logo.png" alt="Logo" className="w-32 text-primary-foreground animate-bounce-subtle" />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold md:h-14 h-12 mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold md:h-14 h-12 mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent animate-gradient">
             Imagine.bo
           </h1>
           <p className="text-xl text-muted-foreground mb-2">
@@ -111,14 +121,21 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
           </p>
         </div>
 
-        {/* Inspiration Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        {/* Inspiration Cards - with staggered slide animations */}
+        <div 
+          ref={cardsAnimation.ref}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+        >
           {inspirationCards.map((card, index) => (
             <div 
               key={index}
-              className="bg-card border border-border rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-200 hover:scale-105"
+              className={`bg-card border border-border rounded-2xl p-6 text-center hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:scale-105 hover:-translate-y-1 ${
+                cardsAnimation.isVisible 
+                  ? `animate-slide-in-left animate-delay-${(index + 1) * 100}`
+                  : 'opacity-0 -translate-x-8'
+              }`}
             >
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
                 <card.icon className="w-6 h-6 text-primary" />
               </div>
               <p className="text-sm font-medium text-card-foreground">{card.text}</p>
@@ -126,8 +143,13 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
           ))}
         </div>
 
-        {/* Main Input Section */}
-        <div className="bg-card border border-border rounded-3xl p-8 shadow-lg mb-16">
+        {/* Main Input Section - with scale animation */}
+        <div 
+          ref={inputAnimation.ref}
+          className={`bg-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-xl shadow-primary/5 mb-16 transition-all duration-600 ${
+            inputAnimation.isVisible ? 'animate-scale-in' : 'opacity-0 scale-95'
+          }`}
+        >
           <div className="text-center mb-6">
             <h2 className="text-2xl font-semibold mb-2 text-card-foreground">What's your idea?</h2>
             <p className="text-muted-foreground">
@@ -142,17 +164,17 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
 For example: 'A marketplace for local artists to sell their digital artwork, with features for artist profiles, secure payments, and community reviews.'"
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              className="min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl"
+              className="min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10"
             />
 
             <Button 
               onClick={handleSubmit}
               disabled={!idea.trim()}
               size="lg"
-              className="w-full h-12 text-base font-medium rounded-xl group transition-all duration-200"
+              className="w-full h-12 text-base font-medium rounded-xl group transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Start Building My Idea
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </div>
 
@@ -161,9 +183,14 @@ For example: 'A marketplace for local artists to sell their digital artwork, wit
           </div>
         </div>
 
-        {/* Community Section */}
-        <div className="mb-12">
-          <div className="text-center mb-8">
+        {/* Community Section - with slide animations */}
+        <div 
+          ref={communityAnimation.ref}
+          className="mb-12"
+        >
+          <div className={`text-center mb-8 transition-all duration-600 ${
+            communityAnimation.isVisible ? 'animate-fade-up' : 'opacity-0 translate-y-8'
+          }`}>
             <h2 className="text-3xl font-bold mb-3 text-foreground">Built by Our Community</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               See what amazing projects other builders have created with Imagine.bo. 
@@ -172,13 +199,20 @@ For example: 'A marketplace for local artists to sell their digital artwork, wit
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {communityProjects.map((project) => (
-              <Card key={project.id} className="group hover:shadow-lg transition-all duration-200 hover:scale-105 overflow-hidden">
-                <div className="relative">
+            {communityProjects.map((project, index) => (
+              <Card 
+                key={project.id} 
+                className={`group hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:scale-105 hover:-translate-y-2 overflow-hidden bg-card/60 backdrop-blur-sm border-border/50 ${
+                  communityAnimation.isVisible 
+                    ? `animate-slide-in-right animate-delay-${(index + 1) * 100}`
+                    : 'opacity-0 translate-x-8'
+                }`}
+              >
+                <div className="relative overflow-hidden">
                   <img 
                     src={project.image} 
                     alt={project.title}
-                    className="w-full h-32 object-cover"
+                    className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <Badge 
                     className={`absolute top-2 right-2 text-xs ${getStatusColor(project.status)}`}
@@ -220,7 +254,7 @@ For example: 'A marketplace for local artists to sell their digital artwork, wit
                         <span>{project.views}</span>
                       </div>
                     </div>
-                    <ExternalLink className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <ExternalLink className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
                   </div>
                 </CardContent>
               </Card>
@@ -229,7 +263,7 @@ For example: 'A marketplace for local artists to sell their digital artwork, wit
         </div>
 
         {/* Footer */}
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center text-sm text-muted-foreground animate-fade-up animate-delay-500">
           <p>Join thousands of builders who have launched their ideas with Imagine.bo</p>
         </div>
       </div>
