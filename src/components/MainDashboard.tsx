@@ -6,9 +6,10 @@ import PreviewCodePanel from './dashboard/PreviewCodePanel';
 
 interface MainDashboardProps {
   userIdea: string;
+  followUpAnswers: Record<string, string>;
 }
 
-const MainDashboard = ({ userIdea }: MainDashboardProps) => {
+const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentProject] = useState({
     id: '1',
