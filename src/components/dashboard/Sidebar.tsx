@@ -3,18 +3,42 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Progress } from '@/components/ui/progress';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   Menu, 
   Plus, 
-  FolderOpen, 
   User, 
   Moon, 
   Sun, 
   Database, 
   Github,
   Settings,
-  Bell
+  Bell,
+  CheckCircle2,
+  Circle,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Bot,
+  Users,
+  CreditCard
 } from 'lucide-react';
+
+interface Task {
+  id: number;
+  title: string;
+  status: 'completed' | 'in-progress' | 'pending';
+  description: string;
+  assignedTo: 'ai' | 'sde';
+  subtasks?: {
+    id: number;
+    title: string;
+    completed: boolean;
+  }[];
+}
 
 interface SidebarProps {
   collapsed: boolean;
@@ -29,11 +53,69 @@ interface SidebarProps {
 
 const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) => {
   const [darkMode, setDarkMode] = useState(false);
-  const [projects] = useState([
-    { id: '1', name: 'My App Idea', status: 'active' },
-    { id: '2', name: 'E-commerce Store', status: 'completed' },
-    { id: '3', name: 'Social Platform', status: 'draft' }
+  const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
+  
+  const [tasks, setTasks] = useState<Task[]>([
+    { 
+      id: 1, 
+      title: 'Idea Submitted', 
+      status: 'completed', 
+      description: 'Initial concept captured', 
+      assignedTo: 'ai',
+      subtasks: [
+        { id: 1, title: 'Document requirements', completed: true },
+        { id: 2, title: 'Initial review', completed: true }
+      ]
+    },
+    { 
+      id: 2, 
+      title: 'Competitive Analysis', 
+      status: 'in-progress', 
+      description: 'Researching market competitors', 
+      assignedTo: 'ai',
+      subtasks: [
+        { id: 3, title: 'Market research', completed: true },
+        { id: 4, title: 'Competitor analysis', completed: false },
+        { id: 5, title: 'SWOT analysis', completed: false }
+      ]
+    },
+    { 
+      id: 3, 
+      title: 'Problem Validation', 
+      status: 'pending', 
+      description: 'Validate core problem exists', 
+      assignedTo: 'ai',
+      subtasks: [
+        { id: 6, title: 'User interviews', completed: false },
+        { id: 7, title: 'Survey creation', completed: false }
+      ]
+    },
+    { 
+      id: 4, 
+      title: 'Research Solutions', 
+      status: 'pending', 
+      description: 'Find optimal solution approach', 
+      assignedTo: 'sde',
+      subtasks: [
+        { id: 8, title: 'Technology stack research', completed: false },
+        { id: 9, title: 'Architecture planning', completed: false }
+      ]
+    },
+    { 
+      id: 5, 
+      title: 'UI/UX Mockups', 
+      status: 'pending', 
+      description: 'Design user interface', 
+      assignedTo: 'sde',
+      subtasks: [
+        { id: 10, title: 'Wireframes', completed: false },
+        { id: 11, title: 'High-fidelity designs', completed: false }
+      ]
+    }
   ]);
+
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
+  const progress = (completedTasks / tasks.length) * 100;
 
   // Check for existing dark mode preference
   useEffect(() => {
@@ -52,11 +134,72 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
     }
   };
 
-  return (
-    <div className={`${collapsed ? 'w-16' : 'w-64'} bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col`}>
-      {/* Header */}
-      <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center justify-between">
+  const assignToDev = (taskId: number) => {
+    setTasks(tasks.map(task => 
+      task.id === taskId 
+        ? { ...task, assignedTo: 'sde' as const }
+        : task
+    ));
+  };
+
+  const toggleTaskExpanded = (taskId: number) => {
+    setExpandedTasks(prev => 
+      prev.includes(taskId) 
+        ? prev.filter(id => id !== taskId)
+        : [...prev, taskId]
+    );
+  };
+
+  const toggleSubtask = (taskId: number, subtaskId: number) => {
+    setTasks(tasks.map(task => 
+      task.id === taskId 
+        ? {
+            ...task,
+            subtasks: task.subtasks?.map(subtask =>
+              subtask.id === subtaskId
+                ? { ...subtask, completed: !subtask.completed }
+                : subtask
+            )
+          }
+        : task
+    ));
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      case 'in-progress':
+        return <Clock className="h-4 w-4 text-blue-500" />;
+      default:
+        return <Circle className="h-4 w-4 text-gray-400" />;
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">Done</Badge>;
+      case 'in-progress':
+        return <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">Active</Badge>;
+      default:
+        return <Badge variant="outline" className="text-xs">Pending</Badge>;
+    }
+  };
+
+  const getAssignmentIcon = (assignedTo: string) => {
+    return assignedTo === 'ai' ? (
+      <Bot className="h-3 w-3 text-purple-500" />
+    ) : (
+      <User className="h-3 w-3 text-orange-500" />
+    );
+  };
+
+  if (collapsed) {
+    return (
+      <div className="w-16 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b border-sidebar-border">
           <Button
             variant="ghost"
             size="sm"
@@ -65,110 +208,249 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
           >
             <Menu className="h-4 w-4" />
           </Button>
-          {!collapsed && (
-            <h2 className="font-semibold text-sidebar-foreground">Imagine.bo</h2>
-          )}
+        </div>
+
+        {/* Collapsed buttons */}
+        <div className="flex-1 flex flex-col items-center py-4 space-y-4">
+          <Button variant="ghost" size="sm" className="h-10 w-10 p-0" title="Teams">
+            <Users className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="sm" className="h-10 w-10 p-0" title="Subscription">
+            <CreditCard className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="mt-auto p-4 border-t border-sidebar-border">
+          <div className="flex flex-col items-center space-y-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleDarkMode}
+              className="h-8 w-8 p-0"
+            >
+              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="text-xs">JD</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="right">
+                <DropdownMenuItem>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Project
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <User className="h-4 w-4 mr-2" />
+                  My Projects
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className="h-4 w-4 mr-2" />
+                  User Profile
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-80 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+      {/* Header */}
+      <div className="p-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleCollapse}
+            className="h-8 w-8 p-0"
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+          <h2 className="font-semibold text-sidebar-foreground">Imagine.bo</h2>
+        </div>
+        
+        {/* Progress Overview */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-sidebar-foreground">Task Progress</h3>
+            <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+          <p className="text-xs text-muted-foreground">{Math.round(progress)}% complete</p>
         </div>
       </div>
 
-      {/* Projects Section */}
-      {!collapsed && (
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-sidebar-foreground">Projects</h3>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
+      {/* Tasks Section */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-3">
+          {tasks.map((task) => {
+            const isExpanded = expandedTasks.includes(task.id);
+            const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
+            const totalSubtasks = task.subtasks?.length || 0;
             
-            <div className="space-y-1">
-              {projects.map((project) => (
-                <div
-                  key={project.id}
-                  className={`p-2 rounded-lg cursor-pointer transition-colors ${
-                    project.id === currentProject.id
-                      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                      : 'hover:bg-sidebar-accent/50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <FolderOpen className="h-4 w-4" />
-                    <span className="text-sm truncate">{project.name}</span>
+            return (
+              <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-2 flex-1">
+                    {getStatusIcon(task.status)}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium text-sidebar-foreground truncate">
+                        {task.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {task.description}
+                      </p>
+                    </div>
                   </div>
-                  <div className={`text-xs mt-1 ${
-                    project.status === 'active' ? 'text-green-500' :
-                    project.status === 'completed' ? 'text-blue-500' : 'text-gray-500'
-                  }`}>
-                    {project.status}
+                  {getStatusBadge(task.status)}
+                </div>
+
+                {/* Assignment and Actions */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    {getAssignmentIcon(task.assignedTo)}
+                    <span className="text-xs text-muted-foreground">
+                      {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {task.assignedTo === 'ai' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => assignToDev(task.id)}
+                        className="text-xs h-6 px-2"
+                      >
+                        Assign to Dev
+                      </Button>
+                    )}
+                    {task.subtasks && task.subtasks.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleTaskExpanded(task.id)}
+                        className="h-6 w-6 p-0"
+                      >
+                        {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                      </Button>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Bottom Section - Fixed positioning */}
-      <div className="mt-auto p-4 border-t border-sidebar-border space-y-3">
-        {!collapsed && (
-          <>
-            {/* Integration Buttons */}
-            <div className="space-y-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start text-xs h-8"
-              >
-                <Database className="h-3 w-3 mr-2" />
-                Connect Supabase
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start text-xs h-8"
-              >
-                <Github className="h-3 w-3 mr-2" />
-                Connect GitHub
-              </Button>
-            </div>
-            
-            <Separator />
-          </>
-        )}
+                {/* Subtasks Progress */}
+                {task.subtasks && task.subtasks.length > 0 && (
+                  <div className="text-xs text-muted-foreground">
+                    Subtasks: {completedSubtasks}/{totalSubtasks} completed
+                  </div>
+                )}
 
-        {/* User & Settings - Always at bottom */}
-        <div className="space-y-2">
-          {!collapsed && (
-            <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleDarkMode}
-                className="h-8 w-8 p-0"
-              >
-                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Bell className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-          
-          <div className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'}`}>
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">JD</AvatarFallback>
-            </Avatar>
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
-                <p className="text-xs text-sidebar-foreground/60">Pro Plan</p>
+                {/* Expanded Subtasks */}
+                {isExpanded && task.subtasks && (
+                  <div className="mt-3 space-y-2 pl-4 border-l-2 border-sidebar-border">
+                    {task.subtasks.map((subtask) => (
+                      <div key={subtask.id} className="flex items-center space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleSubtask(task.id, subtask.id)}
+                          className="h-4 w-4 p-0"
+                        >
+                          {subtask.completed ? 
+                            <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
+                            <Circle className="h-3 w-3 text-gray-400" />
+                          }
+                        </Button>
+                        <span className={`text-xs ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
+                          {subtask.title}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Bottom Section */}
+      <div className="mt-auto p-4 border-t border-sidebar-border space-y-3">
+        {/* Integration Buttons */}
+        <div className="space-y-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start text-xs h-8"
+          >
+            <Database className="h-3 w-3 mr-2" />
+            Connect Supabase
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start text-xs h-8"
+          >
+            <Github className="h-3 w-3 mr-2" />
+            Connect GitHub
+          </Button>
+        </div>
+        
+        <Separator />
+
+        {/* User & Settings */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleDarkMode}
+              className="h-8 w-8 p-0"
+            >
+              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Bell className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Settings className="h-4 w-4" />
+            </Button>
           </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="text-xs">JD</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
+                  <p className="text-xs text-sidebar-foreground/60">Pro Plan</p>
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem>
+                <Plus className="h-4 w-4 mr-2" />
+                New Project
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <User className="h-4 w-4 mr-2" />
+                My Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="h-4 w-4 mr-2" />
+                User Profile
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>

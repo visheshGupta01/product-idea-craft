@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import Sidebar from './dashboard/Sidebar';
 import ChatPanel from './dashboard/ChatPanel';
 import PreviewCodePanel from './dashboard/PreviewCodePanel';
-import TaskTracker from './dashboard/TaskTracker';
 
 interface MainDashboardProps {
   userIdea: string;
@@ -20,7 +19,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
 
   return (
     <div className="min-h-screen bg-background flex overflow-hidden">
-      {/* Sidebar */}
+      {/* Sidebar with Tasks */}
       <Sidebar 
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -28,23 +27,15 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top Section - Chat and Preview */}
-        <div className="flex flex-1 min-h-0">
-          {/* AI Chat Panel */}
-          <div className="w-80 min-w-0 border-r border-border bg-card hidden lg:block">
-            <ChatPanel userIdea={userIdea} />
-          </div>
-
-          {/* Preview/Code Panel with 16:9 aspect ratio */}
-          <div className="flex-1 min-w-0 border-r border-border flex flex-col">
-            <PreviewCodePanel />
-          </div>
+      <div className="flex-1 flex min-w-0 overflow-hidden">
+        {/* AI Chat Panel */}
+        <div className="w-80 min-w-0 border-r border-border bg-card hidden lg:block">
+          <ChatPanel userIdea={userIdea} />
         </div>
 
-        {/* Bottom Section - Task Tracker */}
-        <div className="h-64 border-t border-border bg-card">
-          <TaskTracker />
+        {/* Preview/Code Panel */}
+        <div className="flex-1 min-w-0">
+          <PreviewCodePanel />
         </div>
       </div>
     </div>
