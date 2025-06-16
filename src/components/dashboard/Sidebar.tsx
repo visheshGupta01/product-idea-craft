@@ -289,7 +289,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
             <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
               <Lightbulb className="h-4 w-4 text-white" />
             </div>
-            <h2 className="font-bold text-lg text-sidebar-foreground bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="font-bold text-lg text-sidebar-foreground bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
               imagine.bo
             </h2>
           </div>

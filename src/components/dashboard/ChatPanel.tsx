@@ -81,7 +81,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
           </div>
           <div>
             <h3 className="font-semibold text-sm">AI Assistant</h3>
-            <p className="text-xs text-muted-foreground">Guiding your build process</p>
+            <p className="text-[8px] text-muted-foreground">Guiding your build process</p>
           </div>
         </div>
       </div>
