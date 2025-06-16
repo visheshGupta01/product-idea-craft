@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +14,7 @@ interface IdeaSubmissionScreenProps {
 
 const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
   const [idea, setIdea] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const headerAnimation = useScrollAnimation();
   const cardsAnimation = useScrollAnimation();
@@ -21,7 +23,11 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
 
   const handleSubmit = () => {
     if (idea.trim()) {
-      onIdeaSubmit(idea);
+      setIsSubmitting(true);
+      // Trigger the animation and transition
+      setTimeout(() => {
+        onIdeaSubmit(idea);
+      }, 800); // Allow time for animation
     }
   };
 
@@ -90,7 +96,22 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-x-hidden">
+    <div className={`min-h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-x-hidden transition-all duration-800 ${
+      isSubmitting ? 'scale-105 blur-sm' : 'scale-100 blur-none'
+    }`}>
+      {/* Animated textbox overlay - appears during transition */}
+      {isSubmitting && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-background/80 backdrop-blur-sm">
+          <div className="animate-scale-in">
+            <Textarea
+              value={idea}
+              readOnly
+              className="w-96 h-32 text-base border-2 border-primary/50 rounded-xl shadow-2xl shadow-primary/20 bg-card"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Theme Toggle Button - with float animation */}
       <div className="fixed top-6 right-6 z-10 animate-float">
         <ThemeToggle />
@@ -143,11 +164,13 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
           ))}
         </div>
 
-        {/* Main Input Section - with scale animation */}
+        {/* Main Input Section - with scale animation and submission state */}
         <div 
           ref={inputAnimation.ref}
           className={`bg-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-xl shadow-primary/5 mb-16 transition-all duration-600 ${
             inputAnimation.isVisible ? 'animate-scale-in' : 'opacity-0 scale-95'
+          } ${
+            isSubmitting ? 'scale-110 shadow-2xl shadow-primary/20' : 'scale-100'
           }`}
         >
           <div className="text-center mb-6">
@@ -164,16 +187,19 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
 For example: 'A marketplace for local artists to sell their digital artwork, with features for artist profiles, secure payments, and community reviews.'"
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              className="min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10"
+              disabled={isSubmitting}
+              className={`min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 ${
+                isSubmitting ? 'border-primary/50 shadow-lg shadow-primary/10' : ''
+              }`}
             />
 
             <Button 
               onClick={handleSubmit}
-              disabled={!idea.trim()}
+              disabled={!idea.trim() || isSubmitting}
               size="lg"
               className="w-full h-12 text-base font-medium rounded-xl group transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Start Building My Idea
+              {isSubmitting ? 'Processing your idea...' : 'Start Building My Idea'}
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </div>
