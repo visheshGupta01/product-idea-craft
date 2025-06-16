@@ -25,7 +25,8 @@ import {
   ChevronUp,
   Bot,
   Users,
-  CreditCard
+  CreditCard,
+  Lightbulb
 } from 'lucide-react';
 
 interface Task {
@@ -211,6 +212,13 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
           </Button>
         </div>
 
+        {/* Logo - collapsed */}
+        <div className="p-2 flex justify-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+            <Lightbulb className="h-4 w-4 text-white" />
+          </div>
+        </div>
+
         {/* Collapsed buttons */}
         <div className="flex-1 flex flex-col items-center py-4 space-y-4">
           <Button variant="ghost" size="sm" className="h-10 w-10 p-0" title="Teams">
@@ -275,7 +283,16 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject }: SidebarProps) 
           >
             <Menu className="h-4 w-4" />
           </Button>
-          <h2 className="font-semibold text-sidebar-foreground">Imagine.bo</h2>
+          
+          {/* Logo with text */}
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+              <Lightbulb className="h-4 w-4 text-white" />
+            </div>
+            <h2 className="font-bold text-lg text-sidebar-foreground bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              imagine.bo
+            </h2>
+          </div>
         </div>
         
         {/* Progress Overview */}
