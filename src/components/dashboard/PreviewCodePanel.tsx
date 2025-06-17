@@ -71,9 +71,9 @@ const PreviewCodePanel = () => {
   return (
     <div className="h-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between shrink-0 bg-background">
         <div className="flex items-center space-x-3">
-          <h3 className="font-semibold">Preview & Code</h3>
+          <h3 className="font-semibold text-foreground">Preview & Code</h3>
           <Badge variant="secondary" className="text-xs">
             {activeTab === 'preview' ? 'Live Preview' : 'Code Editor'}
           </Badge>
@@ -91,14 +91,15 @@ const PreviewCodePanel = () => {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          <div className="px-4 pt-2 shrink-0">
+          {/* Tab Controls */}
+          <div className="px-4 py-2 border-b border-border bg-muted/30 shrink-0">
             <div className="flex items-center justify-between">
-              <TabsList className="grid grid-cols-2 w-fit">
-                <TabsTrigger value="preview" className="flex items-center space-x-2">
+              <TabsList className="grid grid-cols-2 w-fit bg-background">
+                <TabsTrigger value="preview" className="flex items-center space-x-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Eye className="w-4 h-4" />
                   <span>Preview</span>
                 </TabsTrigger>
-                <TabsTrigger value="code" className="flex items-center space-x-2">
+                <TabsTrigger value="code" className="flex items-center space-x-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Code className="w-4 h-4" />
                   <span>Code</span>
                 </TabsTrigger>

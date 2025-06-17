@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -205,23 +206,23 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
     return (
       <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-sidebar-border">
+        <div className="p-4 border-b border-sidebar-border bg-sidebar">
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggleCollapse}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-sidebar-accent"
           >
             <Menu className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Navigation buttons - only show when collapsed */}
-        <div className="flex-1 flex flex-col items-center py-4 space-y-4">
+        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
           <Button 
             variant={activeView === 'main' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0" 
+            className="h-10 w-10 p-0 hover:bg-sidebar-accent" 
             title="Dashboard"
             onClick={() => onViewChange?.('main')}
           >
@@ -230,7 +231,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           <Button 
             variant={activeView === 'team' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0" 
+            className="h-10 w-10 p-0 hover:bg-sidebar-accent" 
             title="Teams"
             onClick={() => onViewChange?.('team')}
           >
@@ -239,7 +240,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           <Button 
             variant={activeView === 'subscription' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0" 
+            className="h-10 w-10 p-0 hover:bg-sidebar-accent" 
             title="Subscription"
             onClick={() => onViewChange?.('subscription')}
           >
@@ -248,35 +249,35 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-auto p-4 border-t border-sidebar-border">
+        <div className="mt-auto p-4 border-t border-sidebar-border bg-sidebar">
           <div className="flex flex-col items-center space-y-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleDarkMode}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-sidebar-accent"
             >
               {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
+                <Button variant="ghost" size="sm" className="h-10 w-10 p-0 hover:bg-sidebar-accent">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs">JD</AvatarFallback>
+                    <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-accent-foreground">JD</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" side="right">
-                <DropdownMenuItem>
+              <DropdownMenuContent align="start" side="right" className="bg-background border-border">
+                <DropdownMenuItem className="hover:bg-accent">
                   <Plus className="h-4 w-4 mr-2" />
                   New Project
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-accent">
                   <User className="h-4 w-4 mr-2" />
                   My Projects
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-accent">
                   <Settings className="h-4 w-4 mr-2" />
                   User Profile
                 </DropdownMenuItem>
@@ -289,22 +290,22 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
   }
 
   return (
-    <div className="h-full w-full min-w-[280px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    <div className="h-full w-full min-w-[320px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border flex-shrink-0">
+      <div className="p-4 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-between mb-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggleCollapse}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-sidebar-accent"
           >
             <Menu className="h-4 w-4" />
           </Button>
           
           {/* Logo with text */}
           <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-sm">
               <Lightbulb className="h-5 w-5 text-white" />
             </div>
             <h2 className="font-bold text-lg text-sidebar-foreground bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -314,7 +315,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
         </div>
         
         {/* Progress Overview - always show when expanded */}
-        <div className="space-y-2">
+        <div className="space-y-2 bg-sidebar-accent/30 rounded-lg p-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-sidebar-foreground">Task Progress</h3>
             <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
@@ -325,7 +326,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
       </div>
 
       {/* Tasks Section - always show when expanded */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 bg-sidebar">
         <ScrollArea className="h-full">
           <div className="p-4 space-y-3">
             {tasks.map((task) => {
@@ -334,7 +335,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
               const totalSubtasks = task.subtasks?.length || 0;
               
               return (
-                <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2">
+                <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2 bg-sidebar-accent/20 hover:bg-sidebar-accent/30 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                       {getStatusIcon(task.status)}
@@ -366,7 +367,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleTaskExpanded(task.id)}
-                            className="h-6 w-6 p-0"
+                            className="h-6 w-6 p-0 hover:bg-sidebar-accent"
                           >
                             {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                           </Button>
@@ -379,7 +380,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                         variant="outline"
                         size="sm"
                         onClick={() => assignToDev(task.id)}
-                        className="text-xs h-6 w-full"
+                        className="text-xs h-7 w-full border-sidebar-border hover:bg-sidebar-accent hover:border-sidebar-accent-foreground/20"
                       >
                         Assign to Dev
                       </Button>
@@ -400,7 +401,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleSubtask(task.id, subtask.id)}
-                            className="h-4 w-4 p-0"
+                            className="h-4 w-4 p-0 hover:bg-sidebar-accent"
                           >
                             {subtask.completed ? 
                               <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
@@ -422,13 +423,13 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
       </div>
 
       {/* Bottom Section */}
-      <div className="p-4 border-t border-sidebar-border space-y-3 flex-shrink-0">
+      <div className="p-4 border-t border-sidebar-border space-y-3 flex-shrink-0 bg-sidebar">
         {/* Integration Buttons - always show when expanded */}
         <div className="space-y-2">
           <Button 
             variant="outline" 
             size="sm" 
-            className="w-full justify-start text-xs h-8"
+            className="w-full justify-start text-xs h-8 border-sidebar-border hover:bg-sidebar-accent hover:border-sidebar-accent-foreground/20"
           >
             <Database className="h-3 w-3 mr-2" />
             Connect Supabase
@@ -436,14 +437,14 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           <Button 
             variant="outline" 
             size="sm" 
-            className="w-full justify-start text-xs h-8"
+            className="w-full justify-start text-xs h-8 border-sidebar-border hover:bg-sidebar-accent hover:border-sidebar-accent-foreground/20"
           >
             <Github className="h-3 w-3 mr-2" />
             Connect GitHub
           </Button>
         </div>
         
-        <Separator />
+        <Separator className="bg-sidebar-border" />
 
         {/* User & Settings */}
         <div className="space-y-2">
@@ -452,23 +453,23 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
               variant="ghost"
               size="sm"
               onClick={toggleDarkMode}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-sidebar-accent"
             >
               {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-sidebar-accent">
               <Bell className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-sidebar-accent">
               <Settings className="h-4 w-4" />
             </Button>
           </div>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2">
+              <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="text-xs">JD</AvatarFallback>
+                  <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-accent-foreground">JD</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
@@ -476,16 +477,16 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                 </div>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem>
+            <DropdownMenuContent align="start" className="bg-background border-border">
+              <DropdownMenuItem className="hover:bg-accent">
                 <Plus className="h-4 w-4 mr-2" />
                 New Project
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-accent">
                 <User className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-accent">
                 <Settings className="h-4 w-4 mr-2" />
                 User Profile
               </DropdownMenuItem>
