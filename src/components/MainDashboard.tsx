@@ -15,8 +15,8 @@ interface MainDashboardProps {
 type ActiveView = 'main' | 'team' | 'subscription';
 
 const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeView, setActiveView] = useState<ActiveView>('main');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentProject] = useState({
     id: '1',
     name: 'My App Idea',
@@ -61,10 +61,6 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
     }
   };
 
-  const handleSidebarCollapse = (collapsed: boolean) => {
-    setSidebarCollapsed(collapsed);
-  };
-
   return (
     <div className="h-screen bg-background overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="h-full">
@@ -74,8 +70,8 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
           minSize={4} 
           maxSize={35}
           collapsible={true}
-          onCollapse={() => handleSidebarCollapse(true)}
-          onExpand={() => handleSidebarCollapse(false)}
+          onCollapse={() => setSidebarCollapsed(true)}
+          onExpand={() => setSidebarCollapsed(false)}
         >
           <Sidebar 
             collapsed={sidebarCollapsed}
