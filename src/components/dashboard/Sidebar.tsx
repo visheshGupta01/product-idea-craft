@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -204,7 +203,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
 
   if (collapsed) {
     return (
-      <div className="w-16 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col h-screen">
+      <div className="h-full w-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-sidebar-border">
           <Button
@@ -290,7 +289,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
   }
 
   return (
-    <div className="w-80 bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col h-screen">
+    <div className="h-full w-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
