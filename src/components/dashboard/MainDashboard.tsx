@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
-import Sidebar from './dashboard/Sidebar';
-import ChatPanel from './dashboard/ChatPanel';
-import PreviewCodePanel from './dashboard/PreviewCodePanel';
-import TeamPage from './dashboard/TeamPage';
-import SubscriptionPage from './dashboard/SubscriptionPage';
+import Sidebar from './Sidebar';
+import ChatPanel from './ChatPanel';
+import PreviewCodePanel from './PreviewCodePanel';
+import TeamPage from './TeamPage';
+import SubscriptionPage from './SubscriptionPage';
 
 interface MainDashboardProps {
   userIdea: string;
