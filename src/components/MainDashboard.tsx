@@ -64,30 +64,54 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
   return (
     <div className="h-screen bg-background overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="h-full">
-        {/* Sidebar */}
-        <ResizablePanel 
-          defaultSize={20} 
-          minSize={4} 
-          maxSize={35}
-          collapsible={true}
-          onCollapse={() => setSidebarCollapsed(true)}
-          onExpand={() => setSidebarCollapsed(false)}
-        >
-          <Sidebar 
-            collapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            currentProject={currentProject}
-            activeView={activeView}
-            onViewChange={setActiveView}
-          />
-        </ResizablePanel>
+        {/* Sidebar - only collapsible for main view */}
+        {activeView === 'main' ? (
+          <>
+            <ResizablePanel 
+              defaultSize={20} 
+              minSize={4} 
+              maxSize={35}
+              collapsible={true}
+              onCollapse={() => setSidebarCollapsed(true)}
+              onExpand={() => setSidebarCollapsed(false)}
+            >
+              <Sidebar 
+                collapsed={sidebarCollapsed}
+                onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+                currentProject={currentProject}
+                activeView={activeView}
+                onViewChange={setActiveView}
+              />
+            </ResizablePanel>
 
-        <ResizableHandle withHandle />
+            <ResizableHandle withHandle />
 
-        {/* Main Content Area */}
-        <ResizablePanel defaultSize={80} minSize={65}>
-          {renderMainContent()}
-        </ResizablePanel>
+            {/* Main Content Area */}
+            <ResizablePanel defaultSize={80} minSize={65}>
+              {renderMainContent()}
+            </ResizablePanel>
+          </>
+        ) : (
+          <>
+            {/* Non-collapsible sidebar for team and subscription views */}
+            <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
+              <Sidebar 
+                collapsed={false}
+                onToggleCollapse={() => {}}
+                currentProject={currentProject}
+                activeView={activeView}
+                onViewChange={setActiveView}
+              />
+            </ResizablePanel>
+
+            <ResizableHandle withHandle />
+
+            {/* Main Content Area */}
+            <ResizablePanel defaultSize={80} minSize={65}>
+              {renderMainContent()}
+            </ResizablePanel>
+          </>
+        )}
       </ResizablePanelGroup>
     </div>
   );
