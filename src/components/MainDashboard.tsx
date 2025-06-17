@@ -5,6 +5,8 @@ import ChatPanel from './dashboard/ChatPanel';
 import PreviewCodePanel from './dashboard/PreviewCodePanel';
 import TeamPage from './dashboard/TeamPage';
 import SubscriptionPage from './dashboard/SubscriptionPage';
+import MyProjectsPage from './dashboard/MyProjectsPage';
+import UserProfilePage from './dashboard/UserProfilePage';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 
 interface MainDashboardProps {
@@ -12,7 +14,7 @@ interface MainDashboardProps {
   followUpAnswers: Record<string, string>;
 }
 
-type ActiveView = 'main' | 'team' | 'subscription';
+type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
 
 const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>('main');
@@ -36,6 +38,18 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         return (
           <div className="flex-1 h-full w-full">
             <SubscriptionPage />
+          </div>
+        );
+      case 'my-projects':
+        return (
+          <div className="flex-1 h-full w-full">
+            <MyProjectsPage />
+          </div>
+        );
+      case 'user-profile':
+        return (
+          <div className="flex-1 h-full w-full">
+            <UserProfilePage />
           </div>
         );
       default:

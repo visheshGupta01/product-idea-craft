@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -43,7 +42,7 @@ interface Task {
   }[];
 }
 
-type ActiveView = 'main' | 'team' | 'subscription';
+type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -269,17 +268,23 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" side="right" className="bg-background border-border">
-                <DropdownMenuItem className="hover:bg-accent">
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Project
-                </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-accent">
-                  <User className="h-4 w-4 mr-2" />
+                <DropdownMenuItem 
+                  className="hover:bg-accent"
+                  onClick={() => onViewChange?.('my-projects')}
+                >
+                  <Lightbulb className="h-4 w-4 mr-2" />
                   My Projects
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="hover:bg-accent"
+                  onClick={() => onViewChange?.('user-profile')}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  User Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem className="hover:bg-accent">
                   <Settings className="h-4 w-4 mr-2" />
-                  User Profile
+                  Settings
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -478,17 +483,23 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="bg-background border-border">
-              <DropdownMenuItem className="hover:bg-accent">
-                <Plus className="h-4 w-4 mr-2" />
-                New Project
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-accent">
-                <User className="h-4 w-4 mr-2" />
+              <DropdownMenuItem 
+                className="hover:bg-accent"
+                onClick={() => onViewChange?.('my-projects')}
+              >
+                <Lightbulb className="h-4 w-4 mr-2" />
                 My Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="hover:bg-accent"
+                onClick={() => onViewChange?.('user-profile')}
+              >
+                <User className="h-4 w-4 mr-2" />
+                User Profile
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-accent">
                 <Settings className="h-4 w-4 mr-2" />
-                User Profile
+                Settings
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
