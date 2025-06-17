@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -216,7 +217,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           </Button>
         </div>
 
-        {/* Collapsed buttons */}
+        {/* Navigation buttons - only show when collapsed */}
         <div className="flex-1 flex flex-col items-center py-4 space-y-4">
           <Button 
             variant={activeView === 'main' ? 'default' : 'ghost'} 
@@ -313,171 +314,132 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           </div>
         </div>
         
-        {/* Navigation */}
-        <div className="space-y-2 mb-4">
-          <Button
-            variant={activeView === 'main' ? 'default' : 'ghost'}
-            size="sm"
-            className="w-full justify-start"
-            onClick={() => onViewChange?.('main')}
-          >
-            <Home className="h-4 w-4 mr-2" />
-            Dashboard
-          </Button>
-          <Button
-            variant={activeView === 'team' ? 'default' : 'ghost'}
-            size="sm"
-            className="w-full justify-start"
-            onClick={() => onViewChange?.('team')}
-          >
-            <Users className="h-4 w-4 mr-2" />
-            Teams
-          </Button>
-          <Button
-            variant={activeView === 'subscription' ? 'default' : 'ghost'}
-            size="sm"
-            className="w-full justify-start"
-            onClick={() => onViewChange?.('subscription')}
-          >
-            <CreditCard className="h-4 w-4 mr-2" />
-            Subscription
-          </Button>
-        </div>
-        
-        {/* Progress Overview - only show on main view */}
-        {activeView === 'main' && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-sidebar-foreground">Task Progress</h3>
-              <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-            <p className="text-xs text-muted-foreground">{Math.round(progress)}% complete</p>
+        {/* Progress Overview - always show when expanded */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-sidebar-foreground">Task Progress</h3>
+            <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
           </div>
-        )}
+          <Progress value={progress} className="h-2" />
+          <p className="text-xs text-muted-foreground">{Math.round(progress)}% complete</p>
+        </div>
       </div>
 
-      {/* Tasks Section - only show on main view */}
-      {activeView === 'main' && (
-        <div className="flex-1 min-h-0">
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-3">
-              {tasks.map((task) => {
-                const isExpanded = expandedTasks.includes(task.id);
-                const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
-                const totalSubtasks = task.subtasks?.length || 0;
-                
-                return (
-                  <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-2 flex-1">
-                        {getStatusIcon(task.status)}
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-sidebar-foreground truncate">
-                            {task.title}
-                          </h4>
-                          <p className="text-xs text-muted-foreground line-clamp-2">
-                            {task.description}
-                          </p>
-                        </div>
+      {/* Tasks Section - always show when expanded */}
+      <div className="flex-1 min-h-0">
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-3">
+            {tasks.map((task) => {
+              const isExpanded = expandedTasks.includes(task.id);
+              const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
+              const totalSubtasks = task.subtasks?.length || 0;
+              
+              return (
+                <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-2 flex-1">
+                      {getStatusIcon(task.status)}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium text-sidebar-foreground truncate">
+                          {task.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {task.description}
+                        </p>
                       </div>
-                      {getStatusBadge(task.status)}
                     </div>
+                    {getStatusBadge(task.status)}
+                  </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getAssignmentIcon(task.assignedTo)}
-                        <span className="text-xs text-muted-foreground">
-                          {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {task.assignedTo === 'ai' && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => assignToDev(task.id)}
-                            className="text-xs h-6 px-2"
-                          >
-                            Assign to Dev
-                          </Button>
-                        )}
-                        {task.subtasks && task.subtasks.length > 0 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      {getAssignmentIcon(task.assignedTo)}
+                      <span className="text-xs text-muted-foreground">
+                        {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {task.assignedTo === 'ai' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => assignToDev(task.id)}
+                          className="text-xs h-6 px-2"
+                        >
+                          Assign to Dev
+                        </Button>
+                      )}
+                      {task.subtasks && task.subtasks.length > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleTaskExpanded(task.id)}
+                          className="h-6 w-6 p-0"
+                        >
+                          {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {task.subtasks && task.subtasks.length > 0 && (
+                    <div className="text-xs text-muted-foreground">
+                      Subtasks: {completedSubtasks}/{totalSubtasks} completed
+                    </div>
+                  )}
+
+                  {isExpanded && task.subtasks && (
+                    <div className="mt-3 space-y-2 pl-4 border-l-2 border-sidebar-border">
+                      {task.subtasks.map((subtask) => (
+                        <div key={subtask.id} className="flex items-center space-x-2">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => toggleTaskExpanded(task.id)}
-                            className="h-6 w-6 p-0"
+                            onClick={() => toggleSubtask(task.id, subtask.id)}
+                            className="h-4 w-4 p-0"
                           >
-                            {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                            {subtask.completed ? 
+                              <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
+                              <Circle className="h-3 w-3 text-gray-400" />
+                            }
                           </Button>
-                        )}
-                      </div>
+                          <span className={`text-xs ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
+                            {subtask.title}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-
-                    {task.subtasks && task.subtasks.length > 0 && (
-                      <div className="text-xs text-muted-foreground">
-                        Subtasks: {completedSubtasks}/{totalSubtasks} completed
-                      </div>
-                    )}
-
-                    {isExpanded && task.subtasks && (
-                      <div className="mt-3 space-y-2 pl-4 border-l-2 border-sidebar-border">
-                        {task.subtasks.map((subtask) => (
-                          <div key={subtask.id} className="flex items-center space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleSubtask(task.id, subtask.id)}
-                              className="h-4 w-4 p-0"
-                            >
-                              {subtask.completed ? 
-                                <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
-                                <Circle className="h-3 w-3 text-gray-400" />
-                              }
-                            </Button>
-                            <span className={`text-xs ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
-                              {subtask.title}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </ScrollArea>
-        </div>
-      )}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      </div>
 
       {/* Bottom Section */}
       <div className="p-4 border-t border-sidebar-border space-y-3 flex-shrink-0">
-        {/* Integration Buttons - only show on main view */}
-        {activeView === 'main' && (
-          <>
-            <div className="space-y-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start text-xs h-8"
-              >
-                <Database className="h-3 w-3 mr-2" />
-                Connect Supabase
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start text-xs h-8"
-              >
-                <Github className="h-3 w-3 mr-2" />
-                Connect GitHub
-              </Button>
-            </div>
-            
-            <Separator />
-          </>
-        )}
+        {/* Integration Buttons - always show when expanded */}
+        <div className="space-y-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start text-xs h-8"
+          >
+            <Database className="h-3 w-3 mr-2" />
+            Connect Supabase
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start text-xs h-8"
+          >
+            <Github className="h-3 w-3 mr-2" />
+            Connect GitHub
+          </Button>
+        </div>
+        
+        <Separator />
 
         {/* User & Settings */}
         <div className="space-y-2">
