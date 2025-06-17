@@ -19,25 +19,12 @@ type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profi
 const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>('main');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [sidebarSize, setSidebarSize] = useState(22);
-  const [mainContentSize, setMainContentSize] = useState(78);
   const [currentProject] = useState({
     id: '1',
     name: 'My App Idea',
     description: userIdea,
     status: 'in-progress'
   });
-
-  // Update panel sizes when sidebar collapses/expands
-  useEffect(() => {
-    if (sidebarCollapsed) {
-      setSidebarSize(4);
-      setMainContentSize(96);
-    } else {
-      setSidebarSize(22);
-      setMainContentSize(78);
-    }
-  }, [sidebarCollapsed]);
 
   const renderMainContent = () => {
     switch (activeView) {
@@ -101,8 +88,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
       <ResizablePanelGroup direction="horizontal" className="h-full">
         {/* Sidebar - always collapsible */}
         <ResizablePanel 
-          defaultSize={sidebarSize}
-          size={sidebarSize}
+          defaultSize={sidebarCollapsed ? 4 : 22}
           minSize={4} 
           maxSize={35}
           collapsible={true}
@@ -122,8 +108,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
         {/* Main Content Area */}
         <ResizablePanel 
-          defaultSize={mainContentSize}
-          size={mainContentSize}
+          defaultSize={sidebarCollapsed ? 96 : 78}
           minSize={65}
         >
           {renderMainContent()}
