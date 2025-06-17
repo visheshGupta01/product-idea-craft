@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './dashboard/Sidebar';
 import ChatPanel from './dashboard/ChatPanel';
 import PreviewCodePanel from './dashboard/PreviewCodePanel';
@@ -19,12 +19,25 @@ type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profi
 const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>('main');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarSize, setSidebarSize] = useState(22);
+  const [mainContentSize, setMainContentSize] = useState(78);
   const [currentProject] = useState({
     id: '1',
     name: 'My App Idea',
     description: userIdea,
     status: 'in-progress'
   });
+
+  // Update panel sizes when sidebar collapses/expands
+  useEffect(() => {
+    if (sidebarCollapsed) {
+      setSidebarSize(4);
+      setMainContentSize(96);
+    } else {
+      setSidebarSize(22);
+      setMainContentSize(78);
+    }
+  }, [sidebarCollapsed]);
 
   const renderMainContent = () => {
     switch (activeView) {
@@ -57,7 +70,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
           <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
             {/* AI Chat Panel */}
             <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 40 : 30} 
+              defaultSize={sidebarCollapsed ? 35 : 30} 
               minSize={25} 
               maxSize={50} 
               className="hidden lg:block"
@@ -71,7 +84,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
             {/* Preview/Code Panel */}
             <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 60 : 70} 
+              defaultSize={sidebarCollapsed ? 65 : 70} 
               minSize={50}
             >
               <div className="h-full">
@@ -88,7 +101,8 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
       <ResizablePanelGroup direction="horizontal" className="h-full">
         {/* Sidebar - always collapsible */}
         <ResizablePanel 
-          defaultSize={sidebarCollapsed ? 4 : 22} 
+          defaultSize={sidebarSize}
+          size={sidebarSize}
           minSize={4} 
           maxSize={35}
           collapsible={true}
@@ -108,7 +122,8 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
         {/* Main Content Area */}
         <ResizablePanel 
-          defaultSize={sidebarCollapsed ? 96 : 78} 
+          defaultSize={mainContentSize}
+          size={mainContentSize}
           minSize={65}
         >
           {renderMainContent()}
