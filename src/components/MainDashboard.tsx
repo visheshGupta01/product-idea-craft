@@ -42,7 +42,12 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         return (
           <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
             {/* AI Chat Panel */}
-            <ResizablePanel defaultSize={30} minSize={20} maxSize={50} className="hidden lg:block">
+            <ResizablePanel 
+              defaultSize={sidebarCollapsed ? 35 : 30} 
+              minSize={20} 
+              maxSize={50} 
+              className="hidden lg:block"
+            >
               <div className="h-full border-r border-border bg-card">
                 <ChatPanel userIdea={userIdea} />
               </div>
@@ -51,7 +56,10 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
             <ResizableHandle withHandle className="hidden lg:flex" />
 
             {/* Preview/Code Panel */}
-            <ResizablePanel defaultSize={70} minSize={50}>
+            <ResizablePanel 
+              defaultSize={sidebarCollapsed ? 65 : 70} 
+              minSize={50}
+            >
               <div className="h-full">
                 <PreviewCodePanel />
               </div>
@@ -66,7 +74,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
       <ResizablePanelGroup direction="horizontal" className="h-full">
         {/* Sidebar - collapsible for all views */}
         <ResizablePanel 
-          defaultSize={22} 
+          defaultSize={sidebarCollapsed ? 4 : 25} 
           minSize={4} 
           maxSize={35}
           collapsible={true}
@@ -85,7 +93,10 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         <ResizableHandle withHandle />
 
         {/* Main Content Area */}
-        <ResizablePanel defaultSize={78} minSize={65}>
+        <ResizablePanel 
+          defaultSize={sidebarCollapsed ? 96 : 75} 
+          minSize={65}
+        >
           {renderMainContent()}
         </ResizablePanel>
       </ResizablePanelGroup>
