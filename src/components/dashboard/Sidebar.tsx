@@ -203,7 +203,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
 
   if (collapsed) {
     return (
-      <div className="h-full w-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+      <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-sidebar-border">
           <Button
@@ -289,7 +289,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
   }
 
   return (
-    <div className="h-full w-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    <div className="h-full w-full min-w-[280px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
@@ -336,7 +336,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
               return (
                 <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-2 flex-1">
+                    <div className="flex items-center space-x-2 flex-1 min-w-0">
                       {getStatusIcon(task.status)}
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-medium text-sidebar-foreground truncate">
@@ -347,38 +347,43 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                         </p>
                       </div>
                     </div>
-                    {getStatusBadge(task.status)}
+                    <div className="flex-shrink-0">
+                      {getStatusBadge(task.status)}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      {getAssignmentIcon(task.assignedTo)}
-                      <span className="text-xs text-muted-foreground">
-                        {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                      </span>
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        {getAssignmentIcon(task.assignedTo)}
+                        <span className="text-xs text-muted-foreground">
+                          {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {task.subtasks && task.subtasks.length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleTaskExpanded(task.id)}
+                            className="h-6 w-6 p-0"
+                          >
+                            {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {task.assignedTo === 'ai' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => assignToDev(task.id)}
-                          className="text-xs h-6 px-2"
-                        >
-                          Assign to Dev
-                        </Button>
-                      )}
-                      {task.subtasks && task.subtasks.length > 0 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleTaskExpanded(task.id)}
-                          className="h-6 w-6 p-0"
-                        >
-                          {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                        </Button>
-                      )}
-                    </div>
+                    
+                    {task.assignedTo === 'ai' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => assignToDev(task.id)}
+                        className="text-xs h-6 w-full"
+                      >
+                        Assign to Dev
+                      </Button>
+                    )}
                   </div>
 
                   {task.subtasks && task.subtasks.length > 0 && (
