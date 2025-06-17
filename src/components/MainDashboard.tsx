@@ -26,9 +26,17 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
   const renderMainContent = () => {
     switch (activeView) {
       case 'team':
-        return <TeamPage />;
+        return (
+          <div className="flex-1 h-full w-full">
+            <TeamPage />
+          </div>
+        );
       case 'subscription':
-        return <SubscriptionPage />;
+        return (
+          <div className="flex-1 h-full w-full">
+            <SubscriptionPage />
+          </div>
+        );
       default:
         return (
           <div className="flex-1 flex min-w-0 overflow-hidden">
