@@ -43,8 +43,8 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
           <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
             {/* AI Chat Panel */}
             <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 35 : 30} 
-              minSize={20} 
+              defaultSize={sidebarCollapsed ? 40 : 30} 
+              minSize={25} 
               maxSize={50} 
               className="hidden lg:block"
             >
@@ -57,7 +57,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
             {/* Preview/Code Panel */}
             <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 65 : 70} 
+              defaultSize={sidebarCollapsed ? 60 : 70} 
               minSize={50}
             >
               <div className="h-full">
@@ -72,9 +72,9 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
   return (
     <div className="h-screen bg-background overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="h-full">
-        {/* Sidebar - collapsible for all views */}
+        {/* Sidebar - always collapsible */}
         <ResizablePanel 
-          defaultSize={sidebarCollapsed ? 4 : 25} 
+          defaultSize={sidebarCollapsed ? 4 : 22} 
           minSize={4} 
           maxSize={35}
           collapsible={true}
@@ -94,7 +94,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
         {/* Main Content Area */}
         <ResizablePanel 
-          defaultSize={sidebarCollapsed ? 96 : 75} 
+          defaultSize={sidebarCollapsed ? 96 : 78} 
           minSize={65}
         >
           {renderMainContent()}

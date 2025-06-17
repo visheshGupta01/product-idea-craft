@@ -290,7 +290,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
   }
 
   return (
-    <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    <div className="h-full w-full min-w-[280px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-between mb-4">
@@ -340,15 +340,15 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                       {getStatusIcon(task.status)}
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-sidebar-foreground truncate">
+                        <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
                           {task.title}
                         </h4>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
+                        <p className="text-xs text-muted-foreground break-words leading-tight mt-1">
                           {task.description}
                         </p>
                       </div>
                     </div>
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 ml-2">
                       {getStatusBadge(task.status)}
                     </div>
                   </div>
@@ -408,7 +408,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                               <Circle className="h-3 w-3 text-gray-400" />
                             }
                           </Button>
-                          <span className={`text-xs ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
+                          <span className={`text-xs break-words leading-tight ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
                             {subtask.title}
                           </span>
                         </div>
