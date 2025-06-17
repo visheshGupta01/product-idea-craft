@@ -4,12 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Code, Maximize2, Minimize2, Smartphone, Tablet, Monitor } from 'lucide-react';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import FileExplorer, { type FileNode } from './FileExplorer';
+import CodeEditor from './CodeEditor';
 
 type DeviceType = 'desktop' | 'tablet' | 'phone';
 
 const PreviewCodePanel = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
+  const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
+  const [activeTab, setActiveTab] = useState('preview');
 
   const deviceSizes = {
     desktop: { width: '100%', height: '100%' },
@@ -47,36 +52,6 @@ const PreviewCodePanel = () => {
     </div>
   `;
 
-  const mockCode = `import React from 'react';
-
-const App = () => {
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Your App Preview
-          </h1>
-          <p className="text-xl text-gray-600">
-            This is how your app will look
-          </p>
-        </header>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div key={index} className="bg-white p-6 rounded-xl shadow-sm border">
-              <h3 className="font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default App;`;
-
   const DeviceButton = ({ device, icon: Icon, label }: { device: DeviceType, icon: any, label: string }) => (
     <Button
       variant={activeDevice === device ? "default" : "ghost"}
@@ -89,6 +64,10 @@ export default App;`;
     </Button>
   );
 
+  const handleFileSelect = (file: FileNode) => {
+    setSelectedFile(file);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
@@ -96,7 +75,7 @@ export default App;`;
         <div className="flex items-center space-x-3">
           <h3 className="font-semibold">Preview & Code</h3>
           <Badge variant="secondary" className="text-xs">
-            Live Preview
+            {activeTab === 'preview' ? 'Live Preview' : 'Code Editor'}
           </Badge>
         </div>
         <Button
@@ -111,7 +90,7 @@ export default App;`;
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        <Tabs defaultValue="preview" className="h-full flex flex-col">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
           <div className="px-4 pt-2 shrink-0">
             <div className="flex items-center justify-between">
               <TabsList className="grid grid-cols-2 w-fit">
@@ -126,11 +105,13 @@ export default App;`;
               </TabsList>
 
               {/* Device Preview Buttons - Only show on preview tab */}
-              <div className="flex items-center space-x-1">
-                <DeviceButton device="phone" icon={Smartphone} label="Phone" />
-                <DeviceButton device="tablet" icon={Tablet} label="Tablet" />
-                <DeviceButton device="desktop" icon={Monitor} label="Desktop" />
-              </div>
+              {activeTab === 'preview' && (
+                <div className="flex items-center space-x-1">
+                  <DeviceButton device="phone" icon={Smartphone} label="Phone" />
+                  <DeviceButton device="tablet" icon={Tablet} label="Tablet" />
+                  <DeviceButton device="desktop" icon={Monitor} label="Desktop" />
+                </div>
+              )}
             </div>
           </div>
 
@@ -165,12 +146,23 @@ export default App;`;
             </div>
           </TabsContent>
 
-          <TabsContent value="code" className="flex-1 m-0 p-4 overflow-auto">
-            <div className="bg-muted rounded-lg p-4 h-full overflow-auto">
-              <pre className="text-sm text-foreground">
-                <code>{mockCode}</code>
-              </pre>
-            </div>
+          <TabsContent value="code" className="flex-1 m-0 overflow-hidden">
+            <ResizablePanelGroup direction="horizontal" className="h-full">
+              {/* File Explorer */}
+              <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
+                <FileExplorer 
+                  onFileSelect={handleFileSelect}
+                  selectedFile={selectedFile?.path || null}
+                />
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              {/* Code Editor */}
+              <ResizablePanel defaultSize={75} minSize={60}>
+                <CodeEditor file={selectedFile} />
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </TabsContent>
         </Tabs>
       </div>
