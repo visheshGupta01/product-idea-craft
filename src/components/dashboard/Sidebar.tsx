@@ -290,7 +290,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
   }
 
   return (
-    <div className="h-full w-full min-w-[320px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-between mb-4">
