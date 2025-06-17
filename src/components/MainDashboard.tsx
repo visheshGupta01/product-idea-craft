@@ -42,7 +42,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         return (
           <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
             {/* AI Chat Panel */}
-            <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="hidden lg:block">
+            <ResizablePanel defaultSize={30} minSize={20} maxSize={50} className="hidden lg:block">
               <div className="h-full border-r border-border bg-card">
                 <ChatPanel userIdea={userIdea} />
               </div>
@@ -51,7 +51,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
             <ResizableHandle withHandle className="hidden lg:flex" />
 
             {/* Preview/Code Panel */}
-            <ResizablePanel defaultSize={75} minSize={60}>
+            <ResizablePanel defaultSize={70} minSize={50}>
               <div className="h-full">
                 <PreviewCodePanel />
               </div>
@@ -61,17 +61,21 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
     }
   };
 
+  const handleSidebarCollapse = (collapsed: boolean) => {
+    setSidebarCollapsed(collapsed);
+  };
+
   return (
     <div className="h-screen bg-background overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="h-full">
         {/* Sidebar */}
         <ResizablePanel 
-          defaultSize={sidebarCollapsed ? 5 : 20} 
-          minSize={5} 
-          maxSize={30}
+          defaultSize={20} 
+          minSize={4} 
+          maxSize={35}
           collapsible={true}
-          onCollapse={() => setSidebarCollapsed(true)}
-          onExpand={() => setSidebarCollapsed(false)}
+          onCollapse={() => handleSidebarCollapse(true)}
+          onExpand={() => handleSidebarCollapse(false)}
         >
           <Sidebar 
             collapsed={sidebarCollapsed}
@@ -85,7 +89,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         <ResizableHandle withHandle />
 
         {/* Main Content Area */}
-        <ResizablePanel defaultSize={sidebarCollapsed ? 95 : 80} minSize={70}>
+        <ResizablePanel defaultSize={80} minSize={65}>
           {renderMainContent()}
         </ResizablePanel>
       </ResizablePanelGroup>
