@@ -57,7 +57,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
           <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
             {/* AI Chat Panel */}
             <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 35 : 30} 
+              defaultSize={sidebarCollapsed ? 40 : 35} 
               minSize={25} 
               maxSize={50} 
               className="hidden lg:block"
@@ -71,7 +71,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
             {/* Preview/Code Panel */}
             <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 65 : 70} 
+              defaultSize={sidebarCollapsed ? 60 : 65} 
               minSize={50}
             >
               <div className="h-full">
@@ -98,7 +98,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         </div>
 
         {/* Main Content Area - takes remaining space */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0" key={sidebarCollapsed ? 'collapsed' : 'expanded'}>
           {renderMainContent()}
         </div>
       </div>
