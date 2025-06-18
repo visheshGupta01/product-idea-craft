@@ -1,22 +1,21 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Menu, 
-  Plus, 
   User, 
   Moon, 
   Sun, 
   Database, 
   Github,
   Settings,
-  Bell,
   CheckCircle2,
   Circle,
   Clock,
@@ -26,7 +25,10 @@ import {
   Users,
   CreditCard,
   Lightbulb,
-  Home
+  Home,
+  FileText,
+  Link,
+  Cat
 } from 'lucide-react';
 
 interface Task {
@@ -60,6 +62,7 @@ interface SidebarProps {
 const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'main', onViewChange }: SidebarProps) => {
   const [darkMode, setDarkMode] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   
   const [tasks, setTasks] = useState<Task[]>([
     { 
@@ -90,33 +93,21 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
       title: 'Problem Validation', 
       status: 'pending', 
       description: 'Validate core problem exists', 
-      assignedTo: 'ai',
-      subtasks: [
-        { id: 6, title: 'User interviews', completed: false },
-        { id: 7, title: 'Survey creation', completed: false }
-      ]
+      assignedTo: 'ai'
     },
     { 
       id: 4, 
       title: 'Research Solutions', 
       status: 'pending', 
       description: 'Find optimal solution approach', 
-      assignedTo: 'sde',
-      subtasks: [
-        { id: 8, title: 'Technology stack research', completed: false },
-        { id: 9, title: 'Architecture planning', completed: false }
-      ]
+      assignedTo: 'sde'
     },
     { 
       id: 5, 
       title: 'UI/UX Mockups', 
       status: 'pending', 
       description: 'Design user interface', 
-      assignedTo: 'sde',
-      subtasks: [
-        { id: 10, title: 'Wireframes', completed: false },
-        { id: 11, title: 'High-fidelity designs', completed: false }
-      ]
+      assignedTo: 'sde'
     }
   ]);
 
@@ -174,38 +165,31 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        return <CheckCircle2 className="h-3 w-3 text-green-500" />;
       case 'in-progress':
-        return <Clock className="h-4 w-4 text-blue-500" />;
+        return <Clock className="h-3 w-3 text-blue-500" />;
       default:
-        return <Circle className="h-4 w-4 text-gray-400" />;
+        return <Circle className="h-3 w-3 text-gray-400" />;
     }
   };
 
   const getStatusBadge = (status: string) => {
+    if (collapsed) return null;
     switch (status) {
       case 'completed':
-        return <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">Done</Badge>;
+        return <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 px-1 py-0">✓</Badge>;
       case 'in-progress':
-        return <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">Active</Badge>;
+        return <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 px-1 py-0">•</Badge>;
       default:
-        return <Badge variant="outline" className="text-xs">Pending</Badge>;
+        return <Badge variant="outline" className="text-xs px-1 py-0">○</Badge>;
     }
-  };
-
-  const getAssignmentIcon = (assignedTo: string) => {
-    return assignedTo === 'ai' ? (
-      <Bot className="h-3 w-3 text-purple-500" />
-    ) : (
-      <User className="h-3 w-3 text-orange-500" />
-    );
   };
 
   if (collapsed) {
     return (
       <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-sidebar-border bg-sidebar">
+        <div className="p-2 border-b border-sidebar-border bg-sidebar">
           <Button
             variant="ghost"
             size="sm"
@@ -216,79 +200,108 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           </Button>
         </div>
 
-        {/* Navigation buttons - only show when collapsed */}
-        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
+        {/* Navigation icons */}
+        <div className="flex-1 flex flex-col items-center py-2 space-y-2 bg-sidebar">
           <Button 
             variant={activeView === 'main' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0 hover:bg-sidebar-accent" 
+            className="h-10 w-10 p-0" 
             title="Dashboard"
             onClick={() => onViewChange?.('main')}
           >
-            <Home className="h-5 w-5" />
+            <Home className="h-4 w-4" />
           </Button>
+          
+          {/* Task Progress Icon */}
+          <div className="relative group">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-10 w-10 p-0" 
+              title={`Tasks: ${completedTasks}/${tasks.length}`}
+            >
+              <FileText className="h-4 w-4" />
+            </Button>
+            <div className="absolute -right-1 -top-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-xs text-primary-foreground">{completedTasks}</span>
+            </div>
+          </div>
+
           <Button 
             variant={activeView === 'team' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0 hover:bg-sidebar-accent" 
+            className="h-10 w-10 p-0" 
             title="Teams"
             onClick={() => onViewChange?.('team')}
           >
-            <Users className="h-5 w-5" />
+            <Users className="h-4 w-4" />
           </Button>
+          
           <Button 
             variant={activeView === 'subscription' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0 hover:bg-sidebar-accent" 
+            className="h-10 w-10 p-0" 
             title="Subscription"
             onClick={() => onViewChange?.('subscription')}
           >
-            <CreditCard className="h-5 w-5" />
+            <CreditCard className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-auto p-4 border-t border-sidebar-border bg-sidebar">
-          <div className="flex flex-col items-center space-y-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleDarkMode}
-              className="h-8 w-8 p-0 hover:bg-sidebar-accent"
-            >
-              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-10 w-10 p-0 hover:bg-sidebar-accent">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-accent-foreground">JD</AvatarFallback>
-                  </Avatar>
+        <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar space-y-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleDarkMode}
+            className="h-8 w-8 p-0"
+            title="Toggle theme"
+          >
+            {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+          
+          <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Settings">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Settings & Integrations</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Button variant="outline" className="w-full justify-start">
+                  <Database className="h-4 w-4 mr-2" />
+                  Connect Supabase
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" side="right" className="bg-background border-border">
-                <DropdownMenuItem 
-                  className="hover:bg-accent"
-                  onClick={() => onViewChange?.('my-projects')}
-                >
-                  <Lightbulb className="h-4 w-4 mr-2" />
-                  My Projects
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className="hover:bg-accent"
-                  onClick={() => onViewChange?.('user-profile')}
-                >
-                  <User className="h-4 w-4 mr-2" />
-                  User Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-accent">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                <Button variant="outline" className="w-full justify-start">
+                  <Github className="h-4 w-4 mr-2" />
+                  Connect GitHub
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback className="text-xs">JD</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="right">
+              <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
+                <Lightbulb className="h-4 w-4 mr-2" />
+                My Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
+                <User className="h-4 w-4 mr-2" />
+                User Profile
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     );
@@ -297,8 +310,8 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
   return (
     <div className="h-full w-full min-w-[280px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
-        <div className="flex items-center justify-between mb-4">
+      <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
+        <div className="flex items-center justify-between mb-3">
           <Button
             variant="ghost"
             size="sm"
@@ -308,39 +321,40 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
             <Menu className="h-4 w-4" />
           </Button>
           
-          {/* Logo with text */}
           <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-sm">
-              <Lightbulb className="h-5 w-5 text-white" />
+            <div className="flex items-center justify-center w-7 h-7 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+              <Lightbulb className="h-4 w-4 text-white" />
             </div>
-            <h2 className="font-bold text-lg text-sidebar-foreground bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="font-bold text-base text-sidebar-foreground bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               imagine.bo
             </h2>
           </div>
         </div>
         
-        {/* Progress Overview - always show when expanded */}
-        <div className="space-y-2 bg-sidebar-accent/30 rounded-lg p-3">
+        {/* Compact Progress Overview */}
+        <div className="space-y-2 bg-sidebar-accent/20 rounded-lg p-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-sidebar-foreground">Task Progress</h3>
+            <h3 className="text-sm font-medium text-sidebar-foreground flex items-center">
+              <FileText className="h-4 w-4 mr-2" />
+              Progress
+            </h3>
             <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
           </div>
-          <Progress value={progress} className="h-2" />
-          <p className="text-xs text-muted-foreground">{Math.round(progress)}% complete</p>
+          <Progress value={progress} className="h-1.5" />
         </div>
       </div>
 
-      {/* Tasks Section - always show when expanded */}
+      {/* Scrollable Tasks Section */}
       <div className="flex-1 min-h-0 bg-sidebar">
         <ScrollArea className="h-full">
-          <div className="p-4 space-y-3">
+          <div className="p-2 space-y-1">
             {tasks.map((task) => {
               const isExpanded = expandedTasks.includes(task.id);
               const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
               const totalSubtasks = task.subtasks?.length || 0;
               
               return (
-                <div key={task.id} className="border border-sidebar-border rounded-lg p-3 space-y-2 bg-sidebar-accent/20 hover:bg-sidebar-accent/30 transition-colors">
+                <div key={task.id} className="border border-sidebar-border rounded-md p-2 space-y-1 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                       {getStatusIcon(task.status)}
@@ -348,65 +362,65 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                         <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
                           {task.title}
                         </h4>
-                        <p className="text-xs text-muted-foreground break-words leading-tight mt-1">
+                        <p className="text-xs text-muted-foreground break-words leading-tight">
                           {task.description}
                         </p>
                       </div>
                     </div>
-                    <div className="flex-shrink-0 ml-2">
+                    <div className="flex-shrink-0 ml-2 flex items-center space-x-1">
                       {getStatusBadge(task.status)}
+                      {task.subtasks && task.subtasks.length > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleTaskExpanded(task.id)}
+                          className="h-5 w-5 p-0"
+                        >
+                          {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                        </Button>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getAssignmentIcon(task.assignedTo)}
-                        <span className="text-xs text-muted-foreground">
-                          {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {task.subtasks && task.subtasks.length > 0 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleTaskExpanded(task.id)}
-                            className="h-6 w-6 p-0 hover:bg-sidebar-accent"
-                          >
-                            {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                          </Button>
-                        )}
-                      </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      {task.assignedTo === 'ai' ? (
+                        <Bot className="h-3 w-3 text-purple-500" />
+                      ) : (
+                        <User className="h-3 w-3 text-orange-500" />
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
+                      </span>
                     </div>
                     
-                    {task.assignedTo === 'ai' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => assignToDev(task.id)}
-                        className="text-xs h-7 w-full border-sidebar-border hover:bg-sidebar-accent hover:border-sidebar-accent-foreground/20"
-                      >
-                        Assign to Dev
-                      </Button>
+                    {task.subtasks && task.subtasks.length > 0 && (
+                      <div className="text-xs text-muted-foreground">
+                        {completedSubtasks}/{totalSubtasks}
+                      </div>
                     )}
                   </div>
-
-                  {task.subtasks && task.subtasks.length > 0 && (
-                    <div className="text-xs text-muted-foreground">
-                      Subtasks: {completedSubtasks}/{totalSubtasks} completed
-                    </div>
+                  
+                  {task.assignedTo === 'ai' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => assignToDev(task.id)}
+                      className="text-xs h-6 w-full"
+                    >
+                      Assign to Dev
+                    </Button>
                   )}
 
                   {isExpanded && task.subtasks && (
-                    <div className="mt-3 space-y-2 pl-4 border-l-2 border-sidebar-border">
+                    <div className="mt-2 space-y-1 pl-4 border-l-2 border-sidebar-border">
                       {task.subtasks.map((subtask) => (
                         <div key={subtask.id} className="flex items-center space-x-2">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleSubtask(task.id, subtask.id)}
-                            className="h-4 w-4 p-0 hover:bg-sidebar-accent"
+                            className="h-4 w-4 p-0"
                           >
                             {subtask.completed ? 
                               <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
@@ -427,83 +441,67 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
         </ScrollArea>
       </div>
 
-      {/* Bottom Section */}
-      <div className="p-4 border-t border-sidebar-border space-y-3 flex-shrink-0 bg-sidebar">
-        {/* Integration Buttons - always show when expanded */}
-        <div className="space-y-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full justify-start text-xs h-8 border-sidebar-border hover:bg-sidebar-accent hover:border-sidebar-accent-foreground/20"
+      {/* Bottom Section - Always Visible */}
+      <div className="p-2 border-t border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleDarkMode}
+            className="h-7 w-7 p-0"
           >
-            <Database className="h-3 w-3 mr-2" />
-            Connect Supabase
+            {darkMode ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full justify-start text-xs h-8 border-sidebar-border hover:bg-sidebar-accent hover:border-sidebar-accent-foreground/20"
-          >
-            <Github className="h-3 w-3 mr-2" />
-            Connect GitHub
-          </Button>
+          
+          <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                <Settings className="h-3 w-3" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Settings & Integrations</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <Button variant="outline" className="w-full justify-start">
+                  <Database className="h-4 w-4 mr-2" />
+                  Connect Supabase
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <Github className="h-4 w-4 mr-2" />
+                  Connect GitHub
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
         
         <Separator className="bg-sidebar-border" />
-
-        {/* User & Settings */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleDarkMode}
-              className="h-8 w-8 p-0 hover:bg-sidebar-accent"
-            >
-              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-sidebar-accent">
-              <Bell className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-sidebar-accent">
-              <Settings className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-accent-foreground">JD</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
-                  <p className="text-xs text-sidebar-foreground/60">Pro Plan</p>
-                </div>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center space-x-2 cursor-pointer hover:bg-sidebar-accent rounded-lg p-1.5 transition-colors">
+              <Avatar className="h-6 w-6">
+                <AvatarFallback className="text-xs">JD</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-sidebar-foreground truncate">John Doe</p>
+                <p className="text-xs text-sidebar-foreground/60">Pro Plan</p>
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="bg-background border-border">
-              <DropdownMenuItem 
-                className="hover:bg-accent"
-                onClick={() => onViewChange?.('my-projects')}
-              >
-                <Lightbulb className="h-4 w-4 mr-2" />
-                My Projects
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="hover:bg-accent"
-                onClick={() => onViewChange?.('user-profile')}
-              >
-                <User className="h-4 w-4 mr-2" />
-                User Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-accent">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
+              <Lightbulb className="h-4 w-4 mr-2" />
+              My Projects
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
+              <User className="h-4 w-4 mr-2" />
+              User Profile
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
