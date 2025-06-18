@@ -85,16 +85,9 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
   return (
     <div className="h-screen bg-background overflow-hidden">
-      <ResizablePanelGroup direction="horizontal" className="h-full">
-        {/* Sidebar - always collapsible */}
-        <ResizablePanel 
-          defaultSize={sidebarCollapsed ? 4 : 22}
-          minSize={4} 
-          maxSize={35}
-          collapsible={true}
-          onCollapse={() => setSidebarCollapsed(true)}
-          onExpand={() => setSidebarCollapsed(false)}
-        >
+      <div className="h-full flex">
+        {/* Sidebar */}
+        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-80'} flex-shrink-0`}>
           <Sidebar 
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -102,18 +95,13 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
             activeView={activeView}
             onViewChange={setActiveView}
           />
-        </ResizablePanel>
+        </div>
 
-        <ResizableHandle withHandle />
-
-        {/* Main Content Area */}
-        <ResizablePanel 
-          defaultSize={sidebarCollapsed ? 96 : 78}
-          minSize={65}
-        >
+        {/* Main Content Area - takes remaining space */}
+        <div className="flex-1 min-w-0">
           {renderMainContent()}
-        </ResizablePanel>
-      </ResizablePanelGroup>
+        </div>
+      </div>
     </div>
   );
 };
