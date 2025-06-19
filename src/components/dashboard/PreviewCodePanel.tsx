@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,8 @@ const PreviewCodePanel = () => {
   const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [activeTab, setActiveTab] = useState('preview');
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Fixed device dimensions
   const deviceSizes = {
@@ -45,6 +47,38 @@ const PreviewCodePanel = () => {
   const getDeviceLabel = (device: DeviceType) => {
     return device.charAt(0).toUpperCase() + device.slice(1);
   };
+
+  // Calculate scale based on container size and device dimensions
+  useEffect(() => {
+    const calculateScale = () => {
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const containerWidth = container.clientWidth - 32; // Account for padding
+      const containerHeight = container.clientHeight - 32;
+      
+      const deviceWidth = deviceSizes[activeDevice].width;
+      const deviceHeight = deviceSizes[activeDevice].height;
+
+      // Calculate scale to fit both width and height, with some margin
+      const scaleX = containerWidth / deviceWidth;
+      const scaleY = containerHeight / deviceHeight;
+      const newScale = Math.min(scaleX, scaleY, 1); // Never scale up, only down
+
+      setScale(newScale);
+    };
+
+    calculateScale();
+
+    const resizeObserver = new ResizeObserver(calculateScale);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [activeDevice]);
 
   const mockPreview = `
     <div class="min-h-screen bg-gray-50 p-8">
@@ -132,17 +166,18 @@ const PreviewCodePanel = () => {
             </div>
           </div>
 
-          <TabsContent value="preview" className="flex-1 m-0 p-4 overflow-auto">
-            <div className="h-full w-full flex items-center justify-center bg-muted/30 rounded-lg overflow-auto">
+          <TabsContent value="preview" className="flex-1 m-0 overflow-hidden">
+            <div 
+              ref={containerRef}
+              className="h-full w-full flex items-start justify-center bg-muted/30 p-4 overflow-hidden"
+            >
               <div 
-                className="bg-background border border-border rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out"
+                className="bg-background border border-border rounded-lg shadow-lg overflow-hidden transition-transform duration-300 ease-in-out origin-top"
                 style={{
                   width: `${deviceSizes[activeDevice].width}px`,
                   height: `${deviceSizes[activeDevice].height}px`,
-                  minWidth: `${deviceSizes[activeDevice].width}px`,
-                  minHeight: `${deviceSizes[activeDevice].height}px`,
-                  maxWidth: `${deviceSizes[activeDevice].width}px`,
-                  maxHeight: `${deviceSizes[activeDevice].height}px`
+                  transform: `scale(${scale})`,
+                  transformOrigin: 'top center'
                 }}
               >
                 <iframe
