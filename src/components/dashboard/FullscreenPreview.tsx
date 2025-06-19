@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { X, Monitor, Tablet, Smartphone } from 'lucide-react';
 import { DeviceType, deviceConfigs } from './DevicePreview';
-import DeviceToggle from './DeviceToggle';
 
 interface FullscreenPreviewProps {
   device: DeviceType;
@@ -30,16 +29,37 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+
+  const toggleDevice = () => {
+    const devices: DeviceType[] = ['desktop', 'tablet', 'phone'];
+    const currentIndex = devices.indexOf(device);
+    const nextIndex = (currentIndex + 1) % devices.length;
+    onDeviceChange(devices[nextIndex]);
+  };
+
+  const getDeviceIcon = () => {
+    switch (device) {
+      case 'desktop':
+        return <Monitor className="w-4 h-4" />;
+      case 'tablet':
+        return <Tablet className="w-4 h-4" />;
+      case 'phone':
+        return <Smartphone className="w-4 h-4" />;
+    }
+  };
   
   return (
     <div className="fixed inset-0 z-50 bg-background">
-      {/* Floating controls */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex items-center space-x-4">
-        <DeviceToggle 
-          activeDevice={device}
-          onDeviceChange={onDeviceChange}
-          className="shadow-lg bg-background/95 backdrop-blur-sm"
-        />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleDevice}
+          className="flex items-center space-x-2 shadow-lg bg-background/95 backdrop-blur-sm"
+        >
+          {getDeviceIcon()}
+          <span className="capitalize">{device}</span>
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -51,7 +71,6 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
         </Button>
       </div>
       
-      {/* Full iframe preview */}
       <div className="w-full h-full pt-16">
         <iframe
           src={src}

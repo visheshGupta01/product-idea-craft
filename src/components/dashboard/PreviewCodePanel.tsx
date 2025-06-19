@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Code, Expand } from 'lucide-react';
+import { Code, Expand, Monitor, Tablet, Smartphone } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import FileExplorer, { type FileNode } from './FileExplorer';
 import CodeEditor from './CodeEditor';
 import DevicePreview, { DeviceType } from './DevicePreview';
-import DeviceToggle from './DeviceToggle';
 import FullscreenPreview from './FullscreenPreview';
 
 const PreviewCodePanel = () => {
@@ -17,6 +17,24 @@ const PreviewCodePanel = () => {
 
   const handleFileSelect = (file: FileNode) => {
     setSelectedFile(file);
+  };
+
+  const toggleDevice = () => {
+    const devices: DeviceType[] = ['desktop', 'tablet', 'phone'];
+    const currentIndex = devices.indexOf(activeDevice);
+    const nextIndex = (currentIndex + 1) % devices.length;
+    setActiveDevice(devices[nextIndex]);
+  };
+
+  const getDeviceIcon = () => {
+    switch (activeDevice) {
+      case 'desktop':
+        return <Monitor className="w-4 h-4" />;
+      case 'tablet':
+        return <Tablet className="w-4 h-4" />;
+      case 'phone':
+        return <Smartphone className="w-4 h-4" />;
+    }
   };
 
   const iframeSrc = 'https://2037f7ae-5cce-45b4-87be-ee3f135a1be3.lovableproject.com/?__lovable_token=example-token';
@@ -35,7 +53,6 @@ const PreviewCodePanel = () => {
   if (showCode) {
     return (
       <div className="h-full flex flex-col bg-background">
-        {/* Simple header with back button */}
         <div className="px-3 py-2 border-b border-border flex items-center justify-between bg-background">
           <Button
             variant="ghost"
@@ -67,22 +84,25 @@ const PreviewCodePanel = () => {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Minimal controls */}
       <div className="px-3 py-2 border-b border-border flex items-center justify-between bg-background">
-        <DeviceToggle 
-          activeDevice={activeDevice}
-          onDeviceChange={setActiveDevice}
-        />
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowCode(true)}
-            className="flex items-center space-x-1.5"
-          >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleDevice}
+          className="flex items-center space-x-2"
+        >
+          {getDeviceIcon()}
+          <span className="capitalize">{activeDevice}</span>
+        </Button>
+        
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <Code className="w-4 h-4" />
-            <span>Code</span>
-          </Button>
+            <Switch
+              checked={showCode}
+              onCheckedChange={setShowCode}
+            />
+          </div>
           <Button
             variant="outline"
             size="sm"
@@ -90,12 +110,10 @@ const PreviewCodePanel = () => {
             className="flex items-center space-x-1.5"
           >
             <Expand className="w-4 h-4" />
-            <span>Fullscreen</span>
           </Button>
         </div>
       </div>
 
-      {/* Preview area */}
       <div className="flex-1 overflow-hidden">
         <DevicePreview
           device={activeDevice}

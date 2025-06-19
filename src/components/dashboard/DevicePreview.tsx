@@ -49,19 +49,20 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen
       if (!containerRef.current) return;
       
       const container = containerRef.current;
-      const containerWidth = container.clientWidth - 32; // padding
-      const containerHeight = container.clientHeight - 32; // padding
+      const containerWidth = container.clientWidth - 32;
+      const containerHeight = container.clientHeight - 32;
       
       if (isFullscreen) {
-        // In fullscreen, try to fit the screen optimally
         const scaleX = containerWidth / config.width;
         const scaleY = containerHeight / config.height;
         const newScale = Math.min(scaleX, scaleY, 1);
         setScale(newScale);
       } else {
-        // In normal mode, scale down if needed but don't scale up
-        const scaleNeeded = containerWidth / config.width;
-        setScale(Math.min(scaleNeeded, 1));
+        // Always scale to fit width, and ensure it fits height too
+        const scaleX = containerWidth / config.width;
+        const scaleY = containerHeight / config.height;
+        const newScale = Math.min(scaleX, scaleY, 1);
+        setScale(newScale);
       }
     };
     
@@ -74,7 +75,7 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full flex items-start justify-center overflow-auto bg-muted/20 p-4"
+      className="w-full h-full flex items-center justify-center bg-muted/20 p-4 overflow-hidden"
     >
       <div 
         className="relative bg-background rounded-lg shadow-xl border border-border overflow-hidden transition-all duration-300"
@@ -82,7 +83,7 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen
           width: config.width,
           height: config.height,
           transform: `scale(${scale})`,
-          transformOrigin: 'top center'
+          transformOrigin: 'center center'
         }}
       >
         {/* Device frame decorations */}
