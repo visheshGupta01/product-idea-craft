@@ -16,10 +16,11 @@ const PreviewCodePanel = () => {
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [activeTab, setActiveTab] = useState('preview');
 
+  // Fixed device dimensions
   const deviceSizes = {
-    desktop: { width: '100%', height: '100%' },
-    tablet: { width: '768px', height: '1024px' },
-    phone: { width: '375px', height: '667px' }
+    desktop: { width: 1280, height: 800 },
+    tablet: { width: 768, height: 1024 },
+    phone: { width: 375, height: 667 }
   };
 
   const deviceOrder: DeviceType[] = ['desktop', 'tablet', 'phone'];
@@ -131,15 +132,17 @@ const PreviewCodePanel = () => {
             </div>
           </div>
 
-          <TabsContent value="preview" className="flex-1 m-0 p-4 overflow-hidden">
-            <div className="h-full flex items-center justify-center bg-muted/30 rounded-lg">
+          <TabsContent value="preview" className="flex-1 m-0 p-4 overflow-auto">
+            <div className="h-full w-full flex items-center justify-center bg-muted/30 rounded-lg overflow-auto">
               <div 
-                className="bg-background border border-border rounded-lg shadow-lg overflow-hidden transition-all duration-300"
+                className="bg-background border border-border rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out"
                 style={{
-                  width: deviceSizes[activeDevice].width,
-                  height: deviceSizes[activeDevice].height,
-                  maxWidth: '100%',
-                  maxHeight: '100%'
+                  width: `${deviceSizes[activeDevice].width}px`,
+                  height: `${deviceSizes[activeDevice].height}px`,
+                  minWidth: `${deviceSizes[activeDevice].width}px`,
+                  minHeight: `${deviceSizes[activeDevice].height}px`,
+                  maxWidth: `${deviceSizes[activeDevice].width}px`,
+                  maxHeight: `${deviceSizes[activeDevice].height}px`
                 }}
               >
                 <iframe
@@ -149,6 +152,14 @@ const PreviewCodePanel = () => {
                       <head>
                         <script src="https://cdn.tailwindcss.com"></script>
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                          body { 
+                            margin: 0; 
+                            padding: 0; 
+                            overflow-x: auto;
+                            overflow-y: auto;
+                          }
+                        </style>
                       </head>
                       <body>
                         ${mockPreview}
