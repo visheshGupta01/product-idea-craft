@@ -22,6 +22,29 @@ const PreviewCodePanel = () => {
     phone: { width: '375px', height: '667px' }
   };
 
+  const deviceOrder: DeviceType[] = ['desktop', 'tablet', 'phone'];
+
+  const cycleDevice = () => {
+    const currentIndex = deviceOrder.indexOf(activeDevice);
+    const nextIndex = (currentIndex + 1) % deviceOrder.length;
+    setActiveDevice(deviceOrder[nextIndex]);
+  };
+
+  const getDeviceIcon = (device: DeviceType) => {
+    switch (device) {
+      case 'phone':
+        return <Smartphone className="w-4 h-4" />;
+      case 'tablet':
+        return <Tablet className="w-4 h-4" />;
+      case 'desktop':
+        return <Monitor className="w-4 h-4" />;
+    }
+  };
+
+  const getDeviceLabel = (device: DeviceType) => {
+    return device.charAt(0).toUpperCase() + device.slice(1);
+  };
+
   const mockPreview = `
     <div class="min-h-screen bg-gray-50 p-8">
       <div class="max-w-4xl mx-auto">
@@ -51,17 +74,6 @@ const PreviewCodePanel = () => {
       </div>
     </div>
   `;
-
-  const DeviceButton = ({ device, icon: Icon, label }: { device: DeviceType, icon: any, label: string }) => (
-    <Button
-      variant={activeDevice === device ? "default" : "ghost"}
-      size="sm"
-      onClick={() => setActiveDevice(device)}
-      className="flex items-center space-x-1"
-    >
-      <Icon className="w-4 h-4" />
-    </Button>
-  );
 
   const handleFileSelect = (file: FileNode) => {
     setSelectedFile(file);
@@ -104,13 +116,17 @@ const PreviewCodePanel = () => {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Device Preview Buttons - Only show on preview tab */}
+              {/* Device Toggle Button - Only show on preview tab */}
               {activeTab === 'preview' && (
-                <div className="flex items-center space-x-1">
-                  <DeviceButton device="phone" icon={Smartphone} label="Phone" />
-                  <DeviceButton device="tablet" icon={Tablet} label="Tablet" />
-                  <DeviceButton device="desktop" icon={Monitor} label="Desktop" />
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={cycleDevice}
+                  className="flex items-center space-x-2"
+                >
+                  {getDeviceIcon(activeDevice)}
+                  <span>{getDeviceLabel(activeDevice)}</span>
+                </Button>
               )}
             </div>
           </div>

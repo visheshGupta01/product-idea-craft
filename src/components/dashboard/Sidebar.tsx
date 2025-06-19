@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Menu, 
   User, 
@@ -189,7 +190,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
     return (
       <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
-        <div className="p-2 border-b border-sidebar-border bg-sidebar">
+        <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
           <Button
             variant="ghost"
             size="sm"
@@ -205,7 +206,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           <Button 
             variant={activeView === 'main' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0" 
+            className="h-8 w-8 p-0" 
             title="Dashboard"
             onClick={() => onViewChange?.('main')}
           >
@@ -217,7 +218,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-10 w-10 p-0" 
+              className="h-8 w-8 p-0" 
               title={`Tasks: ${completedTasks}/${tasks.length}`}
             >
               <FileText className="h-4 w-4" />
@@ -230,7 +231,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           <Button 
             variant={activeView === 'team' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0" 
+            className="h-8 w-8 p-0" 
             title="Teams"
             onClick={() => onViewChange?.('team')}
           >
@@ -240,7 +241,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           <Button 
             variant={activeView === 'subscription' ? 'default' : 'ghost'} 
             size="sm" 
-            className="h-10 w-10 p-0" 
+            className="h-8 w-8 p-0" 
             title="Subscription"
             onClick={() => onViewChange?.('subscription')}
           >
@@ -249,7 +250,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar space-y-2">
+        <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar space-y-2 flex flex-col items-center">
           <Button
             variant="ghost"
             size="sm"
@@ -340,7 +341,18 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
             </h3>
             <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
           </div>
-          <Progress value={progress} className="h-1.5" />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Progress value={progress} className="h-2" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{Math.round(progress)}% complete</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
@@ -354,18 +366,13 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
               const totalSubtasks = task.subtasks?.length || 0;
               
               return (
-                <div key={task.id} className="border border-sidebar-border rounded-md p-2 space-y-1 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors">
-                  <div className="flex items-start justify-between">
+                <div key={task.id} className="border border-sidebar-border rounded-md p-2 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                       {getStatusIcon(task.status)}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
-                          {task.title}
-                        </h4>
-                        <p className="text-xs text-muted-foreground break-words leading-tight">
-                          {task.description}
-                        </p>
-                      </div>
+                      <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
+                        {task.title}
+                      </h4>
                     </div>
                     <div className="flex-shrink-0 ml-2 flex items-center space-x-1">
                       {getStatusBadge(task.status)}
@@ -382,57 +389,65 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      {task.assignedTo === 'ai' ? (
-                        <Bot className="h-3 w-3 text-purple-500" />
-                      ) : (
-                        <User className="h-3 w-3 text-orange-500" />
-                      )}
-                      <span className="text-xs text-muted-foreground">
-                        {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                      </span>
-                    </div>
-                    
-                    {task.subtasks && task.subtasks.length > 0 && (
-                      <div className="text-xs text-muted-foreground">
-                        {completedSubtasks}/{totalSubtasks}
-                      </div>
-                    )}
-                  </div>
-                  
-                  {task.assignedTo === 'ai' && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => assignToDev(task.id)}
-                      className="text-xs h-6 w-full"
-                    >
-                      Assign to Dev
-                    </Button>
-                  )}
+                  {isExpanded && (
+                    <>
+                      <p className="text-xs text-muted-foreground break-words leading-tight mt-1">
+                        {task.description}
+                      </p>
 
-                  {isExpanded && task.subtasks && (
-                    <div className="mt-2 space-y-1 pl-4 border-l-2 border-sidebar-border">
-                      {task.subtasks.map((subtask) => (
-                        <div key={subtask.id} className="flex items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleSubtask(task.id, subtask.id)}
-                            className="h-4 w-4 p-0"
-                          >
-                            {subtask.completed ? 
-                              <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
-                              <Circle className="h-3 w-3 text-gray-400" />
-                            }
-                          </Button>
-                          <span className={`text-xs break-words leading-tight ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
-                            {subtask.title}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center space-x-2">
+                          {task.assignedTo === 'ai' ? (
+                            <Bot className="h-3 w-3 text-purple-500" />
+                          ) : (
+                            <User className="h-3 w-3 text-orange-500" />
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
                           </span>
                         </div>
-                      ))}
-                    </div>
+                        
+                        {task.subtasks && task.subtasks.length > 0 && (
+                          <div className="text-xs text-muted-foreground">
+                            {completedSubtasks}/{totalSubtasks}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {task.assignedTo === 'ai' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => assignToDev(task.id)}
+                          className="text-xs h-6 w-full mt-2"
+                        >
+                          Assign to Dev
+                        </Button>
+                      )}
+
+                      {task.subtasks && (
+                        <div className="mt-2 space-y-1 pl-4 border-l-2 border-sidebar-border">
+                          {task.subtasks.map((subtask) => (
+                            <div key={subtask.id} className="flex items-center space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleSubtask(task.id, subtask.id)}
+                                className="h-4 w-4 p-0"
+                              >
+                                {subtask.completed ? 
+                                  <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
+                                  <Circle className="h-3 w-3 text-gray-400" />
+                                }
+                              </Button>
+                              <span className={`text-xs break-words leading-tight ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
+                                {subtask.title}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               );
@@ -443,7 +458,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
 
       {/* Bottom Section - Always Visible */}
       <div className="p-2 border-t border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center space-x-2">
           <Button
             variant="ghost"
             size="sm"
