@@ -154,7 +154,7 @@ const Sidebar = ({
     }
   };
   if (collapsed) {
-    return <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    return <div className="w-12 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
         <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
           <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
@@ -163,20 +163,10 @@ const Sidebar = ({
         </div>
 
         {/* Navigation icons */}
-        <div className="flex-1 flex flex-col items-center py-2 space-y-2 bg-sidebar">
+        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
           <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Dashboard" onClick={() => onViewChange?.('main')}>
             <Home className="h-4 w-4" />
           </Button>
-          
-          {/* Task Progress Icon */}
-          <div className="relative group">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title={`Tasks: ${completedTasks}/${tasks.length}`}>
-              <FileText className="h-4 w-4" />
-            </Button>
-            <div className="absolute -right-1 -top-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-xs text-primary-foreground">{completedTasks}</span>
-            </div>
-          </div>
 
           <Button variant={activeView === 'team' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Teams" onClick={() => onViewChange?.('team')}>
             <Users className="h-4 w-4" />
@@ -188,17 +178,36 @@ const Sidebar = ({
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar space-y-2 flex flex-col items-center">
-          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="h-8 w-8 p-0" title="Toggle theme">
-            {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
+        <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar flex flex-col items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback className="text-xs">JD</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="right" className="w-56">
+              <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
+                <Lightbulb className="h-4 w-4 mr-2" />
+                My Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
+                <User className="h-4 w-4 mr-2" />
+                User Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleDarkMode}>
+                {darkMode ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+                {darkMode ? 'Light Mode' : 'Dark Mode'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Settings">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Settings & Integrations</DialogTitle>
@@ -215,30 +224,11 @@ const Sidebar = ({
               </div>
             </DialogContent>
           </Dialog>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="text-xs">JD</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="right">
-              <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
-                <Lightbulb className="h-4 w-4 mr-2" />
-                My Projects
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
-                <User className="h-4 w-4 mr-2" />
-                User Profile
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>;
   }
-  return <div className="h-full w-full min-w-[280px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+
+  return <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-between mb-3">
@@ -259,17 +249,14 @@ const Sidebar = ({
         {/* Compact Progress Overview */}
         <div className="space-y-2 bg-sidebar-accent/20 rounded-lg p-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-sidebar-foreground flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              Progress
-            </h3>
+            <h3 className="text-sm font-medium text-sidebar-foreground">Progress</h3>
             <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
           </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Progress value={progress} className="h-2" />
+                  <Progress value={progress} className="h-1.5" />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
@@ -345,35 +332,6 @@ const Sidebar = ({
 
       {/* Bottom Section - Always Visible */}
       <div className="p-2 border-t border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
-        <div className="flex items-center justify-center space-x-2">
-          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="h-7 w-7 p-0">
-            {darkMode ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
-          </Button>
-          
-          <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                <Settings className="h-3 w-3" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Settings & Integrations</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Database className="h-4 w-4 mr-2" />
-                  Connect Supabase
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Github className="h-4 w-4 mr-2" />
-                  Connect GitHub
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-        
         <Separator className="bg-sidebar-border" />
         
         <DropdownMenu>
@@ -388,7 +346,7 @@ const Sidebar = ({
               </div>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
               <Lightbulb className="h-4 w-4 mr-2" />
               My Projects
@@ -397,9 +355,36 @@ const Sidebar = ({
               <User className="h-4 w-4 mr-2" />
               User Profile
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={toggleDarkMode}>
+              {darkMode ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+              {darkMode ? 'Light Mode' : 'Dark Mode'}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Settings & Integrations</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Button variant="outline" className="w-full justify-start">
+              <Database className="h-4 w-4 mr-2" />
+              Connect Supabase
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <Github className="h-4 w-4 mr-2" />
+              Connect GitHub
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>;
 };
+
 export default Sidebar;
