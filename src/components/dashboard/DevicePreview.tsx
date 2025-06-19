@@ -48,13 +48,16 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
       if (!containerRef.current) return;
       
       const container = containerRef.current;
-      const containerWidth = container.clientWidth - 32;
-      const containerHeight = container.clientHeight - 32;
+      const containerWidth = container.clientWidth - 64; // More padding for better fit
+      const containerHeight = container.clientHeight - 64;
       
+      // Calculate scale to fit both width and height
       const scaleX = containerWidth / config.width;
       const scaleY = containerHeight / config.height;
       const newScale = Math.min(scaleX, scaleY, 1);
-      setScale(newScale);
+      
+      // Ensure minimum scale for readability
+      setScale(Math.max(newScale, 0.3));
     };
     
     updateScale();
@@ -70,10 +73,10 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full flex items-center justify-center bg-muted/20 p-4"
+      className="w-full h-full flex items-center justify-center bg-muted/20 p-8"
     >
       <div 
-        className="relative bg-background rounded-lg shadow-xl border border-border overflow-hidden transition-transform duration-300"
+        className="relative bg-background rounded-lg shadow-lg border border-border overflow-hidden transition-transform duration-300"
         style={{
           width: config.width,
           height: config.height,
