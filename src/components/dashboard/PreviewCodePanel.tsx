@@ -84,15 +84,15 @@ const PreviewCodePanel = () => {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="px-3 py-2 border-b border-border flex items-center justify-between bg-background">
+      <div className="px-3 py-1.5 border-b border-border flex items-center justify-between bg-background">
         <Button
           variant="outline"
           size="sm"
           onClick={toggleDevice}
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 h-8"
         >
           {getDeviceIcon()}
-          <span className="capitalize">{activeDevice}</span>
+          <span className="capitalize text-xs">{activeDevice}</span>
         </Button>
         
         <div className="flex items-center space-x-3">
@@ -107,7 +107,7 @@ const PreviewCodePanel = () => {
             variant="outline"
             size="sm"
             onClick={() => setIsFullscreen(true)}
-            className="flex items-center space-x-1.5"
+            className="flex items-center space-x-1.5 h-8"
           >
             <Expand className="w-4 h-4" />
           </Button>

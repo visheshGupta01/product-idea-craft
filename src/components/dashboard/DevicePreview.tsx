@@ -35,10 +35,9 @@ export const deviceConfigs: Record<DeviceType, DeviceConfig> = {
 interface DevicePreviewProps {
   device: DeviceType;
   src: string;
-  isFullscreen?: boolean;
 }
 
-const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen }) => {
+const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
   const config = deviceConfigs[device];
   
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -52,33 +51,29 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen
       const containerWidth = container.clientWidth - 32;
       const containerHeight = container.clientHeight - 32;
       
-      if (isFullscreen) {
-        const scaleX = containerWidth / config.width;
-        const scaleY = containerHeight / config.height;
-        const newScale = Math.min(scaleX, scaleY, 1);
-        setScale(newScale);
-      } else {
-        // Always scale to fit width, and ensure it fits height too
-        const scaleX = containerWidth / config.width;
-        const scaleY = containerHeight / config.height;
-        const newScale = Math.min(scaleX, scaleY, 1);
-        setScale(newScale);
-      }
+      const scaleX = containerWidth / config.width;
+      const scaleY = containerHeight / config.height;
+      const newScale = Math.min(scaleX, scaleY, 1);
+      setScale(newScale);
     };
     
     updateScale();
-    window.addEventListener('resize', updateScale);
     
-    return () => window.removeEventListener('resize', updateScale);
-  }, [config.width, config.height, isFullscreen]);
+    const resizeObserver = new ResizeObserver(updateScale);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
+    return () => resizeObserver.disconnect();
+  }, [config.width, config.height]);
   
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full flex items-center justify-center bg-muted/20 p-4 overflow-hidden"
+      className="w-full h-full flex items-center justify-center bg-muted/20 p-4"
     >
       <div 
-        className="relative bg-background rounded-lg shadow-xl border border-border overflow-hidden transition-all duration-300"
+        className="relative bg-background rounded-lg shadow-xl border border-border overflow-hidden transition-transform duration-300"
         style={{
           width: config.width,
           height: config.height,
