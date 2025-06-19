@@ -227,7 +227,6 @@ const Sidebar = ({
         </div>
       </div>;
   }
-
   return <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
@@ -331,7 +330,7 @@ const Sidebar = ({
       </div>
 
       {/* Bottom Section - Always Visible */}
-      <div className="p-2 border-t border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
+      <div className="p-2 border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
         <Separator className="bg-sidebar-border" />
         
         <DropdownMenu>
@@ -386,5 +385,4 @@ const Sidebar = ({
       </Dialog>
     </div>;
 };
-
 export default Sidebar;
