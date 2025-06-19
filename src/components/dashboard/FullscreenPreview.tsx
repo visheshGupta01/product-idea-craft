@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
-import DevicePreview, { DeviceType } from './DevicePreview';
+import { DeviceType, deviceConfigs } from './DevicePreview';
 import DeviceToggle from './DeviceToggle';
 
 interface FullscreenPreviewProps {
@@ -18,7 +18,8 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
   src,
   onClose
 }) => {
-  // Handle escape key
+  const config = deviceConfigs[device];
+
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -32,30 +33,32 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
   
   return (
     <div className="fixed inset-0 z-50 bg-background">
-      {/* Header with controls */}
+      {/* Floating controls */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex items-center space-x-4">
         <DeviceToggle 
           activeDevice={device}
           onDeviceChange={onDeviceChange}
-          className="shadow-lg"
+          className="shadow-lg bg-background/95 backdrop-blur-sm"
         />
         <Button
           variant="outline"
           size="sm"
           onClick={onClose}
-          className="flex items-center space-x-2 shadow-lg"
+          className="flex items-center space-x-2 shadow-lg bg-background/95 backdrop-blur-sm"
         >
           <X className="w-4 h-4" />
-          <span>Exit Fullscreen</span>
+          <span>Exit</span>
         </Button>
       </div>
       
-      {/* Preview area */}
+      {/* Full iframe preview */}
       <div className="w-full h-full pt-16">
-        <DevicePreview
-          device={device}
+        <iframe
           src={src}
-          isFullscreen={true}
+          className="w-full h-full border-0"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-popups-to-escape-sandbox allow-popups allow-downloads allow-storage-access-by-user-activation"
+          allow="accelerometer; autoplay; camera; encrypted-media; fullscreen; geolocation; gyroscope; microphone; midi; clipboard-read; clipboard-write; payment; usb; vr; xr-spatial-tracking; screen-wake-lock; magnetometer; ambient-light-sensor; battery; gamepad; picture-in-picture; display-capture; bluetooth"
+          title={`${config.label} Fullscreen Preview`}
         />
       </div>
     </div>

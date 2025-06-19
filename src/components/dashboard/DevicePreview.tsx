@@ -41,7 +41,6 @@ interface DevicePreviewProps {
 const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen }) => {
   const config = deviceConfigs[device];
   
-  // Calculate scale to fit container while maintaining aspect ratio
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [scale, setScale] = React.useState(1);
   
@@ -53,11 +52,17 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen
       const containerWidth = container.clientWidth - 32; // padding
       const containerHeight = container.clientHeight - 32; // padding
       
-      const scaleX = containerWidth / config.width;
-      const scaleY = containerHeight / config.height;
-      const newScale = Math.min(scaleX, scaleY, 1); // Don't scale up beyond 100%
-      
-      setScale(newScale);
+      if (isFullscreen) {
+        // In fullscreen, try to fit the screen optimally
+        const scaleX = containerWidth / config.width;
+        const scaleY = containerHeight / config.height;
+        const newScale = Math.min(scaleX, scaleY, 1);
+        setScale(newScale);
+      } else {
+        // In normal mode, scale down if needed but don't scale up
+        const scaleNeeded = containerWidth / config.width;
+        setScale(Math.min(scaleNeeded, 1));
+      }
     };
     
     updateScale();
@@ -66,37 +71,30 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src, isFullscreen
     return () => window.removeEventListener('resize', updateScale);
   }, [config.width, config.height, isFullscreen]);
   
-  const frameStyle = {
-    width: config.width,
-    height: config.height,
-    transform: `scale(${scale})`,
-    transformOrigin: 'top center'
-  };
-  
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full flex items-start justify-center overflow-hidden bg-muted/30 p-4"
+      className="w-full h-full flex items-start justify-center overflow-auto bg-muted/20 p-4"
     >
       <div 
-        className="relative bg-background rounded-lg shadow-2xl border border-border overflow-hidden"
-        style={frameStyle}
+        className="relative bg-background rounded-lg shadow-xl border border-border overflow-hidden transition-all duration-300"
+        style={{
+          width: config.width,
+          height: config.height,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top center'
+        }}
       >
         {/* Device frame decorations */}
         {device === 'phone' && (
           <>
-            {/* Phone notch/speaker */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-10" />
-            {/* Home indicator */}
             <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-muted rounded-full z-10" />
           </>
         )}
         
         {device === 'tablet' && (
-          <>
-            {/* Tablet home button */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-muted rounded-full z-10" />
-          </>
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-muted rounded-full z-10" />
         )}
         
         <iframe
