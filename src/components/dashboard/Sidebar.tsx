@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -9,29 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { 
-  Menu, 
-  User, 
-  Moon, 
-  Sun, 
-  Database, 
-  Github,
-  Settings,
-  CheckCircle2,
-  Circle,
-  Clock,
-  ChevronDown,
-  ChevronUp,
-  Bot,
-  Users,
-  CreditCard,
-  Lightbulb,
-  Home,
-  FileText,
-  Link,
-  Cat
-} from 'lucide-react';
-
+import { Menu, User, Moon, Sun, Database, Github, Settings, CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Bot, Users, CreditCard, Lightbulb, Home, FileText, Link, Cat } from 'lucide-react';
 interface Task {
   id: number;
   title: string;
@@ -44,9 +21,7 @@ interface Task {
     completed: boolean;
   }[];
 }
-
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
-
 interface SidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
@@ -59,110 +34,104 @@ interface SidebarProps {
   activeView?: ActiveView;
   onViewChange?: (view: ActiveView) => void;
 }
-
-const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'main', onViewChange }: SidebarProps) => {
+const Sidebar = ({
+  collapsed,
+  onToggleCollapse,
+  currentProject,
+  activeView = 'main',
+  onViewChange
+}: SidebarProps) => {
   const [darkMode, setDarkMode] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  
-  const [tasks, setTasks] = useState<Task[]>([
-    { 
-      id: 1, 
-      title: 'Idea Submitted', 
-      status: 'completed', 
-      description: 'Initial concept captured', 
-      assignedTo: 'ai',
-      subtasks: [
-        { id: 1, title: 'Document requirements', completed: true },
-        { id: 2, title: 'Initial review', completed: true }
-      ]
-    },
-    { 
-      id: 2, 
-      title: 'Competitive Analysis', 
-      status: 'in-progress', 
-      description: 'Researching market competitors', 
-      assignedTo: 'ai',
-      subtasks: [
-        { id: 3, title: 'Market research', completed: true },
-        { id: 4, title: 'Competitor analysis', completed: false },
-        { id: 5, title: 'SWOT analysis', completed: false }
-      ]
-    },
-    { 
-      id: 3, 
-      title: 'Problem Validation', 
-      status: 'pending', 
-      description: 'Validate core problem exists', 
-      assignedTo: 'ai'
-    },
-    { 
-      id: 4, 
-      title: 'Research Solutions', 
-      status: 'pending', 
-      description: 'Find optimal solution approach', 
-      assignedTo: 'sde'
-    },
-    { 
-      id: 5, 
-      title: 'UI/UX Mockups', 
-      status: 'pending', 
-      description: 'Design user interface', 
-      assignedTo: 'sde'
-    }
-  ]);
-
+  const [tasks, setTasks] = useState<Task[]>([{
+    id: 1,
+    title: 'Idea Submitted',
+    status: 'completed',
+    description: 'Initial concept captured',
+    assignedTo: 'ai',
+    subtasks: [{
+      id: 1,
+      title: 'Document requirements',
+      completed: true
+    }, {
+      id: 2,
+      title: 'Initial review',
+      completed: true
+    }]
+  }, {
+    id: 2,
+    title: 'Competitive Analysis',
+    status: 'in-progress',
+    description: 'Researching market competitors',
+    assignedTo: 'ai',
+    subtasks: [{
+      id: 3,
+      title: 'Market research',
+      completed: true
+    }, {
+      id: 4,
+      title: 'Competitor analysis',
+      completed: false
+    }, {
+      id: 5,
+      title: 'SWOT analysis',
+      completed: false
+    }]
+  }, {
+    id: 3,
+    title: 'Problem Validation',
+    status: 'pending',
+    description: 'Validate core problem exists',
+    assignedTo: 'ai'
+  }, {
+    id: 4,
+    title: 'Research Solutions',
+    status: 'pending',
+    description: 'Find optimal solution approach',
+    assignedTo: 'sde'
+  }, {
+    id: 5,
+    title: 'UI/UX Mockups',
+    status: 'pending',
+    description: 'Design user interface',
+    assignedTo: 'sde'
+  }]);
   const completedTasks = tasks.filter(task => task.status === 'completed').length;
-  const progress = (completedTasks / tasks.length) * 100;
+  const progress = completedTasks / tasks.length * 100;
 
   // Check for existing dark mode preference
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
     setDarkMode(isDark);
   }, []);
-
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    
     if (newDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
   };
-
   const assignToDev = (taskId: number) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, assignedTo: 'sde' as const }
-        : task
-    ));
+    setTasks(tasks.map(task => task.id === taskId ? {
+      ...task,
+      assignedTo: 'sde' as const
+    } : task));
   };
-
   const toggleTaskExpanded = (taskId: number) => {
-    setExpandedTasks(prev => 
-      prev.includes(taskId) 
-        ? prev.filter(id => id !== taskId)
-        : [...prev, taskId]
-    );
+    setExpandedTasks(prev => prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]);
   };
-
   const toggleSubtask = (taskId: number, subtaskId: number) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? {
-            ...task,
-            subtasks: task.subtasks?.map(subtask =>
-              subtask.id === subtaskId
-                ? { ...subtask, completed: !subtask.completed }
-                : subtask
-            )
-          }
-        : task
-    ));
+    setTasks(tasks.map(task => task.id === taskId ? {
+      ...task,
+      subtasks: task.subtasks?.map(subtask => subtask.id === subtaskId ? {
+        ...subtask,
+        completed: !subtask.completed
+      } : subtask)
+    } : task));
   };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
@@ -173,7 +142,6 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
         return <Circle className="h-3 w-3 text-gray-400" />;
     }
   };
-
   const getStatusBadge = (status: string) => {
     if (collapsed) return null;
     switch (status) {
@@ -185,42 +153,24 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
         return <Badge variant="outline" className="text-xs px-1 py-0">○</Badge>;
     }
   };
-
   if (collapsed) {
-    return (
-      <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    return <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
         <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleCollapse}
-            className="h-8 w-8 p-0 hover:bg-sidebar-accent"
-          >
+          <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
             <Menu className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Navigation icons */}
         <div className="flex-1 flex flex-col items-center py-2 space-y-2 bg-sidebar">
-          <Button 
-            variant={activeView === 'main' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="h-8 w-8 p-0" 
-            title="Dashboard"
-            onClick={() => onViewChange?.('main')}
-          >
+          <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Dashboard" onClick={() => onViewChange?.('main')}>
             <Home className="h-4 w-4" />
           </Button>
           
           {/* Task Progress Icon */}
           <div className="relative group">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0" 
-              title={`Tasks: ${completedTasks}/${tasks.length}`}
-            >
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title={`Tasks: ${completedTasks}/${tasks.length}`}>
               <FileText className="h-4 w-4" />
             </Button>
             <div className="absolute -right-1 -top-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center">
@@ -228,36 +178,18 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
             </div>
           </div>
 
-          <Button 
-            variant={activeView === 'team' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="h-8 w-8 p-0" 
-            title="Teams"
-            onClick={() => onViewChange?.('team')}
-          >
+          <Button variant={activeView === 'team' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Teams" onClick={() => onViewChange?.('team')}>
             <Users className="h-4 w-4" />
           </Button>
           
-          <Button 
-            variant={activeView === 'subscription' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="h-8 w-8 p-0" 
-            title="Subscription"
-            onClick={() => onViewChange?.('subscription')}
-          >
+          <Button variant={activeView === 'subscription' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Subscription" onClick={() => onViewChange?.('subscription')}>
             <CreditCard className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Bottom Section */}
         <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar space-y-2 flex flex-col items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleDarkMode}
-            className="h-8 w-8 p-0"
-            title="Toggle theme"
-          >
+          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="h-8 w-8 p-0" title="Toggle theme">
             {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           
@@ -304,21 +236,13 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="h-full w-full min-w-[280px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+  return <div className="h-full w-full min-w-[280px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-between mb-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleCollapse}
-            className="h-8 w-8 p-0 hover:bg-sidebar-accent"
-          >
+          <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
             <Menu className="h-4 w-4" />
           </Button>
           
@@ -360,13 +284,11 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
       <div className="flex-1 min-h-0 bg-sidebar">
         <ScrollArea className="h-full">
           <div className="p-2 space-y-1">
-            {tasks.map((task) => {
-              const isExpanded = expandedTasks.includes(task.id);
-              const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
-              const totalSubtasks = task.subtasks?.length || 0;
-              
-              return (
-                <div key={task.id} className="border border-sidebar-border rounded-md p-2 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors">
+            {tasks.map(task => {
+            const isExpanded = expandedTasks.includes(task.id);
+            const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
+            const totalSubtasks = task.subtasks?.length || 0;
+            return <div key={task.id} className="border border-sidebar-border rounded-md p-2 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors px-[9px] my-[6px]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                       {getStatusIcon(task.status)}
@@ -376,82 +298,47 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
                     </div>
                     <div className="flex-shrink-0 ml-2 flex items-center space-x-1">
                       {getStatusBadge(task.status)}
-                      {task.subtasks && task.subtasks.length > 0 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleTaskExpanded(task.id)}
-                          className="h-5 w-5 p-0"
-                        >
+                      {task.subtasks && task.subtasks.length > 0 && <Button variant="ghost" size="sm" onClick={() => toggleTaskExpanded(task.id)} className="h-5 w-5 p-0">
                           {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                        </Button>
-                      )}
+                        </Button>}
                     </div>
                   </div>
 
-                  {isExpanded && (
-                    <>
+                  {isExpanded && <>
                       <p className="text-xs text-muted-foreground break-words leading-tight mt-1">
                         {task.description}
                       </p>
 
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center space-x-2">
-                          {task.assignedTo === 'ai' ? (
-                            <Bot className="h-3 w-3 text-purple-500" />
-                          ) : (
-                            <User className="h-3 w-3 text-orange-500" />
-                          )}
+                          {task.assignedTo === 'ai' ? <Bot className="h-3 w-3 text-purple-500" /> : <User className="h-3 w-3 text-orange-500" />}
                           <span className="text-xs text-muted-foreground">
                             {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
                           </span>
                         </div>
                         
-                        {task.subtasks && task.subtasks.length > 0 && (
-                          <div className="text-xs text-muted-foreground">
+                        {task.subtasks && task.subtasks.length > 0 && <div className="text-xs text-muted-foreground">
                             {completedSubtasks}/{totalSubtasks}
-                          </div>
-                        )}
+                          </div>}
                       </div>
                       
-                      {task.assignedTo === 'ai' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => assignToDev(task.id)}
-                          className="text-xs h-6 w-full mt-2"
-                        >
+                      {task.assignedTo === 'ai' && <Button variant="outline" size="sm" onClick={() => assignToDev(task.id)} className="text-xs h-6 w-full mt-2">
                           Assign to Dev
-                        </Button>
-                      )}
+                        </Button>}
 
-                      {task.subtasks && (
-                        <div className="mt-2 space-y-1 pl-4 border-l-2 border-sidebar-border">
-                          {task.subtasks.map((subtask) => (
-                            <div key={subtask.id} className="flex items-center space-x-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleSubtask(task.id, subtask.id)}
-                                className="h-4 w-4 p-0"
-                              >
-                                {subtask.completed ? 
-                                  <CheckCircle2 className="h-3 w-3 text-green-500" /> : 
-                                  <Circle className="h-3 w-3 text-gray-400" />
-                                }
+                      {task.subtasks && <div className="mt-2 space-y-1 pl-4 border-l-2 border-sidebar-border">
+                          {task.subtasks.map(subtask => <div key={subtask.id} className="flex items-center space-x-2">
+                              <Button variant="ghost" size="sm" onClick={() => toggleSubtask(task.id, subtask.id)} className="h-4 w-4 p-0">
+                                {subtask.completed ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3 text-gray-400" />}
                               </Button>
                               <span className={`text-xs break-words leading-tight ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
                                 {subtask.title}
                               </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              );
-            })}
+                            </div>)}
+                        </div>}
+                    </>}
+                </div>;
+          })}
           </div>
         </ScrollArea>
       </div>
@@ -459,12 +346,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
       {/* Bottom Section - Always Visible */}
       <div className="p-2 border-t border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleDarkMode}
-            className="h-7 w-7 p-0"
-          >
+          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="h-7 w-7 p-0">
             {darkMode ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
           </Button>
           
@@ -518,8 +400,6 @@ const Sidebar = ({ collapsed, onToggleCollapse, currentProject, activeView = 'ma
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Sidebar;
