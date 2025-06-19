@@ -154,7 +154,7 @@ const Sidebar = ({
     }
   };
   if (collapsed) {
-    return <div className="w-12 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    return <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Header */}
         <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
           <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">

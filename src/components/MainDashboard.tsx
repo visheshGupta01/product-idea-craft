@@ -87,7 +87,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
     <div className="h-screen bg-background overflow-hidden">
       <div className="h-full flex">
         {/* Sidebar */}
-        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-80'} flex-shrink-0`}>
+        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'} flex-shrink-0`}>
           <Sidebar 
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
