@@ -59,7 +59,6 @@ const PreviewCodePanel = () => {
       onClick={() => setActiveDevice(device)}
       className="flex items-center space-x-1"
     >
-      <Icon className="w-4 h-4" />
       <span className="hidden sm:inline">{label}</span>
     </Button>
   );
