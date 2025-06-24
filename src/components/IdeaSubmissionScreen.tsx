@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { ThemeToggle } from './ThemeToggle';
@@ -69,15 +68,18 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
               <div className="absolute top-64 right-1/3 w-64 h-64 bg-gradient-to-r from-primary/8 to-primary/4 rounded-full blur-2xl animate-pulse-glow" style={{ animationDelay: '0.5s' }}></div>
               <div className="absolute top-96 left-1/4 w-48 h-48 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-xl animate-bounce-subtle" style={{ animationDelay: '1.5s' }}></div>
               
-              {/* Large animated logo watermarks */}
-              <div className="absolute top-20 right-1/3 opacity-8 animate-float" style={{ animationDelay: '0.5s' }}>
-                <img src="logo.png" alt="" className="w-48 h-48 rotate-12 filter drop-shadow-2xl" style={{ filter: 'drop-shadow(0 0 20px rgba(102, 232, 250, 0.3))' }} />
-              </div>
-              <div className="absolute top-80 left-1/4 opacity-6 animate-bounce-subtle" style={{ animationDelay: '2s' }}>
-                <img src="logo.png" alt="" className="w-40 h-40 -rotate-12 filter drop-shadow-xl" style={{ filter: 'drop-shadow(0 0 15px rgba(102, 232, 250, 0.2))' }} />
-              </div>
-              <div className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-4 animate-pulse-glow" style={{ animationDelay: '1s' }}>
-                <img src="logo.png" alt="" className="w-32 h-32 rotate-45 filter drop-shadow-lg" style={{ filter: 'drop-shadow(0 0 10px rgba(102, 232, 250, 0.15))' }} />
+              {/* Single large animated glowing logo watermark */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-10 animate-float" style={{ animationDelay: '1s' }}>
+                <div className="relative">
+                  <img 
+                    src="logo.png" 
+                    alt="" 
+                    className="w-96 h-96 rotate-12" 
+                    style={{ 
+                      filter: 'drop-shadow(0 0 40px rgba(102, 232, 250, 0.5)) drop-shadow(0 0 80px rgba(102, 232, 250, 0.3)) drop-shadow(0 0 120px rgba(102, 232, 250, 0.2))'
+                    }} 
+                  />
+                </div>
               </div>
               
               {/* Glowing particles effect */}
@@ -86,8 +88,8 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
               <div className="absolute top-52 right-1/5 w-3 h-3 bg-primary/35 rounded-full blur-sm animate-pulse-glow" style={{ animationDelay: '1.8s' }}></div>
             </div>
 
-            {/* Compact Header Bar for Idea Submission */}
-            <div className="relative z-10 bg-gradient-to-r from-card/90 to-card/70 backdrop-blur-sm border border-border/50 rounded-2xl p-4 mb-6 shadow-lg animate-fade-up">
+            {/* Compact Header Bar for Idea Submission - with subtle blur */}
+            <div className="relative z-10 bg-gradient-to-r from-card/90 to-card/70 backdrop-blur-sm border border-border/50 rounded-2xl p-4 mb-6 shadow-lg animate-fade-up backdrop-blur-md">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
@@ -126,15 +128,15 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
               </div>
             </div>
 
-            {/* Your Recent Projects */}
-            <div className="relative z-10 mb-8">
+            {/* Your Recent Projects - with subtle blur */}
+            <div className="relative z-10 mb-8 backdrop-blur-sm">
               <h2 className="text-xl font-bold mb-4">Your Recent Projects</h2>
               <RecentProjects />
             </div>
           </div>
 
-          {/* Full-width Community Section */}
-          <div className="animate-fade-up animate-delay-300">
+          {/* Full-width Community Section - with subtle blur */}
+          <div className="animate-fade-up animate-delay-300 backdrop-blur-sm">
             <CommunityProjects />
           </div>
         </div>
