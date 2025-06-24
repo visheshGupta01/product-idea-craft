@@ -52,19 +52,19 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
         };
       case 'tablet':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-4",
-          frame: "w-full max-w-2xl h-full bg-gray-700 rounded-xl shadow-2xl overflow-hidden relative",
-          titleBar: "h-6 bg-gray-600 flex items-center px-3 space-x-1.5",
-          dot: "w-2 h-2 rounded-full",
-          iframe: "w-full h-[calc(100%-1.5rem)] border-0 bg-white"
+          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-6",
+          frame: "w-full max-w-3xl h-full bg-gray-800 rounded-xl shadow-2xl overflow-hidden relative",
+          titleBar: "h-10 bg-gray-700 flex items-center px-4 space-x-2",
+          dot: "w-3 h-3 rounded-full",
+          iframe: "w-full h-[calc(100%-2.5rem)] border-0 bg-white"
         };
       case 'phone':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 py-4 px-4",
+          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 pt-8 pb-4 px-4",
           frame: "w-80 max-w-sm bg-black rounded-[2rem] p-1.5 shadow-2xl relative",
           notch: "absolute top-1 left-1/2 transform -translate-x-1/2 w-16 h-3 bg-black rounded-full z-20",
           homeIndicator: "absolute bottom-1 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gray-600 rounded-full",
-          iframe: "w-full h-[600px] border-0 rounded-[1.5rem] bg-white overflow-hidden"
+          iframe: "w-full h-[560px] border-0 rounded-[1.5rem] bg-white overflow-hidden"
         };
     }
   };
@@ -81,7 +81,7 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
             <div className={`${styles.dot} bg-yellow-500`} />
             <div className={`${styles.dot} bg-green-500`} />
             <div className="flex-1" />
-            <div className={`text-gray-300 font-medium ${device === 'tablet' ? 'text-xs' : 'text-xs'}`}>
+            <div className={`text-gray-300 font-medium ${device === 'tablet' ? 'text-sm' : 'text-xs'}`}>
               Preview - {config.label}
             </div>
             <div className="flex-1" />
