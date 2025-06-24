@@ -99,7 +99,7 @@ const Index = () => {
       
       <div className={isFullSizePage ? "h-screen" : ""}>
         {appState === 'idea-submission' && (
-          <IdeaSubmissionScreen onIdeaSubmit={handleIdeaSubmit} />
+          <IdeaSubmissionScreen onIdeaSubmit={handleIdeaSubmit} user={user} />
         )}
         
         {appState === 'follow-up-questions' && (

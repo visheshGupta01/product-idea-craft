@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Lightbulb, Sparkles, Rocket, Code, ArrowRight, ExternalLink, Heart, Eye } from 'lucide-react';
+import { Lightbulb, Sparkles, Rocket, Code, ArrowRight, ExternalLink, Heart, Eye, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
+  user?: { name: string; email: string; avatar?: string };
 }
 
-const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
+const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps) => {
   const [idea, setIdea] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,6 +37,62 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
     { icon: Code, text: "We'll build it" },
     { icon: Rocket, text: "Launch together" }
   ];
+
+  const recentProjects = [
+    {
+      id: 1,
+      title: "E-commerce Platform",
+      description: "Modern shopping experience with AI recommendations",
+      status: "active",
+      progress: 75,
+      lastModified: "2 hours ago",
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300&h=150&fit=crop"
+    },
+    {
+      id: 2,
+      title: "Task Manager Pro",
+      description: "Team collaboration tool with smart scheduling",
+      status: "completed",
+      progress: 100,
+      lastModified: "1 day ago",
+      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=300&h=150&fit=crop"
+    },
+    {
+      id: 3,
+      title: "Analytics Dashboard",
+      description: "Real-time data visualization for business insights",
+      status: "paused",
+      progress: 45,
+      lastModified: "3 days ago",
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=150&fit=crop"
+    }
+  ];
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Clock className="h-3 w-3 text-blue-500" />;
+      case 'completed':
+        return <CheckCircle2 className="h-3 w-3 text-green-500" />;
+      case 'paused':
+        return <AlertCircle className="h-3 w-3 text-yellow-500" />;
+      default:
+        return <Code className="h-3 w-3 text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+      case 'completed':
+        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      case 'paused':
+        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
+      default:
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+    }
+  };
 
   const communityProjects = [
     {
@@ -84,7 +141,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
     }
   ];
 
-  const getStatusColor = (status: string) => {
+  const getCommunityStatusColor = (status: string) => {
     switch (status) {
       case 'Live':
         return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
@@ -95,6 +152,126 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit }: IdeaSubmissionScreenProps) => {
     }
   };
 
+  // If user is logged in, show condensed layout
+  if (user) {
+    return (
+      <div className={`min-h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-x-hidden transition-all duration-800 ${
+        isSubmitting ? 'scale-105 blur-sm' : 'scale-100 blur-none'
+      }`}>
+        {/* Animated textbox overlay - appears during transition */}
+        {isSubmitting && (
+          <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-background/80 backdrop-blur-sm">
+            <div className="animate-scale-in">
+              <Textarea
+                value={idea}
+                readOnly
+                className="w-96 h-32 text-base border-2 border-primary/50 rounded-xl shadow-2xl shadow-primary/20 bg-card"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Theme Toggle Button */}
+        <div className="fixed top-6 right-6 z-10">
+          <ThemeToggle />
+        </div>
+
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          {/* Compact Header */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center mt-2 mb-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+                <img src="logo.png" alt="Logo" className="w-6 mt-1 ml-1" />
+              </div>
+            </div>
+            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+              Imagine.bo
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              What's your next big idea?
+            </p>
+          </div>
+
+          {/* Compact Input Section */}
+          <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg shadow-primary/5 mb-8">
+            <div className="space-y-4">
+              <Textarea
+                placeholder="Describe your new app or website idea..."
+                value={idea}
+                onChange={(e) => setIdea(e.target.value)}
+                disabled={isSubmitting}
+                className="min-h-[100px] text-base resize-none border-2 focus:border-primary/50 rounded-xl"
+              />
+
+              <Button 
+                onClick={handleSubmit}
+                disabled={!idea.trim() || isSubmitting}
+                size="lg"
+                className="w-full h-11 text-base font-medium rounded-xl group"
+              >
+                {isSubmitting ? 'Processing your idea...' : 'Start Building'}
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Recent Projects Section */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-foreground">Your Recent Projects</h2>
+              <Button variant="outline" size="sm">View All</Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {recentProjects.map((project) => (
+                <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer bg-card/60 backdrop-blur-sm">
+                  <div className="relative">
+                    <img 
+                      src={project.image} 
+                      alt={project.title}
+                      className="w-full h-24 object-cover rounded-t-lg"
+                    />
+                    <Badge className={`absolute top-2 right-2 text-xs ${getStatusColor(project.status)}`}>
+                      {project.status}
+                    </Badge>
+                  </div>
+                  
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-semibold leading-tight mb-1">
+                      {project.title}
+                    </CardTitle>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0 pb-4">
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-3 line-clamp-2">
+                      {project.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                      <div className="flex items-center space-x-1">
+                        {getStatusIcon(project.status)}
+                        <span>{project.progress}%</span>
+                      </div>
+                      <span>{project.lastModified}</span>
+                    </div>
+                    
+                    <div className="w-full bg-muted rounded-full h-1.5">
+                      <div 
+                        className="bg-primary h-1.5 rounded-full transition-all duration-300"
+                        style={{ width: `${project.progress}%` }}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Original layout for non-logged-in users
   return (
     <div className={`min-h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-x-hidden transition-all duration-800 ${
       isSubmitting ? 'scale-105 blur-sm' : 'scale-100 blur-none'
@@ -241,7 +418,7 @@ For example: 'A marketplace for local artists to sell their digital artwork, wit
                     className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <Badge 
-                    className={`absolute top-2 right-2 text-xs ${getStatusColor(project.status)}`}
+                    className={`absolute top-2 right-2 text-xs ${getCommunityStatusColor(project.status)}`}
                   >
                     {project.status}
                   </Badge>
