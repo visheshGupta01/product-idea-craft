@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { ThemeToggle } from './ThemeToggle';
@@ -131,7 +132,9 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
             {/* Your Recent Projects - with subtle blur */}
             <div className="relative z-10 mb-8 backdrop-blur-sm">
               <h2 className="text-xl font-bold mb-4">Your Recent Projects</h2>
-              <RecentProjects />
+              <div className="backdrop-blur-sm">
+                <RecentProjects />
+              </div>
             </div>
           </div>
 
