@@ -60,11 +60,11 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
         };
       case 'phone':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 pt-6 pb-4 px-4",
-          frame: "w-96 max-w-md bg-black rounded-[2rem] p-1 shadow-2xl relative scale-90",
-          notch: "absolute top-0.5 left-1/2 transform -translate-x-1/2 w-16 h-3 bg-black rounded-full z-20",
-          homeIndicator: "absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gray-600 rounded-full",
-          iframe: "w-full h-[520px] border-0 rounded-[1.5rem] bg-white overflow-hidden"
+          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 py-8 px-4",
+          frame: "w-80 max-w-sm bg-black rounded-[2.5rem] p-1.5 shadow-2xl relative",
+          notch: "absolute top-1.5 left-1/2 transform -translate-x-1/2 w-20 h-3.5 bg-black rounded-full z-20",
+          homeIndicator: "absolute bottom-1.5 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gray-600 rounded-full",
+          iframe: "w-full h-[580px] border-0 rounded-[2rem] bg-white overflow-hidden"
         };
     }
   };
