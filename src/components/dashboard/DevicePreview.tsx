@@ -20,7 +20,7 @@ export const deviceConfigs: Record<DeviceType, DeviceConfig> = {
   },
   tablet: {
     width: 768,
-    height: 1024,
+    height: 600,
     label: 'Tablet',
     icon: <Tablet className="w-4 h-4" />
   },
@@ -44,19 +44,19 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
     switch (device) {
       case 'desktop':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 ",
+          container: "w-full h-full flex items-center justify-center bg-background",
           frame: "w-full max-w-full h-full bg-white shadow-2xl overflow-hidden relative",
           iframe: "w-full h-full border-0 bg-white"
         };
       case 'tablet':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-6 overflow-hidden",
+          container: "w-full h-full flex items-center justify-center bg-background p-6 overflow-hidden",
           frame: "w-[768px] h-[600px] bg-white rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0",
-          iframe: "w-full h-full mt-6 border-0 bg-white"
+          iframe: "w-full h-full border-0 bg-white"
         };
       case 'phone':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 p-2",
+          container: "w-full h-full flex items-center justify-center bg-background p-2",
           frame: "w-full max-w-sm mx-auto bg-white rounded-lg shadow-xl overflow-hidden relative border-2 border-gray-300",
           iframe: "w-full h-[calc(100vh-45px)] border-0 bg-white overflow-hidden"
         };
