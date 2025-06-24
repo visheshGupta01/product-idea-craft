@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -151,10 +152,10 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
     }
   };
 
-  // If user is logged in, show ultra-compact layout
+  // If user is logged in, show enhanced compact layout
   if (user) {
     return (
-      <div className={`h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden transition-all duration-800 ${
+      <div className={`min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/8 transition-all duration-800 ${
         isSubmitting ? 'scale-105 blur-sm' : 'scale-100 blur-none'
       }`}>
         {/* Animated textbox overlay */}
@@ -171,90 +172,218 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
         )}
 
         {/* Theme Toggle Button */}
-        <div className="fixed top-4 right-4 z-10">
+        <div className="fixed top-6 right-6 z-10 animate-float">
           <ThemeToggle />
         </div>
 
-        <div className="h-full flex flex-col">
-          {/* Compact Input Section - Fixed at top */}
-          <div className="flex-shrink-0 p-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-4 shadow-lg shadow-primary/5">
-                <div className="space-y-3">
-                  <Textarea
-                    placeholder="What's your next big idea?"
-                    value={idea}
-                    onChange={(e) => setIdea(e.target.value)}
-                    disabled={isSubmitting}
-                    className="min-h-[80px] text-base resize-none border-2 focus:border-primary/50 rounded-xl"
-                  />
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          {/* Enhanced Input Section - Top positioned with animations */}
+          <div className="mb-8 animate-fade-up">
+            <div className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/15 transition-all duration-500">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4 animate-pulse-glow">
+                  <Sparkles className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="text-3xl font-bold mb-2 text-card-foreground bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                  What's your next big idea?
+                </h2>
+                <p className="text-muted-foreground">
+                  Transform your vision into reality with AI-powered development
+                </p>
+              </div>
 
-                  <Button 
-                    onClick={handleSubmit}
-                    disabled={!idea.trim() || isSubmitting}
-                    size="lg"
-                    className="w-full h-10 text-base font-medium rounded-xl group"
-                  >
-                    {isSubmitting ? 'Processing...' : 'Start Building'}
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
+              <div className="space-y-6">
+                <Textarea
+                  placeholder="Describe your app or website idea in detail... 
+
+For example: 'A marketplace for local artists to sell their digital artwork, with features for artist profiles, secure payments, and community reviews.'"
+                  value={idea}
+                  onChange={(e) => setIdea(e.target.value)}
+                  disabled={isSubmitting}
+                  className={`min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 hover:border-primary/30 ${
+                    isSubmitting ? 'border-primary/50 shadow-lg shadow-primary/10' : ''
+                  }`}
+                />
+
+                <Button 
+                  onClick={handleSubmit}
+                  disabled={!idea.trim() || isSubmitting}
+                  size="lg"
+                  className="w-full h-14 text-lg font-semibold rounded-xl group transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-primary to-primary/90"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mr-2"></div>
+                      Processing your idea...
+                    </>
+                  ) : (
+                    <>
+                      Start Building My Idea
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <div className="mt-6 text-center text-sm text-muted-foreground">
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Your idea is secure and encrypted</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Recent Projects Section - Scrollable content */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold text-foreground">Your Recent Projects</h2>
-                <Button variant="outline" size="sm" className="text-xs h-8">View All</Button>
+          {/* Enhanced Recent Projects Section */}
+          <div className="mb-12 animate-fade-up animate-delay-200">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-1">Your Recent Projects</h2>
+                <p className="text-sm text-muted-foreground">Continue where you left off</p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {recentProjects.map((project) => (
-                  <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer bg-card/60 backdrop-blur-sm">
-                    <div className="relative">
-                      <img 
-                        src={project.image} 
-                        alt={project.title}
-                        className="w-full h-20 object-cover rounded-t-lg"
-                      />
-                      <Badge className={`absolute top-1 right-1 text-xs ${getStatusColor(project.status)}`}>
-                        {project.status}
-                      </Badge>
+              <Button variant="outline" size="sm" className="hover:scale-105 transition-transform duration-200">
+                View All Projects
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {recentProjects.map((project, index) => (
+                <Card key={project.id} className={`group hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 cursor-pointer bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border border-border/50 animate-slide-in-left animate-delay-${(index + 1) * 100}`}>
+                  <div className="relative overflow-hidden">
+                    <img 
+                      src={project.image} 
+                      alt={project.title}
+                      className="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <Badge className={`absolute top-3 right-3 text-xs ${getStatusColor(project.status)} backdrop-blur-sm`}>
+                      {project.status}
+                    </Badge>
+                  </div>
+                  
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-bold leading-tight mb-2 group-hover:text-primary transition-colors duration-300">
+                      {project.title}
+                    </CardTitle>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0 pb-4">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2">
+                      {project.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(project.status)}
+                        <span className="font-medium">{project.progress}%</span>
+                      </div>
+                      <span className="text-xs">{project.lastModified}</span>
                     </div>
                     
-                    <CardHeader className="pb-1">
-                      <CardTitle className="text-sm font-semibold leading-tight mb-1">
-                        {project.title}
-                      </CardTitle>
-                    </CardHeader>
+                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-700 group-hover:from-primary/80 group-hover:to-primary"
+                        style={{ width: `${project.progress}%` }}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Enhanced Community Section */}
+          <div 
+            ref={communityAnimation.ref}
+            className="mb-12"
+          >
+            <div className={`text-center mb-8 transition-all duration-600 ${
+              communityAnimation.isVisible ? 'animate-fade-up' : 'opacity-0 translate-y-8'
+            }`}>
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-xl mb-4 animate-bounce-subtle">
+                <Heart className="w-6 h-6 text-primary" />
+              </div>
+              <h2 className="text-3xl font-bold mb-3 text-foreground">Built by Our Community</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+                Discover amazing projects created by builders like you. Get inspired and join thousands of successful entrepreneurs.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {communityProjects.map((project, index) => (
+                <Card 
+                  key={project.id} 
+                  className={`group hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 hover:scale-105 hover:-translate-y-3 overflow-hidden bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border border-border/50 cursor-pointer ${
+                    communityAnimation.isVisible 
+                      ? `animate-slide-in-right animate-delay-${(index + 1) * 150}`
+                      : 'opacity-0 translate-x-8'
+                  }`}
+                >
+                  <div className="relative overflow-hidden">
+                    <img 
+                      src={project.image} 
+                      alt={project.title}
+                      className="w-full h-36 object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <Badge 
+                      className={`absolute top-3 right-3 text-xs ${getCommunityStatusColor(project.status)} backdrop-blur-sm`}
+                    >
+                      {project.status}
+                    </Badge>
+                  </div>
+                  
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-sm font-bold leading-tight mb-2 group-hover:text-primary transition-colors duration-300">
+                          {project.title}
+                        </CardTitle>
+                        <Badge variant="outline" className="text-xs hover:bg-primary/10 transition-colors duration-300">
+                          {project.category}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0">
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-4 line-clamp-3">
+                      {project.description}
+                    </p>
                     
-                    <CardContent className="pt-0 pb-3">
-                      <p className="text-xs text-muted-foreground leading-relaxed mb-2 line-clamp-2">
-                        {project.description}
-                      </p>
-                      
-                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                        <div className="flex items-center space-x-1">
-                          {getStatusIcon(project.status)}
-                          <span>{project.progress}%</span>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                      <span className="font-medium">by {project.author}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                        <div className="flex items-center space-x-1 hover:text-red-500 transition-colors duration-200">
+                          <Heart className="w-3 h-3" />
+                          <span>{project.likes}</span>
                         </div>
-                        <span>{project.lastModified}</span>
+                        <div className="flex items-center space-x-1 hover:text-blue-500 transition-colors duration-200">
+                          <Eye className="w-3 h-3" />
+                          <span>{project.views}</span>
+                        </div>
                       </div>
-                      
-                      <div className="w-full bg-muted rounded-full h-1">
-                        <div 
-                          className="bg-primary h-1 rounded-full transition-all duration-300"
-                          style={{ width: `${project.progress}%` }}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Enhanced Footer */}
+          <div className="text-center text-sm text-muted-foreground animate-fade-up animate-delay-500">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse animate-delay-100"></div>
+                <div className="w-2 h-2 bg-primary/30 rounded-full animate-pulse animate-delay-200"></div>
               </div>
             </div>
+            <p className="font-medium">Join thousands of builders who have launched their ideas successfully</p>
           </div>
         </div>
       </div>
