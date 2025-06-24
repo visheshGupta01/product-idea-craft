@@ -48,16 +48,22 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
       if (!containerRef.current) return;
       
       const container = containerRef.current;
-      const containerWidth = container.clientWidth - 20; // Minimal padding for better fit
-      const containerHeight = container.clientHeight - 20;
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
       
-      // Calculate scale to fit both width and height
-      const scaleX = containerWidth / config.width;
-      const scaleY = containerHeight / config.height;
-      const newScale = Math.min(scaleX, scaleY, 1);
-      
-      // Allow smaller minimum scale for better utilization of space
-      setScale(Math.max(newScale, 0.2));
+      if (device === 'desktop') {
+        // For desktop, fit width and maintain aspect ratio
+        const scaleX = containerWidth / config.width;
+        const scaleY = (containerHeight - 20) / config.height; // Small vertical padding
+        const newScale = Math.min(scaleX, scaleY, 1);
+        setScale(Math.max(newScale, 0.1));
+      } else {
+        // For tablet and phone, fill width completely and scale height proportionally
+        const scaleX = containerWidth / config.width;
+        const scaleY = (containerHeight - 20) / config.height;
+        const newScale = Math.min(scaleX, scaleY);
+        setScale(Math.max(newScale, 0.1));
+      }
     };
     
     updateScale();
@@ -68,12 +74,12 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
     }
     
     return () => resizeObserver.disconnect();
-  }, [config.width, config.height]);
+  }, [config.width, config.height, device]);
   
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full flex items-center justify-center bg-muted/20 p-2"
+      className="w-full h-full flex items-center justify-center bg-muted/20"
     >
       <div 
         className="relative bg-background rounded-lg shadow-lg border border-border overflow-hidden transition-transform duration-300"
