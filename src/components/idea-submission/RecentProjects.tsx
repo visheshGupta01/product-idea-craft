@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -100,14 +99,7 @@ const RecentProjects = () => {
   };
 
   return (
-    <div className="animate-fade-up animate-delay-200">
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-muted-foreground">Continue where you left off</p>
-        <Button variant="outline" size="sm" className="hover:scale-105 transition-transform duration-200">
-          View All Projects
-        </Button>
-      </div>
-      
+    <div className="animate-fade-up animate-delay-200">      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {recentProjects.map((project, index) => (
           <Card key={project.id} className={`group hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 cursor-pointer bg-gradient-to-br from-card to-card/80 backdrop-blur-sm border border-border/50 animate-slide-in-left animate-delay-${(index + 1) * 100}`}>
