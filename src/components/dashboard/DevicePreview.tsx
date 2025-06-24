@@ -52,13 +52,13 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
         return {
           container: "w-full h-full flex items-center justify-center bg-background p-6 overflow-hidden",
           frame: "w-[768px] h-[600px] bg-white rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0",
-          iframe: "w-full h-full border-0 bg-white"
+          iframe: "w-full h-full mt-6 border-0 bg-white"
         };
       case 'phone':
         return {
           container: "w-full h-full flex items-center justify-center bg-background p-2",
-          frame: "w-full max-w-sm mx-auto bg-white rounded-lg shadow-xl overflow-hidden relative border-2 border-gray-300",
-          iframe: "w-full h-[calc(100vh-45px)] border-0 bg-white overflow-hidden"
+          frame: "w-full max-w-sm mx-auto rounded-lg shadow-2xl overflow-hidden relative",
+          iframe: "w-full h-[calc(100vh-45px)] border-0 overflow-hidden"
         };
     }
   };
