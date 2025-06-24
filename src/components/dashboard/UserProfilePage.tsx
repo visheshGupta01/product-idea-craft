@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,10 +23,15 @@ import {
   Edit,
   Save,
   X,
-  Upload
+  Upload,
+  LogOut
 } from 'lucide-react';
 
-const UserProfilePage = () => {
+interface UserProfilePageProps {
+  onLogout?: () => void;
+}
+
+const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: 'John Doe',
@@ -88,10 +92,18 @@ const UserProfilePage = () => {
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => setIsEditing(true)}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
+                <>
+                  <Button onClick={() => setIsEditing(true)}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                  {onLogout && (
+                    <Button variant="destructive" onClick={onLogout}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           </div>

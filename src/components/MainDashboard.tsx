@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from './dashboard/Sidebar';
 import ChatPanel from './dashboard/ChatPanel';
@@ -26,32 +25,21 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
     status: 'in-progress'
   });
 
-  const renderMainContent = () => {
+  const handleLogout = () => {
+    // Navigate back to the idea submission screen
+    window.location.href = '/';
+  };
+
+  const renderActiveView = () => {
     switch (activeView) {
       case 'team':
-        return (
-          <div className="flex-1 h-full w-full">
-            <TeamPage />
-          </div>
-        );
+        return <TeamPage />;
       case 'subscription':
-        return (
-          <div className="flex-1 h-full w-full">
-            <SubscriptionPage />
-          </div>
-        );
+        return <SubscriptionPage />;
       case 'my-projects':
-        return (
-          <div className="flex-1 h-full w-full">
-            <MyProjectsPage />
-          </div>
-        );
+        return <MyProjectsPage />;
       case 'user-profile':
-        return (
-          <div className="flex-1 h-full w-full">
-            <UserProfilePage />
-          </div>
-        );
+        return <UserProfilePage onLogout={handleLogout} />;
       default:
         return (
           <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
@@ -99,7 +87,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
 
         {/* Main Content Area - takes remaining space */}
         <div className="flex-1 min-w-0" key={sidebarCollapsed ? 'collapsed' : 'expanded'}>
-          {renderMainContent()}
+          {renderActiveView()}
         </div>
       </div>
     </div>
