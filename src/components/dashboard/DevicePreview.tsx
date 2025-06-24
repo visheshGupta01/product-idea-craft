@@ -53,16 +53,16 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
       case 'tablet':
         return {
           container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-6 overflow-hidden",
-          frame: "w-[768px] h-[1024px] bg-gray-800 rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0",
+          frame: "w-[768px] h-[600px] bg-gray-800 rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0",
           titleBar: "h-10 bg-gray-700 flex items-center px-4 space-x-2",
           dot: "w-3 h-3 rounded-full",
           iframe: "w-full h-[calc(100%-2.5rem)] border-0 bg-white"
         };
       case 'phone':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 p-2",
-          frame: "w-full max-w-sm mx-auto bg-white rounded-lg shadow-xl overflow-hidden relative border-2 border-gray-300",
-          iframe: "w-full h-[calc(100vh-120px)] border-0 bg-white overflow-hidden"
+          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 p-4",
+          frame: "w-80 max-w-sm mx-auto bg-gray-900 rounded-3xl shadow-xl overflow-hidden relative border border-gray-700",
+          iframe: "w-full h-[calc(100vh-180px)] border-0 bg-white"
         };
     }
   };
