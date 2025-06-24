@@ -44,9 +44,11 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
     switch (device) {
       case 'desktop':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gray-100 p-4",
-          frame: "w-full max-w-full h-full bg-white rounded-lg shadow-2xl border-2 border-gray-300 overflow-hidden",
-          iframe: "w-full h-full border-0 rounded-lg"
+          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 p-6",
+          frame: "w-full max-w-full h-full bg-gray-800 rounded-t-xl shadow-2xl overflow-hidden relative",
+          titleBar: "h-8 bg-gray-700 flex items-center px-4 space-x-2",
+          dot: "w-3 h-3 rounded-full",
+          iframe: "w-full h-[calc(100%-2rem)] border-0 bg-white"
         };
       case 'tablet':
         return {
@@ -68,6 +70,18 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
   return (
     <div className={styles.container}>
       <div className={styles.frame}>
+        {/* Desktop title bar */}
+        {device === 'desktop' && (
+          <div className={styles.titleBar}>
+            <div className={`${styles.dot} bg-red-500`} />
+            <div className={`${styles.dot} bg-yellow-500`} />
+            <div className={`${styles.dot} bg-green-500`} />
+            <div className="flex-1" />
+            <div className="text-gray-300 text-xs font-medium">Preview</div>
+            <div className="flex-1" />
+          </div>
+        )}
+        
         {/* Phone notch */}
         {device === 'phone' && (
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-24 h-4 bg-black rounded-full z-10" />
