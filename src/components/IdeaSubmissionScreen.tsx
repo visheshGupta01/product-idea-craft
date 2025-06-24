@@ -74,7 +74,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
                   <img 
                     src="logo.png" 
                     alt="" 
-                    className="w-96 h-96 rotate-12" 
+                    className="w-64 h-64 rotate-12" 
                     style={{ 
                       filter: 'drop-shadow(0 0 40px rgba(102, 232, 250, 0.5)) drop-shadow(0 0 80px rgba(102, 232, 250, 0.3)) drop-shadow(0 0 120px rgba(102, 232, 250, 0.2))'
                     }} 
