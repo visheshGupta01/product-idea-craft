@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { ThemeToggle } from './ThemeToggle';
@@ -54,76 +53,70 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
         </div>
 
         <div className="max-w-7xl mx-auto px-6 py-6">
-          {/* Compact Header Bar for Idea Submission */}
-          <div className="bg-gradient-to-r from-card/90 to-card/70 backdrop-blur-sm border border-border/50 rounded-2xl p-4 mb-6 shadow-lg animate-fade-up">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                  What's your next big idea?
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  Transform your vision into reality with AI-powered development
-                </p>
+          {/* Main Content Area with Watermark */}
+          <div className="relative">
+            {/* Watermark Background */}
+            <div className="absolute inset-0 -z-10 overflow-hidden">
+              {/* Primary watermark behind idea submission */}
+              <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-primary/8 to-primary/3 rounded-full blur-3xl"></div>
+              
+              {/* Secondary watermarks behind projects */}
+              <div className="absolute top-48 right-1/4 w-64 h-64 bg-gradient-to-tl from-primary/6 to-transparent rounded-full blur-2xl"></div>
+              <div className="absolute top-64 left-1/3 w-48 h-48 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-xl"></div>
+              
+              {/* Logo watermarks */}
+              <div className="absolute top-32 right-1/3 opacity-5">
+                <img src="logo.png" alt="" className="w-32 h-32 rotate-12" />
+              </div>
+              <div className="absolute top-96 left-1/4 opacity-3">
+                <img src="logo.png" alt="" className="w-24 h-24 -rotate-12" />
               </div>
             </div>
-            
-            <div className="flex gap-3 items-end">
-              <div className="flex-1">
-                <Textarea
-                  placeholder="Describe your app or website idea..."
-                  value={idea}
-                  onChange={(e) => setIdea(e.target.value)}
-                  disabled={isSubmitting}
-                  className="min-h-[50px] resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 text-sm"
-                />
+
+            {/* Compact Header Bar for Idea Submission */}
+            <div className="relative z-10 bg-gradient-to-r from-card/90 to-card/70 backdrop-blur-sm border border-border/50 rounded-2xl p-4 mb-6 shadow-lg animate-fade-up">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    What's your next big idea?
+                  </h1>
+                  <p className="text-xs text-muted-foreground">
+                    Transform your vision into reality with AI-powered development
+                  </p>
+                </div>
               </div>
-              <button
-                onClick={handleSubmit}
-                disabled={!idea.trim() || isSubmitting}
-                className="px-6 py-2 h-[50px] bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary-foreground mr-2"></div>
-                    <span>Processing...</span>
-                  </div>
-                ) : (
-                  <span>Start Building</span>
-                )}
-              </button>
+              
+              <div className="flex gap-3 items-end">
+                <div className="flex-1">
+                  <Textarea
+                    placeholder="Describe your app or website idea..."
+                    value={idea}
+                    onChange={(e) => setIdea(e.target.value)}
+                    disabled={isSubmitting}
+                    className="min-h-[50px] resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 text-sm"
+                  />
+                </div>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!idea.trim() || isSubmitting}
+                  className="px-6 py-2 h-[50px] bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary-foreground mr-2"></div>
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    <span>Start Building</span>
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Your Recent Projects */}
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">Your Recent Projects</h2>
-            <RecentProjects />
-          </div>
-
-          {/* Watermark Design */}
-          <div className="relative py-16 mb-8 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-3xl"></div>
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-8 right-1/4 w-64 h-64 bg-gradient-to-tl from-primary/8 to-transparent rounded-full blur-2xl"></div>
-            <div className="relative text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/20 rounded-2xl mb-4 animate-pulse-glow">
-                <img
-                  src="logo.png" 
-                  alt="Logo" 
-                  className="w-10 h-10 opacity-40" 
-                />
-              </div>
-              <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary/60 via-primary/40 to-primary/60 bg-clip-text text-transparent">
-                Powered by Imagine.bo
-              </h3>
-              <p className="text-muted-foreground/60 max-w-md mx-auto">
-                Join thousands of builders who have launched their ideas successfully with AI-powered development
-              </p>
-              <div className="flex items-center justify-center space-x-2 mt-4">
-                <div className="w-2 h-2 bg-primary/30 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-primary/50 rounded-full animate-pulse animate-delay-100"></div>
-                <div className="w-2 h-2 bg-primary/30 rounded-full animate-pulse animate-delay-200"></div>
-              </div>
+            {/* Your Recent Projects */}
+            <div className="relative z-10 mb-8">
+              <h2 className="text-xl font-bold mb-4">Your Recent Projects</h2>
+              <RecentProjects />
             </div>
           </div>
 
