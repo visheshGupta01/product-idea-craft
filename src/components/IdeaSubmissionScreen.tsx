@@ -29,7 +29,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
     }
   };
 
-  // If user is logged in, show compact layout with both sections visible
+  // If user is logged in, show compact header layout with full-width projects
   if (user) {
     return (
       <div className={`min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/8 transition-all duration-800 ${
@@ -53,32 +53,51 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
           <ThemeToggle />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          {/* Two-column layout for main content */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Left Column - Idea Submission */}
-            <div className="space-y-6">
-              <div className="animate-fade-up">
-                <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          {/* Compact Header Bar for Idea Submission */}
+          <div className="bg-gradient-to-r from-card/90 to-card/70 backdrop-blur-sm border border-border/50 rounded-2xl p-6 mb-8 shadow-lg animate-fade-up">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
                   What's your next big idea?
                 </h1>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-sm text-muted-foreground">
                   Transform your vision into reality with AI-powered development
                 </p>
               </div>
-              
-              <IdeaSubmissionForm
-                idea={idea}
-                setIdea={setIdea}
-                isSubmitting={isSubmitting}
-                onSubmit={handleSubmit}
-              />
             </div>
+            
+            <div className="flex gap-4 items-end">
+              <div className="flex-1">
+                <Textarea
+                  placeholder="Describe your app or website idea..."
+                  value={idea}
+                  onChange={(e) => setIdea(e.target.value)}
+                  disabled={isSubmitting}
+                  className="min-h-[80px] resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300"
+                />
+              </div>
+              <button
+                onClick={handleSubmit}
+                disabled={!idea.trim() || isSubmitting}
+                className="px-8 py-3 h-[80px] bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <div className="flex flex-col items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mb-1"></div>
+                    <span className="text-xs">Processing...</span>
+                  </div>
+                ) : (
+                  <span>Start Building</span>
+                )}
+              </button>
+            </div>
+          </div>
 
-            {/* Right Column - Recent Projects */}
-            <div className="space-y-6">
-              <RecentProjects />
-            </div>
+          {/* Full-width Recent Projects */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-6">Your Recent Projects</h2>
+            <RecentProjects />
           </div>
 
           {/* Full-width Community Section */}
@@ -87,7 +106,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
           </div>
 
           {/* Footer */}
-          <div className="text-center text-sm text-muted-foreground animate-fade-up animate-delay-500">
+          <div className="text-center text-sm text-muted-foreground animate-fade-up animate-delay-500 mt-12">
             <div className="flex items-center justify-center space-x-2 mb-2">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
