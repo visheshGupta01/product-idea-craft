@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -152,13 +151,13 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
     }
   };
 
-  // If user is logged in, show condensed layout
+  // If user is logged in, show ultra-compact layout
   if (user) {
     return (
-      <div className={`min-h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-x-hidden transition-all duration-800 ${
+      <div className={`h-screen bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden transition-all duration-800 ${
         isSubmitting ? 'scale-105 blur-sm' : 'scale-100 blur-none'
       }`}>
-        {/* Animated textbox overlay - appears during transition */}
+        {/* Animated textbox overlay */}
         {isSubmitting && (
           <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-background/80 backdrop-blur-sm">
             <div className="animate-scale-in">
@@ -172,98 +171,89 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
         )}
 
         {/* Theme Toggle Button */}
-        <div className="fixed top-6 right-6 z-10">
+        <div className="fixed top-4 right-4 z-10">
           <ThemeToggle />
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          {/* Compact Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mt-2 mb-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center">
-                <img src="logo.png" alt="Logo" className="w-6 mt-1 ml-1" />
+        <div className="h-full flex flex-col">
+          {/* Compact Input Section - Fixed at top */}
+          <div className="flex-shrink-0 p-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-4 shadow-lg shadow-primary/5">
+                <div className="space-y-3">
+                  <Textarea
+                    placeholder="What's your next big idea?"
+                    value={idea}
+                    onChange={(e) => setIdea(e.target.value)}
+                    disabled={isSubmitting}
+                    className="min-h-[80px] text-base resize-none border-2 focus:border-primary/50 rounded-xl"
+                  />
+
+                  <Button 
+                    onClick={handleSubmit}
+                    disabled={!idea.trim() || isSubmitting}
+                    size="lg"
+                    className="w-full h-10 text-base font-medium rounded-xl group"
+                  >
+                    {isSubmitting ? 'Processing...' : 'Start Building'}
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Button>
+                </div>
               </div>
             </div>
-            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              Imagine.bo
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              What's your next big idea?
-            </p>
           </div>
 
-          {/* Compact Input Section */}
-          <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg shadow-primary/5 mb-8">
-            <div className="space-y-4">
-              <Textarea
-                placeholder="Describe your new app or website idea..."
-                value={idea}
-                onChange={(e) => setIdea(e.target.value)}
-                disabled={isSubmitting}
-                className="min-h-[100px] text-base resize-none border-2 focus:border-primary/50 rounded-xl"
-              />
-
-              <Button 
-                onClick={handleSubmit}
-                disabled={!idea.trim() || isSubmitting}
-                size="lg"
-                className="w-full h-11 text-base font-medium rounded-xl group"
-              >
-                {isSubmitting ? 'Processing your idea...' : 'Start Building'}
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Recent Projects Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-foreground">Your Recent Projects</h2>
-              <Button variant="outline" size="sm">View All</Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recentProjects.map((project) => (
-                <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer bg-card/60 backdrop-blur-sm">
-                  <div className="relative">
-                    <img 
-                      src={project.image} 
-                      alt={project.title}
-                      className="w-full h-24 object-cover rounded-t-lg"
-                    />
-                    <Badge className={`absolute top-2 right-2 text-xs ${getStatusColor(project.status)}`}>
-                      {project.status}
-                    </Badge>
-                  </div>
-                  
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold leading-tight mb-1">
-                      {project.title}
-                    </CardTitle>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-0 pb-4">
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-3 line-clamp-2">
-                      {project.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                      <div className="flex items-center space-x-1">
-                        {getStatusIcon(project.status)}
-                        <span>{project.progress}%</span>
-                      </div>
-                      <span>{project.lastModified}</span>
-                    </div>
-                    
-                    <div className="w-full bg-muted rounded-full h-1.5">
-                      <div 
-                        className="bg-primary h-1.5 rounded-full transition-all duration-300"
-                        style={{ width: `${project.progress}%` }}
+          {/* Recent Projects Section - Scrollable content */}
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-foreground">Your Recent Projects</h2>
+                <Button variant="outline" size="sm" className="text-xs h-8">View All</Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {recentProjects.map((project) => (
+                  <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer bg-card/60 backdrop-blur-sm">
+                    <div className="relative">
+                      <img 
+                        src={project.image} 
+                        alt={project.title}
+                        className="w-full h-20 object-cover rounded-t-lg"
                       />
+                      <Badge className={`absolute top-1 right-1 text-xs ${getStatusColor(project.status)}`}>
+                        {project.status}
+                      </Badge>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    
+                    <CardHeader className="pb-1">
+                      <CardTitle className="text-sm font-semibold leading-tight mb-1">
+                        {project.title}
+                      </CardTitle>
+                    </CardHeader>
+                    
+                    <CardContent className="pt-0 pb-3">
+                      <p className="text-xs text-muted-foreground leading-relaxed mb-2 line-clamp-2">
+                        {project.description}
+                      </p>
+                      
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                        <div className="flex items-center space-x-1">
+                          {getStatusIcon(project.status)}
+                          <span>{project.progress}%</span>
+                        </div>
+                        <span>{project.lastModified}</span>
+                      </div>
+                      
+                      <div className="w-full bg-muted rounded-full h-1">
+                        <div 
+                          className="bg-primary h-1 rounded-full transition-all duration-300"
+                          style={{ width: `${project.progress}%` }}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         </div>
