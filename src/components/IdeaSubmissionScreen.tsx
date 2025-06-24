@@ -29,7 +29,7 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
     }
   };
 
-  // If user is logged in, show enhanced compact layout
+  // If user is logged in, show compact layout with both sections visible
   if (user) {
     return (
       <div className={`min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/8 transition-all duration-800 ${
@@ -53,22 +53,40 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
           <ThemeToggle />
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          {/* Enhanced Input Section - Top positioned with animations */}
-          <IdeaSubmissionForm
-            idea={idea}
-            setIdea={setIdea}
-            isSubmitting={isSubmitting}
-            onSubmit={handleSubmit}
-          />
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          {/* Two-column layout for main content */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Left Column - Idea Submission */}
+            <div className="space-y-6">
+              <div className="animate-fade-up">
+                <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                  What's your next big idea?
+                </h1>
+                <p className="text-muted-foreground mb-6">
+                  Transform your vision into reality with AI-powered development
+                </p>
+              </div>
+              
+              <IdeaSubmissionForm
+                idea={idea}
+                setIdea={setIdea}
+                isSubmitting={isSubmitting}
+                onSubmit={handleSubmit}
+              />
+            </div>
 
-          {/* Enhanced Recent Projects Section */}
-          <RecentProjects />
+            {/* Right Column - Recent Projects */}
+            <div className="space-y-6">
+              <RecentProjects />
+            </div>
+          </div>
 
-          {/* Enhanced Community Section */}
-          <CommunityProjects />
+          {/* Full-width Community Section */}
+          <div className="animate-fade-up animate-delay-300">
+            <CommunityProjects />
+          </div>
 
-          {/* Enhanced Footer */}
+          {/* Footer */}
           <div className="text-center text-sm text-muted-foreground animate-fade-up animate-delay-500">
             <div className="flex items-center justify-center space-x-2 mb-2">
               <div className="flex space-x-1">
