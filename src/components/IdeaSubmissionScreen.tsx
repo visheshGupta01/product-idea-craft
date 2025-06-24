@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { ThemeToggle } from './ThemeToggle';
@@ -53,24 +54,36 @@ const IdeaSubmissionScreen = ({ onIdeaSubmit, user }: IdeaSubmissionScreenProps)
         </div>
 
         <div className="max-w-7xl mx-auto px-6 py-6">
-          {/* Main Content Area with Watermark */}
+          {/* Main Content Area with Enhanced Watermark */}
           <div className="relative">
-            {/* Watermark Background */}
+            {/* Enhanced Glowing Animated Watermark Background */}
             <div className="absolute inset-0 -z-10 overflow-hidden">
-              {/* Primary watermark behind idea submission */}
-              <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-primary/8 to-primary/3 rounded-full blur-3xl"></div>
+              {/* Primary large glowing orb behind idea submission */}
+              <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 rounded-full blur-3xl animate-pulse-glow animate-float"></div>
               
-              {/* Secondary watermarks behind projects */}
-              <div className="absolute top-48 right-1/4 w-64 h-64 bg-gradient-to-tl from-primary/6 to-transparent rounded-full blur-2xl"></div>
-              <div className="absolute top-64 left-1/3 w-48 h-48 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-xl"></div>
+              {/* Secondary animated orbs */}
+              <div className="absolute top-32 right-1/4 w-96 h-96 bg-gradient-to-tl from-primary/15 via-primary/8 to-transparent rounded-full blur-2xl animate-bounce-subtle" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute top-48 left-1/3 w-80 h-80 bg-gradient-to-br from-primary/12 via-primary/6 to-transparent rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
               
-              {/* Logo watermarks */}
-              <div className="absolute top-32 right-1/3 opacity-5">
-                <img src="logo.png" alt="" className="w-32 h-32 rotate-12" />
+              {/* Additional glowing elements */}
+              <div className="absolute top-64 right-1/3 w-64 h-64 bg-gradient-to-r from-primary/8 to-primary/4 rounded-full blur-2xl animate-pulse-glow" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute top-96 left-1/4 w-48 h-48 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-xl animate-bounce-subtle" style={{ animationDelay: '1.5s' }}></div>
+              
+              {/* Large animated logo watermarks */}
+              <div className="absolute top-20 right-1/3 opacity-8 animate-float" style={{ animationDelay: '0.5s' }}>
+                <img src="logo.png" alt="" className="w-48 h-48 rotate-12 filter drop-shadow-2xl" style={{ filter: 'drop-shadow(0 0 20px rgba(102, 232, 250, 0.3))' }} />
               </div>
-              <div className="absolute top-96 left-1/4 opacity-3">
-                <img src="logo.png" alt="" className="w-24 h-24 -rotate-12" />
+              <div className="absolute top-80 left-1/4 opacity-6 animate-bounce-subtle" style={{ animationDelay: '2s' }}>
+                <img src="logo.png" alt="" className="w-40 h-40 -rotate-12 filter drop-shadow-xl" style={{ filter: 'drop-shadow(0 0 15px rgba(102, 232, 250, 0.2))' }} />
               </div>
+              <div className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-4 animate-pulse-glow" style={{ animationDelay: '1s' }}>
+                <img src="logo.png" alt="" className="w-32 h-32 rotate-45 filter drop-shadow-lg" style={{ filter: 'drop-shadow(0 0 10px rgba(102, 232, 250, 0.15))' }} />
+              </div>
+              
+              {/* Glowing particles effect */}
+              <div className="absolute top-16 left-2/3 w-4 h-4 bg-primary/30 rounded-full blur-sm animate-bounce-subtle" style={{ animationDelay: '3s' }}></div>
+              <div className="absolute top-72 left-1/5 w-6 h-6 bg-primary/25 rounded-full blur animate-float" style={{ animationDelay: '2.5s' }}></div>
+              <div className="absolute top-52 right-1/5 w-3 h-3 bg-primary/35 rounded-full blur-sm animate-pulse-glow" style={{ animationDelay: '1.8s' }}></div>
             </div>
 
             {/* Compact Header Bar for Idea Submission */}
