@@ -52,10 +52,11 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
         };
       case 'tablet':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-slate-100 to-slate-200 py-6 px-4",
-          frame: "w-80 max-w-sm bg-black rounded-[3rem] p-6 shadow-2xl relative",
-          homeButton: "absolute bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-600 rounded-full",
-          iframe: "w-full h-[500px] border-0 rounded-[2rem] bg-white overflow-hidden"
+          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-4",
+          frame: "w-full max-w-2xl h-full bg-gray-700 rounded-xl shadow-2xl overflow-hidden relative",
+          titleBar: "h-6 bg-gray-600 flex items-center px-3 space-x-1.5",
+          dot: "w-2 h-2 rounded-full",
+          iframe: "w-full h-[calc(100%-1.5rem)] border-0 bg-white"
         };
       case 'phone':
         return {
@@ -73,14 +74,16 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
   return (
     <div className={styles.container}>
       <div className={styles.frame}>
-        {/* Desktop title bar */}
-        {device === 'desktop' && (
+        {/* Desktop and Tablet title bar */}
+        {(device === 'desktop' || device === 'tablet') && (
           <div className={styles.titleBar}>
             <div className={`${styles.dot} bg-red-500`} />
             <div className={`${styles.dot} bg-yellow-500`} />
             <div className={`${styles.dot} bg-green-500`} />
             <div className="flex-1" />
-            <div className="text-gray-300 text-xs font-medium">Preview</div>
+            <div className={`text-gray-300 font-medium ${device === 'tablet' ? 'text-xs' : 'text-xs'}`}>
+              Preview - {config.label}
+            </div>
             <div className="flex-1" />
           </div>
         )}
@@ -88,11 +91,6 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
         {/* Phone notch */}
         {device === 'phone' && (
           <div className={styles.notch} />
-        )}
-        
-        {/* Tablet home button */}
-        {device === 'tablet' && (
-          <div className={styles.homeButton} />
         )}
         
         <iframe
