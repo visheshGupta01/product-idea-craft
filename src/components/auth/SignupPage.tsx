@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, Mail, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Mail } from 'lucide-react';
 
 interface SignupPageProps {
   onSignup: (email: string, password: string, name: string) => void;
@@ -19,8 +18,6 @@ const SignupPage = ({ onSignup, onSwitchToLogin, onClose }: SignupPageProps) => 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
-  const [verificationCode, setVerificationCode] = useState('');
-  const [isVerifying, setIsVerifying] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,20 +30,9 @@ const SignupPage = ({ onSignup, onSwitchToLogin, onClose }: SignupPageProps) => 
     }, 1000);
   };
 
-  const handleVerification = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsVerifying(true);
-    
-    // Simulate verification
-    setTimeout(() => {
-      setIsVerifying(false);
-      onSignup(email, password, name);
-    }, 1000);
-  };
-
-  const resendVerificationCode = () => {
-    // Simulate resending verification code
-    console.log('Resending verification code to:', email);
+  const resendVerificationEmail = () => {
+    // Simulate resending verification email
+    console.log('Resending verification email to:', email);
   };
 
   if (showVerification) {
@@ -55,7 +41,7 @@ const SignupPage = ({ onSignup, onSwitchToLogin, onClose }: SignupPageProps) => 
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="space-y-1 text-center">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl font-bold">Verify Your Email</CardTitle>
+              <CardTitle className="text-2xl font-bold">Check Your Email</CardTitle>
               <Button variant="ghost" size="sm" onClick={onClose}>×</Button>
             </div>
             <div className="flex justify-center mb-4">
@@ -64,55 +50,36 @@ const SignupPage = ({ onSignup, onSwitchToLogin, onClose }: SignupPageProps) => 
               </div>
             </div>
             <CardDescription className="text-center">
-              We've sent a verification code to<br />
+              We've sent a verification link to<br />
               <span className="font-medium">{email}</span>
             </CardDescription>
           </CardHeader>
-          <form onSubmit={handleVerification}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="verification-code">Verification Code</Label>
-                <Input
-                  id="verification-code"
-                  type="text"
-                  placeholder="Enter 6-digit code"
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
-                  maxLength={6}
-                  className="text-center text-lg tracking-wider"
-                  required
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isVerifying || verificationCode.length !== 6}
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground text-center">
+              Please check your email and click the verification link to complete your account setup.
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <div className="text-sm text-center text-muted-foreground">
+              Didn't receive the email?{' '}
+              <button
+                type="button"
+                onClick={resendVerificationEmail}
+                className="text-primary hover:underline"
               >
-                {isVerifying ? "Verifying..." : "Verify Email"}
-              </Button>
-              <div className="text-sm text-center text-muted-foreground">
-                Didn't receive the code?{' '}
-                <button
-                  type="button"
-                  onClick={resendVerificationCode}
-                  className="text-primary hover:underline"
-                >
-                  Resend code
-                </button>
-              </div>
-              <div className="text-sm text-center text-muted-foreground">
-                <button
-                  type="button"
-                  onClick={() => setShowVerification(false)}
-                  className="text-primary hover:underline"
-                >
-                  Change email address
-                </button>
-              </div>
-            </CardFooter>
-          </form>
+                Resend email
+              </button>
+            </div>
+            <div className="text-sm text-center text-muted-foreground">
+              <button
+                type="button"
+                onClick={() => setShowVerification(false)}
+                className="text-primary hover:underline"
+              >
+                Change email address
+              </button>
+            </div>
+          </CardFooter>
         </Card>
       </div>
     );
