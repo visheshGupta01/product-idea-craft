@@ -60,11 +60,9 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
         };
       case 'phone':
         return {
-          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 py-8 px-4",
-          frame: "w-80 max-w-sm bg-black rounded-[2.5rem] p-1.5 shadow-2xl relative",
-          notch: "absolute top-1.5 left-1/2 transform -translate-x-1/2 w-20 h-3.5 bg-black rounded-full z-20",
-          homeIndicator: "absolute bottom-1.5 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gray-600 rounded-full",
-          iframe: "w-full h-[580px] border-0 rounded-[2rem] bg-white overflow-hidden"
+          container: "w-full h-full flex items-center justify-center bg-gradient-to-b from-indigo-50 to-indigo-100 p-2",
+          frame: "w-full max-w-sm mx-auto bg-white rounded-lg shadow-xl overflow-hidden relative border-2 border-gray-300",
+          iframe: "w-full h-[calc(100vh-120px)] border-0 bg-white overflow-hidden"
         };
     }
   };
@@ -88,11 +86,6 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
           </div>
         )}
         
-        {/* Phone notch */}
-        {device === 'phone' && (
-          <div className={styles.notch} />
-        )}
-        
         <iframe
           src={src}
           className={styles.iframe}
@@ -100,11 +93,6 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
           allow="accelerometer; autoplay; camera; encrypted-media; fullscreen; geolocation; gyroscope; microphone; midi; clipboard-read; clipboard-write; payment; usb; vr; xr-spatial-tracking; screen-wake-lock; magnetometer; ambient-light-sensor; battery; gamepad; picture-in-picture; display-capture; bluetooth"
           title={`${config.label} Preview`}
         />
-        
-        {/* Phone home indicator */}
-        {device === 'phone' && (
-          <div className={styles.homeIndicator} />
-        )}
       </div>
     </div>
   );
