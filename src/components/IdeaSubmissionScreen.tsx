@@ -91,13 +91,13 @@ const IdeaSubmissionScreen = ({
             <div className="absolute inset-0 -z-10 overflow-hidden">
               {/* Single subtle logo watermark */}
               <div
-                className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-[0.015] pointer-events-none"
+                className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-[0.03] pointer-events-none"
                 style={{ animationDelay: "1s" }}
               >
                 <img
                   src="logo.png"
                   alt=""
-                  className="w-96 h-96 filter grayscale blur-[0.5px]"
+                  className="w-96 h-96 filter grayscale blur-sm"
                 />
               </div>
             </div>
