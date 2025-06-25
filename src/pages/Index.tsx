@@ -17,11 +17,13 @@ const Index = () => {
   const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
   const [authModal, setAuthModal] = useState<AuthModal>(null);
   const [pendingIdea, setPendingIdea] = useState<string>('');
+  const [isSubmittingIdea, setIsSubmittingIdea] = useState(false);
 
   const handleIdeaSubmit = (idea: string) => {
     if (!user) {
       // Store the idea and show login modal
       setPendingIdea(idea);
+      setIsSubmittingIdea(true);
       setAuthModal('login');
       return;
     }
@@ -48,6 +50,7 @@ const Index = () => {
     };
     setUser(userData);
     setAuthModal(null);
+    setIsSubmittingIdea(false);
     
     // If there was a pending idea, process it now
     if (pendingIdea) {
@@ -66,6 +69,7 @@ const Index = () => {
     };
     setUser(userData);
     setAuthModal(null);
+    setIsSubmittingIdea(false);
     
     // If there was a pending idea, process it now
     if (pendingIdea) {
@@ -75,12 +79,19 @@ const Index = () => {
     }
   };
 
+  const handleAuthModalClose = () => {
+    setAuthModal(null);
+    setPendingIdea('');
+    setIsSubmittingIdea(false);
+  };
+
   const handleLogout = () => {
     setUser(null);
     setAppState('idea-submission');
     setUserIdea('');
     setFollowUpAnswers({});
     setPendingIdea('');
+    setIsSubmittingIdea(false);
   };
 
   const isFullSizePage = appState !== 'idea-submission';
@@ -99,7 +110,11 @@ const Index = () => {
       
       <div className={isFullSizePage ? "h-screen" : ""}>
         {appState === 'idea-submission' && (
-          <IdeaSubmissionScreen onIdeaSubmit={handleIdeaSubmit} user={user} />
+          <IdeaSubmissionScreen 
+            onIdeaSubmit={handleIdeaSubmit} 
+            user={user} 
+            isSubmitting={isSubmittingIdea}
+          />
         )}
         
         {appState === 'follow-up-questions' && (
@@ -123,10 +138,7 @@ const Index = () => {
         <LoginPage
           onLogin={handleLogin}
           onSwitchToSignup={() => setAuthModal('signup')}
-          onClose={() => {
-            setAuthModal(null);
-            setPendingIdea('');
-          }}
+          onClose={handleAuthModalClose}
         />
       )}
 
@@ -134,10 +146,7 @@ const Index = () => {
         <SignupPage
           onSignup={handleSignup}
           onSwitchToLogin={() => setAuthModal('login')}
-          onClose={() => {
-            setAuthModal(null);
-            setPendingIdea('');
-          }}
+          onClose={handleAuthModalClose}
         />
       )}
     </div>

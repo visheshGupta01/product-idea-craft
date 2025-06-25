@@ -14,18 +14,23 @@ import TextToSpeechPanelComponent, {
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
   user?: { name: string; email: string; avatar?: string };
+  isSubmitting?: boolean;
 }
 
 const IdeaSubmissionScreen = ({
   onIdeaSubmit,
   user,
+  isSubmitting: externalIsSubmitting = false,
 }: IdeaSubmissionScreenProps) => {
   const [idea, setIdea] = useState("");
   const speechRef = useRef<TextToSpeechPanelRef>(null);
   const [liveTranscript, setLiveTranscript] = useState("");
   const [userTyped, setUserTyped] = useState(false);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
+  
+  // Use external isSubmitting prop if provided, otherwise use internal state
+  const isSubmitting = externalIsSubmitting || internalIsSubmitting;
 
   const headerAnimation = useScrollAnimation();
   const inputAnimation = useScrollAnimation();
@@ -38,10 +43,17 @@ const IdeaSubmissionScreen = ({
 
   const handleSubmit = () => {
     if (idea.trim()) {
-      setIsSubmitting(true);
-      setTimeout(() => {
+      if (!user) {
+        // For non-logged-in users, don't set internal submitting state
+        // as it will be handled by the parent component
         onIdeaSubmit(idea);
-      }, 800);
+      } else {
+        // For logged-in users, set internal submitting state
+        setInternalIsSubmitting(true);
+        setTimeout(() => {
+          onIdeaSubmit(idea);
+        }, 800);
+      }
     }
   };
 
