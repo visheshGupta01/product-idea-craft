@@ -1,9 +1,10 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, ArrowRight } from 'lucide-react';
-import SpeechToText from '@/components/ui/speech-to-text';
+import React, { useRef, useState, useEffect } from "react";
+import TextToSpeechPanelComponent, {
+  TextToSpeechPanelRef,
+} from "@/components/ui/speech-to-text"; // adjust path if needed
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 interface IdeaSubmissionFormProps {
   idea: string;
@@ -12,9 +13,20 @@ interface IdeaSubmissionFormProps {
   onSubmit: () => void;
 }
 
-const IdeaSubmissionForm = ({ idea, setIdea, isSubmitting, onSubmit }: IdeaSubmissionFormProps) => {
+const IdeaSubmissionForm = ({
+  idea,
+  setIdea,
+  isSubmitting,
+  onSubmit,
+}: IdeaSubmissionFormProps) => {
+  const speechRef = useRef<TextToSpeechPanelRef>(null);
+  const [liveTranscript, setLiveTranscript] = useState("");
+  const [userTyped, setUserTyped] = useState(false);
+
   const handleSpeechTranscript = (transcript: string) => {
-    setIdea(prev => prev + (prev ? ' ' : '') + transcript);
+    setIdea((prev) => prev + (prev ? " " : "") + transcript);
+    setLiveTranscript("");
+    setUserTyped(false); // allow live speech to continue updating after final
   };
 
   return (
@@ -24,7 +36,7 @@ const IdeaSubmissionForm = ({ idea, setIdea, isSubmitting, onSubmit }: IdeaSubmi
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4 animate-pulse-glow">
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
-          <h2 className="text-3xl font-bold mb-2 text-card-foreground bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
             What's your next big idea?
           </h2>
           <p className="text-muted-foreground">
@@ -35,26 +47,32 @@ const IdeaSubmissionForm = ({ idea, setIdea, isSubmitting, onSubmit }: IdeaSubmi
         <div className="space-y-6">
           <div className="relative">
             <Textarea
-              placeholder="Describe your app or website idea in detail... 
-
-For example: 'A marketplace for local artists to sell their digital artwork, with features for artist profiles, secure payments, and community reviews.'"
-              value={idea}
-              onChange={(e) => setIdea(e.target.value)}
+              placeholder="Describe your app or website idea in detail..."
+              value={
+                userTyped
+                  ? idea
+                  : idea + (liveTranscript ? " " + liveTranscript : "")
+              }
+              onChange={(e) => {
+                setUserTyped(true); // user typed manually, stop auto appending
+                setIdea(e.target.value);
+              }}
               disabled={isSubmitting}
-              className={`min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 hover:border-primary/30 pr-12 ${
-                isSubmitting ? 'border-primary/50 shadow-lg shadow-primary/10' : ''
-              }`}
+              className="min-h-[120px] text-base resize-none pr-12"
             />
+
             <div className="absolute top-3 right-3">
-              <SpeechToText
+              <TextToSpeechPanelComponent
+                ref={speechRef}
                 onTranscript={handleSpeechTranscript}
+                onInterimTranscript={setLiveTranscript}
                 disabled={isSubmitting}
                 className="h-8 w-8"
               />
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={onSubmit}
             disabled={!idea.trim() || isSubmitting}
             size="lg"

@@ -1,11 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
-import SpeechToText from '@/components/ui/speech-to-text';
+import TextToSpeechPanelComponent, { TextToSpeechPanelRef } from '@/components/ui/speech-to-text';
 
 interface FollowUpQuestionsProps {
   userIdea: string;
@@ -18,22 +17,25 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isVisible, setIsVisible] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [liveTranscript, setLiveTranscript] = useState('');
+
+  const speechRef = useRef<TextToSpeechPanelRef>(null);
 
   const questions = [
     {
       id: 'target_audience',
       title: 'Who is your target audience?',
-      placeholder: 'Describe who would use your app... (e.g., "Small business owners who need to manage their inventory" or "Students looking to organize their study materials")'
+      placeholder: 'Describe who would use your app...'
     },
     {
       id: 'key_features',
       title: 'What are the 3 most important features?',
-      placeholder: 'List the core features that are essential for your app... (e.g., "1. User authentication 2. Payment processing 3. Real-time notifications")'
+      placeholder: 'List the core features that are essential for your app...'
     },
     {
       id: 'monetization',
       title: 'How do you plan to monetize this?',
-      placeholder: 'Describe your revenue model... (e.g., "Subscription-based pricing", "One-time purchase", "Freemium model", "Advertisement revenue")'
+      placeholder: 'Describe your revenue model...'
     }
   ];
 
@@ -41,9 +43,15 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
     setIsVisible(true);
   }, []);
 
+  const stopSpeech = () => {
+    speechRef.current?.stopListening();
+  };
+
   const handleNext = () => {
     const currentAnswer = answers[questions[currentQuestion].id] || '';
     if (!currentAnswer.trim()) return;
+
+    stopSpeech();
 
     if (currentQuestion < questions.length - 1) {
       setIsTransitioning(true);
@@ -52,12 +60,13 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
         setIsTransitioning(false);
       }, 300);
     } else {
-      // Complete the process
       onComplete(answers);
     }
   };
 
   const handlePrevious = () => {
+    stopSpeech();
+
     if (currentQuestion > 0) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -79,6 +88,7 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
   const handleSpeechTranscript = (transcript: string) => {
     const currentAnswer = answers[questions[currentQuestion].id] || '';
     updateAnswer(currentAnswer + (currentAnswer ? ' ' : '') + transcript);
+    setLiveTranscript('');
   };
 
   const currentAnswer = answers[questions[currentQuestion].id] || '';
@@ -86,10 +96,8 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-6">
-      {/* Background blur overlay */}
       <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" />
       
-      {/* Main card */}
       <Card 
         className={`relative z-10 w-full max-w-2xl transition-all duration-800 ${
           isVisible ? 'animate-scale-in opacity-100' : 'opacity-0 scale-95'
@@ -110,7 +118,6 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Progress indicator */}
           <div className="flex space-x-2">
             {questions.map((_, index) => (
               <div
@@ -126,7 +133,6 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
             ))}
           </div>
 
-          {/* Question content */}
           <div 
             className={`transition-all duration-300 ${
               isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
@@ -135,20 +141,21 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
             <div className="relative">
               <Textarea
                 placeholder={questions[currentQuestion].placeholder}
-                value={currentAnswer}
+                value={currentAnswer + (liveTranscript ? ' ' + liveTranscript : '')}
                 onChange={(e) => updateAnswer(e.target.value)}
                 className="min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 pr-12"
               />
               <div className="absolute top-3 right-3">
-                <SpeechToText
+                <TextToSpeechPanelComponent
+                  ref={speechRef}
                   onTranscript={handleSpeechTranscript}
+                  onInterimTranscript={setLiveTranscript}
                   className="h-8 w-8"
                 />
               </div>
             </div>
           </div>
 
-          {/* Action buttons */}
           <div className="flex justify-between pt-4">
             <Button
               variant="outline"
@@ -173,7 +180,6 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
             </Button>
           </div>
 
-          {/* Small hint about the original idea */}
           <div className="pt-4 border-t border-border">
             <p className="text-xs text-muted-foreground">
               <strong>Your idea:</strong> {userIdea.substring(0, 100)}...

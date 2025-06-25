@@ -1,101 +1,174 @@
+import {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import { Button } from "@/components/ui/button";
+import { Mic, Square } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Mic, MicOff, Square } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-interface SpeechToTextProps {
-  onTranscript: (text: string) => void;
-  disabled?: boolean;
-  className?: string;
+interface SpeechRecognitionResult {
+  transcript: string;
+  confidence: number;
+  isFinal: boolean;
 }
 
-const SpeechToText = ({ onTranscript, disabled = false, className }: SpeechToTextProps) => {
-  const [isListening, setIsListening] = useState(false);
-  const [isSupported, setIsSupported] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
 
-  useEffect(() => {
-    // Check if speech recognition is supported
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      setIsSupported(true);
-      recognitionRef.current = new SpeechRecognition();
-      
-      const recognition = recognitionRef.current;
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: SpeechRecognitionConstructor;
+    webkitSpeechRecognition: SpeechRecognitionConstructor;
+  }
+}
+
+export interface TextToSpeechPanelRef {
+  stopListening: () => void;
+  getCurrentSpeech: () => string;
+}
+
+interface TextToSpeechPanelProps {
+  isSimulationActive?: boolean;
+  disabled?: boolean;
+  className?: string;
+  onTranscript?: (text: string) => void;
+  onInterimTranscript?: (text: string) => void;
+}
+
+const TextToSpeechPanelComponent = forwardRef<TextToSpeechPanelRef, TextToSpeechPanelProps>(
+  (
+    {
+      isSimulationActive = false,
+      disabled = false,
+      className,
+      onTranscript,
+      onInterimTranscript,
+    },
+    ref
+  ) => {
+    const [isListening, setIsListening] = useState(false);
+    const [finalSpeech, setFinalSpeech] = useState("");
+    const [interimSpeech, setInterimSpeech] = useState("");
+    const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+    useEffect(() => {
+      if (isSimulationActive && !isListening) {
+        startListening();
+      }
+    }, [isSimulationActive]);
+
+    const startListening = () => {
+      if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+        console.error("Speech recognition not supported");
+        return;
+      }
+
+      const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognitionClass();
+
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = 'en-US';
 
-      recognition.onresult = (event) => {
-        let finalTranscript = '';
-        
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript;
-          }
-        }
-        
-        if (finalTranscript) {
-          onTranscript(finalTranscript);
-        }
+      recognition.onstart = () => {
+        setIsListening(true);
       };
 
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let interim = "";
+        let final = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          const transcript = result[0].transcript;
+          if (result.isFinal) {
+            final += transcript + " ";
+          } else {
+            interim += transcript;
+          }
+        }
+
+        if (final) {
+          setFinalSpeech((prev) => {
+            const updated = prev + final;
+            onTranscript?.(final.trim());
+            return updated;
+          });
+        }
+
+        setInterimSpeech(interim);
+        onInterimTranscript?.(interim);
+      };
+
+      recognition.onerror = (e) => {
+        console.error("Speech recognition error", e);
         setIsListening(false);
       };
 
       recognition.onend = () => {
         setIsListening(false);
       };
-    }
 
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
+      recognitionRef.current = recognition;
+      recognition.start();
     };
-  }, [onTranscript]);
 
-  const toggleListening = () => {
-    if (!recognitionRef.current || disabled) return;
-
-    if (isListening) {
-      recognitionRef.current.stop();
+    const stopListening = () => {
+      recognitionRef.current?.stop();
       setIsListening(false);
-    } else {
-      recognitionRef.current.start();
-      setIsListening(true);
-    }
-  };
+    };
 
-  if (!isSupported) {
-    return null; // Don't render if not supported
+    useImperativeHandle(ref, () => ({
+      stopListening,
+      getCurrentSpeech: () => finalSpeech,
+    }));
+
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        onClick={isListening ? stopListening : startListening}
+        disabled={disabled}
+        className={cn(
+          "transition-all duration-200 hover:scale-105",
+          isListening ? "bg-red-500 hover:bg-red-600 text-white animate-pulse" : "",
+          className
+        )}
+        title={isListening ? "Stop recording" : "Start voice input"}
+      >
+        {isListening ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+      </Button>
+    );
   }
+);
 
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      size="icon"
-      onClick={toggleListening}
-      disabled={disabled}
-      className={cn(
-        "transition-all duration-200 hover:scale-105",
-        isListening ? "bg-red-500 hover:bg-red-600 text-white animate-pulse" : "",
-        className
-      )}
-      title={isListening ? "Stop recording" : "Start voice input"}
-    >
-      {isListening ? (
-        <Square className="w-4 h-4" />
-      ) : (
-        <Mic className="w-4 h-4" />
-      )}
-    </Button>
-  );
-};
-
-export default SpeechToText;
+TextToSpeechPanelComponent.displayName = "TextToSpeechPanel";
+export default TextToSpeechPanelComponent;
