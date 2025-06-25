@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemeToggle } from "./ThemeToggle";
@@ -65,67 +66,27 @@ const IdeaSubmissionScreen = ({
           </div>
         )}
 
-        {/* Theme Toggle Button */}
-        <div className="fixed top-6 right-6 z-10 animate-float">
-          <ThemeToggle />
-        </div>
-
         <div className="max-w-7xl mx-auto px-6 py-6">
-          {/* Main Content Area with Enhanced Watermark */}
+          {/* Main Content Area with Subtle Watermark */}
           <div className="relative">
-            {/* Enhanced Glowing Animated Watermark Background */}
+            {/* Subtle Watermark Background */}
             <div className="absolute inset-0 -z-10 overflow-hidden">
-              {/* Primary large glowing orb behind idea submission */}
-              <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 rounded-full blur-3xl animate-pulse-glow animate-float"></div>
-
-              {/* Secondary animated orbs */}
+              {/* Single subtle logo watermark */}
               <div
-                className="absolute top-32 right-1/4 w-96 h-96 bg-gradient-to-tl from-primary/15 via-primary/8 to-transparent rounded-full blur-2xl animate-bounce-subtle"
-                style={{ animationDelay: "1s" }}
-              ></div>
-              <div
-                className="absolute top-48 left-1/3 w-80 h-80 bg-gradient-to-br from-primary/12 via-primary/6 to-transparent rounded-full blur-xl animate-float"
-                style={{ animationDelay: "2s" }}
-              ></div>
-
-              {/* Additional glowing elements */}
-              <div
-                className="absolute top-64 right-1/3 w-64 h-64 bg-gradient-to-r from-primary/8 to-primary/4 rounded-full blur-2xl animate-pulse-glow"
-                style={{ animationDelay: "0.5s" }}
-              ></div>
-              <div
-                className="absolute top-96 left-1/4 w-48 h-48 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-xl animate-bounce-subtle"
-                style={{ animationDelay: "1.5s" }}
-              ></div>
-
-              {/* Large animated logo watermarks */}
-              <div
-                className="absolute top-40 left-1/2 rounded-3xl transform -translate-x-1/2 opacity-4 animate-pulse-glow"
+                className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-[0.03] pointer-events-none"
                 style={{ animationDelay: "1s" }}
               >
                 <img
                   src="logo.png"
                   alt=""
-                  className="w-64 h-64  filter drop-shadow-lg"
-                  style={{
-                    filter: "drop-shadow(0 0 10px rgba(102, 232, 250, 0.15))",
-                  }}
+                  className="w-96 h-96 filter grayscale"
                 />
               </div>
+            </div>
 
-              {/* Glowing particles effect */}
-              <div
-                className="absolute top-16 left-2/3 w-4 h-4 bg-primary/30 rounded-full blur-sm animate-bounce-subtle"
-                style={{ animationDelay: "3s" }}
-              ></div>
-              <div
-                className="absolute top-72 left-1/5 w-6 h-6 bg-primary/25 rounded-full blur animate-float"
-                style={{ animationDelay: "2.5s" }}
-              ></div>
-              <div
-                className="absolute top-52 right-1/5 w-3 h-3 bg-primary/35 rounded-full blur-sm animate-pulse-glow"
-                style={{ animationDelay: "1.8s" }}
-              ></div>
+            {/* Theme Toggle positioned above idea submission */}
+            <div className="flex justify-end mb-4">
+              <ThemeToggle />
             </div>
 
             {/* Compact Header Bar for Idea Submission */}
@@ -190,8 +151,8 @@ const IdeaSubmissionScreen = ({
               </div>
             </div>
 
-            {/* Your Recent Projects */}
-            <div className="relative z-10 mb-8">
+            {/* Your Recent Projects with subtle blur backdrop */}
+            <div className="relative z-10 mb-8 backdrop-blur-[1px]">
               <h2 className="text-xl font-bold mb-4">Your Recent Projects</h2>
               <RecentProjects />
             </div>
