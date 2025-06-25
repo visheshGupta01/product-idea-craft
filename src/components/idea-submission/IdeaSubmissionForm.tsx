@@ -1,9 +1,10 @@
-
-import React, { useRef } from "react";
-import { Textarea } from "@/components/ui/textarea";
+import React, { useRef, useState, useEffect } from "react";
 import TextToSpeechPanelComponent, {
   TextToSpeechPanelRef,
-} from "@/components/ui/speech-to-text";
+} from "@/components/ui/speech-to-text"; // adjust path if needed
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 interface IdeaSubmissionFormProps {
   idea: string;
@@ -19,55 +20,85 @@ const IdeaSubmissionForm = ({
   onSubmit,
 }: IdeaSubmissionFormProps) => {
   const speechRef = useRef<TextToSpeechPanelRef>(null);
+  const [liveTranscript, setLiveTranscript] = useState("");
+  const [userTyped, setUserTyped] = useState(false);
 
   const handleSpeechTranscript = (transcript: string) => {
-    setIdea(idea + (idea ? " " : "") + transcript);
+    setIdea((prev) => prev + (prev ? " " : "") + transcript);
+    setLiveTranscript("");
+    setUserTyped(false); // allow live speech to continue updating after final
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-          What's your next big idea?
-        </h2>
-        <p className="text-muted-foreground">
-          Transform your vision into reality with AI-powered development
-        </p>
-      </div>
+    <div className="mb-8 animate-fade-up">
+      <div className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/15 transition-all duration-500">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4 animate-pulse-glow">
+            <Sparkles className="w-8 h-8 text-primary" />
+          </div>
+          <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+            What's your next big idea?
+          </h2>
+          <p className="text-muted-foreground">
+            Transform your vision into reality with AI-powered development
+          </p>
+        </div>
 
-      <div className="relative">
-        <Textarea
-          placeholder="Describe your app or website idea in detail..."
-          value={idea}
-          onChange={(e) => setIdea(e.target.value)}
-          disabled={isSubmitting}
-          className="min-h-[120px] resize-none border-2 focus:border-primary/50 rounded-xl px-4 py-3 transition-all duration-300"
-        />
-        <div className="absolute top-3 right-3">
-          <TextToSpeechPanelComponent
-            ref={speechRef}
-            onTranscript={handleSpeechTranscript}
-            onInterimTranscript={() => {}}
-            disabled={isSubmitting}
-            className="h-8 w-8"
-          />
+        <div className="space-y-6">
+          <div className="relative">
+            <Textarea
+              placeholder="Describe your app or website idea in detail..."
+              value={
+                userTyped
+                  ? idea
+                  : idea + (liveTranscript ? " " + liveTranscript : "")
+              }
+              onChange={(e) => {
+                setUserTyped(true); // user typed manually, stop auto appending
+                setIdea(e.target.value);
+              }}
+              disabled={isSubmitting}
+              className="min-h-[120px] text-base resize-none pr-12"
+            />
+
+            <div className="absolute top-3 right-3">
+              <TextToSpeechPanelComponent
+                ref={speechRef}
+                onTranscript={handleSpeechTranscript}
+                onInterimTranscript={setLiveTranscript}
+                disabled={isSubmitting}
+                className="h-8 w-8"
+              />
+            </div>
+          </div>
+
+          <Button
+            onClick={onSubmit}
+            disabled={!idea.trim() || isSubmitting}
+            size="lg"
+            className="w-full h-14 text-lg font-semibold rounded-xl group transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-primary to-primary/90"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mr-2"></div>
+                Processing your idea...
+              </>
+            ) : (
+              <>
+                Start Building My Idea
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </>
+            )}
+          </Button>
+        </div>
+
+        <div className="mt-6 text-center text-sm text-muted-foreground">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>Your idea is secure and encrypted</span>
+          </div>
         </div>
       </div>
-
-      <button
-        onClick={onSubmit}
-        disabled={!idea.trim() || isSubmitting}
-        className="w-full py-4 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-xl font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isSubmitting ? (
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mr-3"></div>
-            <span>Processing your idea...</span>
-          </div>
-        ) : (
-          <span>Start Building 🚀</span>
-        )}
-      </button>
     </div>
   );
 };
