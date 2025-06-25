@@ -18,7 +18,7 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
       <div className="flex h-14 items-center px-4">
         <div className="mr-4 flex">
           <a className="mr-6 flex items-center space-x-2" href="/">
-            <div className="h-6 w-6 bg-primary rounded"></div>
+            <img className="h-9 w-9 rounded" src='logo.png'></img>
             <span className="font-bold">imagine.bo</span>
           </a>
         </div>

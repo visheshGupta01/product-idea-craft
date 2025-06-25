@@ -236,10 +236,10 @@ const Sidebar = ({
           </Button>
           
           <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-7 h-7 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-              <Lightbulb className="h-4 w-4 text-white" />
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg">
+              <img src='logo.png' className="h-8 w-8 text-white" />
             </div>
-            <h2 className="font-bold text-base text-sidebar-foreground bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="font-bold text-base bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               imagine.bo
             </h2>
           </div>
