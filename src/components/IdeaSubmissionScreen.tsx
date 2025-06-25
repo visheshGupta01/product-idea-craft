@@ -66,6 +66,11 @@ const IdeaSubmissionScreen = ({
           </div>
         )}
 
+        {/* Theme Toggle Button - floating with higher z-index */}
+        <div className="fixed top-6 right-6 z-20 animate-float">
+          <ThemeToggle />
+        </div>
+
         <div className="max-w-7xl mx-auto px-6 py-6">
           {/* Main Content Area with Subtle Watermark */}
           <div className="relative">
@@ -82,11 +87,6 @@ const IdeaSubmissionScreen = ({
                   className="w-96 h-96 filter grayscale"
                 />
               </div>
-            </div>
-
-            {/* Theme Toggle positioned above idea submission */}
-            <div className="flex justify-end mb-4">
-              <ThemeToggle />
             </div>
 
             {/* Compact Header Bar for Idea Submission */}
