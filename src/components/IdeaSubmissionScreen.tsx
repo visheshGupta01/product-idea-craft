@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { ThemeToggle } from './ThemeToggle';
@@ -7,6 +6,7 @@ import IdeaSubmissionForm from './idea-submission/IdeaSubmissionForm';
 import RecentProjects from './idea-submission/RecentProjects';
 import CommunityProjects from './idea-submission/CommunityProjects';
 import InspirationCards from './idea-submission/InspirationCards';
+import SpeechToText from '@/components/ui/speech-to-text';
 
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;

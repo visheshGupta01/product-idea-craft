@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, ArrowRight } from 'lucide-react';
+import SpeechToText from '@/components/ui/speech-to-text';
 
 interface IdeaSubmissionFormProps {
   idea: string;
@@ -12,6 +13,10 @@ interface IdeaSubmissionFormProps {
 }
 
 const IdeaSubmissionForm = ({ idea, setIdea, isSubmitting, onSubmit }: IdeaSubmissionFormProps) => {
+  const handleSpeechTranscript = (transcript: string) => {
+    setIdea(prev => prev + (prev ? ' ' : '') + transcript);
+  };
+
   return (
     <div className="mb-8 animate-fade-up">
       <div className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/15 transition-all duration-500">
@@ -28,17 +33,26 @@ const IdeaSubmissionForm = ({ idea, setIdea, isSubmitting, onSubmit }: IdeaSubmi
         </div>
 
         <div className="space-y-6">
-          <Textarea
-            placeholder="Describe your app or website idea in detail... 
+          <div className="relative">
+            <Textarea
+              placeholder="Describe your app or website idea in detail... 
 
 For example: 'A marketplace for local artists to sell their digital artwork, with features for artist profiles, secure payments, and community reviews.'"
-            value={idea}
-            onChange={(e) => setIdea(e.target.value)}
-            disabled={isSubmitting}
-            className={`min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 hover:border-primary/30 ${
-              isSubmitting ? 'border-primary/50 shadow-lg shadow-primary/10' : ''
-            }`}
-          />
+              value={idea}
+              onChange={(e) => setIdea(e.target.value)}
+              disabled={isSubmitting}
+              className={`min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 hover:border-primary/30 pr-12 ${
+                isSubmitting ? 'border-primary/50 shadow-lg shadow-primary/10' : ''
+              }`}
+            />
+            <div className="absolute top-3 right-3">
+              <SpeechToText
+                onTranscript={handleSpeechTranscript}
+                disabled={isSubmitting}
+                className="h-8 w-8"
+              />
+            </div>
+          </div>
 
           <Button 
             onClick={onSubmit}

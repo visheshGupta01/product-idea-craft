@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
+import SpeechToText from '@/components/ui/speech-to-text';
 
 interface FollowUpQuestionsProps {
   userIdea: string;
@@ -75,6 +76,11 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
     });
   };
 
+  const handleSpeechTranscript = (transcript: string) => {
+    const currentAnswer = answers[questions[currentQuestion].id] || '';
+    updateAnswer(currentAnswer + (currentAnswer ? ' ' : '') + transcript);
+  };
+
   const currentAnswer = answers[questions[currentQuestion].id] || '';
   const isLastQuestion = currentQuestion === questions.length - 1;
 
@@ -126,12 +132,20 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
               isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
             }`}
           >
-            <Textarea
-              placeholder={questions[currentQuestion].placeholder}
-              value={currentAnswer}
-              onChange={(e) => updateAnswer(e.target.value)}
-              className="min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10"
-            />
+            <div className="relative">
+              <Textarea
+                placeholder={questions[currentQuestion].placeholder}
+                value={currentAnswer}
+                onChange={(e) => updateAnswer(e.target.value)}
+                className="min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 pr-12"
+              />
+              <div className="absolute top-3 right-3">
+                <SpeechToText
+                  onTranscript={handleSpeechTranscript}
+                  className="h-8 w-8"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Action buttons */}
