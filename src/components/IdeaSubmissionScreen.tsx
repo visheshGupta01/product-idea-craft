@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemeToggle } from "./ThemeToggle";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -9,16 +9,18 @@ import CommunityProjects from "./idea-submission/CommunityProjects";
 import InspirationCards from "./idea-submission/InspirationCards";
 import TextToSpeechPanelComponent, {
   TextToSpeechPanelRef,
-} from "@/components/ui/speech-to-text"; // adjust path if needed
+} from "@/components/ui/speech-to-text";
 
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
   user?: { name: string; email: string; avatar?: string };
+  authModal?: 'login' | 'signup' | null;
 }
 
 const IdeaSubmissionScreen = ({
   onIdeaSubmit,
   user,
+  authModal,
 }: IdeaSubmissionScreenProps) => {
   const [idea, setIdea] = useState("");
   const speechRef = useRef<TextToSpeechPanelRef>(null);
@@ -30,10 +32,17 @@ const IdeaSubmissionScreen = ({
   const headerAnimation = useScrollAnimation();
   const inputAnimation = useScrollAnimation();
 
+  // Reset isSubmitting when auth modal is closed without completing login
+  useEffect(() => {
+    if (!authModal && isSubmitting && !user) {
+      setIsSubmitting(false);
+    }
+  }, [authModal, isSubmitting, user]);
+
   const handleSpeechTranscript = (transcript: string) => {
     setIdea((prev) => prev + (prev ? " " : "") + transcript);
     setLiveTranscript("");
-    setUserTyped(false); // allow live speech to continue updating after final
+    setUserTyped(false);
   };
 
   const handleSubmit = () => {
@@ -41,6 +50,10 @@ const IdeaSubmissionScreen = ({
       setIsSubmitting(true);
       setTimeout(() => {
         onIdeaSubmit(idea);
+        // Reset isSubmitting after successful submission
+        if (user) {
+          setIsSubmitting(false);
+        }
       }, 800);
     }
   };
@@ -67,7 +80,7 @@ const IdeaSubmissionScreen = ({
         )}
 
         {/* Theme Toggle Button - floating with higher z-index */}
-        <div className="fixed top-6 right-6 z-20 animate-float">
+        <div className="fixed top-6 right-6 z-50 animate-float">
           <ThemeToggle />
         </div>
 
@@ -78,13 +91,13 @@ const IdeaSubmissionScreen = ({
             <div className="absolute inset-0 -z-10 overflow-hidden">
               {/* Single subtle logo watermark */}
               <div
-                className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-[0.03] pointer-events-none"
+                className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-[0.015] pointer-events-none"
                 style={{ animationDelay: "1s" }}
               >
                 <img
                   src="logo.png"
                   alt=""
-                  className="w-96 h-96 filter grayscale"
+                  className="w-96 h-96 filter grayscale blur-[0.5px]"
                 />
               </div>
             </div>
@@ -116,7 +129,7 @@ const IdeaSubmissionScreen = ({
                               (liveTranscript ? " " + liveTranscript : "")
                         }
                         onChange={(e) => {
-                          setUserTyped(true); // user typed manually, stop auto appending
+                          setUserTyped(true);
                           setIdea(e.target.value);
                         }}
                         disabled={isSubmitting}
@@ -188,7 +201,7 @@ const IdeaSubmissionScreen = ({
       )}
 
       {/* Theme Toggle Button - with float animation */}
-      <div className="fixed top-6 right-6 z-10 animate-float">
+      <div className="fixed top-6 right-6 z-50 animate-float">
         <ThemeToggle />
       </div>
 

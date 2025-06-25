@@ -83,6 +83,11 @@ const Index = () => {
     setPendingIdea('');
   };
 
+  const handleCloseAuthModal = () => {
+    setAuthModal(null);
+    setPendingIdea('');
+  };
+
   const isFullSizePage = appState !== 'idea-submission';
 
   return (
@@ -99,7 +104,11 @@ const Index = () => {
       
       <div className={isFullSizePage ? "h-screen" : ""}>
         {appState === 'idea-submission' && (
-          <IdeaSubmissionScreen onIdeaSubmit={handleIdeaSubmit} user={user} />
+          <IdeaSubmissionScreen 
+            onIdeaSubmit={handleIdeaSubmit} 
+            user={user} 
+            authModal={authModal}
+          />
         )}
         
         {appState === 'follow-up-questions' && (
@@ -123,10 +132,7 @@ const Index = () => {
         <LoginPage
           onLogin={handleLogin}
           onSwitchToSignup={() => setAuthModal('signup')}
-          onClose={() => {
-            setAuthModal(null);
-            setPendingIdea('');
-          }}
+          onClose={handleCloseAuthModal}
         />
       )}
 
@@ -134,10 +140,7 @@ const Index = () => {
         <SignupPage
           onSignup={handleSignup}
           onSwitchToLogin={() => setAuthModal('login')}
-          onClose={() => {
-            setAuthModal(null);
-            setPendingIdea('');
-          }}
+          onClose={handleCloseAuthModal}
         />
       )}
     </div>
