@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from "react";
 import TextToSpeechPanelComponent, {
   TextToSpeechPanelRef,
@@ -24,7 +25,8 @@ const IdeaSubmissionForm = ({
   const [userTyped, setUserTyped] = useState(false);
 
   const handleSpeechTranscript = (transcript: string) => {
-    setIdea((prev) => prev + (prev ? " " : "") + transcript);
+    const newIdea = idea + (idea ? " " : "") + transcript;
+    setIdea(newIdea);
     setLiveTranscript("");
     setUserTyped(false); // allow live speech to continue updating after final
   };
