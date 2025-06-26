@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,17 +26,17 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
     {
       id: 'target_audience',
       title: 'Who is your target audience?',
-      placeholder: 'Describe who would use your app...'
+      placeholder: 'Describe who would use your app... (Press Shift+Enter to continue)'
     },
     {
       id: 'key_features',
       title: 'What are the 3 most important features?',
-      placeholder: 'List the core features that are essential for your app...'
+      placeholder: 'List the core features that are essential for your app... (Press Shift+Enter to continue)'
     },
     {
       id: 'monetization',
       title: 'How do you plan to monetize this?',
-      placeholder: 'Describe your revenue model...'
+      placeholder: 'Describe your revenue model... (Press Shift+Enter to continue)'
     }
   ];
 
@@ -91,6 +92,14 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
     setLiveTranscript('');
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const currentAnswer = answers[questions[currentQuestion].id] || '';
+    if (e.key === 'Enter' && e.shiftKey && currentAnswer.trim()) {
+      e.preventDefault();
+      handleNext();
+    }
+  };
+
   const currentAnswer = answers[questions[currentQuestion].id] || '';
   const isLastQuestion = currentQuestion === questions.length - 1;
 
@@ -143,6 +152,7 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsPr
                 placeholder={questions[currentQuestion].placeholder}
                 value={currentAnswer + (liveTranscript ? ' ' + liveTranscript : '')}
                 onChange={(e) => updateAnswer(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="min-h-[120px] text-base resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 focus:shadow-lg focus:shadow-primary/10 pr-12"
               />
               <div className="absolute top-3 right-3">
