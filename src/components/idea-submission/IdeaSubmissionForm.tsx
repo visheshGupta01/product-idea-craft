@@ -1,4 +1,5 @@
 
+
 import React, { useRef, useState, useEffect } from "react";
 import TextToSpeechPanelComponent, {
   TextToSpeechPanelRef,
@@ -31,6 +32,13 @@ const IdeaSubmissionForm = ({
     setUserTyped(false); // allow live speech to continue updating after final
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && e.shiftKey && !isSubmitting && idea.trim()) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
   return (
     <div className="mb-8 animate-fade-up">
       <div className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/15 transition-all duration-500">
@@ -49,7 +57,7 @@ const IdeaSubmissionForm = ({
         <div className="space-y-6">
           <div className="relative">
             <Textarea
-              placeholder="Describe your app or website idea in detail..."
+              placeholder="Describe your app or website idea in detail... (Press Shift+Enter to submit)"
               value={
                 userTyped
                   ? idea
@@ -59,6 +67,7 @@ const IdeaSubmissionForm = ({
                 setUserTyped(true); // user typed manually, stop auto appending
                 setIdea(e.target.value);
               }}
+              onKeyDown={handleKeyDown}
               disabled={isSubmitting}
               className="min-h-[120px] text-base resize-none pr-12"
             />
@@ -106,3 +115,4 @@ const IdeaSubmissionForm = ({
 };
 
 export default IdeaSubmissionForm;
+
