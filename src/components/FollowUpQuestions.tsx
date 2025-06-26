@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,24 +14,6 @@ interface FollowUpQuestionsProps {
 }
 
 const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }: FollowUpQuestionsProps) => {
-  // Find the last answered question to resume from
-  const findLastAnsweredQuestion = () => {
-    for (let i = questions.length - 1; i >= 0; i--) {
-      if (initialAnswers[questions[i].id]?.trim()) {
-        return Math.min(i + 1, questions.length - 1);
-      }
-    }
-    return 0;
-  };
-
-  const [currentQuestion, setCurrentQuestion] = useState(findLastAnsweredQuestion());
-  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [liveTranscript, setLiveTranscript] = useState('');
-
-  const speechRef = useRef<TextToSpeechPanelRef>(null);
-
   const questions = [
     {
       id: 'target_audience',
@@ -50,6 +31,24 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }
       placeholder: 'Describe your revenue model... (Press Shift+Enter to continue)'
     }
   ];
+
+  // Find the last answered question to resume from
+  const findLastAnsweredQuestion = () => {
+    for (let i = questions.length - 1; i >= 0; i--) {
+      if (initialAnswers[questions[i].id]?.trim()) {
+        return Math.min(i + 1, questions.length - 1);
+      }
+    }
+    return 0;
+  };
+
+  const [currentQuestion, setCurrentQuestion] = useState(findLastAnsweredQuestion());
+  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [liveTranscript, setLiveTranscript] = useState('');
+
+  const speechRef = useRef<TextToSpeechPanelRef>(null);
 
   useEffect(() => {
     setIsVisible(true);
