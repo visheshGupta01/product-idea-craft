@@ -92,24 +92,25 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          {onBack && (
-            <div className="flex items-center justify-between mb-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onBack(followUpAnswers)}
-                className="flex items-center space-x-1 text-sm"
-              >
-                <ArrowLeft className="w-3 h-3" />
-                <span>Back</span>
-              </Button>
-              <div className="flex-1" />
-            </div>
-          )}
-          <CardTitle className="text-2xl">Complete Your Setup</CardTitle>
-          <CardDescription>
-            Connect these integrations to unlock the full power of your development environment
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              {onBack && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onBack(followUpAnswers)}
+                  className="w-8 h-8 p-0"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+              )}
+              <span>Complete Your Setup</span>
+            </CardTitle>
+          </div>
+          <CardDescription className="mt-2 text-center md:text-left">
+            Connect these integrations to unlock the full power of your
+            development environment
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -117,7 +118,9 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
           <div>
             <h3 className="text-lg font-semibold mb-4 flex items-center">
               Required Integrations
-              <Badge variant="destructive" className="ml-2 text-xs">Required</Badge>
+              <Badge variant="destructive" className="ml-2 text-xs">
+                Required
+              </Badge>
             </h3>
             <div className="space-y-3">
               {requiredIntegrations.map((integration) => (
@@ -135,7 +138,9 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
                     <div>
                       <h4 className="font-medium">{integration.name}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {integration.connected ? 'Connected successfully' : 'Not connected'}
+                        {integration.connected
+                          ? "Connected successfully"
+                          : "Not connected"}
                       </p>
                     </div>
                   </div>
@@ -149,7 +154,10 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
                     </Button>
                   )}
                   {integration.connected && (
-                    <Badge variant="secondary" className="text-green-700 bg-green-100">
+                    <Badge
+                      variant="secondary"
+                      className="text-green-700 bg-green-100"
+                    >
                       ✓ Connected
                     </Badge>
                   )}
@@ -162,13 +170,16 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
           <div>
             <h3 className="text-lg font-semibold mb-4 flex items-center">
               Choose Deployment Platform
-              <Badge variant="secondary" className="ml-2 text-xs">Choose One</Badge>
+              <Badge variant="secondary" className="ml-2 text-xs">
+                Choose One
+              </Badge>
             </h3>
-            
+
             {!hasDeploymentOption ? (
               <div className="p-4 border rounded-lg bg-accent/20">
                 <p className="text-sm text-muted-foreground mb-3">
-                  Select your preferred deployment platform to host your application
+                  Select your preferred deployment platform to host your
+                  application
                 </p>
                 <Button
                   onClick={handleDeploymentChoice}
@@ -185,7 +196,9 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
                   <div
                     key={integration.id}
                     className={`flex items-center justify-between p-4 border rounded-lg transition-colors ${
-                      integration.connected ? 'bg-green-50 border-green-200' : 'hover:bg-accent/50'
+                      integration.connected
+                        ? "bg-green-50 border-green-200"
+                        : "hover:bg-accent/50"
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -198,12 +211,17 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
                       <div>
                         <h4 className="font-medium">{integration.name}</h4>
                         <p className="text-sm text-muted-foreground">
-                          {integration.connected ? 'Selected for deployment' : 'Available option'}
+                          {integration.connected
+                            ? "Selected for deployment"
+                            : "Available option"}
                         </p>
                       </div>
                     </div>
                     {integration.connected && (
-                      <Badge variant="secondary" className="text-green-700 bg-green-100">
+                      <Badge
+                        variant="secondary"
+                        className="text-green-700 bg-green-100"
+                      >
                         ✓ Selected
                       </Badge>
                     )}
@@ -229,11 +247,14 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
               className="w-full"
               size="lg"
             >
-              {canProceed ? 'Continue to Dashboard' : 'Complete All Integrations'}
+              {canProceed
+                ? "Continue to Dashboard"
+                : "Complete All Integrations"}
             </Button>
             {!canProceed && (
               <p className="text-sm text-muted-foreground text-center mt-2">
-                Please connect all required integrations and choose a deployment platform
+                Please connect all required integrations and choose a deployment
+                platform
               </p>
             )}
           </div>
@@ -241,7 +262,10 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
       </Card>
 
       {/* Deployment Selection Dialog */}
-      <Dialog open={showDeploymentOptions} onOpenChange={setShowDeploymentOptions}>
+      <Dialog
+        open={showDeploymentOptions}
+        onOpenChange={setShowDeploymentOptions}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Choose Deployment Platform</DialogTitle>
@@ -262,10 +286,9 @@ const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: Verificatio
                   <div className="text-left">
                     <h4 className="font-medium">{integration.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {integration.id === 'vercel' 
-                        ? 'Perfect for React apps with automatic deployments'
-                        : 'Simple static site hosting with continuous deployment'
-                      }
+                      {integration.id === "vercel"
+                        ? "Perfect for React apps with automatic deployments"
+                        : "Simple static site hosting with continuous deployment"}
                     </p>
                   </div>
                 </div>
