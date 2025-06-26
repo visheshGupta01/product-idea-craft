@@ -11,11 +11,22 @@ interface FollowUpQuestionsProps {
   userIdea: string;
   onComplete: (answers: Record<string, string>) => void;
   onBack: () => void;
+  initialAnswers?: Record<string, string>;
 }
 
-const FollowUpQuestions = ({ userIdea, onComplete, onBack }: FollowUpQuestionsProps) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }: FollowUpQuestionsProps) => {
+  // Find the last answered question to resume from
+  const findLastAnsweredQuestion = () => {
+    for (let i = questions.length - 1; i >= 0; i--) {
+      if (initialAnswers[questions[i].id]?.trim()) {
+        return Math.min(i + 1, questions.length - 1);
+      }
+    }
+    return 0;
+  };
+
+  const [currentQuestion, setCurrentQuestion] = useState(findLastAnsweredQuestion());
+  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers);
   const [isVisible, setIsVisible] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState('');

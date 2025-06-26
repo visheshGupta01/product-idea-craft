@@ -15,10 +15,11 @@ interface Integration {
 
 interface VerificationScreenProps {
   onComplete: () => void;
-  onBack?: () => void;
+  onBack?: (answers?: Record<string, string>) => void;
+  followUpAnswers?: Record<string, string>;
 }
 
-const VerificationScreen = ({ onComplete, onBack }: VerificationScreenProps) => {
+const VerificationScreen = ({ onComplete, onBack, followUpAnswers }: VerificationScreenProps) => {
   const [integrations, setIntegrations] = useState<Integration[]>([
     {
       id: 'github',
@@ -93,16 +94,17 @@ const VerificationScreen = ({ onComplete, onBack }: VerificationScreenProps) => 
       <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
           {onBack && (
-            <div className="flex justify-start mb-4">
+            <div className="flex items-center justify-between mb-4">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={onBack}
+                onClick={() => onBack(followUpAnswers)}
                 className="flex items-center space-x-1 text-sm"
               >
                 <ArrowLeft className="w-3 h-3" />
                 <span>Back</span>
               </Button>
+              <div className="flex-1" />
             </div>
           )}
           <CardTitle className="text-2xl">Complete Your Setup</CardTitle>

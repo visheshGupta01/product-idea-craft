@@ -45,7 +45,10 @@ const Index = () => {
     setAppState('idea-submission');
   };
 
-  const handleBackToFollowUp = () => {
+  const handleBackToFollowUp = (preservedAnswers?: Record<string, string>) => {
+    if (preservedAnswers) {
+      setFollowUpAnswers(preservedAnswers);
+    }
     setAppState('follow-up-questions');
   };
 
@@ -130,6 +133,7 @@ const Index = () => {
             userIdea={userIdea}
             onComplete={handleFollowUpComplete}
             onBack={handleBackToIdea}
+            initialAnswers={followUpAnswers}
           />
         )}
 
@@ -137,6 +141,7 @@ const Index = () => {
           <VerificationScreen 
             onComplete={handleVerificationComplete}
             onBack={handleBackToFollowUp}
+            followUpAnswers={followUpAnswers}
           />
         )}
         
