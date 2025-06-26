@@ -96,10 +96,11 @@ const VerificationScreen = ({ onComplete, onBack }: VerificationScreenProps) => 
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={onBack}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-1 text-sm"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-3 h-3" />
                 <span>Back</span>
               </Button>
             </div>
