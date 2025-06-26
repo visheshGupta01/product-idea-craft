@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import IdeaSubmissionScreen from '../components/IdeaSubmissionScreen';
 import FollowUpQuestions from '../components/FollowUpQuestions';
+import VerificationScreen from '../components/VerificationScreen';
 import MainDashboard from '../components/MainDashboard';
 import Navbar from '../components/Navbar';
 import LoginPage from '../components/auth/LoginPage';
 import SignupPage from '../components/auth/SignupPage';
 
-type AppState = 'idea-submission' | 'follow-up-questions' | 'dashboard';
+type AppState = 'idea-submission' | 'follow-up-questions' | 'verification' | 'dashboard';
 type AuthModal = 'login' | 'signup' | null;
 
 const Index = () => {
@@ -34,6 +35,10 @@ const Index = () => {
 
   const handleFollowUpComplete = (answers: Record<string, string>) => {
     setFollowUpAnswers(answers);
+    setAppState('verification');
+  };
+
+  const handleVerificationComplete = () => {
     setAppState('dashboard');
   };
 
@@ -122,6 +127,12 @@ const Index = () => {
             userIdea={userIdea}
             onComplete={handleFollowUpComplete}
             onBack={handleBackToIdea}
+          />
+        )}
+
+        {appState === 'verification' && (
+          <VerificationScreen 
+            onComplete={handleVerificationComplete}
           />
         )}
         
