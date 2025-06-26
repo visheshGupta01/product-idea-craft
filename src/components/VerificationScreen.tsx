@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Circle, Github, Database, Globe } from 'lucide-react';
+import { CheckCircle2, Circle, Github, Database, Globe, ArrowLeft } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface Integration {
@@ -16,9 +15,10 @@ interface Integration {
 
 interface VerificationScreenProps {
   onComplete: () => void;
+  onBack?: () => void;
 }
 
-const VerificationScreen = ({ onComplete }: VerificationScreenProps) => {
+const VerificationScreen = ({ onComplete, onBack }: VerificationScreenProps) => {
   const [integrations, setIntegrations] = useState<Integration[]>([
     {
       id: 'github',
@@ -92,6 +92,18 @@ const VerificationScreen = ({ onComplete }: VerificationScreenProps) => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
+          {onBack && (
+            <div className="flex justify-start mb-4">
+              <Button
+                variant="outline"
+                onClick={onBack}
+                className="flex items-center space-x-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back</span>
+              </Button>
+            </div>
+          )}
           <CardTitle className="text-2xl">Complete Your Setup</CardTitle>
           <CardDescription>
             Connect these integrations to unlock the full power of your development environment

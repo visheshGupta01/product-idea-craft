@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemeToggle } from "./ThemeToggle";
@@ -54,6 +53,13 @@ const IdeaSubmissionScreen = ({
           onIdeaSubmit(idea);
         }, 800);
       }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && e.shiftKey && !isSubmitting && idea.trim()) {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -120,7 +126,7 @@ const IdeaSubmissionScreen = ({
                   <div className="space-y-6">
                     <div className="relative">
                       <Textarea
-                        placeholder="Describe your app or website idea in detail..."
+                        placeholder="Describe your app or website idea in detail... (Press Shift+Enter to submit)"
                         value={
                           userTyped
                             ? idea
@@ -131,6 +137,7 @@ const IdeaSubmissionScreen = ({
                           setUserTyped(true); // user typed manually, stop auto appending
                           setIdea(e.target.value);
                         }}
+                        onKeyDown={handleKeyDown}
                         disabled={isSubmitting}
                         className="min-h-[50px] resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 text-sm"
                       />

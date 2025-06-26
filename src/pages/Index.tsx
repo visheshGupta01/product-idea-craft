@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import IdeaSubmissionScreen from '../components/IdeaSubmissionScreen';
 import FollowUpQuestions from '../components/FollowUpQuestions';
@@ -44,6 +43,10 @@ const Index = () => {
 
   const handleBackToIdea = () => {
     setAppState('idea-submission');
+  };
+
+  const handleBackToFollowUp = () => {
+    setAppState('follow-up-questions');
   };
 
   const handleLogin = (email: string, password: string) => {
@@ -133,6 +136,7 @@ const Index = () => {
         {appState === 'verification' && (
           <VerificationScreen 
             onComplete={handleVerificationComplete}
+            onBack={handleBackToFollowUp}
           />
         )}
         
