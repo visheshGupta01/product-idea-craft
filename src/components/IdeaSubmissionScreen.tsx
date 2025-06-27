@@ -170,29 +170,36 @@ const IdeaSubmissionScreen = ({
             </div>
 
             {/* Static Welcome Message with Typewriter Effects */}
-            <div className="relative z-10 mb-6 text-center animate-fade-up">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-primary/20 to-primary/30 rounded-lg flex items-center justify-center animate-pulse-glow shadow-md">
-                  <Zap className="w-3 h-3 text-primary animate-bounce-subtle" />
+            <div className="relative z-10 mb-10 text-center animate-fade-up">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/30 rounded-lg flex items-center justify-center animate-pulse-glow shadow-md">
+                  <Zap className="w-6 h-6 text-primary animate-bounce-subtle" />
                 </div>
                 <div className="text-center">
-                  <h2 className="text-lg font-bold text-foreground">
-                    Welcome back, <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">{displayedName}</span>
+                  <h2 className="text-2xl font-bold text-foreground">
+                    Welcome back,{" "}
+                    <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                      {displayedName}
+                    </span>
                     <span className="animate-pulse">|</span>
                   </h2>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground min-h-[20px]">
-                {displayedLine}<span className="animate-pulse">|</span>
+              <p className="text-md text-muted-foreground min-h-[20px]">
+                {displayedLine}
+                <span className="animate-pulse">|</span>
               </p>
             </div>
 
             {/* Compact Idea Submission Box */}
-            <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-card/95 via-card/90 to-card/80 backdrop-blur-md border border-border/50 rounded-2xl p-6 mb-6 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-700 hover:scale-[1.01] animate-fade-up animate-delay-200">
+            <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-card/95 via-card/90 to-card/80 backdrop-blur-md border border-border/50 rounded-2xl p-6 mb-10 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-700 hover:scale-[1.01] animate-fade-up animate-delay-200">
               {/* Decorative elements */}
               <div className="absolute top-0 left-0 w-full h-full rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
               <div className="absolute -top-1 -right-1 w-12 h-12 bg-primary/10 rounded-full blur-lg animate-pulse"></div>
-              <div className="absolute -bottom-1 -left-1 w-10 h-10 bg-primary/5 rounded-full blur-md animate-pulse" style={{ animationDelay: "1s" }}></div>
+              <div
+                className="absolute -bottom-1 -left-1 w-10 h-10 bg-primary/5 rounded-full blur-md animate-pulse"
+                style={{ animationDelay: "1s" }}
+              ></div>
 
               <div className="relative">
                 <div className="flex items-center justify-center mb-4">
@@ -271,7 +278,10 @@ const IdeaSubmissionScreen = ({
                   </div>
                   <div className="w-1 h-1 bg-muted-foreground/30 rounded-full"></div>
                   <div className="flex items-center space-x-1">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
+                    <div
+                      className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"
+                      style={{ animationDelay: "0.5s" }}
+                    ></div>
                     <span>AI-powered</span>
                   </div>
                 </div>
@@ -284,9 +294,14 @@ const IdeaSubmissionScreen = ({
                 <div className="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                 </div>
-                <h2 className="text-lg font-bold text-center">Your Recent Projects</h2>
+                <h2 className="text-lg font-bold text-center">
+                  Your Recent Projects
+                </h2>
                 <div className="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
+                  <div
+                    className="w-2 h-2 bg-primary rounded-full animate-pulse"
+                    style={{ animationDelay: "0.5s" }}
+                  ></div>
                 </div>
               </div>
               <RecentProjects />

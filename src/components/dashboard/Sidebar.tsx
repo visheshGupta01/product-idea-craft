@@ -364,7 +364,7 @@ const Sidebar = ({
                                       onClick={() => assignSubtaskToDev(task.id, subtask.id)} 
                                       className="text-xs h-4 px-1 py-0 ml-1"
                                     >
-                                      →Dev
+                                      → Dev
                                     </Button>
                                   )}
                                 </div>
