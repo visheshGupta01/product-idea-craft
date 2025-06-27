@@ -19,6 +19,7 @@ interface Task {
     id: number;
     title: string;
     completed: boolean;
+    assignedTo?: 'ai' | 'sde';
   }[];
 }
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
@@ -53,11 +54,13 @@ const Sidebar = ({
     subtasks: [{
       id: 1,
       title: 'Document requirements',
-      completed: true
+      completed: true,
+      assignedTo: 'ai'
     }, {
       id: 2,
       title: 'Initial review',
-      completed: true
+      completed: true,
+      assignedTo: 'ai'
     }]
   }, {
     id: 2,
@@ -68,15 +71,18 @@ const Sidebar = ({
     subtasks: [{
       id: 3,
       title: 'Market research',
-      completed: true
+      completed: true,
+      assignedTo: 'ai'
     }, {
       id: 4,
       title: 'Competitor analysis',
-      completed: false
+      completed: false,
+      assignedTo: 'ai'
     }, {
       id: 5,
       title: 'SWOT analysis',
-      completed: false
+      completed: false,
+      assignedTo: 'ai'
     }]
   }, {
     id: 3,
@@ -120,6 +126,17 @@ const Sidebar = ({
       assignedTo: 'sde' as const
     } : task));
   };
+
+  const assignSubtaskToDev = (taskId: number, subtaskId: number) => {
+    setTasks(tasks.map(task => task.id === taskId ? {
+      ...task,
+      subtasks: task.subtasks?.map(subtask => subtask.id === subtaskId ? {
+        ...subtask,
+        assignedTo: 'sde' as const
+      } : subtask)
+    } : task));
+  };
+
   const toggleTaskExpanded = (taskId: number) => {
     setExpandedTasks(prev => prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]);
   };
@@ -311,14 +328,31 @@ const Sidebar = ({
                           Assign to Dev
                         </Button>}
 
-                      {task.subtasks && <div className="mt-2 space-y-1 pl-4 border-l-2 border-sidebar-border">
-                          {task.subtasks.map(subtask => <div key={subtask.id} className="flex items-center space-x-2">
-                              <Button variant="ghost" size="sm" onClick={() => toggleSubtask(task.id, subtask.id)} className="h-4 w-4 p-0">
-                                {subtask.completed ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3 text-gray-400" />}
-                              </Button>
-                              <span className={`text-xs break-words leading-tight ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
-                                {subtask.title}
-                              </span>
+                      {task.subtasks && <div className="mt-2 space-y-2 pl-4 border-l-2 border-sidebar-border">
+                          {task.subtasks.map(subtask => <div key={subtask.id} className="space-y-1">
+                              <div className="flex items-center space-x-2">
+                                <Button variant="ghost" size="sm" onClick={() => toggleSubtask(task.id, subtask.id)} className="h-4 w-4 p-0">
+                                  {subtask.completed ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3 text-gray-400" />}
+                                </Button>
+                                <div className="flex-1 min-w-0">
+                                  <span className={`text-xs break-words leading-tight ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
+                                    {subtask.title}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  {subtask.assignedTo === 'ai' ? <Bot className="h-2 w-2 text-purple-500" /> : <User className="h-2 w-2 text-orange-500" />}
+                                </div>
+                              </div>
+                              {(!subtask.assignedTo || subtask.assignedTo === 'ai') && (
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => assignSubtaskToDev(task.id, subtask.id)} 
+                                  className="text-xs h-5 w-full ml-6"
+                                >
+                                  Assign to Dev
+                                </Button>
+                              )}
                             </div>)}
                         </div>}
                     </>}
