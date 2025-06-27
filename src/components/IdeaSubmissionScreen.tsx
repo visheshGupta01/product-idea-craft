@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+
+import React, { useRef, useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemeToggle } from "./ThemeToggle";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -26,6 +27,9 @@ const IdeaSubmissionScreen = ({
   const speechRef = useRef<TextToSpeechPanelRef>(null);
   const [liveTranscript, setLiveTranscript] = useState("");
   const [userTyped, setUserTyped] = useState(false);
+  const [displayedName, setDisplayedName] = useState("");
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [displayedLine, setDisplayedLine] = useState("");
 
   const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
   
@@ -34,6 +38,63 @@ const IdeaSubmissionScreen = ({
 
   const headerAnimation = useScrollAnimation();
   const inputAnimation = useScrollAnimation();
+
+  const rotatingLines = [
+    "Ready to build something amazing?",
+    "Let's turn your vision into reality",
+    "What innovative idea will you create today?",
+    "Transform your thoughts into digital magic"
+  ];
+
+  // Name typewriter effect
+  useEffect(() => {
+    if (!user) return;
+    
+    const capitalizedName = user.name.charAt(0).toUpperCase() + user.name.slice(1);
+    let index = 0;
+    
+    const nameInterval = setInterval(() => {
+      if (index < capitalizedName.length) {
+        setDisplayedName(capitalizedName.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(nameInterval);
+      }
+    }, 100);
+
+    return () => clearInterval(nameInterval);
+  }, [user]);
+
+  // Rotating line typewriter effect
+  useEffect(() => {
+    if (!user) return;
+
+    const typewriteLine = () => {
+      const currentLine = rotatingLines[currentLineIndex];
+      let charIndex = 0;
+      
+      // Clear previous line
+      setDisplayedLine("");
+      
+      const lineInterval = setInterval(() => {
+        if (charIndex < currentLine.length) {
+          setDisplayedLine(currentLine.slice(0, charIndex + 1));
+          charIndex++;
+        } else {
+          clearInterval(lineInterval);
+          // Wait 2 seconds before moving to next line
+          setTimeout(() => {
+            setCurrentLineIndex((prev) => (prev + 1) % rotatingLines.length);
+          }, 2000);
+        }
+      }, 50);
+
+      return () => clearInterval(lineInterval);
+    };
+
+    const timeout = setTimeout(typewriteLine, 500); // Start after name is done
+    return () => clearTimeout(timeout);
+  }, [currentLineIndex, user]);
 
   const handleSpeechTranscript = (transcript: string) => {
     setIdea((prev) => prev + (prev ? " " : "") + transcript);
@@ -108,23 +169,22 @@ const IdeaSubmissionScreen = ({
               </div>
             </div>
 
-            {/* Compact Welcome Message */}
-            <div className="relative z-10 mb-6 animate-fade-up text-center">
-              <div className="max-w-xl mx-auto bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-4 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-500">
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary/20 to-primary/30 rounded-xl flex items-center justify-center animate-pulse-glow shadow-md">
-                    <Zap className="w-4 h-4 text-primary animate-bounce-subtle" />
-                  </div>
-                  <div className="text-center">
-                    <h2 className="text-lg font-bold text-foreground bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                      Welcome back, {user.name}!
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      Ready to build something amazing?
-                    </p>
-                  </div>
+            {/* Static Welcome Message with Typewriter Effects */}
+            <div className="relative z-10 mb-6 text-center animate-fade-up">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-primary/20 to-primary/30 rounded-lg flex items-center justify-center animate-pulse-glow shadow-md">
+                  <Zap className="w-3 h-3 text-primary animate-bounce-subtle" />
+                </div>
+                <div className="text-center">
+                  <h2 className="text-lg font-bold text-foreground">
+                    Welcome back, <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">{displayedName}</span>
+                    <span className="animate-pulse">|</span>
+                  </h2>
                 </div>
               </div>
+              <p className="text-sm text-muted-foreground min-h-[20px]">
+                {displayedLine}<span className="animate-pulse">|</span>
+              </p>
             </div>
 
             {/* Compact Idea Submission Box */}
