@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemeToggle } from "./ThemeToggle";
@@ -16,14 +15,18 @@ interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
   user?: { name: string; email: string; avatar?: string };
   isSubmitting?: boolean;
+  currentIdea?: string;
+  onIdeaChange?: (idea: string) => void;
 }
 
 const IdeaSubmissionScreen = ({
   onIdeaSubmit,
   user,
   isSubmitting: externalIsSubmitting = false,
+  currentIdea = "",
+  onIdeaChange,
 }: IdeaSubmissionScreenProps) => {
-  const [idea, setIdea] = useState("");
+  const [idea, setIdea] = useState(currentIdea);
   const speechRef = useRef<TextToSpeechPanelRef>(null);
   const [liveTranscript, setLiveTranscript] = useState("");
   const [userTyped, setUserTyped] = useState(false);
@@ -45,6 +48,19 @@ const IdeaSubmissionScreen = ({
     "What innovative idea will you create today?",
     "Transform your thoughts into digital magic"
   ];
+
+  // Update local idea state when currentIdea prop changes
+  useEffect(() => {
+    setIdea(currentIdea);
+  }, [currentIdea]);
+
+  // Update parent's currentIdea when local idea changes
+  const handleIdeaChange = (newIdea: string) => {
+    setIdea(newIdea);
+    if (onIdeaChange) {
+      onIdeaChange(newIdea);
+    }
+  };
 
   // Name typewriter effect
   useEffect(() => {
@@ -97,7 +113,8 @@ const IdeaSubmissionScreen = ({
   }, [currentLineIndex, user]);
 
   const handleSpeechTranscript = (transcript: string) => {
-    setIdea((prev) => prev + (prev ? " " : "") + transcript);
+    const newIdea = idea + (idea ? " " : "") + transcript;
+    handleIdeaChange(newIdea);
     setLiveTranscript("");
     setUserTyped(false); // allow live speech to continue updating after final
   };
@@ -170,20 +187,15 @@ const IdeaSubmissionScreen = ({
             </div>
 
             {/* Static Welcome Message with Typewriter Effects */}
-            <div className="relative z-10 mb-10 text-center animate-fade-up">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/30 rounded-lg flex items-center justify-center animate-pulse-glow shadow-md">
-                  <Zap className="w-6 h-6 text-primary animate-bounce-subtle" />
-                </div>
-                <div className="text-center">
-                  <h2 className="text-2xl font-bold text-foreground">
-                    Welcome back,{" "}
-                    <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                      {displayedName}
-                    </span>
-                    <span className="animate-pulse">|</span>
-                  </h2>
-                </div>
+            <div className="relative z-10 mb-8 text-center animate-fade-up">
+              <div className="text-center mb-2">
+                <h2 className="text-2xl font-bold text-foreground">
+                  Welcome back,{" "}
+                  <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    {displayedName}
+                  </span>
+                  <span className="animate-pulse">|</span>
+                </h2>
               </div>
               <p className="text-md text-muted-foreground min-h-[20px]">
                 {displayedLine}
@@ -192,7 +204,7 @@ const IdeaSubmissionScreen = ({
             </div>
 
             {/* Compact Idea Submission Box */}
-            <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-card/95 via-card/90 to-card/80 backdrop-blur-md border border-border/50 rounded-2xl p-6 mb-10 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-700 hover:scale-[1.01] animate-fade-up animate-delay-200">
+            <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-card/95 via-card/90 to-card/80 backdrop-blur-md border border-border/50 rounded-2xl p-6 mb-8 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-700 hover:scale-[1.01] animate-fade-up animate-delay-200">
               {/* Decorative elements */}
               <div className="absolute top-0 left-0 w-full h-full rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
               <div className="absolute -top-1 -right-1 w-12 h-12 bg-primary/10 rounded-full blur-lg animate-pulse"></div>
@@ -204,11 +216,11 @@ const IdeaSubmissionScreen = ({
               <div className="relative">
                 <div className="flex items-center justify-center mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary/15 to-primary/25 rounded-xl flex items-center justify-center animate-bounce-subtle shadow-md">
-                      <Sparkles className="w-5 h-5 text-primary" />
+                    <div className="w-8 h-8 bg-gradient-to-br from-primary/15 to-primary/25 rounded-xl flex items-center justify-center animate-bounce-subtle shadow-md">
+                      <Sparkles className="w-4 h-4 text-primary" />
                     </div>
                     <div className="text-center">
-                      <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                      <h1 className="text-lg font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
                         What's your next big idea?
                       </h1>
                       <p className="text-sm text-muted-foreground">
@@ -232,7 +244,7 @@ const IdeaSubmissionScreen = ({
                           }
                           onChange={(e) => {
                             setUserTyped(true); // user typed manually, stop auto appending
-                            setIdea(e.target.value);
+                            handleIdeaChange(e.target.value);
                           }}
                           onKeyDown={handleKeyDown}
                           disabled={isSubmitting}
@@ -387,7 +399,7 @@ const IdeaSubmissionScreen = ({
         >
           <IdeaSubmissionForm
             idea={idea}
-            setIdea={setIdea}
+            setIdea={handleIdeaChange}
             isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
           />

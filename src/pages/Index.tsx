@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import IdeaSubmissionScreen from '../components/IdeaSubmissionScreen';
 import FollowUpQuestions from '../components/FollowUpQuestions';
@@ -13,6 +14,7 @@ type AuthModal = 'login' | 'signup' | null;
 const Index = () => {
   const [appState, setAppState] = useState<AppState>('idea-submission');
   const [userIdea, setUserIdea] = useState('');
+  const [currentIdea, setCurrentIdea] = useState(''); // Add state to preserve current idea being typed
   const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
   const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
   const [authModal, setAuthModal] = useState<AuthModal>(null);
@@ -29,6 +31,7 @@ const Index = () => {
     }
     
     setUserIdea(idea);
+    setCurrentIdea(''); // Clear current idea after submission
     setAppState('follow-up-questions');
   };
 
@@ -67,6 +70,7 @@ const Index = () => {
     if (pendingIdea) {
       setUserIdea(pendingIdea);
       setPendingIdea('');
+      setCurrentIdea('');
       setAppState('follow-up-questions');
     }
   };
@@ -86,6 +90,7 @@ const Index = () => {
     if (pendingIdea) {
       setUserIdea(pendingIdea);
       setPendingIdea('');
+      setCurrentIdea('');
       setAppState('follow-up-questions');
     }
   };
@@ -100,6 +105,7 @@ const Index = () => {
     setUser(null);
     setAppState('idea-submission');
     setUserIdea('');
+    setCurrentIdea('');
     setFollowUpAnswers({});
     setPendingIdea('');
     setIsSubmittingIdea(false);
@@ -125,6 +131,8 @@ const Index = () => {
             onIdeaSubmit={handleIdeaSubmit} 
             user={user} 
             isSubmitting={isSubmittingIdea}
+            currentIdea={currentIdea}
+            onIdeaChange={setCurrentIdea}
           />
         )}
         
