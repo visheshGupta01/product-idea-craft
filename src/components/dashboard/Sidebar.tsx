@@ -244,7 +244,8 @@ const Sidebar = ({
         </div>
       </div>;
   }
-  return <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+  return (
+    <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Header */}
       <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-between mb-3">
@@ -287,10 +288,12 @@ const Sidebar = ({
         <ScrollArea className="h-full">
           <div className="p-2 space-y-1">
             {tasks.map(task => {
-            const isExpanded = expandedTasks.includes(task.id);
-            const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
-            const totalSubtasks = task.subtasks?.length || 0;
-            return <div key={task.id} className="border border-sidebar-border rounded-md p-2 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors px-[9px] my-[6px]">
+              const isExpanded = expandedTasks.includes(task.id);
+              const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
+              const totalSubtasks = task.subtasks?.length || 0;
+              
+              return (
+                <div key={task.id} className="border border-sidebar-border rounded-md p-2 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors px-[9px] my-[6px]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                       {getStatusIcon(task.status)}
@@ -300,13 +303,21 @@ const Sidebar = ({
                     </div>
                     <div className="flex-shrink-0 ml-2 flex items-center space-x-1">
                       {getStatusBadge(task.status)}
-                      {task.subtasks && task.subtasks.length > 0 && <Button variant="ghost" size="sm" onClick={() => toggleTaskExpanded(task.id)} className="h-5 w-5 p-0">
+                      {task.subtasks && task.subtasks.length > 0 && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => toggleTaskExpanded(task.id)} 
+                          className="h-5 w-5 p-0"
+                        >
                           {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                        </Button>}
+                        </Button>
+                      )}
                     </div>
                   </div>
 
-                  {isExpanded && <>
+                  {isExpanded && (
+                    <>
                       <p className="text-xs text-muted-foreground break-words leading-tight mt-1">
                         {task.description}
                       </p>
@@ -319,19 +330,24 @@ const Sidebar = ({
                           </span>
                         </div>
                         
-                        {task.subtasks && task.subtasks.length > 0 && <div className="text-xs text-muted-foreground">
+                        {task.subtasks && task.subtasks.length > 0 && (
+                          <div className="text-xs text-muted-foreground">
                             {completedSubtasks}/{totalSubtasks}
-                          </div>}
+                          </div>
+                        )}
                       </div>
-                      
-                      {task.assignedTo === 'ai' && <Button variant="outline" size="sm" onClick={() => assignToDev(task.id)} className="text-xs h-6 w-full mt-2">
-                          Assign to Dev
-                        </Button>}
 
-                      {task.subtasks && <div className="mt-2 space-y-2 pl-4 border-l-2 border-sidebar-border">
-                          {task.subtasks.map(subtask => <div key={subtask.id} className="space-y-1">
+                      {task.subtasks && (
+                        <div className="mt-2 space-y-2 pl-4 border-l-2 border-sidebar-border">
+                          {task.subtasks.map(subtask => (
+                            <div key={subtask.id} className="space-y-1">
                               <div className="flex items-center space-x-2">
-                                <Button variant="ghost" size="sm" onClick={() => toggleSubtask(task.id, subtask.id)} className="h-4 w-4 p-0">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => toggleSubtask(task.id, subtask.id)} 
+                                  className="h-4 w-4 p-0"
+                                >
                                   {subtask.completed ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3 text-gray-400" />}
                                 </Button>
                                 <div className="flex-1 min-w-0">
@@ -341,23 +357,27 @@ const Sidebar = ({
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   {subtask.assignedTo === 'ai' ? <Bot className="h-2 w-2 text-purple-500" /> : <User className="h-2 w-2 text-orange-500" />}
+                                  {!subtask.completed && (!subtask.assignedTo || subtask.assignedTo === 'ai') && (
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      onClick={() => assignSubtaskToDev(task.id, subtask.id)} 
+                                      className="text-xs h-4 px-1 py-0 ml-1"
+                                    >
+                                      →Dev
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
-                              {(!subtask.assignedTo || subtask.assignedTo === 'ai') && (
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={() => assignSubtaskToDev(task.id, subtask.id)} 
-                                  className="text-xs h-5 w-full ml-6"
-                                >
-                                  Assign to Dev
-                                </Button>
-                              )}
-                            </div>)}
-                        </div>}
-                    </>}
-                </div>;
-          })}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </ScrollArea>
       </div>
@@ -416,6 +436,8 @@ const Sidebar = ({
           </div>
         </DialogContent>
       </Dialog>
-    </div>;
+    </div>
+  );
 };
+
 export default Sidebar;
