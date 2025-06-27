@@ -276,7 +276,6 @@ const IdeaSubmissionScreen = ({
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     <span>Secure</span>
                   </div>
-                  <div className="w-1 h-1 bg-muted-foreground/30 rounded-full"></div>
                   <div className="flex items-center space-x-1">
                     <div
                       className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"
