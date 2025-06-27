@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemeToggle } from "./ThemeToggle";
@@ -91,76 +90,73 @@ const IdeaSubmissionScreen = ({
           <ThemeToggle />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-6xl mx-auto px-6 py-6">
           {/* Main Content Area with Subtle Watermark */}
           <div className="relative">
             {/* Subtle Watermark Background */}
             <div className="absolute inset-0 -z-10 overflow-hidden">
               {/* Single subtle logo watermark */}
               <div
-                className="absolute top-40 left-1/2 transform -translate-x-1/2 opacity-[0.03] pointer-events-none"
+                className="absolute top-32 left-1/2 transform -translate-x-1/2 opacity-[0.02] pointer-events-none"
                 style={{ animationDelay: "1s" }}
               >
                 <img
                   src="logo.png"
                   alt=""
-                  className="w-96 h-96 filter grayscale"
+                  className="w-64 h-64 filter grayscale"
                 />
               </div>
             </div>
 
-            {/* Centered Welcome Message */}
-            <div className="relative z-10 mb-8 animate-fade-up text-center">
-              <div className="max-w-2xl mx-auto bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-3xl p-8 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-500">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center animate-pulse-glow shadow-lg">
-                    <Zap className="w-6 h-6 text-primary animate-bounce-subtle" />
+            {/* Compact Welcome Message */}
+            <div className="relative z-10 mb-6 animate-fade-up text-center">
+              <div className="max-w-xl mx-auto bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-4 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-500">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary/20 to-primary/30 rounded-xl flex items-center justify-center animate-pulse-glow shadow-md">
+                    <Zap className="w-4 h-4 text-primary animate-bounce-subtle" />
                   </div>
                   <div className="text-center">
-                    <h2 className="text-2xl font-bold text-foreground bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    <h2 className="text-lg font-bold text-foreground bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
                       Welcome back, {user.name}!
                     </h2>
-                    <p className="text-base text-muted-foreground mt-1">
-                      Ready to build something amazing today?
+                    <p className="text-sm text-muted-foreground">
+                      Ready to build something amazing?
                     </p>
                   </div>
-                </div>
-                <div className="flex justify-center">
-                  <div className="w-16 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent rounded-full"></div>
                 </div>
               </div>
             </div>
 
-            {/* Enhanced Idea Submission Box */}
-            <div className="relative z-10 max-w-4xl mx-auto bg-gradient-to-br from-card/95 via-card/90 to-card/80 backdrop-blur-md border border-border/50 rounded-3xl p-8 mb-8 shadow-2xl shadow-primary/10 hover:shadow-3xl hover:shadow-primary/20 transition-all duration-700 hover:scale-[1.01] animate-fade-up animate-delay-200">
+            {/* Compact Idea Submission Box */}
+            <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-card/95 via-card/90 to-card/80 backdrop-blur-md border border-border/50 rounded-2xl p-6 mb-6 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-700 hover:scale-[1.01] animate-fade-up animate-delay-200">
               {/* Decorative elements */}
-              <div className="absolute top-0 left-0 w-full h-full rounded-3xl bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
-              <div className="absolute -top-2 -right-2 w-20 h-20 bg-primary/10 rounded-full blur-xl animate-pulse"></div>
-              <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-primary/5 rounded-full blur-lg animate-pulse" style={{ animationDelay: "1s" }}></div>
+              <div className="absolute top-0 left-0 w-full h-full rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
+              <div className="absolute -top-1 -right-1 w-12 h-12 bg-primary/10 rounded-full blur-lg animate-pulse"></div>
+              <div className="absolute -bottom-1 -left-1 w-10 h-10 bg-primary/5 rounded-full blur-md animate-pulse" style={{ animationDelay: "1s" }}></div>
 
               <div className="relative">
-                <div className="flex items-center justify-center mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-primary/15 to-primary/25 rounded-2xl flex items-center justify-center animate-bounce-subtle shadow-lg">
-                      <Sparkles className="w-7 h-7 text-primary" />
+                <div className="flex items-center justify-center mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary/15 to-primary/25 rounded-xl flex items-center justify-center animate-bounce-subtle shadow-md">
+                      <Sparkles className="w-5 h-5 text-primary" />
                     </div>
                     <div className="text-center">
-                      <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                      <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
                         What's your next big idea?
                       </h1>
-                      <p className="text-muted-foreground mt-1">
-                        Transform your vision into reality with AI-powered development
+                      <p className="text-sm text-muted-foreground">
+                        Transform your vision into reality
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-6 items-end">
+                <div className="flex gap-4 items-end">
                   <div className="flex-1">
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       <div className="relative group">
                         <Textarea
-                          placeholder="Describe your app or website idea in detail... (Press Shift+Enter to submit)"
+                          placeholder="Describe your app or website idea... (Press Shift+Enter to submit)"
                           value={
                             userTyped
                               ? idea
@@ -173,15 +169,15 @@ const IdeaSubmissionScreen = ({
                           }}
                           onKeyDown={handleKeyDown}
                           disabled={isSubmitting}
-                          className="min-h-[100px] resize-none border-2 focus:border-primary/50 rounded-2xl transition-all duration-300 text-base group-hover:shadow-lg group-hover:shadow-primary/10 bg-background/80 backdrop-blur-sm px-6 py-4"
+                          className="min-h-[80px] resize-none border-2 focus:border-primary/50 rounded-xl transition-all duration-300 text-sm group-hover:shadow-md group-hover:shadow-primary/10 bg-background/80 backdrop-blur-sm px-4 py-3"
                         />
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute top-3 right-3">
                           <TextToSpeechPanelComponent
                             ref={speechRef}
                             onTranscript={handleSpeechTranscript}
                             onInterimTranscript={setLiveTranscript}
                             disabled={isSubmitting}
-                            className="h-10 w-10 hover:scale-110 transition-transform duration-200"
+                            className="h-8 w-8 hover:scale-110 transition-transform duration-200"
                           />
                         </div>
                       </div>
@@ -190,54 +186,54 @@ const IdeaSubmissionScreen = ({
                   <button
                     onClick={handleSubmit}
                     disabled={!idea.trim() || isSubmitting}
-                    className="px-10 py-4 h-[100px] bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground rounded-2xl font-semibold transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-base group relative overflow-hidden"
+                    className="px-6 py-3 h-[80px] bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground rounded-xl font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-primary/40 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm group relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12 group-hover:animate-pulse"></div>
                     {isSubmitting ? (
                       <div className="flex flex-col items-center">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mb-2"></div>
-                        <span className="text-sm">Processing...</span>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mb-1"></div>
+                        <span className="text-xs">Processing...</span>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center">
-                        <Sparkles className="w-6 h-6 mb-2 group-hover:animate-bounce" />
+                        <Sparkles className="w-5 h-5 mb-1 group-hover:animate-bounce" />
                         <span>Start Building</span>
                       </div>
                     )}
                   </button>
                 </div>
 
-                {/* Enhanced Progress indicator */}
-                <div className="mt-6 flex items-center justify-center space-x-3 text-sm text-muted-foreground">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>Secure & encrypted</span>
+                {/* Compact Progress indicator */}
+                <div className="mt-4 flex items-center justify-center space-x-3 text-xs text-muted-foreground">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Secure</span>
                   </div>
                   <div className="w-1 h-1 bg-muted-foreground/30 rounded-full"></div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
-                    <span>AI-powered development</span>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
+                    <span>AI-powered</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Your Recent Projects with enhanced styling */}
-            <div className="relative z-10 mb-10 backdrop-blur-[1px] animate-fade-up animate-delay-400">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center">
-                  <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+            {/* Compact Recent Projects */}
+            <div className="relative z-10 mb-8 backdrop-blur-[1px] animate-fade-up animate-delay-400">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                 </div>
-                <h2 className="text-2xl font-bold text-center">Your Recent Projects</h2>
-                <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center">
-                  <div className="w-3 h-3 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
+                <h2 className="text-lg font-bold text-center">Your Recent Projects</h2>
+                <div className="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
                 </div>
               </div>
               <RecentProjects />
             </div>
           </div>
 
-          {/* Full-width Community Section */}
+          {/* Community Section */}
           <div className="animate-fade-up animate-delay-500">
             <CommunityProjects />
           </div>
