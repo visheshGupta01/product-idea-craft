@@ -131,7 +131,7 @@ const Index = () => {
             onIdeaSubmit={handleIdeaSubmit} 
             user={user} 
             isSubmitting={isSubmittingIdea}
-            currentIdea={currentIdea}
+            idea={currentIdea}
             onIdeaChange={setCurrentIdea}
           />
         )}
