@@ -1,6 +1,7 @@
 
 import React from 'react';
 import UserProfilePage from '../components/dashboard/UserProfilePage';
+import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 
 interface ProfileProps {
@@ -15,7 +16,17 @@ const Profile = ({ user }: ProfileProps) => {
     navigate('/', { state: { logout: true } });
   };
 
-  return <UserProfilePage onLogout={handleLogout} />;
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar
+        user={user}
+        onLoginClick={() => {}}
+        onSignupClick={() => {}}
+        onLogout={handleLogout}
+      />
+      <UserProfilePage onLogout={handleLogout} />
+    </div>
+  );
 };
 
 export default Profile;
