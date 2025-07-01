@@ -1,5 +1,5 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import IdeaSubmissionScreen from '../components/IdeaSubmissionScreen';
 import FollowUpQuestions from '../components/FollowUpQuestions';
 import VerificationScreen from '../components/VerificationScreen';
@@ -11,8 +11,8 @@ import SignupPage from '../components/auth/SignupPage';
 type AppState = 'idea-submission' | 'follow-up-questions' | 'verification' | 'dashboard';
 type AuthModal = 'login' | 'signup' | null;
 
-
 const Index = ({user, setUser}) => {
+  const location = useLocation();
   const [appState, setAppState] = useState<AppState>('idea-submission');
   const [userIdea, setUserIdea] = useState('');
   const [currentIdea, setCurrentIdea] = useState(''); // Add state to preserve current idea being typed
@@ -21,6 +21,13 @@ const Index = ({user, setUser}) => {
   const [authModal, setAuthModal] = useState<AuthModal>(null);
   const [pendingIdea, setPendingIdea] = useState<string>('');
   const [isSubmittingIdea, setIsSubmittingIdea] = useState(false);
+
+  // Handle logout from other pages
+  useEffect(() => {
+    if (location.state?.logout) {
+      handleLogout();
+    }
+  }, [location.state]);
 
   const handleIdeaSubmit = (idea: string) => {
     if (!user) {

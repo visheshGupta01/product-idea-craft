@@ -15,11 +15,16 @@ import {
   Shield, 
   User, 
   Settings,
-  MoreHorizontal
+  MoreHorizontal,
+  LogOut
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-const TeamPage = () => {
+interface TeamPageProps {
+  onLogout?: () => void;
+}
+
+const TeamPage = ({ onLogout }: TeamPageProps) => {
   const [inviteEmail, setInviteEmail] = useState('');
 
   const teamMembers = [
@@ -88,6 +93,12 @@ const TeamPage = () => {
     }
   };
 
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
@@ -100,10 +111,16 @@ const TeamPage = () => {
               <p className="text-sm text-muted-foreground">Manage your team members and permissions</p>
             </div>
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Invite Member
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Invite Member
+            </Button>
+            <Button variant="destructive" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 

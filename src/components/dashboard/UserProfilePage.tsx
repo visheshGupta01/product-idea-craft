@@ -62,6 +62,12 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
     // Reset to original data if needed
   };
 
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
   const stats = [
     { label: 'Projects', value: '12', color: 'text-blue-600' },
     { label: 'Completed', value: '8', color: 'text-green-600' },
@@ -97,12 +103,10 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Profile
                   </Button>
-                  {onLogout && (
-                    <Button variant="destructive" onClick={onLogout}>
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
-                    </Button>
-                  )}
+                  <Button variant="destructive" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
                 </>
               )}
             </div>
