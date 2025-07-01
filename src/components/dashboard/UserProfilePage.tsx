@@ -9,22 +9,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Settings, 
-  Bell, 
-  Shield, 
   CreditCard,
-  Github,
-  Globe,
   Edit,
   Save,
   X,
   Upload,
-  LogOut
 } from 'lucide-react';
 
 interface UserProfilePageProps {
@@ -61,13 +50,6 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
     setIsEditing(false);
     // Reset to original data if needed
   };
-
-  const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
-  };
-
   const stats = [
     { label: 'Projects', value: '12', color: 'text-blue-600' },
     { label: 'Completed', value: '8', color: 'text-green-600' },
@@ -102,10 +84,6 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                   <Button onClick={() => setIsEditing(true)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Profile
-                  </Button>
-                  <Button variant="destructive" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
                   </Button>
                 </>
               )}

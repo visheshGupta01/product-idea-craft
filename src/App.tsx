@@ -15,10 +15,7 @@ import { useState } from "react";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [user, setUser] = useState({
-    name: "Vishesh",
-    email: "lodalasan@synlabs.io",
-  });
+  const [user, setUser] = useState(null);
 return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

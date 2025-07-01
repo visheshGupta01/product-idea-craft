@@ -24,7 +24,7 @@ const Profile = ({ user }: ProfileProps) => {
         onSignupClick={() => {}}
         onLogout={handleLogout}
       />
-      <UserProfilePage onLogout={handleLogout} />
+      <UserProfilePage/>
     </div>
   );
 };
