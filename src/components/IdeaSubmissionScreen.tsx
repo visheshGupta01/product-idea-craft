@@ -276,7 +276,7 @@ const IdeaSubmissionScreen = ({
                     ) : (
                       <div className="flex flex-col items-center">
                         <Sparkles className="w-5 h-5 mb-1 group-hover:animate-bounce" />
-                        <span>Start Building...</span>
+                        <span>Start Building</span>
                       </div>
                     )}
                   </button>
