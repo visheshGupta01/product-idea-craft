@@ -38,22 +38,26 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
             >
               Community
             </Link>
-            <Link
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive('/teams') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-              to="/teams"
-            >
-              Teams
-            </Link>
-            <Link
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive('/profile') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-              to="/profile"
-            >
-              Profile
-            </Link>
+            {user && (
+              <>
+                <Link
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/teams') ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                  to="/teams"
+                >
+                  Teams
+                </Link>
+                <Link
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/profile') ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                  to="/profile"
+                >
+                  Profile
+                </Link>
+              </>
+            )}
           </nav>
           
           <div className="flex items-center space-x-2">
