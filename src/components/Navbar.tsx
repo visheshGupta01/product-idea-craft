@@ -38,26 +38,6 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
             >
               Community
             </Link>
-            {user && (
-              <>
-                <Link
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    isActive('/teams') ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                  to="/teams"
-                >
-                  Teams
-                </Link>
-                <Link
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    isActive('/profile') ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                  to="/profile"
-                >
-                  Profile
-                </Link>
-              </>
-            )}
           </nav>
           
           <div className="flex items-center space-x-2">
@@ -82,20 +62,20 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center">
+                    <Link to="/profile" className="flex items-center w-full">
                       <User className="mr-2 h-4 w-4" />
                       Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/teams" className="flex items-center w-full">
+                      <Users className="mr-2 h-4 w-4" />
+                      Teams
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/teams" className="flex items-center">
-                      <Users className="mr-2 h-4 w-4" />
-                      Teams
-                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onLogout}>
