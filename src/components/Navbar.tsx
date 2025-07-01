@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,24 +14,46 @@ interface NavbarProps {
 }
 
 const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center px-4">
         <div className="mr-4 flex">
-          <a className="mr-6 flex items-center space-x-2" href="/">
-            <img className="h-9 w-9 rounded" src='logo.png'></img>
+          <Link className="mr-6 flex items-center space-x-2" to="/">
+            <img className="h-9 w-9 rounded" src='logo.png' alt="logo" />
             <span className="font-bold">imagine.bo</span>
-          </a>
+          </Link>
         </div>
         
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <nav className="flex items-center space-x-6">
-            <a
-              className="text-sm font-medium transition-colors hover:text-primary"
-              href="#community"
+            <Link
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/community') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+              to="/community"
             >
               Community
-            </a>
+            </Link>
+            <Link
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/teams') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+              to="/teams"
+            >
+              Teams
+            </Link>
+            <Link
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/profile') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+              to="/profile"
+            >
+              Profile
+            </Link>
           </nav>
           
           <div className="flex items-center space-x-2">
@@ -54,17 +77,21 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Users className="mr-2 h-4 w-4" />
-                    Team
+                  <DropdownMenuItem asChild>
+                    <Link to="/teams" className="flex items-center">
+                      <Users className="mr-2 h-4 w-4" />
+                      Teams
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onLogout}>
