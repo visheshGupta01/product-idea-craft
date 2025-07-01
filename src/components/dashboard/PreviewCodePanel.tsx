@@ -47,7 +47,7 @@ const PreviewCodePanel = () => {
     }
   };
 
-  const iframeSrc = 'https://2037f7ae-5cce-45b4-87be-ee3f135a1be3.lovableproject.com/?__lovable_token=example-token';
+  const iframeSrc = "https://imaginebo.lovable.app/";
 
   if (isFullscreen) {
     return (

@@ -10,10 +10,16 @@ import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import Teams from "./pages/Teams";
 import NotFound from "./pages/NotFound";
+import { useState } from "react";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  const [user, setUser] = useState({
+    name: "Vishesh",
+    email: "lodalasan@synlabs.io",
+  });
+return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <TooltipProvider>
@@ -21,10 +27,10 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/teams" element={<Teams />} />
+            <Route path="/" element={<Index user={user} setUser={setUser} />} />
+            <Route path="/community" element={<Community user={user} />} />
+            <Route path="/profile" element={<Profile user={user} />} />
+            <Route path="/teams" element={<Teams user={user} />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -33,5 +39,5 @@ const App = () => (
     </ThemeProvider>
   </QueryClientProvider>
 );
-
+}
 export default App;

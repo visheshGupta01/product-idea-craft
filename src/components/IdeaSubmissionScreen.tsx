@@ -204,7 +204,7 @@ const IdeaSubmissionScreen = ({
           <div className="relative z-10 max-w-4xl mx-auto mb-8 sm:mb-12 animate-fade-up animate-delay-200">
             <div className="relative group">
               {/* Animated background gradient */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse" />
               
               <div className="relative bg-gradient-to-br from-card/98 via-card/95 to-card/90 backdrop-blur-xl border border-border/30 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-primary/5 hover:shadow-3xl hover:shadow-primary/15 transition-all duration-700 hover:scale-[1.02] hover:border-primary/20">
                 {/* Floating decorative elements */}
@@ -219,7 +219,7 @@ const IdeaSubmissionScreen = ({
                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-500 hover:scale-110">
                           <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-bounce-subtle" />
                         </div>
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-ping opacity-20" />
+                       
                       </div>
                       <div className="text-center">
                         <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary bg-clip-text text-transparent">
@@ -341,18 +341,16 @@ const IdeaSubmissionScreen = ({
     >
       {/* Interactive background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
+        <div
           className="absolute w-96 h-96 bg-primary/3 rounded-full blur-3xl transition-all duration-1000 ease-out opacity-70"
           style={{
             left: mousePosition.x - 192,
             top: mousePosition.y - 192,
-            transform: `translate(${Math.sin(Date.now() / 3000) * 30}px, ${Math.cos(Date.now() / 4000) * 20}px)`
+            transform: `translate(${Math.sin(Date.now() / 3000) * 30}px, ${
+              Math.cos(Date.now() / 4000) * 20
+            }px)`,
           }}
         />
-        <div className="absolute top-20 left-10 w-2 h-2 bg-primary/40 rounded-full animate-pulse" />
-        <div className="absolute top-40 right-20 w-1.5 h-1.5 bg-primary/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-40 left-20 w-1 h-1 bg-primary/35 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-20 right-40 w-2 h-2 bg-primary/25 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
       </div>
 
       {/* Animated textbox overlay */}
@@ -400,7 +398,7 @@ const IdeaSubmissionScreen = ({
               </div>
             </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary/90 to-primary bg-clip-text text-transparent animate-gradient hover:scale-105 transition-transform duration-500 cursor-default">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary/90 to-primary bg-clip-text text-transparent animate-gradient hover:scale-105 transition-transform duration-500 cursor-default sm:leading-[1.1] md:leading-[1.1] lg:leading-[1.1]">
             Imagine.bo
           </h1>
           <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground mb-3 hover:text-foreground transition-colors duration-500">
@@ -446,7 +444,8 @@ const IdeaSubmissionScreen = ({
         {/* Enhanced Footer */}
         <div className="text-center text-sm sm:text-base text-muted-foreground animate-fade-up animate-delay-500 mt-16 hover:text-foreground transition-colors duration-500">
           <p>
-            Join thousands of builders who have launched their ideas with Imagine.bo
+            Join thousands of builders who have launched their ideas with
+            Imagine.bo
           </p>
         </div>
       </div>

@@ -18,66 +18,125 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
-const Teams = () => {
+const Teams = ({ user: user_real }) => {
   const teams = [
     {
       id: 1,
       name: "Innovation Labs",
-      description: "Building the future of productivity tools with AI and automation",
+      description:
+        "Building the future of productivity tools with AI and automation",
       members: [
-        { name: "Sarah Chen", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah", role: "Owner" },
-        { name: "Mike Johnson", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike", role: "Developer" },
-        { name: "Lisa Park", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa", role: "Designer" },
-        { name: "Alex Smith", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex", role: "Developer" }
+        {
+          name: "Sarah Chen",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah",
+          role: "Owner",
+        },
+        {
+          name: "Mike Johnson",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike",
+          role: "Developer",
+        },
+        {
+          name: "Lisa Park",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa",
+          role: "Designer",
+        },
+        {
+          name: "Alex Smith",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex",
+          role: "Developer",
+        },
       ],
       projects: 8,
       created: "2024-01-15",
-      isOwner: true
+      isOwner: true,
     },
     {
       id: 2,
       name: "Creative Collective",
-      description: "Artists and developers collaborating on creative digital experiences",
+      description:
+        "Artists and developers collaborating on creative digital experiences",
       members: [
-        { name: "Emma Wilson", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=emma", role: "Owner" },
-        { name: "David Brown", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=david", role: "Artist" },
-        { name: "Sarah Chen", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah", role: "Developer" }
+        {
+          name: "Emma Wilson",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=emma",
+          role: "Owner",
+        },
+        {
+          name: "David Brown",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=david",
+          role: "Artist",
+        },
+        {
+          name: "Sarah Chen",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah",
+          role: "Developer",
+        },
       ],
       projects: 5,
       created: "2024-01-10",
-      isOwner: false
+      isOwner: false,
     },
     {
       id: 3,
       name: "Startup Builders",
-      description: "Fast-moving team focused on building and launching MVPs quickly",
+      description:
+        "Fast-moving team focused on building and launching MVPs quickly",
       members: [
-        { name: "John Doe", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john", role: "Owner" },
-        { name: "Sarah Chen", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah", role: "Co-founder" },
-        { name: "Jane Smith", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane", role: "Product Manager" }
+        {
+          name: "John Doe",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john",
+          role: "Owner",
+        },
+        {
+          name: "Sarah Chen",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah",
+          role: "Co-founder",
+        },
+        {
+          name: "Jane Smith",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane",
+          role: "Product Manager",
+        },
       ],
       projects: 12,
       created: "2023-12-20",
-      isOwner: false
-    }
+      isOwner: false,
+    },
   ];
 
   const recentActivity = [
-    { team: "Innovation Labs", action: "launched new project", time: "2 hours ago" },
-    { team: "Creative Collective", action: "added new member", time: "1 day ago" },
-    { team: "Startup Builders", action: "completed milestone", time: "2 days ago" },
-    { team: "Innovation Labs", action: "updated team settings", time: "3 days ago" }
+    {
+      team: "Innovation Labs",
+      action: "launched new project",
+      time: "2 hours ago",
+    },
+    {
+      team: "Creative Collective",
+      action: "added new member",
+      time: "1 day ago",
+    },
+    {
+      team: "Startup Builders",
+      action: "completed milestone",
+      time: "2 days ago",
+    },
+    {
+      team: "Innovation Labs",
+      action: "updated team settings",
+      time: "3 days ago",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar
-        user={null}
+        user={user_real}
         onLoginClick={() => {}}
         onSignupClick={() => {}}
         onLogout={() => {}}
       />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -98,7 +157,10 @@ const Teams = () => {
           <div className="lg:col-span-2">
             <div className="grid gap-6">
               {teams.map((team) => (
-                <Card key={team.id} className="hover:shadow-lg transition-shadow">
+                <Card
+                  key={team.id}
+                  className="hover:shadow-lg transition-shadow"
+                >
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-3">
@@ -108,10 +170,13 @@ const Teams = () => {
                         <div>
                           <CardTitle className="flex items-center gap-2">
                             {team.name}
-                            {team.isOwner && <Crown className="w-4 h-4 text-yellow-500" />}
+                            {team.isOwner && (
+                              <Crown className="w-4 h-4 text-yellow-500" />
+                            )}
                           </CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            {team.members.length} members • {team.projects} projects
+                            {team.members.length} members • {team.projects}{" "}
+                            projects
                           </p>
                         </div>
                       </div>
@@ -121,8 +186,10 @@ const Teams = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground mb-4">{team.description}</p>
-                    
+                    <p className="text-muted-foreground mb-4">
+                      {team.description}
+                    </p>
+
                     {/* Members */}
                     <div className="mb-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -134,8 +201,14 @@ const Teams = () => {
                       <div className="flex items-center gap-2">
                         <div className="flex -space-x-2">
                           {team.members.slice(0, 4).map((member, index) => (
-                            <Avatar key={index} className="w-8 h-8 border-2 border-background">
-                              <AvatarImage src={member.avatar} alt={member.name} />
+                            <Avatar
+                              key={index}
+                              className="w-8 h-8 border-2 border-background"
+                            >
+                              <AvatarImage
+                                src={member.avatar}
+                                alt={member.name}
+                              />
                               <AvatarFallback className="text-xs">
                                 {member.name.charAt(0)}
                               </AvatarFallback>
@@ -143,17 +216,23 @@ const Teams = () => {
                           ))}
                           {team.members.length > 4 && (
                             <div className="w-8 h-8 bg-muted rounded-full border-2 border-background flex items-center justify-center">
-                              <span className="text-xs font-medium">+{team.members.length - 4}</span>
+                              <span className="text-xs font-medium">
+                                +{team.members.length - 4}
+                              </span>
                             </div>
                           )}
                         </div>
-                        <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1 text-xs"
+                        >
                           <UserPlus className="w-3 h-3" />
                           Invite
                         </Button>
                       </div>
                     </div>
-                    
+
                     {/* Actions */}
                     <div className="flex gap-2 pt-4 border-t">
                       <Button variant="outline" size="sm" className="gap-2">
@@ -187,12 +266,20 @@ const Teams = () => {
                     <span className="font-semibold">{teams.length}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total Projects</span>
-                    <span className="font-semibold">{teams.reduce((acc, team) => acc + team.projects, 0)}</span>
+                    <span className="text-sm text-muted-foreground">
+                      Total Projects
+                    </span>
+                    <span className="font-semibold">
+                      {teams.reduce((acc, team) => acc + team.projects, 0)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Teams Owned</span>
-                    <span className="font-semibold">{teams.filter(team => team.isOwner).length}</span>
+                    <span className="text-sm text-muted-foreground">
+                      Teams Owned
+                    </span>
+                    <span className="font-semibold">
+                      {teams.filter((team) => team.isOwner).length}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -213,9 +300,12 @@ const Teams = () => {
                       <div className="w-2 h-2 bg-primary rounded-full mt-2" />
                       <div className="flex-1">
                         <p className="text-sm">
-                          <span className="font-medium">{activity.team}</span> {activity.action}
+                          <span className="font-medium">{activity.team}</span>{" "}
+                          {activity.action}
                         </p>
-                        <p className="text-xs text-muted-foreground">{activity.time}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {activity.time}
+                        </p>
                       </div>
                     </div>
                   ))}

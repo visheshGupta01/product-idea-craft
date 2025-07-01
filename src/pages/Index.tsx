@@ -11,12 +11,13 @@ import SignupPage from '../components/auth/SignupPage';
 type AppState = 'idea-submission' | 'follow-up-questions' | 'verification' | 'dashboard';
 type AuthModal = 'login' | 'signup' | null;
 
-const Index = () => {
+
+const Index = ({user, setUser}) => {
   const [appState, setAppState] = useState<AppState>('idea-submission');
   const [userIdea, setUserIdea] = useState('');
   const [currentIdea, setCurrentIdea] = useState(''); // Add state to preserve current idea being typed
   const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
-  const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
+  // const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
   const [authModal, setAuthModal] = useState<AuthModal>(null);
   const [pendingIdea, setPendingIdea] = useState<string>('');
   const [isSubmittingIdea, setIsSubmittingIdea] = useState(false);

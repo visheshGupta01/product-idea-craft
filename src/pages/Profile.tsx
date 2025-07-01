@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
-const Profile = () => {
+const Profile = ({user:user_real}) => {
   const user = {
     name: "Sarah Chen",
     email: "sarah.chen@example.com",
@@ -78,7 +78,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar
-        user={null}
+        user={user_real}
         onLoginClick={() => {}}
         onSignupClick={() => {}}
         onLogout={() => {}}
