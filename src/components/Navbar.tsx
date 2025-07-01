@@ -18,6 +18,10 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
   
   const isActive = (path: string) => location.pathname === path;
 
+  const handleLogout = () => {
+    onLogout();
+  };
+
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center px-4">
@@ -78,7 +82,7 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={onLogout}>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
                   </DropdownMenuItem>
