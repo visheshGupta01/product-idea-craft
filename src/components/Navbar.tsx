@@ -61,13 +61,13 @@ const Navbar = ({ user, onLoginClick, onSignupClick, onLogout }: NavbarProps) =>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                     <Link to="/profile" className="flex items-center w-full">
                       <User className="mr-2 h-4 w-4" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                     <Link to="/teams" className="flex items-center w-full">
                       <Users className="mr-2 h-4 w-4" />
                       Teams
