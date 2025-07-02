@@ -10,6 +10,8 @@ import Profile from "./pages/Profile";
 import Teams from "./pages/Teams";
 import NotFound from "./pages/NotFound";
 import UserProvider from "@/context/UserProvider"; // ✅ Only exports a component
+import ProtectedRoute from "./components/ProtectedRoute";
+
 
 const queryClient = new QueryClient();
 
@@ -24,9 +26,30 @@ const App = () => {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/community" element={<Community />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/teams" element={<Teams />} />
+                <Route
+                  path="/community"
+                  element={
+                    <ProtectedRoute>
+                      <Community />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teams"
+                  element={
+                    <ProtectedRoute>
+                      <Teams />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
