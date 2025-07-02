@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,10 +13,61 @@ import {
   Filter,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { useUser } from "@/context/UserContext"; // ✅ import context
+import LoginPage from "@/components/auth/LoginPage";
+import SignupPage from "@/components/auth/SignupPage";
+import { useUser } from "@/context/UserContext";
+import { useLocation } from "react-router-dom";
+
+type AuthModal = "login" | "signup" | null;
+type AppState =
+  | "idea-submission"
+  | "follow-up-questions"
+  | "verification"
+  | "dashboard";
 
 const Community = () => {
-  const { user } = useUser(); // ✅ access user from context
+  const { user,signup,logout } = useUser();
+  const [authModal, setAuthModal] = useState<AuthModal>(null);
+  const [appState, setAppState] = useState<AppState>("idea-submission");
+  const [isSubmittingIdea, setIsSubmittingIdea] = useState(false);
+    const location = useLocation();
+  
+  const handleSignup = async (
+    email: string,
+    password: string,
+    name: string
+  ) => {
+    try {
+      await signup(
+        name,
+        email,
+        password, // if your context accepts and uses this
+        false
+      ); // call signup from context
+      setAuthModal(null);
+      setIsSubmittingIdea(false);
+      setAppState("verification"); // trigger email verification screen
+    } catch (error) {
+      console.error("Signup failed:", error);
+      // TODO: Show error to user if needed
+    }
+  };
+
+const handleLogout = useCallback(() => {
+    logout(); // <- from context
+    setAppState("idea-submission");
+    setIsSubmittingIdea(false);
+  }, [logout]);
+  
+  useEffect(() => {
+    if (location.state?.logout) {
+      handleLogout();
+    }
+  }, [location.state, handleLogout]);
+
+  const handleAuthModalClose = () => {
+    setAuthModal(null);
+  };
 
   const projects = [
     {
@@ -130,9 +182,9 @@ const Community = () => {
     <div className="min-h-screen bg-background">
       <Navbar
         user={user}
-        onLoginClick={() => {}}
-        onSignupClick={() => {}}
-        onLogout={() => {}}
+        onLoginClick={() => setAuthModal("login")}
+        onSignupClick={() => setAuthModal("signup")}
+        onLogout={handleLogout}
       />
 
       <div className="container mx-auto px-4 py-8">
@@ -249,6 +301,21 @@ const Community = () => {
           </Button>
         </div>
       </div>
+
+      {authModal === "login" && (
+        <LoginPage
+          onSwitchToSignup={() => setAuthModal("signup")}
+          onClose={handleAuthModalClose}
+        />
+      )}
+
+      {authModal === "signup" && (
+        <SignupPage
+          onSignup={handleSignup} // ✅ pass this
+          onSwitchToLogin={() => setAuthModal("login")}
+          onClose={handleAuthModalClose}
+        />
+      )}
     </div>
   );
 };
