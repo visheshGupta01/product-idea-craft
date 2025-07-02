@@ -1,19 +1,16 @@
+import React from "react";
+import UserProfilePage from "../components/dashboard/UserProfilePage";
+import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext"; // ✅ context hook
 
-import React from 'react';
-import UserProfilePage from '../components/dashboard/UserProfilePage';
-import Navbar from '../components/Navbar';
-import { useNavigate } from 'react-router-dom';
-
-interface ProfileProps {
-  user: { name: string; email: string; avatar?: string } | null;
-}
-
-const Profile = ({ user }: ProfileProps) => {
+const Profile = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useUser(); // ✅ get user from context
 
   const handleLogout = () => {
-    // Navigate back to home and trigger logout
-    navigate('/', { state: { logout: true } });
+    setUser(null); // ✅ clear user from context
+    navigate("/", { state: { logout: true } });
   };
 
   return (
@@ -24,7 +21,7 @@ const Profile = ({ user }: ProfileProps) => {
         onSignupClick={() => {}}
         onLogout={handleLogout}
       />
-      <UserProfilePage/>
+      <UserProfilePage />
     </div>
   );
 };

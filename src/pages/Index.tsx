@@ -1,151 +1,148 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import IdeaSubmissionScreen from '../components/IdeaSubmissionScreen';
-import FollowUpQuestions from '../components/FollowUpQuestions';
-import VerificationScreen from '../components/VerificationScreen';
-import MainDashboard from '../components/MainDashboard';
-import Navbar from '../components/Navbar';
-import LoginPage from '../components/auth/LoginPage';
-import SignupPage from '../components/auth/SignupPage';
+import React, { useState, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
+import IdeaSubmissionScreen from "../components/IdeaSubmissionScreen";
+import FollowUpQuestions from "../components/FollowUpQuestions";
+import VerificationScreen from "../components/VerificationScreen";
+import MainDashboard from "../components/MainDashboard";
+import Navbar from "../components/Navbar";
+import LoginPage from "../components/auth/LoginPage";
+import SignupPage from "../components/auth/SignupPage";
+import { useUser } from "@/context/UserContext"; // ✅
 
-type AppState = 'idea-submission' | 'follow-up-questions' | 'verification' | 'dashboard';
-type AuthModal = 'login' | 'signup' | null;
+type AppState =
+  | "idea-submission"
+  | "follow-up-questions"
+  | "verification"
+  | "dashboard";
+type AuthModal = "login" | "signup" | null;
 
-const Index = ({user, setUser}) => {
+const Index = () => {
   const location = useLocation();
-  const [appState, setAppState] = useState<AppState>('idea-submission');
-  const [userIdea, setUserIdea] = useState('');
-  const [currentIdea, setCurrentIdea] = useState(''); // Add state to preserve current idea being typed
-  const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
-  // const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
+  const { user, setUser } = useUser(); // ✅ use context
+  const [appState, setAppState] = useState<AppState>("idea-submission");
+  const [userIdea, setUserIdea] = useState("");
+  const [currentIdea, setCurrentIdea] = useState("");
+  const [followUpAnswers, setFollowUpAnswers] = useState<
+    Record<string, string>
+  >({});
   const [authModal, setAuthModal] = useState<AuthModal>(null);
-  const [pendingIdea, setPendingIdea] = useState<string>('');
+  const [pendingIdea, setPendingIdea] = useState<string>("");
   const [isSubmittingIdea, setIsSubmittingIdea] = useState(false);
 
-  // Handle logout from other pages
+  const handleLogout = useCallback(() => {
+    setUser(null);
+    setAppState("idea-submission");
+    setUserIdea("");
+    setCurrentIdea("");
+    setFollowUpAnswers({});
+    setPendingIdea("");
+    setIsSubmittingIdea(false);
+  }, [setUser]);
+
   useEffect(() => {
     if (location.state?.logout) {
       handleLogout();
     }
-  }, [location.state]);
+  }, [location.state, handleLogout]);
 
   const handleIdeaSubmit = (idea: string) => {
     if (!user) {
-      // Store the idea and show login modal
       setPendingIdea(idea);
       setIsSubmittingIdea(true);
-      setAuthModal('login');
+      setAuthModal("login");
       return;
     }
-    
+
     setUserIdea(idea);
-    setCurrentIdea(''); // Clear current idea after submission
-    setAppState('follow-up-questions');
+    setCurrentIdea("");
+    setAppState("follow-up-questions");
   };
 
   const handleFollowUpComplete = (answers: Record<string, string>) => {
     setFollowUpAnswers(answers);
-    setAppState('verification');
+    setAppState("verification");
   };
 
   const handleVerificationComplete = () => {
-    setAppState('dashboard');
+    setAppState("dashboard");
   };
 
   const handleBackToIdea = () => {
-    setAppState('idea-submission');
+    setAppState("idea-submission");
   };
 
   const handleBackToFollowUp = (preservedAnswers?: Record<string, string>) => {
     if (preservedAnswers) {
       setFollowUpAnswers(preservedAnswers);
     }
-    setAppState('follow-up-questions');
+    setAppState("follow-up-questions");
   };
 
   const handleLogin = (email: string, password: string) => {
-    // Simulate login - in real app, this would call an API
     const userData = {
-      name: email.split('@')[0],
+      name: email.split("@")[0],
       email: email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
     };
     setUser(userData);
     setAuthModal(null);
     setIsSubmittingIdea(false);
-    
-    // If there was a pending idea, process it now
+
     if (pendingIdea) {
       setUserIdea(pendingIdea);
-      setPendingIdea('');
-      setCurrentIdea('');
-      setAppState('follow-up-questions');
+      setPendingIdea("");
+      setCurrentIdea("");
+      setAppState("follow-up-questions");
     }
   };
 
   const handleSignup = (email: string, password: string, name: string) => {
-    // Simulate signup - in real app, this would call an API
     const userData = {
-      name: name,
-      email: email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
+      name,
+      email,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
     };
     setUser(userData);
     setAuthModal(null);
     setIsSubmittingIdea(false);
-    
-    // If there was a pending idea, process it now
-    if (pendingIdea) {
-      setUserIdea(pendingIdea);
-      setPendingIdea('');
-      setCurrentIdea('');
-      setAppState('follow-up-questions');
-    }
+
+    // Move to verification step instead of follow-up
+    setAppState("verification");
   };
+  
 
   const handleAuthModalClose = () => {
     setAuthModal(null);
-    setPendingIdea('');
+    setPendingIdea("");
     setIsSubmittingIdea(false);
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    setAppState('idea-submission');
-    setUserIdea('');
-    setCurrentIdea('');
-    setFollowUpAnswers({});
-    setPendingIdea('');
-    setIsSubmittingIdea(false);
-  };
-
-  const isFullSizePage = appState !== 'idea-submission';
+  const isFullSizePage = appState !== "idea-submission";
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Show navbar only on idea submission page */}
-      {appState === 'idea-submission' && (
+      {appState === "idea-submission" && (
         <Navbar
           user={user}
-          onLoginClick={() => setAuthModal('login')}
-          onSignupClick={() => setAuthModal('signup')}
+          onLoginClick={() => setAuthModal("login")}
+          onSignupClick={() => setAuthModal("signup")}
           onLogout={handleLogout}
         />
       )}
-      
+
       <div className={isFullSizePage ? "h-screen" : ""}>
-        {appState === 'idea-submission' && (
-          <IdeaSubmissionScreen 
-            onIdeaSubmit={handleIdeaSubmit} 
-            user={user} 
+        {appState === "idea-submission" && (
+          <IdeaSubmissionScreen
+            onIdeaSubmit={handleIdeaSubmit}
+            user={user}
             isSubmitting={isSubmittingIdea}
             idea={currentIdea}
             onIdeaChange={setCurrentIdea}
           />
         )}
-        
-        {appState === 'follow-up-questions' && (
-          <FollowUpQuestions 
+
+        {appState === "follow-up-questions" && (
+          <FollowUpQuestions
             userIdea={userIdea}
             onComplete={handleFollowUpComplete}
             onBack={handleBackToIdea}
@@ -153,35 +150,34 @@ const Index = ({user, setUser}) => {
           />
         )}
 
-        {appState === 'verification' && (
-          <VerificationScreen 
+        {appState === "verification" && (
+          <VerificationScreen
             onComplete={handleVerificationComplete}
             onBack={handleBackToFollowUp}
             followUpAnswers={followUpAnswers}
           />
         )}
-        
-        {appState === 'dashboard' && (
-          <MainDashboard 
-            userIdea={userIdea} 
+
+        {appState === "dashboard" && (
+          <MainDashboard
+            userIdea={userIdea}
             followUpAnswers={followUpAnswers}
           />
         )}
       </div>
 
-      {/* Auth Modals */}
-      {authModal === 'login' && (
+      {authModal === "login" && (
         <LoginPage
           onLogin={handleLogin}
-          onSwitchToSignup={() => setAuthModal('signup')}
+          onSwitchToSignup={() => setAuthModal("signup")}
           onClose={handleAuthModalClose}
         />
       )}
 
-      {authModal === 'signup' && (
+      {authModal === "signup" && (
         <SignupPage
           onSignup={handleSignup}
-          onSwitchToLogin={() => setAuthModal('login')}
+          onSwitchToLogin={() => setAuthModal("login")}
           onClose={handleAuthModalClose}
         />
       )}

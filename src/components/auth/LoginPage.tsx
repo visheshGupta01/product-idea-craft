@@ -1,10 +1,17 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
+import { useUser } from "@/context/UserContext"; // ✅ import user context
 
 interface LoginPageProps {
   onLogin: (email: string, password: string) => void;
@@ -12,20 +19,34 @@ interface LoginPageProps {
   onClose: () => void;
 }
 
-const LoginPage = ({ onLogin, onSwitchToSignup, onClose }: LoginPageProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginPage: React.FC<LoginPageProps> = ({
+  onLogin,
+  onSwitchToSignup,
+  onClose,
+}) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { setUser } = useUser(); // ✅ use context
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Simulate login
     setTimeout(() => {
-      onLogin(email, password);
+      const userData = {
+        name: email.split("@")[0],
+        email,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+      };
+      setUser(userData); // ✅ login using context
       setIsLoading(false);
+      onClose(); // close modal
     }, 1000);
   };
 
@@ -35,7 +56,9 @@ const LoginPage = ({ onLogin, onSwitchToSignup, onClose }: LoginPageProps) => {
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>×</Button>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              ×
+            </Button>
           </div>
           <CardDescription>
             Enter your email and password to access your account
@@ -85,7 +108,7 @@ const LoginPage = ({ onLogin, onSwitchToSignup, onClose }: LoginPageProps) => {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
             <div className="text-sm text-center text-muted-foreground">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <button
                 type="button"
                 onClick={onSwitchToSignup}

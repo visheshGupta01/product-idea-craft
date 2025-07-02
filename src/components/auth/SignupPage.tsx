@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, Mail } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Eye, EyeOff, Mail } from "lucide-react";
+import { useUser } from "@/context/UserContext"; // ✅ import user context
 
 interface SignupPageProps {
   onSignup: (email: string, password: string, name: string) => void;
@@ -11,87 +19,54 @@ interface SignupPageProps {
   onClose: () => void;
 }
 
-const SignupPage = ({ onSignup, onSwitchToLogin, onClose }: SignupPageProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+const SignupPage: React.FC<SignupPageProps> = ({
+  onSignup,
+  onSwitchToLogin,
+  onClose,
+}) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
 
+  const { setUser } = useUser(); // ✅ use context
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate signup and email sending
+
+    // Simulate server delay
     setTimeout(() => {
+      onSignup(email, password, name);
       setIsLoading(false);
-      setShowVerification(true);
     }, 1000);
+  };
+
+  const handleVerificationSuccess = () => {
+    const userData = {
+      name,
+      email,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+    };
+    setUser(userData); // ✅ add user to context
+    onClose(); // close modal
   };
 
   const resendVerificationEmail = () => {
     // Simulate resending verification email
-    console.log('Resending verification email to:', email);
+    console.log("Resending verification email to:", email);
   };
-
-  if (showVerification) {
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <Card className="w-full max-w-md mx-4">
-          <CardHeader className="space-y-1 text-center">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl font-bold">Check Your Email</CardTitle>
-              <Button variant="ghost" size="sm" onClick={onClose}>×</Button>
-            </div>
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                <Mail className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-            <CardDescription className="text-center">
-              We've sent a verification link to<br />
-              <span className="font-medium">{email}</span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-sm text-muted-foreground text-center">
-              Please check your email and click the verification link to complete your account setup.
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-center text-muted-foreground">
-              Didn't receive the email?{' '}
-              <button
-                type="button"
-                onClick={resendVerificationEmail}
-                className="text-primary hover:underline"
-              >
-                Resend email
-              </button>
-            </div>
-            <div className="text-sm text-center text-muted-foreground">
-              <button
-                type="button"
-                onClick={() => setShowVerification(false)}
-                className="text-primary hover:underline"
-              >
-                Change email address
-              </button>
-            </div>
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>×</Button>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              ×
+            </Button>
           </div>
           <CardDescription>
             Create an account to start building your ideas
@@ -152,7 +127,7 @@ const SignupPage = ({ onSignup, onSwitchToLogin, onClose }: SignupPageProps) => 
               {isLoading ? "Creating account..." : "Sign Up"}
             </Button>
             <div className="text-sm text-center text-muted-foreground">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <button
                 type="button"
                 onClick={onSwitchToLogin}

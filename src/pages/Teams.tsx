@@ -1,19 +1,16 @@
+import React from "react";
+import TeamPage from "../components/dashboard/TeamPage";
+import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext"; // ✅ use context
 
-import React from 'react';
-import TeamPage from '../components/dashboard/TeamPage';
-import Navbar from '../components/Navbar';
-import { useNavigate } from 'react-router-dom';
-
-interface TeamsProps {
-  user: { name: string; email: string; avatar?: string } | null;
-}
-
-const Teams = ({ user }: TeamsProps) => {
+const Teams = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useUser(); // ✅ get from context
 
   const handleLogout = () => {
-    // Navigate back to home and trigger logout
-    navigate('/', { state: { logout: true } });
+    setUser(null); // ✅ logout via context
+    navigate("/", { state: { logout: true } });
   };
 
   return (
