@@ -39,7 +39,7 @@ const IdeaSubmissionScreen = ({
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
   const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
-
+  
   // Use external isSubmitting prop if provided, otherwise use internal state
   const isSubmitting = externalIsSubmitting || internalIsSubmitting;
 
@@ -50,7 +50,7 @@ const IdeaSubmissionScreen = ({
     "Ready to build something amazing?",
     "Let's turn your vision into reality",
     "What innovative idea will you create today?",
-    "Transform your thoughts into digital magic",
+    "Transform your thoughts into digital magic"
   ];
 
   // Mouse tracking for interactive effects
@@ -59,18 +59,17 @@ const IdeaSubmissionScreen = ({
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   // Name typewriter effect
   useEffect(() => {
     if (!user) return;
-
-    const capitalizedName =
-      user.name.charAt(0).toUpperCase() + user.name.slice(1);
+    
+    const capitalizedName = user.name.charAt(0).toUpperCase() + user.name.slice(1);
     let index = 0;
-
+    
     const nameInterval = setInterval(() => {
       if (index < capitalizedName.length) {
         setDisplayedName(capitalizedName.slice(0, index + 1));
@@ -84,52 +83,15 @@ const IdeaSubmissionScreen = ({
   }, [user]);
 
   // Rotating line typewriter effect
-  // Fix Option 1: Add rotatingLines to dependency array
   useEffect(() => {
     if (!user) return;
 
     const typewriteLine = () => {
       const currentLine = rotatingLines[currentLineIndex];
       let charIndex = 0;
-
+      
       setDisplayedLine("");
-
-      const lineInterval = setInterval(() => {
-        if (charIndex < currentLine.length) {
-          setDisplayedLine(currentLine.slice(0, charIndex + 1));
-          charIndex++;
-        } else {
-          clearInterval(lineInterval);
-          setTimeout(() => {
-            setCurrentLineIndex((prev) => (prev + 1) % rotatingLines.length);
-          }, 2000);
-        }
-      }, 50);
-
-      return () => clearInterval(lineInterval);
-    };
-
-    const timeout = setTimeout(typewriteLine, 500);
-    return () => clearTimeout(timeout);
-  }, [currentLineIndex, user, rotatingLines]); // Added rotatingLines here
-
-  // Fix Option 2: Move rotatingLines inside useEffect (Recommended)
-  useEffect(() => {
-    if (!user) return;
-
-    const rotatingLines = [
-      "Ready to build something amazing?",
-      "Let's turn your vision into reality",
-      "What innovative idea will you create today?",
-      "Transform your thoughts into digital magic",
-    ];
-
-    const typewriteLine = () => {
-      const currentLine = rotatingLines[currentLineIndex];
-      let charIndex = 0;
-
-      setDisplayedLine("");
-
+      
       const lineInterval = setInterval(() => {
         if (charIndex < currentLine.length) {
           setDisplayedLine(currentLine.slice(0, charIndex + 1));
@@ -160,13 +122,13 @@ const IdeaSubmissionScreen = ({
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      const fileNames = Array.from(files).map((file) => file.name);
-      setUploadedFiles((prev) => [...prev, ...fileNames]);
+      const fileNames = Array.from(files).map(file => file.name);
+      setUploadedFiles(prev => [...prev, ...fileNames]);
     }
   };
 
   const removeFile = (fileToRemove: string) => {
-    setUploadedFiles((prev) => prev.filter((file) => file !== fileToRemove));
+    setUploadedFiles(prev => prev.filter(file => file !== fileToRemove));
   };
 
   const handleSubmit = () => {
@@ -183,7 +145,7 @@ const IdeaSubmissionScreen = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && e.shiftKey && !isSubmitting && idea.trim()) {
+    if (e.key === 'Enter' && e.shiftKey && !isSubmitting && idea.trim()) {
       e.preventDefault();
       handleSubmit();
     }
@@ -192,13 +154,9 @@ const IdeaSubmissionScreen = ({
   // Listen for recording state changes
   useEffect(() => {
     const checkRecordingState = () => {
-      const micButton = document.querySelector(
-        '[title="Start voice input"], [title="Stop recording"]'
-      );
+      const micButton = document.querySelector('[title="Start voice input"], [title="Stop recording"]');
       if (micButton) {
-        const isCurrentlyRecording = micButton
-          .getAttribute("title")
-          ?.includes("Stop");
+        const isCurrentlyRecording = micButton.getAttribute('title')?.includes('Stop');
         setIsRecording(!!isCurrentlyRecording);
       }
     };
@@ -217,29 +175,18 @@ const IdeaSubmissionScreen = ({
       >
         {/* Interactive background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
+          <div 
             className="absolute w-96 h-96 bg-primary/5 rounded-full blur-3xl transition-all duration-1000 ease-out"
             style={{
               left: mousePosition.x - 192,
               top: mousePosition.y - 192,
-              transform: `translate(${Math.sin(Date.now() / 3000) * 20}px, ${
-                Math.cos(Date.now() / 4000) * 15
-              }px)`,
+              transform: `translate(${Math.sin(Date.now() / 3000) * 20}px, ${Math.cos(Date.now() / 4000) * 15}px)`
             }}
           />
           <div className="absolute top-20 left-10 w-2 h-2 bg-primary/30 rounded-full animate-pulse" />
-          <div
-            className="absolute top-40 right-20 w-1 h-1 bg-primary/40 rounded-full animate-bounce"
-            style={{ animationDelay: "1s" }}
-          />
-          <div
-            className="absolute bottom-40 left-20 w-1.5 h-1.5 bg-primary/20 rounded-full animate-pulse"
-            style={{ animationDelay: "2s" }}
-          />
-          <div
-            className="absolute bottom-20 right-40 w-1 h-1 bg-primary/35 rounded-full animate-bounce"
-            style={{ animationDelay: "0.5s" }}
-          />
+          <div className="absolute top-40 right-20 w-1 h-1 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-40 left-20 w-1.5 h-1.5 bg-primary/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-20 right-40 w-1 h-1 bg-primary/35 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
         </div>
 
         {/* Animated textbox overlay */}
@@ -288,15 +235,12 @@ const IdeaSubmissionScreen = ({
             <div className="relative group">
               {/* Animated background gradient */}
               <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse" />
-
+              
               <div className="relative bg-gradient-to-br from-card/98 via-card/95 to-card/90 backdrop-blur-xl border border-border/30 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-primary/5 hover:shadow-3xl hover:shadow-primary/15 transition-all duration-700 hover:scale-[1.02] hover:border-primary/20">
                 {/* Floating decorative elements */}
                 <div className="absolute top-0 left-0 w-full h-full rounded-3xl bg-gradient-to-br from-primary/3 via-transparent to-primary/3 pointer-events-none" />
                 <div className="absolute -top-2 -right-2 w-16 h-16 bg-gradient-to-br from-primary/15 to-primary/5 rounded-full blur-2xl animate-pulse opacity-60" />
-                <div
-                  className="absolute -bottom-2 -left-2 w-12 h-12 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full blur-xl animate-pulse opacity-40"
-                  style={{ animationDelay: "1s" }}
-                />
+                <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full blur-xl animate-pulse opacity-40" style={{ animationDelay: '1s' }} />
 
                 <div className="relative">
                   <div className="flex items-center justify-center mb-6">
@@ -305,6 +249,7 @@ const IdeaSubmissionScreen = ({
                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-500 hover:scale-110">
                           <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-bounce-subtle" />
                         </div>
+                       
                       </div>
                       <div className="text-center">
                         <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary bg-clip-text text-transparent">
@@ -324,9 +269,7 @@ const IdeaSubmissionScreen = ({
                         <div className="bg-muted/50 rounded-2xl p-3 mb-4 border border-border/30">
                           <div className="flex items-center gap-2 mb-2">
                             <Upload className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm font-medium text-muted-foreground">
-                              Uploaded Files
-                            </span>
+                            <span className="text-sm font-medium text-muted-foreground">Uploaded Files</span>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {uploadedFiles.map((fileName, index) => (
@@ -334,9 +277,7 @@ const IdeaSubmissionScreen = ({
                                 key={index}
                                 className="flex items-center gap-2 bg-background/80 rounded-lg px-3 py-1 text-sm border border-border/20"
                               >
-                                <span className="text-foreground/80">
-                                  {fileName}
-                                </span>
+                                <span className="text-foreground/80">{fileName}</span>
                                 <button
                                   onClick={() => removeFile(fileName)}
                                   className="text-muted-foreground hover:text-destructive transition-colors"
@@ -355,8 +296,7 @@ const IdeaSubmissionScreen = ({
                           value={
                             userTyped
                               ? idea
-                              : idea +
-                                (liveTranscript ? " " + liveTranscript : "")
+                              : idea + (liveTranscript ? " " + liveTranscript : "")
                           }
                           onChange={(e) => {
                             setUserTyped(true);
@@ -379,7 +319,7 @@ const IdeaSubmissionScreen = ({
                           >
                             <Upload className="w-4 h-4" />
                           </Button>
-
+                          
                           {/* Hidden file input */}
                           <input
                             ref={fileInputRef}
@@ -435,16 +375,12 @@ const IdeaSubmissionScreen = ({
                       {isSubmitting ? (
                         <div className="flex flex-col items-center">
                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mb-2"></div>
-                          <span className="text-xs sm:text-sm">
-                            Processing...
-                          </span>
+                          <span className="text-xs sm:text-sm">Processing...</span>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center">
                           <Rocket className="w-5 h-5 sm:w-6 sm:h-6 mb-2 group-hover/button:animate-bounce transition-transform duration-300" />
-                          <span className="whitespace-nowrap">
-                            Start Building
-                          </span>
+                          <span className="whitespace-nowrap">Start Building</span>
                         </div>
                       )}
                     </button>
@@ -457,17 +393,11 @@ const IdeaSubmissionScreen = ({
                       <span>Secure & Private</span>
                     </div>
                     <div className="flex items-center gap-2 hover:text-foreground transition-colors duration-300">
-                      <div
-                        className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50"
-                        style={{ animationDelay: "0.5s" }}
-                      ></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50" style={{ animationDelay: "0.5s" }}></div>
                       <span>AI-Powered</span>
                     </div>
                     <div className="flex items-center gap-2 hover:text-foreground transition-colors duration-300">
-                      <div
-                        className="w-2 h-2 bg-purple-500 rounded-full animate-pulse shadow-lg shadow-purple-500/50"
-                        style={{ animationDelay: "1s" }}
-                      ></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse shadow-lg shadow-purple-500/50" style={{ animationDelay: "1s" }}></div>
                       <span>Lightning Fast</span>
                     </div>
                   </div>
@@ -487,10 +417,7 @@ const IdeaSubmissionScreen = ({
                   Your Recent Projects
                 </h2>
                 <div className="w-8 h-8 bg-gradient-to-br from-primary/25 to-primary/15 rounded-xl flex items-center justify-center shadow-lg">
-                  <Zap
-                    className="w-4 h-4 text-primary animate-pulse"
-                    style={{ animationDelay: "0.5s" }}
-                  />
+                  <Zap className="w-4 h-4 text-primary animate-pulse" style={{ animationDelay: "0.5s" }} />
                 </div>
               </div>
             </div>
