@@ -14,13 +14,11 @@ import { Eye, EyeOff } from "lucide-react";
 import { useUser } from "@/context/UserContext"; // ✅ import user context
 
 interface LoginPageProps {
-  onLogin: (email: string, password: string) => void;
   onSwitchToSignup: () => void;
   onClose: () => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({
-  onLogin,
   onSwitchToSignup,
   onClose,
 }) => {
@@ -29,7 +27,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setUser } = useUser(); // ✅ use context
+  const { login } = useUser();
 
 
 
@@ -37,17 +35,15 @@ const LoginPage: React.FC<LoginPageProps> = ({
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate login
-    setTimeout(() => {
-      const userData = {
-        name: email.split("@")[0],
-        email,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      };
-      setUser(userData); // ✅ login using context
+    try {
+      await login(email, password); // ✅ cleaner, decoupled
+      onClose(); // ✅ close modal
+    } catch (err) {
+      console.error("Login failed", err);
+      // optionally show toast
+    } finally {
       setIsLoading(false);
-      onClose(); // close modal
-    }, 1000);
+    }
   };
 
   return (

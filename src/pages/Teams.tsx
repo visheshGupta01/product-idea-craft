@@ -6,10 +6,10 @@ import { useUser } from "@/context/UserContext"; // ✅ use context
 
 const Teams = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useUser(); // ✅ get from context
+  const { user, logout } = useUser(); // ✅ get from context
 
   const handleLogout = () => {
-    setUser(null); // ✅ logout via context
+    logout(); // ✅ logout via context
     navigate("/", { state: { logout: true } });
   };
 

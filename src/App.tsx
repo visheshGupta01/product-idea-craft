@@ -29,9 +29,7 @@ const App = () => {
                 <Route
                   path="/community"
                   element={
-                    <ProtectedRoute>
                       <Community />
-                    </ProtectedRoute>
                   }
                 />
                 <Route

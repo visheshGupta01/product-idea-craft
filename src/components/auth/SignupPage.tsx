@@ -14,50 +14,41 @@ import { Eye, EyeOff, Mail } from "lucide-react";
 import { useUser } from "@/context/UserContext"; // ✅ import user context
 
 interface SignupPageProps {
-  onSignup: (email: string, password: string, name: string) => void;
   onSwitchToLogin: () => void;
   onClose: () => void;
+  onSignup: (email: string, password: string, name: string) => void; // ✅ Add this
 }
 
+
 const SignupPage: React.FC<SignupPageProps> = ({
-  onSignup,
   onSwitchToLogin,
   onClose,
+  onSignup, // ✅ now it's usable
 }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showVerification, setShowVerification] = useState(false);
 
-  const { setUser } = useUser(); // ✅ use context
+  const { signup } = useUser(); // ✅ use context
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate server delay
-    setTimeout(() => {
+    try {
+      await signup(email, password, name, false); // ✅ cleaner, decoupled
       onSignup(email, password, name);
+      onClose(); // ✅ close modal
+    } catch (err) {
+      console.error("Signup failed", err);
+      // optionally show toast
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
-  const handleVerificationSuccess = () => {
-    const userData = {
-      name,
-      email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-    };
-    setUser(userData); // ✅ add user to context
-    onClose(); // close modal
-  };
-
-  const resendVerificationEmail = () => {
-    // Simulate resending verification email
-    console.log("Resending verification email to:", email);
-  };
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <Card className="w-full max-w-md mx-4">

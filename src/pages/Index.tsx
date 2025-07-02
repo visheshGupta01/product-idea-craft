@@ -18,7 +18,7 @@ type AuthModal = "login" | "signup" | null;
 
 const Index = () => {
   const location = useLocation();
-  const { user, setUser } = useUser(); // ✅ use context
+  const { user, signup,logout } = useUser(); // ✅ FIXED
   const [appState, setAppState] = useState<AppState>("idea-submission");
   const [userIdea, setUserIdea] = useState("");
   const [currentIdea, setCurrentIdea] = useState("");
@@ -29,16 +29,38 @@ const Index = () => {
   const [pendingIdea, setPendingIdea] = useState<string>("");
   const [isSubmittingIdea, setIsSubmittingIdea] = useState(false);
 
+  const handleSignup = async (
+    email: string,
+    password: string,
+    name: string
+  ) => {
+
+    try {
+      await signup(name,
+        email,
+        password, // if your context accepts and uses this
+        false
+); // call signup from context
+      setAuthModal(null);
+      setIsSubmittingIdea(false);
+      setAppState("verification"); // trigger email verification screen
+    } catch (error) {
+      console.error("Signup failed:", error);
+      // TODO: Show error to user if needed
+    }
+  };
+  
+
   const handleLogout = useCallback(() => {
-    setUser(null);
+    logout(); // <- from context
     setAppState("idea-submission");
     setUserIdea("");
     setCurrentIdea("");
     setFollowUpAnswers({});
     setPendingIdea("");
     setIsSubmittingIdea(false);
-  }, [setUser]);
-
+  }, [logout]);
+  
   useEffect(() => {
     if (location.state?.logout) {
       handleLogout();
@@ -77,39 +99,6 @@ const Index = () => {
     }
     setAppState("follow-up-questions");
   };
-
-  const handleLogin = (email: string, password: string) => {
-    const userData = {
-      name: email.split("@")[0],
-      email: email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-    };
-    setUser(userData);
-    setAuthModal(null);
-    setIsSubmittingIdea(false);
-
-    if (pendingIdea) {
-      setUserIdea(pendingIdea);
-      setPendingIdea("");
-      setCurrentIdea("");
-      setAppState("follow-up-questions");
-    }
-  };
-
-  const handleSignup = (email: string, password: string, name: string) => {
-    const userData = {
-      name,
-      email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-    };
-    setUser(userData);
-    setAuthModal(null);
-    setIsSubmittingIdea(false);
-
-    // Move to verification step instead of follow-up
-    setAppState("verification");
-  };
-  
 
   const handleAuthModalClose = () => {
     setAuthModal(null);
@@ -168,7 +157,6 @@ const Index = () => {
 
       {authModal === "login" && (
         <LoginPage
-          onLogin={handleLogin}
           onSwitchToSignup={() => setAuthModal("signup")}
           onClose={handleAuthModalClose}
         />
@@ -176,7 +164,7 @@ const Index = () => {
 
       {authModal === "signup" && (
         <SignupPage
-          onSignup={handleSignup}
+          onSignup={handleSignup} // ✅ pass this
           onSwitchToLogin={() => setAuthModal("login")}
           onClose={handleAuthModalClose}
         />
