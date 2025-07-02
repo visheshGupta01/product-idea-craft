@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Lightbulb, Upload, Mic } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Lightbulb, Upload, X } from 'lucide-react';
 import TextToSpeechPanelComponent, {
   TextToSpeechPanelRef,
 } from "@/components/ui/speech-to-text";
@@ -19,6 +19,7 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers);
   const [isRecording, setIsRecording] = useState<Record<number, boolean>>({});
+  const [uploadedFiles, setUploadedFiles] = useState<Record<number, string[]>>({});
   const speechRefs = useRef<Record<number, TextToSpeechPanelRef | null>>({});
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
@@ -72,16 +73,19 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, questionIndex: number) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      const fileNames = Array.from(files).map(file => file.name).join(', ');
-      const uploadText = `[Uploaded files: ${fileNames}]`;
-      const questionId = questions[questionIndex].id;
-      const currentAnswer = answers[questionId] || '';
-      const newAnswer = currentAnswer + (currentAnswer ? ' ' : '') + uploadText;
-      setAnswers(prev => ({
+      const fileNames = Array.from(files).map(file => file.name);
+      setUploadedFiles(prev => ({
         ...prev,
-        [questionId]: newAnswer
+        [questionIndex]: [...(prev[questionIndex] || []), ...fileNames]
       }));
     }
+  };
+
+  const removeFile = (questionIndex: number, fileToRemove: string) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [questionIndex]: (prev[questionIndex] || []).filter(file => file !== fileToRemove)
+    }));
   };
 
   const handleNext = () => {
@@ -139,6 +143,32 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }
               </h3>
             </div>
 
+            {/* File Upload Display */}
+            {uploadedFiles[currentQuestionIndex]?.length > 0 && (
+              <div className="bg-muted/50 rounded-2xl p-4 border border-border/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Upload className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-muted-foreground">Uploaded Files</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {uploadedFiles[currentQuestionIndex].map((fileName, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 bg-background/80 rounded-lg px-3 py-1 text-sm border border-border/20"
+                    >
+                      <span className="text-foreground/80">{fileName}</span>
+                      <button
+                        onClick={() => removeFile(currentQuestionIndex, fileName)}
+                        className="text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="relative">
               <Textarea
                 value={answers[currentQuestion.id] || ''}
@@ -170,12 +200,15 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }
                   className="hidden"
                 />
 
-                {/* Voice Input with Recording Animation */}
+                {/* Voice Input with Smooth Wave Animation */}
                 <div className="relative">
                   {isRecording[currentQuestionIndex] && (
-                    <div className="absolute -inset-2 bg-red-500/20 rounded-full animate-pulse">
-                      <div className="absolute -inset-1 bg-red-500/30 rounded-full animate-ping"></div>
-                    </div>
+                    <>
+                      {/* Smooth wave animation rings */}
+                      <div className="absolute -inset-3 rounded-full animate-ping bg-primary/20 animation-delay-0"></div>
+                      <div className="absolute -inset-2 rounded-full animate-pulse bg-primary/30 animation-delay-300"></div>
+                      <div className="absolute -inset-1 rounded-full animate-ping bg-primary/40 animation-delay-600"></div>
+                    </>
                   )}
                   <TextToSpeechPanelComponent
                     ref={(el) => speechRefs.current[currentQuestionIndex] = el}
@@ -186,9 +219,15 @@ const FollowUpQuestions = ({ userIdea, onComplete, onBack, initialAnswers = {} }
                     className="h-8 w-8 relative z-10"
                   />
                   {isRecording[currentQuestionIndex] && (
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap animate-bounce">
-                      <Mic className="w-3 h-3 inline mr-1" />
-                      Recording...
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
+                      <div className="flex items-center gap-1">
+                        <div className="flex gap-0.5">
+                          <div className="w-1 h-3 bg-current rounded-full animate-pulse"></div>
+                          <div className="w-1 h-4 bg-current rounded-full animate-pulse animation-delay-100"></div>
+                          <div className="w-1 h-3 bg-current rounded-full animate-pulse animation-delay-200"></div>
+                        </div>
+                        <span>Recording...</span>
+                      </div>
                     </div>
                   )}
                 </div>

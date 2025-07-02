@@ -10,7 +10,7 @@ import InspirationCards from "./idea-submission/InspirationCards";
 import TextToSpeechPanelComponent, {
   TextToSpeechPanelRef,
 } from "@/components/ui/speech-to-text";
-import { Sparkles, Zap, Star, Rocket, Upload, Mic } from "lucide-react";
+import { Sparkles, Zap, Star, Rocket, Upload, Mic, X } from "lucide-react";
 
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
@@ -36,6 +36,7 @@ const IdeaSubmissionScreen = ({
   const [displayedLine, setDisplayedLine] = useState("");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isRecording, setIsRecording] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
   const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
   
@@ -121,11 +122,13 @@ const IdeaSubmissionScreen = ({
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      const fileNames = Array.from(files).map(file => file.name).join(', ');
-      const uploadText = `[Uploaded files: ${fileNames}]`;
-      const newIdea = idea + (idea ? ' ' : '') + uploadText;
-      onIdeaChange(newIdea);
+      const fileNames = Array.from(files).map(file => file.name);
+      setUploadedFiles(prev => [...prev, ...fileNames]);
     }
+  };
+
+  const removeFile = (fileToRemove: string) => {
+    setUploadedFiles(prev => prev.filter(file => file !== fileToRemove));
   };
 
   const handleSubmit = () => {
@@ -261,6 +264,32 @@ const IdeaSubmissionScreen = ({
 
                   <div className="flex flex-col lg:flex-row gap-4 items-end">
                     <div className="flex-1 w-full">
+                      {/* File Upload Display */}
+                      {uploadedFiles.length > 0 && (
+                        <div className="bg-muted/50 rounded-2xl p-3 mb-4 border border-border/30">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Upload className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm font-medium text-muted-foreground">Uploaded Files</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {uploadedFiles.map((fileName, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-2 bg-background/80 rounded-lg px-3 py-1 text-sm border border-border/20"
+                              >
+                                <span className="text-foreground/80">{fileName}</span>
+                                <button
+                                  onClick={() => removeFile(fileName)}
+                                  className="text-muted-foreground hover:text-destructive transition-colors"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="relative group/input">
                         <Textarea
                           placeholder="Describe your app or website idea... (Press Shift+Enter to submit)"
@@ -301,12 +330,15 @@ const IdeaSubmissionScreen = ({
                             className="hidden"
                           />
 
-                          {/* Voice Input with Recording Animation */}
+                          {/* Voice Input with Smooth Wave Animation */}
                           <div className="relative">
                             {isRecording && (
-                              <div className="absolute -inset-2 bg-red-500/20 rounded-full animate-pulse">
-                                <div className="absolute -inset-1 bg-red-500/30 rounded-full animate-ping"></div>
-                              </div>
+                              <>
+                                {/* Smooth wave animation rings */}
+                                <div className="absolute -inset-3 rounded-full animate-ping bg-primary/20 animation-delay-0"></div>
+                                <div className="absolute -inset-2 rounded-full animate-pulse bg-primary/30 animation-delay-300"></div>
+                                <div className="absolute -inset-1 rounded-full animate-ping bg-primary/40 animation-delay-600"></div>
+                              </>
                             )}
                             <TextToSpeechPanelComponent
                               ref={speechRef}
@@ -319,9 +351,15 @@ const IdeaSubmissionScreen = ({
                               className="h-8 w-8 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 relative z-10"
                             />
                             {isRecording && (
-                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap animate-bounce">
-                                <Mic className="w-3 h-3 inline mr-1" />
-                                Recording...
+                              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
+                                <div className="flex items-center gap-1">
+                                  <div className="flex gap-0.5">
+                                    <div className="w-1 h-3 bg-current rounded-full animate-pulse"></div>
+                                    <div className="w-1 h-4 bg-current rounded-full animate-pulse animation-delay-100"></div>
+                                    <div className="w-1 h-3 bg-current rounded-full animate-pulse animation-delay-200"></div>
+                                  </div>
+                                  <span>Recording...</span>
+                                </div>
                               </div>
                             )}
                           </div>
