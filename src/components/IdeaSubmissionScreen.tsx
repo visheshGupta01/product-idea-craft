@@ -1,6 +1,6 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import IdeaSubmissionForm from "./idea-submission/IdeaSubmissionForm";
@@ -10,7 +10,7 @@ import InspirationCards from "./idea-submission/InspirationCards";
 import TextToSpeechPanelComponent, {
   TextToSpeechPanelRef,
 } from "@/components/ui/speech-to-text";
-import { Sparkles, Zap, Star, Rocket } from "lucide-react";
+import { Sparkles, Zap, Star, Rocket, Upload, Mic } from "lucide-react";
 
 interface IdeaSubmissionScreenProps {
   onIdeaSubmit: (idea: string) => void;
@@ -28,12 +28,14 @@ const IdeaSubmissionScreen = ({
   onIdeaChange,
 }: IdeaSubmissionScreenProps) => {
   const speechRef = useRef<TextToSpeechPanelRef>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [liveTranscript, setLiveTranscript] = useState("");
   const [userTyped, setUserTyped] = useState(false);
   const [displayedName, setDisplayedName] = useState("");
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [displayedLine, setDisplayedLine] = useState("");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isRecording, setIsRecording] = useState(false);
 
   const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
   
@@ -113,6 +115,17 @@ const IdeaSubmissionScreen = ({
     onIdeaChange(newIdea);
     setLiveTranscript("");
     setUserTyped(false);
+    setIsRecording(false);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const fileNames = Array.from(files).map(file => file.name).join(', ');
+      const uploadText = `[Uploaded files: ${fileNames}]`;
+      const newIdea = idea + (idea ? ' ' : '') + uploadText;
+      onIdeaChange(newIdea);
+    }
   };
 
   const handleSubmit = () => {
@@ -134,6 +147,20 @@ const IdeaSubmissionScreen = ({
       handleSubmit();
     }
   };
+
+  // Listen for recording state changes
+  useEffect(() => {
+    const checkRecordingState = () => {
+      const micButton = document.querySelector('[title="Start voice input"], [title="Stop recording"]');
+      if (micButton) {
+        const isCurrentlyRecording = micButton.getAttribute('title')?.includes('Stop');
+        setIsRecording(!!isCurrentlyRecording);
+      }
+    };
+
+    const interval = setInterval(checkRecordingState, 100);
+    return () => clearInterval(interval);
+  }, []);
 
   // If user is logged in, show compact header layout with full-width projects
   if (user) {
@@ -248,17 +275,55 @@ const IdeaSubmissionScreen = ({
                           }}
                           onKeyDown={handleKeyDown}
                           disabled={isSubmitting}
-                          className="min-h-[80px] sm:min-h-[100px] resize-none border-2 focus:border-primary/50 rounded-2xl transition-all duration-500 text-sm sm:text-base group-hover/input:shadow-lg group-hover/input:shadow-primary/10 bg-background/90 backdrop-blur-sm px-4 py-3 hover:bg-background/95 focus:bg-background/100"
+                          className="min-h-[80px] sm:min-h-[100px] resize-none border-2 focus:border-primary/50 rounded-2xl transition-all duration-500 text-sm sm:text-base group-hover/input:shadow-lg group-hover/input:shadow-primary/10 bg-background/90 backdrop-blur-sm px-4 py-3 hover:bg-background/95 focus:bg-background/100 pr-20"
                         />
-                        <div className="absolute top-3 right-3">
-                          <div className="hover:scale-110 transition-transform duration-300">
+                        <div className="absolute top-3 right-3 flex items-center gap-2">
+                          {/* Upload Button */}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isSubmitting}
+                            className="h-8 w-8 hover:scale-110 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
+                            title="Upload files"
+                          >
+                            <Upload className="w-4 h-4" />
+                          </Button>
+                          
+                          {/* Hidden file input */}
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept=".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg,.gif"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+
+                          {/* Voice Input with Recording Animation */}
+                          <div className="relative">
+                            {isRecording && (
+                              <div className="absolute -inset-2 bg-red-500/20 rounded-full animate-pulse">
+                                <div className="absolute -inset-1 bg-red-500/30 rounded-full animate-ping"></div>
+                              </div>
+                            )}
                             <TextToSpeechPanelComponent
                               ref={speechRef}
                               onTranscript={handleSpeechTranscript}
-                              onInterimTranscript={setLiveTranscript}
+                              onInterimTranscript={(transcript) => {
+                                setLiveTranscript(transcript);
+                                setIsRecording(!!transcript);
+                              }}
                               disabled={isSubmitting}
-                              className="h-8 w-8 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
+                              className="h-8 w-8 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 relative z-10"
                             />
+                            {isRecording && (
+                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap animate-bounce">
+                                <Mic className="w-3 h-3 inline mr-1" />
+                                Recording...
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
