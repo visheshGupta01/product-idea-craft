@@ -19,7 +19,7 @@ type AuthModal = "login" | "signup" | null;
 const Index = () => {
   const location = useLocation();
   const { user, signup,logout } = useUser(); // ✅ FIXED
-  const [appState, setAppState] = useState<AppState>("idea-submission");
+  const [appState, setAppState] = useState<AppState>("dashboard");
   const [userIdea, setUserIdea] = useState("");
   const [currentIdea, setCurrentIdea] = useState("");
   const [followUpAnswers, setFollowUpAnswers] = useState<
