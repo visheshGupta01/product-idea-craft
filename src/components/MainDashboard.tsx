@@ -86,7 +86,7 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         </div>
 
         {/* Main Content Area - takes remaining space */}
-        <div className="flex-1 min-w-0" key={sidebarCollapsed ? 'collapsed' : 'expanded'}>
+        <div className="flex-1 min-w-0">
           {renderActiveView()}
         </div>
       </div>

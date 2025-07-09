@@ -69,6 +69,7 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
     <div className={styles.container}>
       <div className={styles.frame}>
         <iframe
+          key="device-preview"
           src={src}
           className={styles.iframe}
           sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-popups-to-escape-sandbox allow-popups allow-downloads allow-storage-access-by-user-activation"
