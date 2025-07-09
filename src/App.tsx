@@ -4,13 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
-import Index from "./pages/Index";
-import Community from "./pages/Community";
-import Profile from "./pages/Profile";
-import Teams from "./pages/Teams";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
-import UserProvider from "@/context/UserProvider"; // ✅ Only exports a component
-import ProtectedRoute from "./components/ProtectedRoute";
+import UserProvider from "@/context/UserProvider";
 
 
 const queryClient = new QueryClient();
@@ -25,29 +21,7 @@ const App = () => {
           <UserProvider>
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Index />} />
-                <Route
-                  path="/community"
-                  element={
-                      <Community />
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/teams"
-                  element={
-                    <ProtectedRoute>
-                      <Teams />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="/" element={<Dashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
