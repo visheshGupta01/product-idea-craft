@@ -143,7 +143,7 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
       {/* Preview Container */}
       <div className={getPreviewContainerStyles()}>
         <iframe
-          key="fullscreen-preview"
+          key="stable-fullscreen-preview"
           src={src}
           className={getIframeStyles()}
           sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-popups-to-escape-sandbox allow-popups allow-downloads allow-storage-access-by-user-activation"
