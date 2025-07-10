@@ -181,17 +181,45 @@ const Sidebar = ({
 
         {/* Navigation icons */}
         <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
-          <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Dashboard" onClick={() => onViewChange?.('main')}>
-            <Home className="h-4 w-4" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+                  <Home className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Dashboard</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <Button variant={activeView === 'team' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Teams" onClick={() => onViewChange?.('team')}>
-            <Users className="h-4 w-4" />
-          </Button>
-          
-          <Button variant={activeView === 'subscription' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" title="Subscription" onClick={() => onViewChange?.('subscription')}>
-            <CreditCard className="h-4 w-4" />
-          </Button>
+          {/* Task Icons with Status Indicators */}
+          <div className="space-y-2">
+            {tasks.slice(0, 4).map(task => (
+              <TooltipProvider key={task.id}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="relative">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        {getStatusIcon(task.status)}
+                      </Button>
+                      {/* Status indicator dot */}
+                      <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${
+                        task.status === 'completed' ? 'bg-green-500' : 
+                        task.status === 'in-progress' ? 'bg-blue-500' : 
+                        'bg-gray-400'
+                      }`} />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>{task.title}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{task.status.replace('-', ' ')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))}
+          </div>
         </div>
 
         {/* Bottom Section */}
@@ -212,6 +240,14 @@ const Sidebar = ({
               <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
                 <User className="h-4 w-4 mr-2" />
                 User Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange?.('team')}>
+                <Users className="h-4 w-4 mr-2" />
+                Teams
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange?.('subscription')}>
+                <CreditCard className="h-4 w-4 mr-2" />
+                Subscription
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                 <Settings className="h-4 w-4 mr-2" />
@@ -406,6 +442,14 @@ const Sidebar = ({
             <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
               <User className="h-4 w-4 mr-2" />
               User Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewChange?.('team')}>
+              <Users className="h-4 w-4 mr-2" />
+              Teams
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewChange?.('subscription')}>
+              <CreditCard className="h-4 w-4 mr-2" />
+              Subscription
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
               <Settings className="h-4 w-4 mr-2" />
