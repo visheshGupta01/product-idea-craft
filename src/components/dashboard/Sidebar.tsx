@@ -209,6 +209,22 @@ const Sidebar = ({
           </div>
         </div>
 
+        {/* Home button above profile */}
+        <div className="flex justify-center pb-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+                  <Home className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Dashboard</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
         {/* Bottom Section */}
         <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar flex flex-col items-center">
           <DropdownMenu>
