@@ -106,7 +106,7 @@ const ChatPanel = ({
   }, [messages]);
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col">{/* Changed from h-screen to h-full to work with navbar */}
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center space-x-3">
