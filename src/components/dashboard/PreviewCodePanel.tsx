@@ -1,6 +1,6 @@
-  import React, { useEffect, useState } from 'react';
-  import { Button } from '@/components/ui/button';
-  import { Code, Expand, Monitor, Tablet, Smartphone } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Code, Expand, Monitor, Tablet, Smartphone, Save, Globe } from 'lucide-react';
   import { Switch } from '@/components/ui/switch';
   import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
   import FileExplorer, { type FileNode } from './FileExplorer';
@@ -10,15 +10,16 @@
 
 
 
-  const PreviewCodePanel = () => {
-    const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
-    const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
-    const [showCode, setShowCode] = useState(false);
-    const [isFullscreen, setIsFullscreen] = useState(false);
-    const [isTransitioning, setIsTransitioning] = useState(false);
-    const [iframeSrc, setIframeSrc] = useState(
-      "https://94153f317dee.ngrok-free.app/"
-    );
+const PreviewCodePanel = () => {
+  const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
+  const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
+  const [showCode, setShowCode] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [iframeSrc, setIframeSrc] = useState(
+    "https://94153f317dee.ngrok-free.app/"
+  );
 
 
     const handleFileSelect = (file: FileNode) => {
@@ -38,6 +39,17 @@ const handleCodeToggle = (checked: boolean) => {
   setTimeout(() => {
     setIsTransitioning(false);
   }, 150);
+};
+
+const handleSave = () => {
+  // Implement save logic here
+  setHasUnsavedChanges(false);
+  // In a real implementation, this would save the file content
+};
+
+const handlePublish = () => {
+  // Implement publish logic here
+  window.open('https://docs.lovable.dev/user-guides/deploying', '_blank');
 };
 
 
@@ -88,6 +100,30 @@ const handleCodeToggle = (checked: boolean) => {
           )}
 
           <div className="flex items-center space-x-3">
+            {showCode && (
+              <>
+                {hasUnsavedChanges && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleSave}
+                    className="flex items-center space-x-1.5 h-8"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save</span>
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePublish}
+                  className="flex items-center space-x-1.5 h-8"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>Publish</span>
+                </Button>
+              </>
+            )}
             <div className="flex items-center space-x-2">
               <Code className="w-4 h-4" />
               <Switch checked={showCode} onCheckedChange={handleCodeToggle} />
@@ -121,7 +157,10 @@ const handleCodeToggle = (checked: boolean) => {
                 </ResizablePanel>
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={75} minSize={60}>
-                  <CodeEditor file={selectedFile} />
+                  <CodeEditor 
+                    file={selectedFile} 
+                    onContentChange={() => setHasUnsavedChanges(true)}
+                  />
                 </ResizablePanel>
               </ResizablePanelGroup>
             </div>

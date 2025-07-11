@@ -4,9 +4,10 @@ import type { FileNode } from "./FileExplorer";
 
 interface CodeEditorProps {
   file: FileNode | null;
+  onContentChange?: () => void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ file }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ file, onContentChange }) => {
   const getLanguageFromExtension = (filename: string): string => {
     const ext = filename.split(".").pop()?.toLowerCase();
     switch (ext) {
@@ -58,9 +59,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file }) => {
       <div className="flex-1 overflow-hidden">
         <Editor
           height="100%"
-          language={getLanguageFromExtension(file.name)} // ← use `language`, not `defaultLanguage`
-          value={file.content || "// No content available"} // ← use `value`, not `defaultValue`
+          language={getLanguageFromExtension(file.name)}
+          value={file.content || "// No content available"}
           theme="vs-dark"
+          onChange={onContentChange}
           options={{
             readOnly: false,
             minimap: { enabled: false },
