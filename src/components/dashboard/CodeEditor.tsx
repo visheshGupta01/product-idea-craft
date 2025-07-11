@@ -32,10 +32,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, onContentChange }) => {
 
   if (!file) {
     return (
-      <div className="h-full flex items-center justify-center bg-muted/20">
+      <div className="h-full flex items-center justify-center bg-sidebar-background">
         <div className="text-center">
           <div className="text-4xl mb-4">📁</div>
-          <p className="text-muted-foreground">
+          <p className="text-sidebar-foreground/60">
             Select a file to view its contents
           </p>
         </div>
@@ -44,12 +44,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, onContentChange }) => {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-sidebar-background">
       {/* File tab */}
-      <div className="border-b border-border bg-card">
+      <div className="border-b border-sidebar-border bg-sidebar-background">
         <div className="flex items-center px-4 py-2">
-          <span className="text-sm font-medium">{file.name}</span>
-          <span className="ml-2 text-xs text-muted-foreground">
+          <span className="text-sm font-medium text-sidebar-foreground">{file.name}</span>
+          <span className="ml-2 text-xs text-sidebar-foreground/60">
             {getLanguageFromExtension(file.name)}
           </span>
         </div>
