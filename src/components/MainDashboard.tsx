@@ -6,6 +6,7 @@ import TeamPage from './dashboard/TeamPage';
 import SubscriptionPage from './dashboard/SubscriptionPage';
 import MyProjectsPage from './dashboard/MyProjectsPage';
 import UserProfilePage from './dashboard/UserProfilePage';
+import Navbar from './ui/navbar';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import IDE from './dashboard/FileExplorerAndCoder';
 
@@ -25,9 +26,17 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
     status: 'in-progress'
   });
 
+  // Track if frontend creation task is completed (task id 6: "First Draft Generated")
+  const [isFrontendCreated, setIsFrontendCreated] = useState(false);
+
   const handleLogout = () => {
     // Navigate back to the idea submission screen
     window.location.href = '/';
+  };
+
+  const handlePublish = () => {
+    // Handle publish functionality
+    console.log('Publishing app...');
   };
 
   const renderActiveView = () => {
@@ -41,6 +50,16 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
       case 'user-profile':
         return <UserProfilePage onLogout={handleLogout} />;
       default:
+        // Show fullscreen chat until frontend creation is completed
+        if (!isFrontendCreated) {
+          return (
+            <div className="h-full">
+              <ChatPanel userIdea={userIdea} />
+            </div>
+          );
+        }
+        
+        // Show normal layout after frontend creation
         return (
           <ResizablePanelGroup
             direction="horizontal"
@@ -76,7 +95,11 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
 
   return (
     <div className="h-screen bg-background overflow-hidden">
-      <div className="h-full flex">
+      {/* Fixed Navbar */}
+      <Navbar onPublish={handlePublish} />
+      
+      {/* Main content with top padding for navbar */}
+      <div className="h-full pt-14 flex">
         {/* Sidebar */}
         <div className={`transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'} flex-shrink-0`}>
           <Sidebar 
