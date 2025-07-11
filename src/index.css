@@ -7,26 +7,26 @@
 @layer base {
   :root {
     /* Custom color scheme */
-    --background: 210 13% 13%; /* #22282A */
-    --foreground: 318 100% 50%; /* #FF00A9 */
+    --background: 200 14% 16%; /* #22282A */
+    --foreground: 0 0% 100%; /* #FFFFFF */
 
     --card: 0 0% 12%; /* #1E1E1E */
-    --card-foreground: 318 100% 50%; /* #FF00A9 */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
 
     --popover: 0 0% 12%; /* #1E1E1E */
-    --popover-foreground: 318 100% 50%; /* #FF00A9 */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
 
     --primary: 318 100% 50%; /* #FF00A9 */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 0 0% 12%; /* #1E1E1E */
-    --secondary-foreground: 318 100% 50%; /* #FF00A9 */
+    --secondary-foreground: 74 43% 87%; /* #EAF0CE */
 
     --muted: 0 0% 12%; /* #1E1E1E */
-    --muted-foreground: 0 0% 60%;
+    --muted-foreground: 74 43% 87%; /* #EAF0CE */
 
-    --accent: 318 71% 87%; /* #FAAADE hover color */
-    --accent-foreground: 0 0% 12%;
+    --accent: 44 94% 53%; /* #FAA916 */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
@@ -37,38 +37,38 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 210 13% 13%; /* #22282A */
-    --sidebar-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-background: 200 14% 16%; /* #22282A */
+    --sidebar-foreground: 0 0% 100%; /* #FFFFFF */
     --sidebar-primary: 318 100% 50%; /* #FF00A9 */
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 0 0% 12%; /* #1E1E1E */
-    --sidebar-accent-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-accent-foreground: 74 43% 87%; /* #EAF0CE */
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 318 100% 50%; /* #FF00A9 */
   }
 
   .dark {
     /* Dark mode uses the same colors */
-    --background: 210 13% 13%; /* #22282A */
-    --foreground: 318 100% 50%; /* #FF00A9 */
+    --background: 200 14% 16%; /* #22282A */
+    --foreground: 0 0% 100%; /* #FFFFFF */
 
     --card: 0 0% 12%; /* #1E1E1E */
-    --card-foreground: 318 100% 50%; /* #FF00A9 */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
 
     --popover: 0 0% 12%; /* #1E1E1E */
-    --popover-foreground: 318 100% 50%; /* #FF00A9 */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
 
     --primary: 318 100% 50%; /* #FF00A9 */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 0 0% 12%; /* #1E1E1E */
-    --secondary-foreground: 318 100% 50%; /* #FF00A9 */
+    --secondary-foreground: 74 43% 87%; /* #EAF0CE */
 
     --muted: 0 0% 12%; /* #1E1E1E */
-    --muted-foreground: 0 0% 60%;
+    --muted-foreground: 74 43% 87%; /* #EAF0CE */
 
-    --accent: 318 71% 87%; /* #FAAADE hover color */
-    --accent-foreground: 0 0% 12%;
+    --accent: 44 94% 53%; /* #FAA916 */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
 
     --destructive: 0 73% 58%;
     --destructive-foreground: 210 40% 98%;
@@ -77,12 +77,12 @@
     --input: 0 0% 20%;
     --ring: 318 100% 50%; /* #FF00A9 */
 
-    --sidebar-background: 210 13% 13%; /* #22282A */
-    --sidebar-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-background: 200 14% 16%; /* #22282A */
+    --sidebar-foreground: 0 0% 100%; /* #FFFFFF */
     --sidebar-primary: 318 100% 50%; /* #FF00A9 */
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 0 0% 12%; /* #1E1E1E */
-    --sidebar-accent-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-accent-foreground: 74 43% 87%; /* #EAF0CE */
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 318 100% 50%; /* #FF00A9 */
   }
@@ -103,6 +103,11 @@
 
   button {
     @apply font-poppins;
+  }
+
+  /* Custom button hover effects */
+  .btn-primary:hover {
+    background-color: hsl(318, 71%, 87%); /* #FAAADE */
   }
 }
 
