@@ -172,15 +172,8 @@ const Sidebar = ({
   };
   if (collapsed) {
     return <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
-        {/* Header */}
-        <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
-          <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
-            <Menu className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Home button at top */}
-        <div className="flex justify-center pt-2 pb-4">
+        {/* Home button at very top */}
+        <div className="flex justify-center pt-2 pb-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -195,8 +188,15 @@ const Sidebar = ({
           </TooltipProvider>
         </div>
 
+        {/* Header */}
+        <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
+          <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
+            <Menu className="h-4 w-4" />
+          </Button>
+        </div>
+
         {/* Navigation icons */}
-        <div className="flex-1 flex flex-col items-center space-y-4 bg-sidebar">
+        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
           {/* Task Icons with Status Indicators */}
           <div className="space-y-2">
             {tasks.slice(0, 4).map(task => (
@@ -285,6 +285,13 @@ const Sidebar = ({
   }
   return (
     <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+      {/* Home button at very top */}
+      <div className="p-2 bg-sidebar flex justify-center border-b border-sidebar-border">
+        <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+          <Home className="h-4 w-4" />
+        </Button>
+      </div>
+
       {/* Header */}
       <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
         <div className="flex items-center justify-between mb-3">
