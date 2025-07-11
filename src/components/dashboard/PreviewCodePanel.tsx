@@ -87,15 +87,15 @@ const handlePublish = () => {
         <div className="px-3 py-2 border-b border-sidebar-border flex items-center justify-between bg-sidebar-background">
           {/* Left side buttons - Code toggle and Save */}
           <div className="flex items-center space-x-2">
-            {/* Code toggle with icon */}
-            <div className="flex items-center space-x-2 px-2 py-1 rounded bg-sidebar-accent">
-              <Code className="w-4 h-4 text-sidebar-foreground" />
-              <Switch 
-                checked={showCode} 
-                onCheckedChange={handleCodeToggle}
-                className="scale-75"
-              />
-            </div>
+            {/* Code toggle button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleCodeToggle(!showCode)}
+              className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+            >
+              <Code className="w-4 h-4" />
+            </Button>
             
             {/* Save button - only show when there are unsaved changes and in code view */}
             {showCode && hasUnsavedChanges && (
@@ -103,16 +103,26 @@ const handlePublish = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleSave}
-                className="flex items-center space-x-1.5 h-8 font-poppins bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+                className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
               >
                 <Save className="w-4 h-4" />
-                <span>Save</span>
               </Button>
             )}
           </div>
 
-          {/* Right side buttons - Device toggle and Fullscreen */}
+          {/* Right side buttons - Hide Preview, Device toggle and Fullscreen */}
           <div className="flex items-center space-x-2">
+            {/* Hide Preview button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCode(true)}
+              className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+              title="Hide Preview"
+            >
+              <Globe className="w-4 h-4" />
+            </Button>
+            
             {/* Device toggle - only show icon, no text */}
             {!showCode && (
               <Button

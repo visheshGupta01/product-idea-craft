@@ -1,13 +1,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Rocket } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Rocket, User } from 'lucide-react';
 
 interface NavbarProps {
   onPublish?: () => void;
   isFrontendCreated?: boolean;
+  userName?: string;
 }
 
-const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
+const Navbar = ({ onPublish, isFrontendCreated = false, userName }: NavbarProps) => {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar-background border-b border-sidebar-border flex items-center justify-between px-4">
       {/* Logo */}
@@ -20,9 +22,9 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
         </h2>
       </div>
 
-      {/* Frontend Generation Task with Complete Button or Publish Button */}
+      {/* Frontend Generation Task and Profile Section */}
       <div className="flex items-center space-x-3">
-        {!isFrontendCreated ? (
+        {!isFrontendCreated && (
           <div className="flex items-center space-x-2 bg-sidebar-accent border border-sidebar-border rounded-lg px-3 py-1">
             <span className="text-sm text-sidebar-foreground">Frontend Generation</span>
             <Button 
@@ -38,17 +40,17 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
               Complete
             </Button>
           </div>
-        ) : (
-          <Button 
-            onClick={onPublish}
-            variant="default"
-            size="sm"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground"
-          >
-            <Rocket className="h-4 w-4 mr-2" />
-            Publish
-          </Button>
         )}
+
+        {/* Profile Section */}
+        <div className="flex items-center space-x-3 bg-sidebar-accent rounded-lg px-3 py-2">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-sidebar-background text-sidebar-foreground">
+              <User className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-sm font-medium text-sidebar-foreground">{userName || 'John Doe'}</span>
+        </div>
       </div>
     </div>
   );

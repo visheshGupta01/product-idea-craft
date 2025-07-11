@@ -110,8 +110,8 @@ const ChatPanel = ({
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border bg-sidebar-background">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <Bot className="w-4 h-4 text-primary-foreground" />
+          <div className="w-8 h-8 bg-sidebar-accent rounded-lg flex items-center justify-center">
+            <Bot className="w-4 h-4 text-sidebar-foreground" />
           </div>
           <div>
             <h3 className="font-semibold text-sm text-sidebar-foreground">AI Assistant</h3>
@@ -144,7 +144,7 @@ const ChatPanel = ({
                 className={`max-w-[80%] p-3 rounded-2xl text-sm ${
                   message.type === "user"
                     ? "bg-primary text-primary-foreground ml-auto"
-                    : "bg-muted"
+                    : "bg-sidebar-accent text-sidebar-foreground"
                 }`}
               >
                 <p>{message.content}</p>
@@ -174,10 +174,10 @@ const ChatPanel = ({
                   <Bot className="w-3 h-3 text-primary-foreground" />
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-muted p-3 rounded-2xl">
+              <div className="bg-sidebar-accent p-3 rounded-2xl">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin text-sidebar-foreground" />
+                  <span className="text-sm text-sidebar-foreground/60">
                     AI is thinking...
                   </span>
                 </div>
@@ -195,14 +195,14 @@ const ChatPanel = ({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && !isLoading && sendMessage()}
-            className="flex-1 bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50"
+            className="flex-1 bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 rounded-2xl"
             disabled={isLoading}
           />
           <Button
             onClick={sendMessage}
             size="sm"
             disabled={!newMessage.trim() || isLoading}
-            className="px-3 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="px-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

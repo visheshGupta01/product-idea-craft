@@ -5,20 +5,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
-import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Bot, User } from 'lucide-react';
+import { Lightbulb, BarChart3, Puzzle, Layers, Monitor, ChevronDown, ChevronUp, Bot, User } from 'lucide-react';
 
 const TaskTracker = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   const [tasks, setTasks] = useState([
-    { id: 1, title: 'Idea Submitted', status: 'completed', description: 'Initial concept captured', assignedTo: 'ai' },
-    { id: 2, title: 'Competitive Analysis', status: 'in-progress', description: 'Researching market competitors', assignedTo: 'ai' },
-    { id: 3, title: 'Problem Validation', status: 'pending', description: 'Validate core problem exists', assignedTo: 'ai' },
-    { id: 4, title: 'Research Solutions', status: 'pending', description: 'Find optimal solution approach', assignedTo: 'sde' },
-    { id: 5, title: 'UI/UX Mockups', status: 'pending', description: 'Design user interface', assignedTo: 'sde' },
-    { id: 6, title: 'First Draft Generated', status: 'pending', description: 'Generate initial prototype', assignedTo: 'ai' },
-    { id: 7, title: 'Connect Backend', status: 'pending', description: 'Integrate with Supabase', assignedTo: 'sde' },
-    { id: 8, title: 'Deploy & Launch', status: 'pending', description: 'Make app live', assignedTo: 'sde' }
+    { id: 1, title: 'Idea Submitted', status: 'completed', description: 'Initial concept captured', assignedTo: 'ai', icon: Lightbulb },
+    { id: 2, title: 'Competitive analysis', status: 'in-progress', description: 'Researching market competitors', assignedTo: 'ai', icon: BarChart3 },
+    { id: 3, title: 'Gap Analysis', status: 'pending', description: 'Validate core problem exists', assignedTo: 'ai', icon: Puzzle },
+    { id: 4, title: 'Research Solutions', status: 'pending', description: 'Find optimal solution approach', assignedTo: 'sde', icon: Layers },
+    { id: 5, title: 'UI/UX Mockups', status: 'pending', description: 'Design user interface', assignedTo: 'sde', icon: Monitor }
   ]);
 
   const completedTasks = tasks.filter(task => task.status === 'completed').length;
@@ -32,15 +29,9 @@ const TaskTracker = () => {
     ));
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case 'in-progress':
-        return <Clock className="h-4 w-4 text-blue-500" />;
-      default:
-        return <Circle className="h-4 w-4 text-gray-400" />;
-    }
+  const getTaskIcon = (TaskIcon: any, status: string) => {
+    const iconClass = status === 'completed' ? 'text-green-500' : status === 'in-progress' ? 'text-blue-500' : 'text-gray-400';
+    return <TaskIcon className={`h-6 w-6 ${iconClass}`} />;
   };
 
   const getStatusBadge = (status: string) => {
@@ -63,28 +54,28 @@ const TaskTracker = () => {
   };
 
   return (
-    <div className={`bg-card flex flex-col transition-all duration-300 ${isCollapsed ? 'h-auto' : 'h-64'}`}>
+    <div className={`bg-sidebar-background flex flex-col transition-all duration-300 ${isCollapsed ? 'h-auto' : 'h-64'}`}>
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div>
-              <h3 className="font-semibold text-foreground">Task Progress</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="font-semibold text-sidebar-foreground">Task Progress</h3>
+              <p className="text-sm text-sidebar-foreground/60">
                 {completedTasks} of {tasks.length} completed
               </p>
             </div>
             {/* Progress Bar */}
             <div className="flex-1 max-w-xs">
               <Progress value={progress} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-1">{Math.round(progress)}% complete</p>
+              <p className="text-xs text-sidebar-foreground/60 mt-1">{Math.round(progress)}% complete</p>
             </div>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 text-sidebar-foreground hover:bg-sidebar-accent"
           >
             {isCollapsed ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
@@ -97,38 +88,40 @@ const TaskTracker = () => {
           <div className="p-4 h-full overflow-x-auto">
             <div className="flex space-x-3 h-full">
               {tasks.map((task, index) => (
-                <Card key={task.id} className="flex-shrink-0 w-64 transition-all hover:shadow-md">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getStatusIcon(task.status)}
-                        <CardTitle className="text-sm font-medium leading-tight">
-                          {task.title}
-                        </CardTitle>
-                      </div>
-                      {getStatusBadge(task.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                      {task.description}
-                    </p>
-                    
-                    {/* Assignment Toggle */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getAssignmentIcon(task.assignedTo)}
-                        <span className="text-xs text-muted-foreground">
-                          {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                        </span>
-                      </div>
-                      <Switch
-                        checked={task.assignedTo === 'sde'}
-                        onCheckedChange={() => toggleAssignment(task.id)}
-                        className="scale-75"
-                      />
-                    </div>
-                  </CardContent>
+                 <Card key={task.id} className="flex-shrink-0 w-64 transition-all hover:shadow-md bg-sidebar-background border-sidebar-border">
+                   <CardHeader className="pb-2">
+                     <div className="flex flex-col items-center space-y-3">
+                       <div className="flex items-center justify-center w-12 h-12 bg-sidebar-accent rounded-lg">
+                         {getTaskIcon(task.icon, task.status)}
+                       </div>
+                       <div className="text-center">
+                         <CardTitle className="text-sm font-medium leading-tight text-sidebar-foreground">
+                           {task.title}
+                         </CardTitle>
+                         {getStatusBadge(task.status)}
+                       </div>
+                     </div>
+                   </CardHeader>
+                   <CardContent className="pt-0">
+                     <p className="text-xs text-sidebar-foreground/60 leading-relaxed mb-3 text-center">
+                       {task.description}
+                     </p>
+                     
+                     {/* Assignment Toggle */}
+                     <div className="flex items-center justify-between">
+                       <div className="flex items-center space-x-2">
+                         {getAssignmentIcon(task.assignedTo)}
+                         <span className="text-xs text-sidebar-foreground/60">
+                           {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
+                         </span>
+                       </div>
+                       <Switch
+                         checked={task.assignedTo === 'sde'}
+                         onCheckedChange={() => toggleAssignment(task.id)}
+                         className="scale-75"
+                       />
+                     </div>
+                   </CardContent>
                 </Card>
               ))}
             </div>
