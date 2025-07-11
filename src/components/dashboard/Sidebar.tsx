@@ -8,13 +8,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Menu, User, Moon, Sun, Database, Github, Settings, CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Bot, Users, CreditCard, Lightbulb, Home, FileText, Link, Cat } from 'lucide-react';
+import { Menu, User, Moon, Sun, Database, Github, Settings, CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Bot, Users, CreditCard, Lightbulb, Home, FileText, Link, Cat, BarChart3, Puzzle, Layers, Monitor } from 'lucide-react';
 interface Task {
   id: number;
   title: string;
   status: 'completed' | 'in-progress' | 'pending';
   description: string;
   assignedTo: 'ai' | 'sde';
+  icon?: any;
   subtasks?: {
     id: number;
     title: string;
@@ -51,6 +52,7 @@ const Sidebar = ({
     status: 'completed',
     description: 'Initial concept captured',
     assignedTo: 'ai',
+    icon: Lightbulb,
     subtasks: [{
       id: 1,
       title: 'Document requirements',
@@ -64,10 +66,11 @@ const Sidebar = ({
     }]
   }, {
     id: 2,
-    title: 'Competitive Analysis',
+    title: 'Competitive analysis',
     status: 'in-progress',
     description: 'Researching market competitors',
     assignedTo: 'ai',
+    icon: BarChart3,
     subtasks: [{
       id: 3,
       title: 'Market research',
@@ -86,22 +89,25 @@ const Sidebar = ({
     }]
   }, {
     id: 3,
-    title: 'Problem Validation',
+    title: 'Gap Analysis',
     status: 'pending',
     description: 'Validate core problem exists',
-    assignedTo: 'ai'
+    assignedTo: 'ai',
+    icon: Puzzle
   }, {
     id: 4,
     title: 'Research Solutions',
     status: 'pending',
     description: 'Find optimal solution approach',
-    assignedTo: 'sde'
+    assignedTo: 'sde',
+    icon: Layers
   }, {
     id: 5,
     title: 'UI/UX Mockups',
     status: 'pending',
     description: 'Design user interface',
-    assignedTo: 'sde'
+    assignedTo: 'sde',
+    icon: Monitor
   }]);
   const completedTasks = tasks.filter(task => task.status === 'completed').length;
   const progress = completedTasks / tasks.length * 100;
@@ -203,29 +209,30 @@ const Sidebar = ({
         <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar-background">
           {/* Task Icons with Status Indicators */}
           <div className="space-y-2">
-            {tasks.slice(0, 4).map(task => (
-              <TooltipProvider key={task.id}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="relative">
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        {getStatusIcon(task.status)}
-                      </Button>
-                      {/* Status indicator dot */}
-                      <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${
-                        task.status === 'completed' ? 'bg-green-500' : 
-                        task.status === 'in-progress' ? 'bg-blue-500' : 
-                        'bg-gray-400'
-                      }`} />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p>{task.title}</p>
-                    <p className="text-xs text-muted-foreground capitalize">{task.status.replace('-', ' ')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ))}
+            {tasks.slice(0, 5).map(task => {
+              const TaskIcon = task.icon;
+              return (
+                <TooltipProvider key={task.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="relative">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          {TaskIcon && <TaskIcon className={`h-4 w-4 ${
+                            task.status === 'completed' ? 'text-green-500' : 
+                            task.status === 'in-progress' ? 'text-blue-500' : 
+                            'text-gray-400'
+                          }`} />}
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{task.title}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{task.status.replace('-', ' ')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            })}
           </div>
         </div>
 
@@ -235,7 +242,9 @@ const Sidebar = ({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <Avatar className="h-6 w-6">
-                  <AvatarFallback className="text-xs">JD</AvatarFallback>
+                  <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
+                    <User className="h-3 w-3" />
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -345,7 +354,11 @@ const Sidebar = ({
                 <div key={task.id} className="border border-sidebar-border rounded-md p-2 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors px-[9px] my-[6px]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
-                      {getStatusIcon(task.status)}
+                      {task.icon && <task.icon className={`h-3 w-3 ${
+                        task.status === 'completed' ? 'text-green-500' : 
+                        task.status === 'in-progress' ? 'text-blue-500' : 
+                        'text-gray-400'
+                      }`} />}
                       <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
                         {task.title}
                       </h4>
@@ -438,13 +451,14 @@ const Sidebar = ({
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="flex items-center space-x-2 cursor-pointer hover:bg-sidebar-accent rounded-lg p-1.5 transition-colors">
-              <Avatar className="h-6 w-6">
-                <AvatarFallback className="text-xs">JD</AvatarFallback>
+            <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
+                  <User className="h-4 w-4" />
+                </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-sidebar-foreground truncate">John Doe</p>
-                <p className="text-xs text-sidebar-foreground/60">Pro Plan</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
               </div>
             </div>
           </DropdownMenuTrigger>
