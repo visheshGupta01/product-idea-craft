@@ -71,7 +71,7 @@ const handleCodeToggle = (checked: boolean) => {
               variant="ghost"
               size="sm"
               onClick={() => handleCodeToggle(false)}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 text-foreground"
             >
               <span>← Back to Preview</span>
             </Button>
