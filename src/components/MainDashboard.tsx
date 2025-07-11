@@ -66,7 +66,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
               minSize={50}
             >
               <div className="h-full">
-                <IDE />
+                <PreviewCodePanel />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
