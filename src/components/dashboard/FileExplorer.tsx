@@ -49,8 +49,9 @@ const FileTreeItem: React.FC<{
     <div>
       <div
         className={cn(
-          "flex items-center py-1 px-2 cursor-pointer hover:bg-muted/50 rounded-sm transition-colors",
-          isSelected && "bg-accent text-accent-foreground"
+          "flex items-center py-1 px-2 cursor-pointer hover:bg-sidebar-accent rounded-sm transition-colors",
+          "text-sidebar-foreground",
+          isSelected && "bg-sidebar-accent text-sidebar-foreground"
         )}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
         onClick={handleClick}
@@ -58,20 +59,20 @@ const FileTreeItem: React.FC<{
         {node.type === "folder" ? (
           <>
             {isExpanded ? (
-              <ChevronDown className="w-4 h-4 mr-1 text-muted-foreground" />
+              <ChevronDown className="w-4 h-4 mr-1 text-sidebar-foreground/60" />
             ) : (
-              <ChevronRight className="w-4 h-4 mr-1 text-muted-foreground" />
+              <ChevronRight className="w-4 h-4 mr-1 text-sidebar-foreground/60" />
             )}
             {isExpanded ? (
-              <FolderOpen className="w-4 h-4 mr-2 text-blue-500" />
+              <FolderOpen className="w-4 h-4 mr-2 text-accent" />
             ) : (
-              <Folder className="w-4 h-4 mr-2 text-blue-500" />
+              <Folder className="w-4 h-4 mr-2 text-accent" />
             )}
           </>
         ) : (
           <>
             <div className="w-5 mr-1" />
-            <File className="w-4 h-4 mr-2 text-muted-foreground" />
+            <File className="w-4 h-4 mr-2 text-sidebar-foreground/60" />
           </>
         )}
         <span className="text-sm truncate">{node.name}</span>
@@ -152,9 +153,9 @@ const tree = buildFileTreeFromPathsWithFullPaths(allFiles);
   };
 
   return (
-    <div className="h-full bg-card border-r border-border">
-      <div className="p-3 border-b border-border">
-        <h3 className="text-sm font-medium text-foreground">Explorer</h3>
+    <div className="h-full bg-sidebar-background border-r border-sidebar-border">
+      <div className="p-3 border-b border-sidebar-border">
+        <h3 className="text-sm font-medium text-sidebar-foreground">Explorer</h3>
       </div>
       <div className="p-2 overflow-y-auto h-full">
         {fileTree.map((node) => (

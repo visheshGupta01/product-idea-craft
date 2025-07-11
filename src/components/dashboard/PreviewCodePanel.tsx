@@ -83,60 +83,65 @@ const handlePublish = () => {
     }
 
     return (
-      <div className="h-full flex flex-col bg-background">
-        <div className="px-3 py-1.5 border-b border-border flex items-center justify-between bg-background">
-          {showCode ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleCodeToggle(false)}
-              className="flex items-center space-x-2 text-foreground font-poppins"
-            >
-              <span>← Back to Preview</span>
-            </Button>
-          ) : (
+      <div className="h-full flex flex-col bg-sidebar-background">
+        <div className="px-3 py-2 border-b border-sidebar-border flex items-center justify-between bg-sidebar-background">
+          {/* Left side buttons - Code toggle and Save */}
+          <div className="flex items-center space-x-2">
+            {/* Code toggle button */}
             <Button
               variant="outline"
               size="sm"
-              onClick={toggleDevice}
-              className="flex items-center space-x-2 h-8 font-poppins"
+              onClick={() => handleCodeToggle(!showCode)}
+              className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
             >
-              {getDeviceIcon()}
-              <span className="capitalize text-xs">{activeDevice}</span>
-            </Button>
-          )}
-
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2">
               <Code className="w-4 h-4" />
-              <Switch checked={showCode} onCheckedChange={handleCodeToggle} />
-            </div>
+            </Button>
+            
+            {/* Save button - only show when there are unsaved changes and in code view */}
             {showCode && hasUnsavedChanges && (
               <Button
-                variant="default"
+                variant="outline"
                 size="sm"
                 onClick={handleSave}
-                className="flex items-center space-x-1.5 h-8 font-poppins"
+                className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
               >
                 <Save className="w-4 h-4" />
-                <span>Save</span>
               </Button>
             )}
+          </div>
+
+          {/* Right side buttons - Hide Preview, Device toggle and Fullscreen */}
+          <div className="flex items-center space-x-2">
+            {/* Hide Preview button */}
             <Button
               variant="outline"
               size="sm"
-              onClick={handlePublish}
-              className="flex items-center space-x-1.5 h-8 font-poppins"
+              onClick={() => setShowCode(true)}
+              className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+              title="Hide Preview"
             >
               <Globe className="w-4 h-4" />
-              <span>Publish</span>
             </Button>
+            
+            {/* Device toggle - only show icon, no text */}
+            {!showCode && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleDevice}
+                className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+              >
+                {getDeviceIcon()}
+              </Button>
+            )}
+            
+            {/* Fullscreen button */}
             {!showCode && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsFullscreen(true)}
-                className="flex items-center space-x-1.5 h-8 font-poppins"
+                className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
               >
                 <Expand className="w-4 h-4" />
               </Button>
@@ -150,25 +155,29 @@ const handlePublish = () => {
           }`}
         >
           {showCode ? (
-            <div className="h-full animate-fade-in">
+            <div className="h-full animate-fade-in bg-sidebar-background">
               <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
-                  <FileExplorer
-                    onFileSelect={handleFileSelect}
-                    selectedFile={selectedFile?.path || null}
-                  />
+                  <div className="h-full bg-sidebar-background">
+                    <FileExplorer
+                      onFileSelect={handleFileSelect}
+                      selectedFile={selectedFile?.path || null}
+                    />
+                  </div>
                 </ResizablePanel>
-                <ResizableHandle withHandle />
+                <ResizableHandle withHandle className="bg-sidebar-border" />
                 <ResizablePanel defaultSize={75} minSize={60}>
-                  <CodeEditor 
-                    file={selectedFile} 
-                    onContentChange={handleContentChange}
-                  />
+                  <div className="h-full bg-sidebar-background">
+                    <CodeEditor 
+                      file={selectedFile} 
+                      onContentChange={handleContentChange}
+                    />
+                  </div>
                 </ResizablePanel>
               </ResizablePanelGroup>
             </div>
           ) : (
-            <div className="h-full animate-fade-in">
+            <div className="h-full animate-fade-in bg-sidebar-background">
               <DevicePreview device={activeDevice} src={iframeSrc} />
             </div>
           )}
