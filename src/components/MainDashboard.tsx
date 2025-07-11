@@ -110,7 +110,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
   };
 
   return (
-    <div className="h-screen bg-sidebar-background overflow-hidden">
+    <div className="h-screen bg-background overflow-hidden">
       {/* Fixed Navbar */}
       <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
       
