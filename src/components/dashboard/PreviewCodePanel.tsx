@@ -16,15 +16,17 @@ const PreviewCodePanel = () => {
   const [showCode, setShowCode] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [originalContent, setOriginalContent] = useState<string>('');
+  const [currentContent, setCurrentContent] = useState<string>('');
   const [iframeSrc, setIframeSrc] = useState(
     "https://94153f317dee.ngrok-free.app/"
   );
 
-
-    const handleFileSelect = (file: FileNode) => {
-      setSelectedFile(file);
-    };  
+  const handleFileSelect = (file: FileNode) => {
+    setSelectedFile(file);
+    setOriginalContent(file.content || '');
+    setCurrentContent(file.content || '');
+  };
 
     const toggleDevice = () => {
       const devices: DeviceType[] = ["desktop", "tablet", "phone"];
@@ -41,9 +43,14 @@ const handleCodeToggle = (checked: boolean) => {
   }, 150);
 };
 
+const handleContentChange = (newContent: string) => {
+  setCurrentContent(newContent);
+};
+
+const hasUnsavedChanges = originalContent !== currentContent && currentContent.trim() !== '';
+
 const handleSave = () => {
-  // Implement save logic here
-  setHasUnsavedChanges(false);
+  setOriginalContent(currentContent);
   // In a real implementation, this would save the file content
 };
 
@@ -83,7 +90,7 @@ const handlePublish = () => {
               variant="ghost"
               size="sm"
               onClick={() => handleCodeToggle(false)}
-              className="flex items-center space-x-2 text-foreground"
+              className="flex items-center space-x-2 text-foreground font-poppins"
             >
               <span>← Back to Preview</span>
             </Button>
@@ -92,7 +99,7 @@ const handlePublish = () => {
               variant="outline"
               size="sm"
               onClick={toggleDevice}
-              className="flex items-center space-x-2 h-8"
+              className="flex items-center space-x-2 h-8 font-poppins"
             >
               {getDeviceIcon()}
               <span className="capitalize text-xs">{activeDevice}</span>
@@ -107,7 +114,7 @@ const handlePublish = () => {
                     variant="default"
                     size="sm"
                     onClick={handleSave}
-                    className="flex items-center space-x-1.5 h-8"
+                    className="flex items-center space-x-1.5 h-8 font-poppins"
                   >
                     <Save className="w-4 h-4" />
                     <span>Save</span>
@@ -117,12 +124,23 @@ const handlePublish = () => {
                   variant="outline"
                   size="sm"
                   onClick={handlePublish}
-                  className="flex items-center space-x-1.5 h-8"
+                  className="flex items-center space-x-1.5 h-8 font-poppins"
                 >
                   <Globe className="w-4 h-4" />
                   <span>Publish</span>
                 </Button>
               </>
+            )}
+            {!showCode && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePublish}
+                className="flex items-center space-x-1.5 h-8 font-poppins"
+              >
+                <Globe className="w-4 h-4" />
+                <span>Publish</span>
+              </Button>
             )}
             <div className="flex items-center space-x-2">
               <Code className="w-4 h-4" />
@@ -133,7 +151,7 @@ const handlePublish = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsFullscreen(true)}
-                className="flex items-center space-x-1.5 h-8"
+                className="flex items-center space-x-1.5 h-8 font-poppins"
               >
                 <Expand className="w-4 h-4" />
               </Button>
@@ -159,7 +177,7 @@ const handlePublish = () => {
                 <ResizablePanel defaultSize={75} minSize={60}>
                   <CodeEditor 
                     file={selectedFile} 
-                    onContentChange={() => setHasUnsavedChanges(true)}
+                    onContentChange={handleContentChange}
                   />
                 </ResizablePanel>
               </ResizablePanelGroup>

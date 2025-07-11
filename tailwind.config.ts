@@ -22,6 +22,7 @@ export default {
 			fontFamily: {
 				'impact': ['"Et Mono"', 'Impact', 'sans-serif'],
 				'satoshi': ['"Satoshi Variable"', 'sans-serif'],
+				'poppins': ['Poppins', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

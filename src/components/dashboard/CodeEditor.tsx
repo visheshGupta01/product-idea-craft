@@ -4,7 +4,7 @@ import type { FileNode } from "./FileExplorer";
 
 interface CodeEditorProps {
   file: FileNode | null;
-  onContentChange?: () => void;
+  onContentChange?: (content: string) => void;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ file, onContentChange }) => {
@@ -62,7 +62,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, onContentChange }) => {
           language={getLanguageFromExtension(file.name)}
           value={file.content || "// No content available"}
           theme="vs-dark"
-          onChange={onContentChange}
+          onChange={(value) => onContentChange?.(value || '')}
           options={{
             readOnly: false,
             minimap: { enabled: false },

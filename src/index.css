@@ -6,90 +6,85 @@
 
 @layer base {
   :root {
-    /* Softer light theme colors */
-    --background: 0 0% 98%;
-    --foreground: 222.2 84% 4.9%;
+    /* Custom color scheme */
+    --background: 210 13% 13%; /* #22282A */
+    --foreground: 318 100% 50%; /* #FF00A9 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 12%; /* #1E1E1E */
+    --card-foreground: 318 100% 50%; /* #FF00A9 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 12%; /* #1E1E1E */
+    --popover-foreground: 318 100% 50%; /* #FF00A9 */
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 318 100% 50%; /* #FF00A9 */
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 94%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 0 0% 12%; /* #1E1E1E */
+    --secondary-foreground: 318 100% 50%; /* #FF00A9 */
 
-    --muted: 210 40% 94%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 12%; /* #1E1E1E */
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 210 40% 94%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 318 71% 87%; /* #FAAADE hover color */
+    --accent-foreground: 0 0% 12%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 88%;
-    --input: 214.3 31.8% 88%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 318 100% 50%; /* #FF00A9 */
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 96%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-background: 210 13% 13%; /* #22282A */
+    --sidebar-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-primary: 318 100% 50%; /* #FF00A9 */
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 92%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 85%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 0% 12%; /* #1E1E1E */
+    --sidebar-accent-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 318 100% 50%; /* #FF00A9 */
   }
 
   .dark {
-    /* Refined dark background colors */
-    --background: 210 24% 8%;
-    --foreground: 213 31% 91%;
+    /* Dark mode uses the same colors */
+    --background: 210 13% 13%; /* #22282A */
+    --foreground: 318 100% 50%; /* #FF00A9 */
 
-    --card: 211 23% 11%;
-    --card-foreground: 213 31% 91%;
+    --card: 0 0% 12%; /* #1E1E1E */
+    --card-foreground: 318 100% 50%; /* #FF00A9 */
 
-    --popover: 211 23% 11%;
-    --popover-foreground: 213 31% 91%;
+    --popover: 0 0% 12%; /* #1E1E1E */
+    --popover-foreground: 318 100% 50%; /* #FF00A9 */
 
-    /* Vibrant cyan primary accent */
-    --primary: 188 100% 65%;
-    --primary-foreground: 210 24% 8%;
+    --primary: 318 100% 50%; /* #FF00A9 */
+    --primary-foreground: 0 0% 98%;
 
-    /* Subtle secondary colors */
-    --secondary: 211 20% 16%;
-    --secondary-foreground: 213 27% 84%;
+    --secondary: 0 0% 12%; /* #1E1E1E */
+    --secondary-foreground: 318 100% 50%; /* #FF00A9 */
 
-    --muted: 211 20% 16%;
-    --muted-foreground: 213 19% 64%;
+    --muted: 0 0% 12%; /* #1E1E1E */
+    --muted-foreground: 0 0% 60%;
 
-    /* Medium accent color */
-    --accent: 212 18% 32%;
-    --accent-foreground: 213 31% 91%;
+    --accent: 318 71% 87%; /* #FAAADE hover color */
+    --accent-foreground: 0 0% 12%;
 
     --destructive: 0 73% 58%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Borders and inputs */
-    --border: 211 20% 20%;
-    --input: 211 20% 20%;
-    --ring: 188 100% 65%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 318 100% 50%; /* #FF00A9 */
 
-    /* Sidebar colors matching the theme */
-    --sidebar-background: 210 24% 8%;
-    --sidebar-foreground: 213 31% 91%;
-    --sidebar-primary: 188 100% 65%;
-    --sidebar-primary-foreground: 210 24% 8%;
-    --sidebar-accent: 211 20% 16%;
-    --sidebar-accent-foreground: 213 31% 91%;
-    --sidebar-border: 211 20% 20%;
-    --sidebar-ring: 188 100% 65%;
+    --sidebar-background: 210 13% 13%; /* #22282A */
+    --sidebar-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-primary: 318 100% 50%; /* #FF00A9 */
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 12%; /* #1E1E1E */
+    --sidebar-accent-foreground: 318 100% 50%; /* #FF00A9 */
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 318 100% 50%; /* #FF00A9 */
   }
 }
 
@@ -103,7 +98,11 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-satoshi;
+    @apply font-poppins;
+  }
+
+  button {
+    @apply font-poppins;
   }
 }
 
