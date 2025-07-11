@@ -7,8 +7,7 @@
   import CodeEditor from './CodeEditor';
   import DevicePreview, { DeviceType } from './DevicePreview';
   import FullscreenPreview from './FullscreenPreview';
-  import { WebContainer } from "@webcontainer/api";
-  import { files } from './fileStructure'; // Adjust the import path as necessary
+
 
 
   const PreviewCodePanel = () => {
@@ -17,32 +16,14 @@
     const [showCode, setShowCode] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
-    const [iframeSrc, setIframeSrc] = useState("");
+    const [iframeSrc, setIframeSrc] = useState(
+      "https://94153f317dee.ngrok-free.app/"
+    );
 
 
     const handleFileSelect = (file: FileNode) => {
       setSelectedFile(file);
-    };
-
-    useEffect(() => {
-      (async () => {
-        const webcontainer = await WebContainer.boot();
-        console.log(Object.keys(files)); // should log: ['index.html', 'src', 'package.json', 'vite.config.js']
-        await webcontainer.mount(files);
-
-        const install = await webcontainer.spawn("npm", ["install"]);
-        install.output.pipeTo(new WritableStream({ write: console.log }));
-        await install.exit;
-
-        const server = await webcontainer.spawn("npm", ["run", "dev"]);
-        server.output.pipeTo(new WritableStream({ write: console.log }));
-
-        webcontainer.on("server-ready", (port, url) => {
-          setIframeSrc(url);
-          console.log(`Server is running at ${url}`);
-        });
-      })();
-    }, []);
+    };  
 
     const toggleDevice = () => {
       const devices: DeviceType[] = ["desktop", "tablet", "phone"];
@@ -51,13 +32,14 @@
       setActiveDevice(devices[nextIndex]);
     };
 
-    const handleCodeToggle = (checked: boolean) => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setShowCode(checked);
-        setIsTransitioning(false);
-      }, 150);
-    };
+const handleCodeToggle = (checked: boolean) => {
+  setShowCode(checked); // update state immediately
+  setIsTransitioning(true); // still fade out/in for animation
+  setTimeout(() => {
+    setIsTransitioning(false);
+  }, 150);
+};
+
 
     const getDeviceIcon = () => {
       switch (activeDevice) {
@@ -69,8 +51,6 @@
           return <Smartphone className="w-4 h-4" />;
       }
     };
-
-    // const iframeSrc = "https://imaginebo.lovable.app/";
 
     if (isFullscreen) {
       return (

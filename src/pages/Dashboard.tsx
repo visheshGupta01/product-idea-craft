@@ -5,7 +5,6 @@ const Dashboard = () => {
   return (
     <MainDashboard 
       userIdea="My App" 
-      followUpAnswers={{}} 
     />
   );
 };

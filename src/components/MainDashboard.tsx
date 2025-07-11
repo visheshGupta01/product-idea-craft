@@ -7,15 +7,15 @@ import SubscriptionPage from './dashboard/SubscriptionPage';
 import MyProjectsPage from './dashboard/MyProjectsPage';
 import UserProfilePage from './dashboard/UserProfilePage';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import IDE from './dashboard/FileExplorerAndCoder';
 
 interface MainDashboardProps {
   userIdea: string;
-  followUpAnswers: Record<string, string>;
 }
 
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
 
-const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
+const MainDashboard = ({ userIdea }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>('main');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentProject] = useState({
@@ -42,12 +42,15 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
         return <UserProfilePage onLogout={handleLogout} />;
       default:
         return (
-          <ResizablePanelGroup direction="horizontal" className="flex-1 min-w-0">
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="flex-1 min-w-0"
+          >
             {/* AI Chat Panel */}
-            <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 40 : 35} 
-              minSize={25} 
-              maxSize={50} 
+            <ResizablePanel
+              defaultSize={sidebarCollapsed ? 40 : 35}
+              minSize={25}
+              maxSize={50}
               className="hidden lg:block"
             >
               <div className="h-full border-r border-border bg-card">
@@ -58,12 +61,12 @@ const MainDashboard = ({ userIdea, followUpAnswers }: MainDashboardProps) => {
             <ResizableHandle withHandle className="hidden lg:flex" />
 
             {/* Preview/Code Panel */}
-            <ResizablePanel 
-              defaultSize={sidebarCollapsed ? 60 : 65} 
+            <ResizablePanel
+              defaultSize={sidebarCollapsed ? 60 : 65}
               minSize={50}
             >
               <div className="h-full">
-                <PreviewCodePanel />
+                <IDE />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>

@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import type { FileNode } from './FileExplorer';
+import React from "react";
+import Editor from "@monaco-editor/react";
+import type { FileNode } from "./FileExplorer";
 
 interface CodeEditorProps {
   file: FileNode | null;
@@ -9,22 +8,24 @@ interface CodeEditorProps {
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ file }) => {
   const getLanguageFromExtension = (filename: string): string => {
-    const ext = filename.split('.').pop()?.toLowerCase();
+    const ext = filename.split(".").pop()?.toLowerCase();
     switch (ext) {
-      case 'tsx':
-      case 'jsx':
-        return 'jsx';
-      case 'ts':
-      case 'js':
-        return 'javascript';
-      case 'css':
-        return 'css';
-      case 'html':
-        return 'html';
-      case 'json':
-        return 'json';
+      case "tsx":
+        return "typescript";
+      case "jsx":
+        return "javascript";
+      case "ts":
+        return "typescript";
+      case "js":
+        return "javascript";
+      case "css":
+        return "css";
+      case "html":
+        return "html";
+      case "json":
+        return "json";
       default:
-        return 'text';
+        return "plaintext";
     }
   };
 
@@ -33,7 +34,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file }) => {
       <div className="h-full flex items-center justify-center bg-muted/20">
         <div className="text-center">
           <div className="text-4xl mb-4">📁</div>
-          <p className="text-muted-foreground">Select a file to view its contents</p>
+          <p className="text-muted-foreground">
+            Select a file to view its contents
+          </p>
         </div>
       </div>
     );
@@ -51,16 +54,22 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file }) => {
         </div>
       </div>
 
-      {/* Code content */}
-      <ScrollArea className="flex-1">
-        <div className="p-4">
-          <pre className="text-sm leading-relaxed">
-            <code className="block whitespace-pre-wrap break-words">
-              {file.content || '// No content available'}
-            </code>
-          </pre>
-        </div>
-      </ScrollArea>
+      {/* Monaco Editor */}
+      <div className="flex-1 overflow-hidden">
+        <Editor
+          height="100%"
+          language={getLanguageFromExtension(file.name)} // ← use `language`, not `defaultLanguage`
+          value={file.content || "// No content available"} // ← use `value`, not `defaultValue`
+          theme="vs-dark"
+          options={{
+            readOnly: false,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            fontSize: 14,
+            wordWrap: "on",
+          }}
+        />
+      </div>
     </div>
   );
 };

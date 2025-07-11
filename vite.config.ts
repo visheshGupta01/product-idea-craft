@@ -7,10 +7,8 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     headers: {
-      "Cross-Origin-Embedder-Policy": "require-corp",
-      "Cross-Origin-Opener-Policy": "same-origin",
     },
-    host: "::",
+    host: "0.0.0.0",
     port: 8080,
   },
   plugins: [
@@ -23,4 +21,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  allowedHosts: [".ngrok-free.app"], // if using tunnels like ngrok/cloudflared
 }));
