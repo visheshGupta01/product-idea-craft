@@ -171,7 +171,7 @@ const Sidebar = ({
     }
   };
   if (collapsed) {
-    return <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    return <div className="w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Home button at very top (only show when not on main) */}
         {activeView !== 'main' && (
           <div className="flex justify-center pt-2 pb-2">
@@ -192,7 +192,7 @@ const Sidebar = ({
 
         {/* Header - only show hamburger on main dashboard */}
         {activeView === 'main' && (
-          <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
+          <div className="p-2 border-b border-sidebar-border bg-sidebar-background flex justify-center">
             <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
               <Menu className="h-4 w-4" />
             </Button>
@@ -200,7 +200,7 @@ const Sidebar = ({
         )}
 
         {/* Navigation icons */}
-        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
+        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar-background">
           {/* Task Icons with Status Indicators */}
           <div className="space-y-2">
             {tasks.slice(0, 4).map(task => (
@@ -288,10 +288,10 @@ const Sidebar = ({
       </div>;
   }
   return (
-    <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    <div className="h-full w-full min-w-[240px] bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Home button at very top (only show when not on main) */}
       {activeView !== 'main' && (
-        <div className="p-2 bg-sidebar flex justify-center border-b border-sidebar-border">
+        <div className="p-2 bg-sidebar-background flex justify-center border-b border-sidebar-border">
           <Button variant="default" size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
             <Home className="h-4 w-4" />
           </Button>
@@ -300,7 +300,7 @@ const Sidebar = ({
 
       {/* Header - only show hamburger on main dashboard */}
       {activeView === 'main' && (
-        <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
+        <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar-background">
           <div className="flex items-center justify-between mb-3">
             <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
               <Menu className="h-4 w-4" />
@@ -333,7 +333,7 @@ const Sidebar = ({
 
       {/* Scrollable Tasks Section - only show on main dashboard */}
       {activeView === 'main' && (
-        <div className="flex-1 min-h-0 bg-sidebar">
+        <div className="flex-1 min-h-0 bg-sidebar-background">
         <ScrollArea className="h-full">
           <div className="p-2 space-y-1">
             {tasks.map(task => {
@@ -433,7 +433,7 @@ const Sidebar = ({
       )}
 
       {/* Bottom Section - Always Visible */}
-      <div className="p-2 border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
+      <div className="p-2 border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar-background">
         <Separator className="bg-sidebar-border" />
         
         <DropdownMenu>

@@ -108,14 +108,14 @@ const ChatPanel = ({
   return (
     <div className="h-full flex flex-col">{/* Changed from h-screen to h-full to work with navbar */}
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-sidebar-border bg-sidebar-background">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
             <Bot className="w-4 h-4 text-primary-foreground" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm">AI Assistant</h3>
-            <p className="text-xs text-muted-foreground">
+            <h3 className="font-semibold text-sm text-sidebar-foreground">AI Assistant</h3>
+            <p className="text-xs text-sidebar-foreground/60">
               Guiding your build process
             </p>
           </div>
@@ -188,21 +188,21 @@ const ChatPanel = ({
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-sidebar-border bg-sidebar-background">
         <div className="flex space-x-2">
           <Input
             placeholder="Ask me anything about your project..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && !isLoading && sendMessage()}
-            className="flex-1"
+            className="flex-1 bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50"
             disabled={isLoading}
           />
           <Button
             onClick={sendMessage}
             size="sm"
             disabled={!newMessage.trim() || isLoading}
-            className="px-3"
+            className="px-3 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
