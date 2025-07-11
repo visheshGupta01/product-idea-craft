@@ -179,8 +179,24 @@ const Sidebar = ({
           </Button>
         </div>
 
+        {/* Home button at top */}
+        <div className="flex justify-center pt-2 pb-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+                  <Home className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Dashboard</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
         {/* Navigation icons */}
-        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
+        <div className="flex-1 flex flex-col items-center space-y-4 bg-sidebar">
           {/* Task Icons with Status Indicators */}
           <div className="space-y-2">
             {tasks.slice(0, 4).map(task => (
@@ -207,22 +223,6 @@ const Sidebar = ({
               </TooltipProvider>
             ))}
           </div>
-        </div>
-
-        {/* Home button above profile */}
-        <div className="flex justify-center pb-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
-                  <Home className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>Dashboard</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
 
         {/* Bottom Section */}

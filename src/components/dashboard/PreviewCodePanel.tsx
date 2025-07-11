@@ -107,45 +107,30 @@ const handlePublish = () => {
           )}
 
           <div className="flex items-center space-x-3">
-            {showCode && (
-              <>
-                {hasUnsavedChanges && (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={handleSave}
-                    className="flex items-center space-x-1.5 h-8 font-poppins"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>Save</span>
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePublish}
-                  className="flex items-center space-x-1.5 h-8 font-poppins"
-                >
-                  <Globe className="w-4 h-4" />
-                  <span>Publish</span>
-                </Button>
-              </>
-            )}
-            {!showCode && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePublish}
-                className="flex items-center space-x-1.5 h-8 font-poppins"
-              >
-                <Globe className="w-4 h-4" />
-                <span>Publish</span>
-              </Button>
-            )}
             <div className="flex items-center space-x-2">
               <Code className="w-4 h-4" />
               <Switch checked={showCode} onCheckedChange={handleCodeToggle} />
             </div>
+            {showCode && hasUnsavedChanges && (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleSave}
+                className="flex items-center space-x-1.5 h-8 font-poppins"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save</span>
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePublish}
+              className="flex items-center space-x-1.5 h-8 font-poppins"
+            >
+              <Globe className="w-4 h-4" />
+              <span>Publish</span>
+            </Button>
             {!showCode && (
               <Button
                 variant="outline"
