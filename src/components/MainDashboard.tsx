@@ -29,6 +29,13 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(false);
 
+  // Auto-collapse sidebar on non-main screens
+  useEffect(() => {
+    if (activeView !== 'main') {
+      setSidebarCollapsed(true);
+    }
+  }, [activeView]);
+
   useEffect(() => {
     const handleFrontendComplete = () => {
       setIsFrontendCreated(true);
@@ -105,7 +112,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
   return (
     <div className="h-screen bg-background overflow-hidden">
       {/* Fixed Navbar */}
-      <Navbar onPublish={handlePublish} />
+      <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
       
       {/* Main content with top padding for navbar */}
       <div className="h-full pt-14 flex">
@@ -113,7 +120,12 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
         <div className={`transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'} flex-shrink-0`}>
           <Sidebar 
             collapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onToggleCollapse={() => {
+              // Only allow toggle on main dashboard, keep collapsed on other screens
+              if (activeView === 'main') {
+                setSidebarCollapsed(!sidebarCollapsed);
+              }
+            }}
             currentProject={currentProject}
             activeView={activeView}
             onViewChange={setActiveView}

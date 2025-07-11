@@ -172,28 +172,32 @@ const Sidebar = ({
   };
   if (collapsed) {
     return <div className="w-16 h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
-        {/* Home button at very top */}
-        <div className="flex justify-center pt-2 pb-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
-                  <Home className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>Dashboard</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        {/* Home button at very top (only show when not on main) */}
+        {activeView !== 'main' && (
+          <div className="flex justify-center pt-2 pb-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+                    <Home className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Back to Dashboard</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
 
-        {/* Header */}
-        <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
-          <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
-            <Menu className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Header - only show hamburger on main dashboard */}
+        {activeView === 'main' && (
+          <div className="p-2 border-b border-sidebar-border bg-sidebar flex justify-center">
+            <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
 
         {/* Navigation icons */}
         <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar">
@@ -285,44 +289,51 @@ const Sidebar = ({
   }
   return (
     <div className="h-full w-full min-w-[240px] bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col">
-      {/* Home button at very top */}
-      <div className="p-2 bg-sidebar flex justify-center border-b border-sidebar-border">
-        <Button variant={activeView === 'main' ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
-          <Home className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Header */}
-      <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
-        <div className="flex items-center justify-between mb-3">
-          <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
-            <Menu className="h-4 w-4" />
+      {/* Home button at very top (only show when not on main) */}
+      {activeView !== 'main' && (
+        <div className="p-2 bg-sidebar flex justify-center border-b border-sidebar-border">
+          <Button variant="default" size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+            <Home className="h-4 w-4" />
           </Button>
         </div>
-        
-        {/* Compact Progress Overview */}
-        <div className="space-y-2 bg-sidebar-accent/20 rounded-lg p-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-sidebar-foreground">Progress</h3>
-            <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
-          </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Progress value={progress} className="h-1.5" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{Math.round(progress)}% complete</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
+      )}
 
-      {/* Scrollable Tasks Section */}
-      <div className="flex-1 min-h-0 bg-sidebar">
+      {/* Header - only show hamburger on main dashboard */}
+      {activeView === 'main' && (
+        <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar">
+          <div className="flex items-center justify-between mb-3">
+            <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
+        
+        {/* Compact Progress Overview - only show on main dashboard */}
+        {activeView === 'main' && (
+          <div className="space-y-2 bg-sidebar-accent/20 rounded-lg p-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-sidebar-foreground">Progress</h3>
+              <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Progress value={progress} className="h-1.5" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{Math.round(progress)}% complete</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
+      </div>
+      )}
+
+      {/* Scrollable Tasks Section - only show on main dashboard */}
+      {activeView === 'main' && (
+        <div className="flex-1 min-h-0 bg-sidebar">
         <ScrollArea className="h-full">
           <div className="p-2 space-y-1">
             {tasks.map(task => {
@@ -419,6 +430,7 @@ const Sidebar = ({
           </div>
         </ScrollArea>
       </div>
+      )}
 
       {/* Bottom Section - Always Visible */}
       <div className="p-2 border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar">
