@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    /* Custom color scheme */
-    --background: 200 14% 16%; /* #22282A */
+    /* Custom color scheme - Using exact colors specified */
+    --background: 0 0% 12%; /* #1E1E1E - everywhere else background */
     --foreground: 0 0% 100%; /* #FFFFFF */
 
     --card: 0 0% 12%; /* #1E1E1E */
@@ -37,6 +37,11 @@
 
     --radius: 0.5rem;
 
+    /* Chat specific colors - Always #22282A */
+    --chat-background: 200 14% 16%; /* #22282A - for chat background at all times */
+    --chat-foreground: 0 0% 100%; /* #FFFFFF */
+    --chat-accent: 0 0% 15%; /* Slightly lighter for chat bubbles */
+    
     --sidebar-background: 0 0% 8%; /* Very dark for sidebar */
     --sidebar-foreground: 0 0% 85%; /* Light gray text */
     --sidebar-primary: 318 100% 50%; /* #FF00A9 */
@@ -49,7 +54,7 @@
 
   .dark {
     /* Dark mode uses the same colors */
-    --background: 200 14% 16%; /* #22282A */
+    --background: 0 0% 12%; /* #1E1E1E - everywhere else background */
     --foreground: 0 0% 100%; /* #FFFFFF */
 
     --card: 0 0% 12%; /* #1E1E1E */
@@ -77,6 +82,11 @@
     --input: 0 0% 20%;
     --ring: 318 100% 50%; /* #FF00A9 */
 
+    /* Chat specific colors - Always #22282A */
+    --chat-background: 200 14% 16%; /* #22282A - for chat background at all times */
+    --chat-foreground: 0 0% 100%; /* #FFFFFF */
+    --chat-accent: 0 0% 15%; /* Slightly lighter for chat bubbles */
+    
     --sidebar-background: 0 0% 8%; /* Very dark for sidebar */
     --sidebar-foreground: 0 0% 85%; /* Light gray text */
     --sidebar-primary: 318 100% 50%; /* #FF00A9 */
@@ -107,7 +117,16 @@
 
   /* Custom button hover effects */
   .btn-primary:hover {
-    background-color: hsl(318, 71%, 87%); /* #FAAADE */
+    background-color: hsl(318 71% 87%); /* #FAAADE */
+  }
+  
+  /* Chat specific utility classes */
+  .chat-bg {
+    background-color: hsl(var(--chat-background));
+  }
+  
+  .chat-accent-bg {
+    background-color: hsl(var(--chat-accent));
   }
 }
 

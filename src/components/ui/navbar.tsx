@@ -43,7 +43,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
             onClick={onPublish}
             variant="default"
             size="sm"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground"
+            className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl px-6 py-2 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Rocket className="h-4 w-4 mr-2" />
             Publish

@@ -15,6 +15,7 @@ const PreviewCodePanel = () => {
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [showCode, setShowCode] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [hidePreview, setHidePreview] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [originalContent, setOriginalContent] = useState<string>('');
   const [currentContent, setCurrentContent] = useState<string>('');
@@ -116,15 +117,15 @@ const handlePublish = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowCode(true)}
+              onClick={() => setHidePreview(!hidePreview)}
               className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              title="Hide Preview"
+              title={hidePreview ? "Show Preview" : "Hide Preview"}
             >
               <Globe className="w-4 h-4" />
             </Button>
             
             {/* Device toggle - only show icon, no text */}
-            {!showCode && (
+            {!showCode && !hidePreview && (
               <Button
                 variant="outline"
                 size="sm"
@@ -136,7 +137,7 @@ const handlePublish = () => {
             )}
             
             {/* Fullscreen button */}
-            {!showCode && (
+            {!showCode && !hidePreview && (
               <Button
                 variant="outline"
                 size="sm"
@@ -154,7 +155,7 @@ const handlePublish = () => {
             isTransitioning ? "opacity-0" : "opacity-100"
           }`}
         >
-          {showCode ? (
+          {showCode || hidePreview ? (
             <div className="h-full animate-fade-in bg-sidebar-background">
               <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>

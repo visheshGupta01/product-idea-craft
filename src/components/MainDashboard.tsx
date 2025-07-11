@@ -88,7 +88,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
               maxSize={50}
               className="hidden lg:block"
             >
-              <div className="h-full border-r border-border bg-card">
+              <div className="h-full border-r border-border">
                 <ChatPanel userIdea={userIdea} />
               </div>
             </ResizablePanel>
@@ -100,7 +100,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
               defaultSize={sidebarCollapsed ? 60 : 65}
               minSize={50}
             >
-              <div className="h-full">
+              <div className="h-full bg-background">
                 <PreviewCodePanel />
               </div>
             </ResizablePanel>
