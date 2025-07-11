@@ -298,14 +298,6 @@ const Sidebar = ({
           <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
             <Menu className="h-4 w-4" />
           </Button>
-          <div className="flex items-center space-x-1">
-            <div className="flex items-center justify-center w-9 h-7 rounded-lg">
-              <img src='logo.png' className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="font-bold text-base bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              imagine.bo
-            </h2>
-          </div>
         </div>
         
         {/* Compact Progress Overview */}

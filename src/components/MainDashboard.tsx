@@ -29,6 +29,15 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(false);
 
+  useEffect(() => {
+    const handleFrontendComplete = () => {
+      setIsFrontendCreated(true);
+    };
+
+    window.addEventListener('frontendComplete', handleFrontendComplete);
+    return () => window.removeEventListener('frontendComplete', handleFrontendComplete);
+  }, []);
+
   const handleLogout = () => {
     // Navigate back to the idea submission screen
     window.location.href = '/';
