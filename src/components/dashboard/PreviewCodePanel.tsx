@@ -15,13 +15,6 @@ const PreviewCodePanel = () => {
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [showCode, setShowCode] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [hidePreview, setHidePreview] = useState(false);
-
-  // Notify parent when preview is hidden/shown
-  useEffect(() => {
-    const event = new CustomEvent('previewToggle', { detail: { hidden: hidePreview } });
-    window.dispatchEvent(event);
-  }, [hidePreview]);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [originalContent, setOriginalContent] = useState<string>('');
   const [currentContent, setCurrentContent] = useState<string>('');
@@ -117,21 +110,10 @@ const handlePublish = () => {
             )}
           </div>
 
-          {/* Right side buttons - Hide Preview, Device toggle and Fullscreen */}
+          {/* Right side buttons - Device toggle and Fullscreen */}
           <div className="flex items-center space-x-2">
-            {/* Hide Preview button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setHidePreview(!hidePreview)}
-              className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              title={hidePreview ? "Show Preview" : "Hide Preview"}
-            >
-              <Globe className="w-4 h-4" />
-            </Button>
-            
             {/* Device toggle - only show icon, no text */}
-            {!showCode && !hidePreview && (
+            {!showCode && (
               <Button
                 variant="outline"
                 size="sm"
@@ -143,7 +125,7 @@ const handlePublish = () => {
             )}
             
             {/* Fullscreen button */}
-            {!showCode && !hidePreview && (
+            {!showCode && (
               <Button
                 variant="outline"
                 size="sm"
@@ -161,20 +143,7 @@ const handlePublish = () => {
             isTransitioning ? "opacity-0" : "opacity-100"
           }`}
         >
-          {hidePreview ? (
-            <div className="h-full flex items-center justify-center bg-sidebar-background">
-              <div className="text-center">
-                <div className="text-sidebar-foreground/60 mb-4">Preview is hidden</div>
-                <Button
-                  onClick={() => setHidePreview(false)}
-                  variant="outline"
-                  className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-                >
-                  Show Preview
-                </Button>
-              </div>
-            </div>
-          ) : showCode ? (
+          {showCode ? (
             <div className="h-full animate-fade-in bg-sidebar-background">
               <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
