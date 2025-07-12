@@ -11,18 +11,18 @@ export default defineConfig(({ mode }) => ({
     // Add CORS configuration if needed
     cors: true,
     // If you need to proxy API requests to avoid CORS issues
-    proxy: {
-      // Proxy API requests to avoid CORS issues
-      '/api': {
-        target: 'https://713f60dd7948.ngrok-free.app',
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-        headers: {
-          'ngrok-skip-browser-warning': 'true'
-        }
-      }
-    }
+    // proxy: {
+    //   // Proxy API requests to avoid CORS issues
+    //   '/api': {
+    //     target: 'https://713f60dd7948.ngrok-free.app',
+    //     changeOrigin: true,
+    //     secure: true,
+    //     rewrite: (path) => path.replace(/^\/api/, ''),
+    //     headers: {
+    //       // 'ngrok-skip-browser-warning': 'true'
+    //     }
+    //   }
+    // }
   },
   plugins: [
     react(),

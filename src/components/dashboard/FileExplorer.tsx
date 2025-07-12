@@ -5,11 +5,22 @@ import {
   Folder,
   FolderOpen,
   File,
+  FileText,
+  Code,
+  Image,
+  Music,
+  Video,
+  Archive,
+  Database,
+  FileCode,
+  Globe,
+  Settings,
+  Palette,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { buildFileTreeFromPathsWithFullPaths } from "@/lib/transformSupabase";
-
 
 export interface FileNode {
   name: string;
@@ -17,6 +28,7 @@ export interface FileNode {
   path: string;
   children?: FileNode[];
   content?: string;
+  extension?: string;
 }
 
 interface FileExplorerProps {
@@ -24,8 +36,85 @@ interface FileExplorerProps {
   selectedFile: string | null;
 }
 
-const BUCKET_NAME = "test-bucket"
-const FOLDER_PREFIX = "user1/project23"
+const BUCKET_NAME = "test-bucket";
+const FOLDER_PREFIX = "user1/project23";
+
+// File extension to icon mapping
+const getFileIcon = (extension: string) => {
+  const ext = extension.toLowerCase();
+
+  // Code files
+  if (["js", "jsx", "ts", "tsx", "vue", "svelte"].includes(ext)) {
+    return { icon: Code, color: "text-yellow-500" };
+  }
+  if (
+    ["py", "rb", "php", "java", "c", "cpp", "cs", "go", "rs", "swift"].includes(
+      ext
+    )
+  ) {
+    return { icon: FileCode, color: "text-blue-500" };
+  }
+  if (["html", "htm", "xml", "xhtml"].includes(ext)) {
+    return { icon: Globe, color: "text-orange-500" };
+  }
+  if (["css", "scss", "sass", "less", "styl"].includes(ext)) {
+    return { icon: Palette, color: "text-pink-500" };
+  }
+
+  // Documents
+  if (["txt", "md", "rst", "rtf"].includes(ext)) {
+    return { icon: FileText, color: "text-gray-500" };
+  }
+  if (["pdf", "doc", "docx", "odt"].includes(ext)) {
+    return { icon: FileText, color: "text-red-500" };
+  }
+
+  // Images
+  if (
+    ["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp", "ico"].includes(ext)
+  ) {
+    return { icon: Image, color: "text-green-500" };
+  }
+
+  // Audio
+  if (["mp3", "wav", "flac", "aac", "ogg", "m4a"].includes(ext)) {
+    return { icon: Music, color: "text-purple-500" };
+  }
+
+  // Video
+  if (["mp4", "avi", "mov", "wmv", "flv", "webm", "mkv"].includes(ext)) {
+    return { icon: Video, color: "text-red-600" };
+  }
+
+  // Archives
+  if (["zip", "rar", "7z", "tar", "gz", "bz2", "xz"].includes(ext)) {
+    return { icon: Archive, color: "text-amber-600" };
+  }
+
+  // Database
+  if (["sql", "db", "sqlite", "mdb"].includes(ext)) {
+    return { icon: Database, color: "text-indigo-500" };
+  }
+
+  // Config files
+  if (["json", "yml", "yaml", "toml", "ini", "cfg", "conf"].includes(ext)) {
+    return { icon: Settings, color: "text-gray-600" };
+  }
+
+  // Executables
+  if (["exe", "msi", "deb", "rpm", "dmg", "app"].includes(ext)) {
+    return { icon: Download, color: "text-slate-700" };
+  }
+
+  // Default
+  return { icon: File, color: "text-sidebar-foreground/60" };
+};
+
+// Extract file extension from filename
+const getFileExtension = (filename: string): string => {
+  const lastDotIndex = filename.lastIndexOf(".");
+  return lastDotIndex > 0 ? filename.substring(lastDotIndex + 1) : "";
+};
 
 const FileTreeItem: React.FC<{
   node: FileNode;
@@ -44,6 +133,12 @@ const FileTreeItem: React.FC<{
   };
 
   const isSelected = selectedFile === node.path;
+
+  // Get file icon and color based on extension
+  const fileIconData =
+    node.type === "file" ? getFileIcon(node.extension || "") : null;
+  const FileIcon = fileIconData?.icon || File;
+  const iconColor = fileIconData?.color || "text-sidebar-foreground/60";
 
   return (
     <div>
@@ -72,10 +167,17 @@ const FileTreeItem: React.FC<{
         ) : (
           <>
             <div className="w-5 mr-1" />
-            <File className="w-4 h-4 mr-2 text-sidebar-foreground/60" />
+            <FileIcon className={cn("w-4 h-4 mr-2", iconColor)} />
           </>
         )}
-        <span className="text-sm truncate">{node.name}</span>
+        <span className="text-sm truncate flex items-center gap-1">
+          {node.name}
+          {node.type === "file" && node.extension && (
+            <span className="text-xs text-sidebar-foreground/50 font-mono">
+              .{node.extension}
+            </span>
+          )}
+        </span>
       </div>
       {node.type === "folder" && isExpanded && node.children && (
         <div>
@@ -102,7 +204,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
 
   useEffect(() => {
     const fetchFiles = async () => {
-const allFiles: { relativePath: string; fullPath: string }[] = [];
+      const allFiles: { relativePath: string; fullPath: string }[] = [];
 
       const walk = async (prefix: string) => {
         const { data, error } = await supabase.storage
@@ -126,12 +228,28 @@ const allFiles: { relativePath: string; fullPath: string }[] = [];
         }
       };
 
-
-
-
       await walk(FOLDER_PREFIX);
-const tree = buildFileTreeFromPathsWithFullPaths(allFiles);
-      setFileTree(tree);
+      const tree = buildFileTreeFromPathsWithFullPaths(allFiles);
+
+      // Add extension information to file nodes
+      const addExtensions = (nodes: FileNode[]): FileNode[] => {
+        return nodes.map((node) => {
+          if (node.type === "file") {
+            return {
+              ...node,
+              extension: getFileExtension(node.name),
+            };
+          } else if (node.children) {
+            return {
+              ...node,
+              children: addExtensions(node.children),
+            };
+          }
+          return node;
+        });
+      };
+
+      setFileTree(addExtensions(tree));
     };
 
     fetchFiles();
@@ -155,7 +273,9 @@ const tree = buildFileTreeFromPathsWithFullPaths(allFiles);
   return (
     <div className="h-full bg-sidebar-background border-r border-sidebar-border">
       <div className="p-3 border-b border-sidebar-border">
-        <h3 className="text-sm font-medium text-sidebar-foreground">Explorer</h3>
+        <h3 className="text-sm font-medium text-sidebar-foreground">
+          Explorer
+        </h3>
       </div>
       <div className="p-2 overflow-y-auto h-full">
         {fileTree.map((node) => (

@@ -152,13 +152,13 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
 
 const ChatPanel = ({
   userIdea,
-  mcpServerUrl = "https://808326d1f03d.ngrok-free.app/chat",
+  mcpServerUrl = "https://0ae639c5b561.ngrok-free.app/chat",
 }: ChatPanelProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
       type: "ai",
-      content: `Great idea! I've analyzed your concept: "${userIdea}". Let's start by conducting a competitive analysis. What similar products or services have you seen in the market?`,
+      content: `Hello Sir, Tell me the idea which you want to bring to life. I will help you build it step by step.`,
       timestamp: new Date(),
     },
   ]);
@@ -320,7 +320,8 @@ const ChatPanel = ({
   }, [messages]);
 
   return (
-    <div className="h-full flex flex-col chat-bg">{/* Always use chat background */}
+    <div className="h-full flex flex-col chat-bg">
+      {/* Always use chat background */}
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border chat-bg">
         <div className="flex items-center space-x-3">
@@ -328,27 +329,15 @@ const ChatPanel = ({
             <Bot className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm text-foreground">AI Assistant</h3>
+            <h3 className="font-semibold text-sm text-foreground">
+              AI Assistant
+            </h3>
             <p className="text-xs text-foreground/60">
               Guiding your build process
             </p>
           </div>
         </div>
       </div>
-
-      {/* Debug Info */}
-      {debugInfo && (
-        <div className="p-2 bg-gray-100 border-b text-xs">
-          <details>
-            <summary className="cursor-pointer font-medium">
-              Last Server Response (Click to expand)
-            </summary>
-            <pre className="mt-2 overflow-auto max-h-40 text-xs">
-              {debugInfo}
-            </pre>
-          </details>
-        </div>
-      )}
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4 chat-bg" ref={scrollAreaRef}>
