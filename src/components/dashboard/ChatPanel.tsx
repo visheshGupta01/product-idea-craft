@@ -165,7 +165,7 @@ const ChatPanel = ({
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>("");
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const formatResearchOutput = (output: string): string => {
     // Keep the markdown formatting for the enhanced renderer
@@ -313,11 +313,13 @@ const ChatPanel = ({
     }
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, isLoading]);
 
   return (
     <div className="h-full flex flex-col chat-bg">{/* Always use chat background */}
@@ -351,7 +353,7 @@ const ChatPanel = ({
       )}
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4 chat-bg" ref={scrollAreaRef}>
+      <ScrollArea className="flex-1 p-4 chat-bg">
         <div className="space-y-4">
           {messages.map((message) => (
             <div
@@ -412,6 +414,9 @@ const ChatPanel = ({
               </div>
             </div>
           )}
+          
+          {/* Invisible element to scroll to */}
+          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
 
