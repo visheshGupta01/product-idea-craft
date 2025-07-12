@@ -41,11 +41,8 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
         ) : (
           <Button 
             onClick={onPublish}
-            variant="default"
-            size="sm"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl px-6 py-2 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+            className="bg-white text-black hover:bg-gray-100 rounded-lg px-4 py-2 font-medium transition-all duration-200 border-0"
           >
-            <Rocket className="h-4 w-4 mr-2" />
             Publish
           </Button>
         )}

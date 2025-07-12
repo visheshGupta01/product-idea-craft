@@ -28,6 +28,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(false);
+  const [isPreviewHidden, setIsPreviewHidden] = useState(false);
 
   // Auto-collapse sidebar on non-main screens
   useEffect(() => {
@@ -41,8 +42,16 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
       setIsFrontendCreated(true);
     };
 
+    const handlePreviewToggle = (event: CustomEvent) => {
+      setIsPreviewHidden(event.detail.hidden);
+    };
+
     window.addEventListener('frontendComplete', handleFrontendComplete);
-    return () => window.removeEventListener('frontendComplete', handleFrontendComplete);
+    window.addEventListener('previewToggle', handlePreviewToggle as EventListener);
+    return () => {
+      window.removeEventListener('frontendComplete', handleFrontendComplete);
+      window.removeEventListener('previewToggle', handlePreviewToggle as EventListener);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -83,9 +92,9 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
           >
             {/* AI Chat Panel */}
             <ResizablePanel
-              defaultSize={sidebarCollapsed ? 40 : 35}
-              minSize={25}
-              maxSize={50}
+              defaultSize={isPreviewHidden ? 100 : (sidebarCollapsed ? 40 : 35)}
+              minSize={isPreviewHidden ? 100 : 25}
+              maxSize={isPreviewHidden ? 100 : 50}
               className="hidden lg:block"
             >
               <div className="h-full border-r border-border">
@@ -93,17 +102,19 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
               </div>
             </ResizablePanel>
 
-            <ResizableHandle withHandle className="hidden lg:flex" />
+            {!isPreviewHidden && <ResizableHandle withHandle className="hidden lg:flex" />}
 
             {/* Preview/Code Panel */}
-            <ResizablePanel
-              defaultSize={sidebarCollapsed ? 60 : 65}
-              minSize={50}
-            >
-              <div className="h-full bg-background">
-                <PreviewCodePanel />
-              </div>
-            </ResizablePanel>
+            {!isPreviewHidden && (
+              <ResizablePanel
+                defaultSize={sidebarCollapsed ? 60 : 65}
+                minSize={50}
+              >
+                <div className="h-full bg-background">
+                  <PreviewCodePanel />
+                </div>
+              </ResizablePanel>
+            )}
           </ResizablePanelGroup>
         );
     }
