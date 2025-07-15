@@ -616,7 +616,7 @@ Please try again or check your connection.`,
                   className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                     message.type === "user"
                       ? "bg-blue-300 text-black rounded-br-md"
-                      : "bg-gradient-to-b from-white to-[#FAA916] text-black rounded-bl-md backdrop-blur-sm"
+                      : "bg-[#D9D9D9] text-black rounded-bl-md backdrop-blur-sm"
                   }`}
                 >
                   {message.type === "user" ? (
