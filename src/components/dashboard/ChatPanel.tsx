@@ -572,16 +572,21 @@ Please try again or check your connection.`,
   }, [messages, isLoading]);
 
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: '#1a1a1a' }}>
+    <div
+      className="h-full flex flex-col"
+      style={{ backgroundColor: "#1a1a1a" }}
+    >
       {/* Messages */}
-      <ScrollArea className="flex-1 p-6" style={{ backgroundColor: '#1a1a1a' }}>
-        <div className="space-y-4 max-w-2xl mx-auto">
+      <ScrollArea className="flex-1 p-6" style={{ backgroundColor: "#1a1a1a" }}>
+        <div className="space-y-4 w-full">
           {messages.map((message) => (
             <div
               key={message.id}
               data-message-id={message.id}
               className={`group flex items-start space-x-3 ${
-                message.type === "user" ? "flex-row-reverse space-x-reverse" : ""
+                message.type === "user"
+                  ? "flex-row-reverse space-x-reverse"
+                  : ""
               }`}
             >
               {/* Avatar */}
@@ -592,9 +597,9 @@ Please try again or check your connection.`,
                   </div>
                 ) : (
                   <div className="w-8 h-8 rounded-full overflow-hidden">
-                    <img 
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
-                      alt="User Avatar" 
+                    <img
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
+                      alt="User Avatar"
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -602,12 +607,16 @@ Please try again or check your connection.`,
               </div>
 
               {/* Message bubble */}
-              <div className={`max-w-[70%] ${message.type === "user" ? "text-right" : ""}`}>
+              <div
+                className={`max-w-[70%] ${
+                  message.type === "user" ? "text-right" : ""
+                }`}
+              >
                 <div
                   className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                     message.type === "user"
-                      ? "bg-blue-500 text-white rounded-br-md"
-                      : "bg-white/10 text-white rounded-bl-md backdrop-blur-sm"
+                      ? "bg-blue-300 text-black rounded-br-md"
+                      : "bg-[#d9d9d9] text-black rounded-bl-md backdrop-blur-sm"
                   }`}
                 >
                   {message.type === "user" ? (
@@ -621,9 +630,11 @@ Please try again or check your connection.`,
 
                 {/* Copy and Download buttons */}
                 {message.id !== "1" && (
-                  <div className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 mt-2 ${
-                    message.type === "user" ? "justify-start" : "justify-end"
-                  }`}>
+                  <div
+                    className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 mt-2 ${
+                      message.type === "user" ? "justify-start" : "justify-end"
+                    }`}
+                  >
                     {message.type === "user" ? (
                       <Button
                         variant="ghost"
@@ -647,7 +658,9 @@ Please try again or check your connection.`,
                           variant="ghost"
                           size="sm"
                           className="h-7 w-7 p-0 bg-white/10 hover:bg-white/20 border-0"
-                          onClick={() => downloadAsText(message.content, message.id)}
+                          onClick={() =>
+                            downloadAsText(message.content, message.id)
+                          }
                         >
                           <Download className="h-3 w-3 text-white" />
                         </Button>
@@ -668,9 +681,7 @@ Please try again or check your connection.`,
               <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md">
                 <div className="flex items-center space-x-2">
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span className="text-sm text-white">
-                    AI is typing...
-                  </span>
+                  <span className="text-sm text-white">AI is typing...</span>
                 </div>
               </div>
             </div>
@@ -681,14 +692,16 @@ Please try again or check your connection.`,
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-6" style={{ backgroundColor: '#1a1a1a' }}>
-        <div className="max-w-2xl mx-auto">
+      <div className="p-6" style={{ backgroundColor: "#1a1a1a" }}>
+        <div className="w-full">
           <div className="relative">
             <Input
               placeholder="Message..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && !isLoading && sendMessage()}
+              onKeyPress={(e) =>
+                e.key === "Enter" && !isLoading && sendMessage()
+              }
               className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/60 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
               disabled={isLoading}
             />
@@ -696,7 +709,7 @@ Please try again or check your connection.`,
               onClick={sendMessage}
               size="sm"
               disabled={!newMessage.trim() || isLoading}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-sm"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-blue-600 text-white rounded-full shadow-sm"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
