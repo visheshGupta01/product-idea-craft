@@ -614,16 +614,6 @@ Please try again or check your connection.`,
                   ) : (
                     <MarkdownRenderer content={message.content} />
                   )}
-                  <p
-                    className={`text-xs mt-3 ${
-                      message.type === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
-                    }`}
-                  >
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
                 </div>
 
                 {/* Copy and Download buttons - show on hover except for first AI message */}
