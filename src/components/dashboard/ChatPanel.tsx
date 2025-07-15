@@ -572,106 +572,104 @@ Please try again or check your connection.`,
   }, [messages, isLoading]);
 
   return (
-    <div className="h-full flex flex-col bg-chat-background">
+    <div className="h-full flex flex-col" style={{ backgroundColor: '#1a1a1a' }}>
       {/* Messages */}
-      <ScrollArea className="flex-1 pt-4 pl-4 pr-4 bg-chat-background">
-        <div className="space-y-6">
+      <ScrollArea className="flex-1 p-6" style={{ backgroundColor: '#1a1a1a' }}>
+        <div className="space-y-4 max-w-2xl mx-auto">
           {messages.map((message) => (
             <div
               key={message.id}
               data-message-id={message.id}
-              className={`group flex flex-col space-y-2 ${
-                message.type === "user" ? "items-end" : "items-start"
+              className={`group flex items-start space-x-3 ${
+                message.type === "user" ? "flex-row-reverse space-x-reverse" : ""
               }`}
             >
-              <div className={`flex space-x-3 ${
-                message.type === "user" ? "justify-end" : "justify-start"
-              }`}>
-                {message.type === "ai" && (
-                  <Avatar className="w-8 h-8 flex-shrink-0">
-                    <AvatarFallback className="bg-primary">
-                      <Bot className="w-4 h-4 text-primary-foreground" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-
-                <div className="max-w-[85%]">
-                  <div
-                    className={`p-4 rounded-2xl text-sm ${
-                      message.type === "user"
-                        ? "bg-primary text-primary-foreground ml-auto"
-                        : "bg-chat-accent border border-border text-chat-foreground shadow-sm"
-                    }`}
-                  >
-                    {message.type === "user" ? (
-                      <div className="whitespace-pre-wrap">{message.content}</div>
-                    ) : (
-                      <MarkdownRenderer content={message.content} />
-                    )}
+              {/* Avatar */}
+              <div className="flex-shrink-0">
+                {message.type === "ai" ? (
+                  <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
+                    <Bot className="w-4 h-4 text-white" />
                   </div>
-                </div>
-
-                {message.type === "user" && (
-                  <Avatar className="w-8 h-8 flex-shrink-0">
-                    <AvatarFallback className="bg-muted">
-                      <User className="w-4 h-4 text-muted-foreground" />
-                    </AvatarFallback>
-                  </Avatar>
+                ) : (
+                  <div className="w-8 h-8 rounded-full overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                      alt="User Avatar" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
               </div>
 
-              {/* Copy and Download buttons - positioned differently for AI vs User */}
-              {message.id !== "1" && (
-                <div className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2 w-full ${
-                  message.type === "user" ? "justify-start" : "justify-end"
-                }`}>
+              {/* Message bubble */}
+              <div className={`max-w-[70%] ${message.type === "user" ? "text-right" : ""}`}>
+                <div
+                  className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                    message.type === "user"
+                      ? "bg-blue-500 text-white rounded-br-md"
+                      : "bg-white/10 text-white rounded-bl-md backdrop-blur-sm"
+                  }`}
+                >
                   {message.type === "user" ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 px-2 bg-background/80 hover:bg-background border border-border/50"
-                      onClick={() => copyToClipboard(message.content)}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
+                    <div className="whitespace-pre-wrap">{message.content}</div>
                   ) : (
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2 bg-background/80 hover:bg-background border border-border/50"
-                        onClick={() => copyToClipboard(message.content)}
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2 bg-background/80 hover:bg-background border border-border/50"
-                        onClick={() => downloadAsText(message.content, message.id)}
-                      >
-                        <Download className="h-3 w-3" />
-                      </Button>
-                    </>
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <MarkdownRenderer content={message.content} />
+                    </div>
                   )}
                 </div>
-              )}
+
+                {/* Copy and Download buttons */}
+                {message.id !== "1" && (
+                  <div className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 mt-2 ${
+                    message.type === "user" ? "justify-start" : "justify-end"
+                  }`}>
+                    {message.type === "user" ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 bg-white/10 hover:bg-white/20 border-0"
+                        onClick={() => copyToClipboard(message.content)}
+                      >
+                        <Copy className="h-3 w-3 text-white" />
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 bg-white/10 hover:bg-white/20 border-0"
+                          onClick={() => copyToClipboard(message.content)}
+                        >
+                          <Copy className="h-3 w-3 text-white" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 bg-white/10 hover:bg-white/20 border-0"
+                          onClick={() => downloadAsText(message.content, message.id)}
+                        >
+                          <Download className="h-3 w-3 text-white" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
 
           {/* Loading indicator */}
           {isLoading && (
-            <div className="flex space-x-3 justify-start">
-              <Avatar className="w-8 h-8">
-                <AvatarFallback className="bg-primary">
-                  <Bot className="w-4 h-4 text-primary-foreground" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="bg-chat-accent border border-border p-4 rounded-2xl shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
+                <Bot className="w-4 h-4 text-white" />
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                  <span className="text-sm text-chat-foreground">
-                    AI is processing your request...
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span className="text-sm text-white">
+                    AI is typing...
                   </span>
                 </div>
               </div>
@@ -683,28 +681,30 @@ Please try again or check your connection.`,
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 bg-chat-background">
-        <div className="flex space-x-2">
-          <Input
-            placeholder="Describe your idea or ask a question..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && !isLoading && sendMessage()}
-            className="flex-1 bg-background border-input text-foreground placeholder:text-muted-foreground rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent"
-            disabled={isLoading}
-          />
-          <Button
-            onClick={sendMessage}
-            size="sm"
-            disabled={!newMessage.trim() || isLoading}
-            className="px-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-sm"
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
-          </Button>
+      <div className="p-6" style={{ backgroundColor: '#1a1a1a' }}>
+        <div className="max-w-2xl mx-auto">
+          <div className="relative">
+            <Input
+              placeholder="Message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && !isLoading && sendMessage()}
+              className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/60 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
+              disabled={isLoading}
+            />
+            <Button
+              onClick={sendMessage}
+              size="sm"
+              disabled={!newMessage.trim() || isLoading}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-sm"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
