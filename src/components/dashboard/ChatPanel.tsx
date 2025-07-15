@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Send, Bot, User, Loader2 } from "lucide-react";
+import { Send, Bot, User, Loader2, Copy, Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChatPanelProps {
   userIdea: string;
@@ -352,6 +353,7 @@ const ChatPanel = ({
   userIdea,
   mcpServerUrl = "https://1946dc82ab95.ngrok-free.app/chat",
 }: ChatPanelProps) => {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -533,23 +535,48 @@ Please try again or check your connection.`,
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const copyToClipboard = (content: string) => {
+    navigator.clipboard.writeText(content);
+    toast({
+      title: "Copied to clipboard",
+      description: "Message content has been copied to your clipboard.",
+    });
+  };
+
+  const downloadAsText = (content: string, messageId: string) => {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `message-${messageId}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Downloaded",
+      description: "Message has been downloaded as a text file.",
+    });
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col chat-bg">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-gray-50">
+      <div className="p-4 border-b border-border chat-accent-bg">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Bot className="w-4 h-4 text-blue-600" />
+          <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+            <Bot className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm text-gray-900">
+            <h3 className="font-semibold text-sm text-chat-foreground">
               AI Assistant
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Guiding your build process with enhanced markdown support
             </p>
           </div>
@@ -557,51 +584,75 @@ Please try again or check your connection.`,
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4 bg-gray-50">
+      <ScrollArea className="flex-1 p-4 chat-bg">
         <div className="space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex space-x-3 ${
+              className={`group flex space-x-3 ${
                 message.type === "user" ? "justify-end" : "justify-start"
               }`}
             >
               {message.type === "ai" && (
                 <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarFallback className="bg-blue-600">
-                    <Bot className="w-4 h-4 text-white" />
+                  <AvatarFallback className="bg-primary">
+                    <Bot className="w-4 h-4 text-primary-foreground" />
                   </AvatarFallback>
                 </Avatar>
               )}
 
-              <div
-                className={`max-w-[85%] p-4 rounded-2xl text-sm ${
-                  message.type === "user"
-                    ? "bg-blue-600 text-white ml-auto"
-                    : "bg-white border border-gray-200 text-gray-900 shadow-sm"
-                }`}
-              >
-                {message.type === "user" ? (
-                  <div className="whitespace-pre-wrap">{message.content}</div>
-                ) : (
-                  <MarkdownRenderer content={message.content} />
-                )}
-                <p
-                  className={`text-xs mt-3 ${
-                    message.type === "user" ? "text-blue-100" : "text-gray-400"
+              <div className="relative max-w-[85%]">
+                <div
+                  className={`p-4 rounded-2xl text-sm ${
+                    message.type === "user"
+                      ? "bg-primary text-primary-foreground ml-auto"
+                      : "chat-accent-bg border border-border text-chat-foreground shadow-sm"
                   }`}
                 >
-                  {message.timestamp.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
+                  {message.type === "user" ? (
+                    <div className="whitespace-pre-wrap">{message.content}</div>
+                  ) : (
+                    <MarkdownRenderer content={message.content} />
+                  )}
+                  <p
+                    className={`text-xs mt-3 ${
+                      message.type === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
+                    }`}
+                  >
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+
+                {/* Copy and Download buttons - show on hover except for first AI message */}
+                {message.id !== "1" && (
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 bg-background/80 hover:bg-background"
+                      onClick={() => copyToClipboard(message.content)}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 bg-background/80 hover:bg-background"
+                      onClick={() => downloadAsText(message.content, message.id)}
+                    >
+                      <Download className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {message.type === "user" && (
                 <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarFallback className="bg-gray-600">
-                    <User className="w-4 h-4 text-white" />
+                  <AvatarFallback className="bg-muted">
+                    <User className="w-4 h-4 text-muted-foreground" />
                   </AvatarFallback>
                 </Avatar>
               )}
@@ -612,14 +663,14 @@ Please try again or check your connection.`,
           {isLoading && (
             <div className="flex space-x-3 justify-start">
               <Avatar className="w-8 h-8">
-                <AvatarFallback className="bg-blue-600">
-                  <Bot className="w-4 h-4 text-white" />
+                <AvatarFallback className="bg-primary">
+                  <Bot className="w-4 h-4 text-primary-foreground" />
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm">
+              <div className="chat-accent-bg border border-border p-4 rounded-2xl shadow-sm">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                  <span className="text-sm text-gray-600">
+                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                  <span className="text-sm text-chat-foreground">
                     AI is processing your request...
                   </span>
                 </div>
@@ -632,21 +683,21 @@ Please try again or check your connection.`,
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200 bg-white">
+      <div className="p-4 border-t border-border chat-accent-bg">
         <div className="flex space-x-2">
           <Input
             placeholder="Describe your idea or ask a question..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && !isLoading && sendMessage()}
-            className="flex-1 bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 bg-background border-input text-foreground placeholder:text-muted-foreground rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent"
             disabled={isLoading}
           />
           <Button
             onClick={sendMessage}
             size="sm"
             disabled={!newMessage.trim() || isLoading}
-            className="px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm"
+            className="px-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-sm"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

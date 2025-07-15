@@ -205,35 +205,37 @@ const Sidebar = ({
           </div>
         )}
 
-        {/* Navigation icons */}
+        {/* Navigation icons - only show task icons on main dashboard */}
         <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar-background">
-          {/* Task Icons with Status Indicators */}
-          <div className="space-y-2">
-            {tasks.slice(0, 5).map(task => {
-              const TaskIcon = task.icon;
-              return (
-                <TooltipProvider key={task.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="relative">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          {TaskIcon && <TaskIcon className={`h-4 w-4 ${
-                            task.status === 'completed' ? 'text-green-500' : 
-                            task.status === 'in-progress' ? 'text-blue-500' : 
-                            'text-gray-400'
-                          }`} />}
-                        </Button>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      <p>{task.title}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{task.status.replace('-', ' ')}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              );
-            })}
-          </div>
+          {/* Task Icons with Status Indicators - only show on main dashboard */}
+          {activeView === 'main' && (
+            <div className="space-y-2">
+              {tasks.slice(0, 5).map(task => {
+                const TaskIcon = task.icon;
+                return (
+                  <TooltipProvider key={task.id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="relative">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            {TaskIcon && <TaskIcon className={`h-4 w-4 ${
+                              task.status === 'completed' ? 'text-green-500' : 
+                              task.status === 'in-progress' ? 'text-blue-500' : 
+                              'text-gray-400'
+                            }`} />}
+                          </Button>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{task.title}</p>
+                        <p className="text-xs text-muted-foreground capitalize">{task.status.replace('-', ' ')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Bottom Section */}
