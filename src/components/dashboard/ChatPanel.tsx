@@ -573,25 +573,8 @@ Please try again or check your connection.`,
 
   return (
     <div className="h-full flex flex-col bg-chat-background">
-      {/* Header */}
-      <div className="p-4 border-b border-border bg-chat-accent">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-            <Bot className="w-4 h-4 text-primary" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-sm text-chat-foreground">
-              AI Assistant
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Guiding your build process with enhanced markdown support
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4 bg-chat-background">
+      <ScrollArea className="flex-1 pt-4 pl-4 pr-4 bg-chat-background">
         <div className="space-y-6">
           {messages.map((message) => (
             <div
@@ -700,7 +683,7 @@ Please try again or check your connection.`,
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t border-border bg-chat-accent">
+      <div className="p-4 bg-chat-background">
         <div className="flex space-x-2">
           <Input
             placeholder="Describe your idea or ask a question..."
