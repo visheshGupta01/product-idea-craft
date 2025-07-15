@@ -616,13 +616,13 @@ Please try again or check your connection.`,
                   className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                     message.type === "user"
                       ? "bg-blue-300 text-black rounded-br-md"
-                      : "bg-[#d9d9d9] text-black rounded-bl-md backdrop-blur-sm"
+                      : "bg-gradient-to-b from-white to-[#FAA916] text-black rounded-bl-md backdrop-blur-sm"
                   }`}
                 >
                   {message.type === "user" ? (
                     <div className="whitespace-pre-wrap">{message.content}</div>
                   ) : (
-                    <div className="prose prose-invert prose-sm max-w-none">
+                    <div className="prose prose-sm max-w-none text-black">
                       <MarkdownRenderer content={message.content} />
                     </div>
                   )}
@@ -702,7 +702,7 @@ Please try again or check your connection.`,
               onKeyPress={(e) =>
                 e.key === "Enter" && !isLoading && sendMessage()
               }
-              className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/60 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
+              className="w-full bg-white/10 border-white/20 text-black placeholder:text-gray-600 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
               disabled={isLoading}
             />
             <Button
