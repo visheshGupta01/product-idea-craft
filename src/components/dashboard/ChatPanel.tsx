@@ -622,7 +622,7 @@ Please try again or check your connection.`,
                   {message.type === "user" ? (
                     <div className="whitespace-pre-wrap">{message.content}</div>
                   ) : (
-                    <div className="prose prose-sm max-w-none text-black">
+                    <div className="prose prose-sm max-w-none !text-black [&_*]:!text-black">
                       <MarkdownRenderer content={message.content} />
                     </div>
                   )}
