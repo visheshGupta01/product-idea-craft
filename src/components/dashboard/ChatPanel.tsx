@@ -591,8 +591,8 @@ Please try again or check your connection.`,
     >
       {/* Messages */}
       <ScrollArea className="flex-1 pt-4 pl-4 pr-4" style={{ backgroundColor: "#1a1a1a" }}>
-        <div className="space-y-4 w-full">
-          {messages.map((message) => (
+        <div className="w-full">
+          {messages.map((message, index) => (
             <div
               key={message.id}
               data-message-id={message.id}
@@ -600,7 +600,7 @@ Please try again or check your connection.`,
                 message.type === "user"
                   ? "flex-row-reverse space-x-reverse"
                   : ""
-              }`}
+              } ${index === messages.length - 1 ? "mb-[-1rem]" : "mb-4"}`}
             >
               {/* Avatar */}
               <div className="flex-shrink-0">
