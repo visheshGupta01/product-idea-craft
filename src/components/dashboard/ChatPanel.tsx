@@ -49,7 +49,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h1
             key={currentIndex++}
-            className="text-2xl font-bold mb-4 mt-6 text-slate-900 border-b border-slate-300 pb-2"
+            className="text-2xl font-bold mb-4 mt-6 text-foreground border-b border-border pb-2"
           >
             {line.substring(2)}
           </h1>
@@ -58,7 +58,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h2
             key={currentIndex++}
-            className="text-xl font-bold mb-3 mt-6 text-slate-900 border-b border-slate-300 pb-2"
+            className="text-xl font-bold mb-3 mt-6 text-foreground border-b border-border pb-2"
           >
             {line.substring(3)}
           </h2>
@@ -67,7 +67,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h3
             key={currentIndex++}
-            className="text-lg font-bold mb-3 mt-6 text-slate-900 border-b border-slate-300 pb-1"
+            className="text-lg font-bold mb-3 mt-6 text-foreground border-b border-border pb-1"
           >
             {line.substring(4)}
           </h3>
@@ -76,7 +76,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h4
             key={currentIndex++}
-            className="text-md font-semibold mb-2 mt-4 text-slate-800"
+            className="text-md font-semibold mb-2 mt-4 text-foreground"
           >
             {line.substring(5)}
           </h4>
@@ -85,7 +85,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h5
             key={currentIndex++}
-            className="text-sm font-semibold mb-2 mt-4 text-slate-800"
+            className="text-sm font-semibold mb-2 mt-4 text-foreground"
           >
             {line.substring(6)}
           </h5>
@@ -94,7 +94,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h6
             key={currentIndex++}
-            className="text-sm font-semibold mb-2 mt-4 text-slate-700"
+            className="text-sm font-semibold mb-2 mt-4 text-muted-foreground"
           >
             {line.substring(7)}
           </h6>
@@ -109,7 +109,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <hr
             key={currentIndex++}
-            className="my-6 border-t-2 border-slate-300"
+            className="my-6 border-t-2 border-border"
           />
         );
       }
@@ -126,14 +126,14 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
 
         elements.push(
           <div key={currentIndex++} className="my-4">
-            <div className="bg-slate-100 border border-slate-200 rounded-lg overflow-hidden">
+            <div className="bg-muted border border-border rounded-lg overflow-hidden">
               {language && (
-                <div className="bg-slate-200 px-4 py-2 text-sm font-mono text-slate-600 border-b border-slate-300">
+                <div className="bg-muted/50 px-4 py-2 text-sm font-mono text-muted-foreground border-b border-border">
                   {language}
                 </div>
               )}
               <pre className="p-4 overflow-x-auto">
-                <code className="text-sm font-mono text-slate-800">
+                <code className="text-sm font-mono text-foreground">
                   {codeLines.join("\n")}
                 </code>
               </pre>
@@ -156,7 +156,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <blockquote
             key={currentIndex++}
-            className="border-l-4 border-blue-500 bg-blue-50 pl-4 py-2 my-4 italic text-slate-700"
+            className="border-l-4 border-primary bg-primary/10 pl-4 py-2 my-4 italic text-muted-foreground"
           >
             {quoteLines.map((quoteLine, idx) => (
               <p key={idx} className="mb-1 last:mb-0">
@@ -221,7 +221,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
             } list-inside space-y-2`}
           >
             {listItems.map((item, idx) => (
-              <li key={idx} className="text-slate-700 leading-relaxed">
+              <li key={idx} className="text-foreground leading-relaxed">
                 {processInlineFormatting(item)}
               </li>
             ))}
@@ -258,14 +258,14 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
 
         elements.push(
           <div key={currentIndex++} className="my-4 overflow-x-auto">
-            <table className="min-w-full border border-slate-300 rounded-lg">
+            <table className="min-w-full border border-border rounded-lg">
               {headerRow && (
-                <thead className="bg-slate-100">
+                <thead className="bg-muted">
                   <tr>
                     {headerRow.map((header, idx) => (
                       <th
                         key={idx}
-                        className="px-4 py-2 text-left font-semibold text-slate-900 border-b border-slate-300"
+                        className="px-4 py-2 text-left font-semibold text-foreground border-b border-border"
                       >
                         {processInlineFormatting(header)}
                       </th>
@@ -275,11 +275,11 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
               )}
               <tbody>
                 {dataRows.map((row, rowIdx) => (
-                  <tr key={rowIdx} className="even:bg-slate-50">
+                  <tr key={rowIdx} className="even:bg-muted/50">
                     {row.map((cell, cellIdx) => (
                       <td
                         key={cellIdx}
-                        className="px-4 py-2 text-slate-700 border-b border-slate-200"
+                        className="px-4 py-2 text-foreground border-b border-border"
                       >
                         {processInlineFormatting(cell)}
                       </td>
@@ -298,7 +298,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <p
             key={currentIndex++}
-            className="mb-4 leading-relaxed text-slate-700"
+            className="mb-4 leading-relaxed text-foreground"
           >
             {processInlineFormatting(line)}
           </p>
@@ -314,31 +314,31 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
     // Handle inline code first
     text = text.replace(
       /`([^`]+)`/g,
-      '<code class="bg-slate-100 text-slate-800 px-1 py-0.5 rounded font-mono text-sm">$1</code>'
+      '<code class="bg-muted text-foreground px-1 py-0.5 rounded font-mono text-sm">$1</code>'
     );
 
     // Handle bold
     text = text.replace(
       /\*\*([^*]+)\*\*/g,
-      '<strong class="font-bold text-slate-900">$1</strong>'
+      '<strong class="font-bold text-foreground">$1</strong>'
     );
 
     // Handle italic
     text = text.replace(
       /\*([^*]+)\*/g,
-      '<em class="italic text-slate-700">$1</em>'
+      '<em class="italic text-foreground">$1</em>'
     );
 
     // Handle links
     text = text.replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" class="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer">$1</a>'
+      '<a href="$2" class="text-primary hover:text-primary/80 underline" target="_blank" rel="noopener noreferrer">$1</a>'
     );
 
     // Handle strikethrough
     text = text.replace(
       /~~([^~]+)~~/g,
-      '<del class="line-through text-slate-500">$1</del>'
+      '<del class="line-through text-muted-foreground">$1</del>'
     );
 
     return <span dangerouslySetInnerHTML={{ __html: text }} />;
@@ -637,27 +637,40 @@ Please try again or check your connection.`,
                 )}
               </div>
 
-              {/* Copy and Download buttons - outside chat bubble at bottom, except for first AI message */}
+              {/* Copy and Download buttons - positioned differently for AI vs User */}
               {message.id !== "1" && (
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 px-2 text-xs bg-background/80 hover:bg-background border border-border/50"
-                    onClick={() => copyToClipboard(message.content)}
-                  >
-                    <Copy className="h-3 w-3 mr-1" />
-                    Copy
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 px-2 text-xs bg-background/80 hover:bg-background border border-border/50"
-                    onClick={() => downloadAsText(message.content, message.id)}
-                  >
-                    <Download className="h-3 w-3 mr-1" />
-                    Download
-                  </Button>
+                <div className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2 w-full ${
+                  message.type === "user" ? "justify-start" : "justify-end"
+                }`}>
+                  {message.type === "user" ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2 bg-background/80 hover:bg-background border border-border/50"
+                      onClick={() => copyToClipboard(message.content)}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 bg-background/80 hover:bg-background border border-border/50"
+                        onClick={() => copyToClipboard(message.content)}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 bg-background/80 hover:bg-background border border-border/50"
+                        onClick={() => downloadAsText(message.content, message.id)}
+                      >
+                        <Download className="h-3 w-3" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
