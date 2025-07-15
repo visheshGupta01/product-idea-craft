@@ -575,7 +575,7 @@ Please try again or check your connection.`,
     <div className="h-full flex flex-col" style={{ backgroundColor: '#1a1a1a' }}>
       {/* Messages */}
       <ScrollArea className="flex-1 p-6" style={{ backgroundColor: '#1a1a1a' }}>
-        <div className="space-y-4 max-w-2xl mx-auto">
+        <div className="space-y-4 w-full">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -607,13 +607,16 @@ Please try again or check your connection.`,
                   className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                     message.type === "user"
                       ? "bg-blue-500 text-white rounded-br-md"
-                      : "bg-white/10 text-white rounded-bl-md backdrop-blur-sm"
+                      : "rounded-bl-md backdrop-blur-sm"
                   }`}
+                  style={message.type === "ai" ? {
+                    background: 'linear-gradient(to bottom, #ffffff, #FAA916)'
+                  } : {}}
                 >
                   {message.type === "user" ? (
                     <div className="whitespace-pre-wrap">{message.content}</div>
                   ) : (
-                    <div className="prose prose-invert prose-sm max-w-none">
+                    <div className="prose prose-sm max-w-none text-black">
                       <MarkdownRenderer content={message.content} />
                     </div>
                   )}
@@ -665,10 +668,15 @@ Please try again or check your connection.`,
               <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
                 <Bot className="w-4 h-4 text-white" />
               </div>
-              <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md">
+              <div 
+                className="backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md"
+                style={{
+                  background: 'linear-gradient(to bottom, #ffffff, #FAA916)'
+                }}
+              >
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span className="text-sm text-white">
+                  <Loader2 className="w-4 h-4 animate-spin text-black" />
+                  <span className="text-sm text-black">
                     AI is typing...
                   </span>
                 </div>
@@ -682,7 +690,7 @@ Please try again or check your connection.`,
 
       {/* Input */}
       <div className="p-6" style={{ backgroundColor: '#1a1a1a' }}>
-        <div className="max-w-2xl mx-auto">
+        <div className="w-full">
           <div className="relative">
             <Input
               placeholder="Message..."
