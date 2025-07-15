@@ -531,8 +531,13 @@ Please try again or check your connection.`,
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToTopOfNewMessage = () => {
+    // Find the last message element and scroll to its top
+    const messageElements = document.querySelectorAll('[data-message-id]');
+    if (messageElements.length > 0) {
+      const lastMessage = messageElements[messageElements.length - 1];
+      lastMessage.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   const copyToClipboard = (content: string) => {
@@ -561,13 +566,15 @@ Please try again or check your connection.`,
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 1) {
+      scrollToTopOfNewMessage();
+    }
   }, [messages, isLoading]);
 
   return (
-    <div className="h-full flex flex-col chat-bg">
+    <div className="h-full flex flex-col bg-chat-background">
       {/* Header */}
-      <div className="p-4 border-b border-border chat-accent-bg">
+      <div className="p-4 border-b border-border bg-chat-accent">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
             <Bot className="w-4 h-4 text-primary" />
@@ -584,77 +591,84 @@ Please try again or check your connection.`,
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4 chat-bg">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-4 bg-chat-background">
+        <div className="space-y-6">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`group flex space-x-3 ${
-                message.type === "user" ? "justify-end" : "justify-start"
+              data-message-id={message.id}
+              className={`group flex flex-col space-y-2 ${
+                message.type === "user" ? "items-end" : "items-start"
               }`}
             >
-              {message.type === "ai" && (
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarFallback className="bg-primary">
-                    <Bot className="w-4 h-4 text-primary-foreground" />
-                  </AvatarFallback>
-                </Avatar>
-              )}
+              <div className={`flex space-x-3 ${
+                message.type === "user" ? "justify-end" : "justify-start"
+              }`}>
+                {message.type === "ai" && (
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    <AvatarFallback className="bg-primary">
+                      <Bot className="w-4 h-4 text-primary-foreground" />
+                    </AvatarFallback>
+                  </Avatar>
+                )}
 
-              <div className="relative max-w-[85%]">
-                <div
-                  className={`p-4 rounded-2xl text-sm ${
-                    message.type === "user"
-                      ? "bg-primary text-primary-foreground ml-auto"
-                      : "chat-accent-bg border border-border text-chat-foreground shadow-sm"
-                  }`}
-                >
-                  {message.type === "user" ? (
-                    <div className="whitespace-pre-wrap">{message.content}</div>
-                  ) : (
-                    <MarkdownRenderer content={message.content} />
-                  )}
-                  <p
-                    className={`text-xs mt-3 ${
-                      message.type === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
+                <div className="max-w-[85%]">
+                  <div
+                    className={`p-4 rounded-2xl text-sm ${
+                      message.type === "user"
+                        ? "bg-primary text-primary-foreground ml-auto"
+                        : "bg-chat-accent border border-border text-chat-foreground shadow-sm"
                     }`}
                   >
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                    {message.type === "user" ? (
+                      <div className="whitespace-pre-wrap">{message.content}</div>
+                    ) : (
+                      <MarkdownRenderer content={message.content} />
+                    )}
+                    <p
+                      className={`text-xs mt-3 ${
+                        message.type === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
+                      }`}
+                    >
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Copy and Download buttons - show on hover except for first AI message */}
-                {message.id !== "1" && (
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0 bg-background/80 hover:bg-background"
-                      onClick={() => copyToClipboard(message.content)}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0 bg-background/80 hover:bg-background"
-                      onClick={() => downloadAsText(message.content, message.id)}
-                    >
-                      <Download className="h-3 w-3" />
-                    </Button>
-                  </div>
+                {message.type === "user" && (
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    <AvatarFallback className="bg-muted">
+                      <User className="w-4 h-4 text-muted-foreground" />
+                    </AvatarFallback>
+                  </Avatar>
                 )}
               </div>
 
-              {message.type === "user" && (
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarFallback className="bg-muted">
-                    <User className="w-4 h-4 text-muted-foreground" />
-                  </AvatarFallback>
-                </Avatar>
+              {/* Copy and Download buttons - outside chat bubble at bottom, except for first AI message */}
+              {message.id !== "1" && (
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2 text-xs bg-background/80 hover:bg-background border border-border/50"
+                    onClick={() => copyToClipboard(message.content)}
+                  >
+                    <Copy className="h-3 w-3 mr-1" />
+                    Copy
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2 text-xs bg-background/80 hover:bg-background border border-border/50"
+                    onClick={() => downloadAsText(message.content, message.id)}
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    Download
+                  </Button>
+                </div>
               )}
             </div>
           ))}
@@ -667,7 +681,7 @@ Please try again or check your connection.`,
                   <Bot className="w-4 h-4 text-primary-foreground" />
                 </AvatarFallback>
               </Avatar>
-              <div className="chat-accent-bg border border-border p-4 rounded-2xl shadow-sm">
+              <div className="bg-chat-accent border border-border p-4 rounded-2xl shadow-sm">
                 <div className="flex items-center space-x-2">
                   <Loader2 className="w-4 h-4 animate-spin text-primary" />
                   <span className="text-sm text-chat-foreground">
@@ -683,7 +697,7 @@ Please try again or check your connection.`,
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t border-border chat-accent-bg">
+      <div className="p-4 border-t border-border bg-chat-accent">
         <div className="flex space-x-2">
           <Input
             placeholder="Describe your idea or ask a question..."
