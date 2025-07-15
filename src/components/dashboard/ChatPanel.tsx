@@ -644,7 +644,7 @@ Please try again or check your connection.`,
                 {/* Copy and Download buttons */}
                 {message.id !== "1" && (
                   <div
-                    className={`hidden group-hover:flex transition-opacity duration-200 space-x-1 mt-2 ${
+                    className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 mt-2 ${
                       message.type === "user" ? "justify-start" : "justify-end"
                     }`}
                   >
