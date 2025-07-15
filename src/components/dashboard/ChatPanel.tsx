@@ -179,6 +179,13 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         // Process all consecutive list items
         while (j < lines.length) {
           const currentLine = lines[j];
+
+          // Skip empty lines within lists
+          if (currentLine.match(/^\s*$/)) {
+            j++;
+            continue;
+          }
+
           const listMatch = currentLine.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
 
           if (listMatch) {
@@ -186,43 +193,49 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
             const marker = listMatch[2];
             const content = listMatch[3];
 
-            // Check if this is the same type of list and similar indentation
+            // Check if this is the same type of list
             const isCurrentOrdered = marker.match(/\d+\./);
-            if ((!!isCurrentOrdered === !!isOrdered) && indent >= baseIndent) {
-              listItems.push(content);
+
+            // Same list type and similar indentation level
+            if (!!isCurrentOrdered === !!isOrdered && indent === baseIndent) {
+              listItems.push({
+                content: content,
+                originalNumber: isCurrentOrdered
+                  ? marker.replace(".", "")
+                  : null,
+              });
               j++;
             } else {
-              break;
-            }
-          } else if (currentLine.match(/^\s*$/) && j > i) {
-            // Empty line - check if next line continues the list
-            const nextLine = lines[j + 1];
-            if (nextLine && nextLine.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/)) {
-              j++; // Skip empty line
-              continue;
-            } else {
+              // Different list type or indentation - end current list
               break;
             }
           } else if (currentLine.match(/^\s{2,}/) && listItems.length > 0) {
             // Continuation of previous item (indented content)
-            listItems[listItems.length - 1] += " " + currentLine.trim();
+            const lastItem = listItems[listItems.length - 1];
+            lastItem.content += " " + currentLine.trim();
             j++;
           } else {
+            // Not a list item or continuation - end list
             break;
           }
         }
 
         const ListComponent = isOrdered ? "ol" : "ul";
+        const listProps = isOrdered
+          ? { start: listItems[0]?.originalNumber || 1 }
+          : {};
+
         elements.push(
           <ListComponent
             key={currentIndex++}
             className={`my-4 ${
               isOrdered ? "list-decimal" : "list-disc"
             } list-inside space-y-2`}
+            {...listProps}
           >
             {listItems.map((item, idx) => (
               <li key={idx} className="text-foreground leading-relaxed">
-                {processInlineFormatting(item)}
+                {processInlineFormatting(item.content)}
               </li>
             ))}
           </ListComponent>
@@ -577,7 +590,7 @@ Please try again or check your connection.`,
       style={{ backgroundColor: "#1a1a1a" }}
     >
       {/* Messages */}
-      <ScrollArea className="flex-1 p-6" style={{ backgroundColor: "#1a1a1a" }}>
+      <ScrollArea className="flex-1 pt-4 pl-4 pr-4" style={{ backgroundColor: "#1a1a1a" }}>
         <div className="space-y-4 w-full">
           {messages.map((message) => (
             <div
@@ -702,14 +715,14 @@ Please try again or check your connection.`,
               onKeyPress={(e) =>
                 e.key === "Enter" && !isLoading && sendMessage()
               }
-              className="w-full bg-white/10 border-white/20 text-black placeholder:text-gray-600 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
+              className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
               disabled={isLoading}
             />
             <Button
               onClick={sendMessage}
               size="sm"
               disabled={!newMessage.trim() || isLoading}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-blue-600 text-white rounded-full shadow-sm"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-transparent text-white rounded-full shadow-sm"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
