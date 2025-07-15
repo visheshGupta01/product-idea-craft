@@ -319,10 +319,6 @@ const Sidebar = ({
         {/* Compact Progress Overview - only show on main dashboard */}
         {activeView === 'main' && (
           <div className="space-y-2 bg-sidebar-accent/20 rounded-lg p-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-sidebar-foreground">Progress</h3>
-              <span className="text-xs text-muted-foreground">{completedTasks}/{tasks.length}</span>
-            </div>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>

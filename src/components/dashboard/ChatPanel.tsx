@@ -25,140 +25,353 @@ interface ServerResponse {
   }>;
 }
 
-// Enhanced markdown renderer for research output
+// Enhanced markdown renderer using react-markdown (simulated)
 const MarkdownRenderer = ({ content }: { content: string }) => {
-  const renderLine = (line: string, index: number) => {
-    // Skip empty lines
-    if (!line.trim()) {
-      return <br key={index} />;
-    }
+  // Custom component for rendering markdown elements
+  const renderMarkdown = (text: string) => {
+    // Split text into lines for processing
+    const lines = text.split("\n");
+    const elements: React.ReactElement[] = [];
+    let currentIndex = 0;
 
-    // Handle headers
-    if (line.startsWith("**") && line.endsWith("**") && line.length > 4) {
-      const headerText = line.substring(2, line.length - 2);
-      return (
-        <h2 key={index} className="text-lg font-bold mb-3 mt-4 text-blue-800">
-          {headerText}
-        </h2>
-      );
-    }
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
 
-    if (line.startsWith("# ")) {
-      return (
-        <h1 key={index} className="text-xl font-bold mb-3 mt-4">
-          {line.substring(2)}
-        </h1>
-      );
-    }
-    if (line.startsWith("## ")) {
-      return (
-        <h2 key={index} className="text-lg font-semibold mb-2 mt-3">
-          {line.substring(3)}
-        </h2>
-      );
-    }
-    if (line.startsWith("### ")) {
-      return (
-        <h3 key={index} className="text-md font-medium mb-2 mt-2">
-          {line.substring(4)}
-        </h3>
-      );
-    }
-
-    // Handle bullet points
-    if (line.startsWith("- **") || line.startsWith("  - **")) {
-      const indent = line.startsWith("  ") ? "ml-8" : "ml-4";
-      const content = line
-        .replace(/^\s*-\s*/, "")
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-      return (
-        <div
-          key={index}
-          className={`${indent} mb-1`}
-          dangerouslySetInnerHTML={{ __html: `• ${content}` }}
-        />
-      );
-    }
-
-    if (line.startsWith("- ") || line.startsWith("• ")) {
-      const content = line.substring(2);
-      return (
-        <div key={index} className="ml-4 mb-1">
-          • {content}
-        </div>
-      );
-    }
-
-    // Handle numbered lists
-    if (/^\d+\.\s/.test(line)) {
-      const content = line
-        .replace(/^\d+\.\s/, "")
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-      return (
-        <div
-          key={index}
-          className="ml-4 mb-1"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
-      );
-    }
-
-    // Handle table rows (basic)
-    if (line.includes("|") && line.split("|").length > 2) {
-      const cells = line
-        .split("|")
-        .map((cell) => cell.trim())
-        .filter((cell) => cell);
-      const isHeader = cells.some((cell) => cell.includes("---"));
-
-      if (isHeader) {
-        return <div key={index} className="border-b border-gray-300 my-2" />;
+      // Skip empty lines
+      if (!line.trim()) {
+        elements.push(<br key={currentIndex++} />);
+        continue;
       }
 
-      return (
-        <div key={index} className="grid grid-cols-4 gap-2 mb-1 text-sm">
-          {cells.map((cell, cellIndex) => (
-            <div
-              key={cellIndex}
-              className="p-1 border-r border-gray-200 last:border-r-0"
-            >
-              {cell}
+      // Headers
+      if (line.startsWith("# ")) {
+        elements.push(
+          <h1
+            key={currentIndex++}
+            className="text-2xl font-bold mb-4 mt-6 text-slate-900 border-b border-slate-300 pb-2"
+          >
+            {line.substring(2)}
+          </h1>
+        );
+      } else if (line.startsWith("## ")) {
+        elements.push(
+          <h2
+            key={currentIndex++}
+            className="text-xl font-bold mb-3 mt-6 text-slate-900 border-b border-slate-300 pb-2"
+          >
+            {line.substring(3)}
+          </h2>
+        );
+      } else if (line.startsWith("### ")) {
+        elements.push(
+          <h3
+            key={currentIndex++}
+            className="text-lg font-bold mb-3 mt-6 text-slate-900 border-b border-slate-300 pb-1"
+          >
+            {line.substring(4)}
+          </h3>
+        );
+      } else if (line.startsWith("#### ")) {
+        elements.push(
+          <h4
+            key={currentIndex++}
+            className="text-md font-semibold mb-2 mt-4 text-slate-800"
+          >
+            {line.substring(5)}
+          </h4>
+        );
+      } else if (line.startsWith("##### ")) {
+        elements.push(
+          <h5
+            key={currentIndex++}
+            className="text-sm font-semibold mb-2 mt-4 text-slate-800"
+          >
+            {line.substring(6)}
+          </h5>
+        );
+      } else if (line.startsWith("###### ")) {
+        elements.push(
+          <h6
+            key={currentIndex++}
+            className="text-sm font-semibold mb-2 mt-4 text-slate-700"
+          >
+            {line.substring(7)}
+          </h6>
+        );
+      }
+      // Horizontal rules
+      else if (
+        line.trim() === "---" ||
+        line.trim() === "***" ||
+        line.trim() === "___"
+      ) {
+        elements.push(
+          <hr
+            key={currentIndex++}
+            className="my-6 border-t-2 border-slate-300"
+          />
+        );
+      }
+      // Code blocks (fenced)
+      else if (line.startsWith("```")) {
+        const language = line.substring(3).trim();
+        const codeLines = [];
+        let j = i + 1;
+
+        while (j < lines.length && !lines[j].startsWith("```")) {
+          codeLines.push(lines[j]);
+          j++;
+        }
+
+        elements.push(
+          <div key={currentIndex++} className="my-4">
+            <div className="bg-slate-100 border border-slate-200 rounded-lg overflow-hidden">
+              {language && (
+                <div className="bg-slate-200 px-4 py-2 text-sm font-mono text-slate-600 border-b border-slate-300">
+                  {language}
+                </div>
+              )}
+              <pre className="p-4 overflow-x-auto">
+                <code className="text-sm font-mono text-slate-800">
+                  {codeLines.join("\n")}
+                </code>
+              </pre>
             </div>
-          ))}
-        </div>
-      );
+          </div>
+        );
+
+        i = j; // Skip to end of code block
+      }
+      // Blockquotes
+      else if (line.startsWith("> ")) {
+        const quoteLines = [line.substring(2)];
+        let j = i + 1;
+
+        while (j < lines.length && lines[j].startsWith("> ")) {
+          quoteLines.push(lines[j].substring(2));
+          j++;
+        }
+
+        elements.push(
+          <blockquote
+            key={currentIndex++}
+            className="border-l-4 border-blue-500 bg-blue-50 pl-4 py-2 my-4 italic text-slate-700"
+          >
+            {quoteLines.map((quoteLine, idx) => (
+              <p key={idx} className="mb-1 last:mb-0">
+                {processInlineFormatting(quoteLine)}
+              </p>
+            ))}
+          </blockquote>
+        );
+
+        i = j - 1; // Skip processed lines
+      }
+      // Lists - FIXED VERSION
+      else if (line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/)) {
+        const listItems = [];
+        let j = i;
+        const firstMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
+        const isOrdered = firstMatch && firstMatch[2].match(/\d+\./);
+        const baseIndent = firstMatch ? firstMatch[1].length : 0;
+
+        // Process all consecutive list items
+        while (j < lines.length) {
+          const currentLine = lines[j];
+          const listMatch = currentLine.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
+
+          if (listMatch) {
+            const indent = listMatch[1].length;
+            const marker = listMatch[2];
+            const content = listMatch[3];
+
+            // Check if this is the same type of list and similar indentation
+            const isCurrentOrdered = marker.match(/\d+\./);
+            if ((!!isCurrentOrdered === !!isOrdered) && indent >= baseIndent) {
+              listItems.push(content);
+              j++;
+            } else {
+              break;
+            }
+          } else if (currentLine.match(/^\s*$/) && j > i) {
+            // Empty line - check if next line continues the list
+            const nextLine = lines[j + 1];
+            if (nextLine && nextLine.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/)) {
+              j++; // Skip empty line
+              continue;
+            } else {
+              break;
+            }
+          } else if (currentLine.match(/^\s{2,}/) && listItems.length > 0) {
+            // Continuation of previous item (indented content)
+            listItems[listItems.length - 1] += " " + currentLine.trim();
+            j++;
+          } else {
+            break;
+          }
+        }
+
+        const ListComponent = isOrdered ? "ol" : "ul";
+        elements.push(
+          <ListComponent
+            key={currentIndex++}
+            className={`my-4 ${
+              isOrdered ? "list-decimal" : "list-disc"
+            } list-inside space-y-2`}
+          >
+            {listItems.map((item, idx) => (
+              <li key={idx} className="text-slate-700 leading-relaxed">
+                {processInlineFormatting(item)}
+              </li>
+            ))}
+          </ListComponent>
+        );
+
+        i = j - 1; // Skip processed lines
+      }
+      // Tables
+      else if (line.includes("|") && line.split("|").length > 2) {
+        const tableLines = [line];
+        let j = i + 1;
+
+        while (
+          j < lines.length &&
+          lines[j].includes("|") &&
+          lines[j].split("|").length > 2
+        ) {
+          tableLines.push(lines[j]);
+          j++;
+        }
+
+        const rows = tableLines.map((row) =>
+          row
+            .split("|")
+            .map((cell) => cell.trim())
+            .filter((cell) => cell)
+        );
+
+        const hasHeader =
+          rows.length > 1 && rows[1].some((cell) => cell.includes("---"));
+        const headerRow = hasHeader ? rows[0] : null;
+        const dataRows = hasHeader ? rows.slice(2) : rows;
+
+        elements.push(
+          <div key={currentIndex++} className="my-4 overflow-x-auto">
+            <table className="min-w-full border border-slate-300 rounded-lg">
+              {headerRow && (
+                <thead className="bg-slate-100">
+                  <tr>
+                    {headerRow.map((header, idx) => (
+                      <th
+                        key={idx}
+                        className="px-4 py-2 text-left font-semibold text-slate-900 border-b border-slate-300"
+                      >
+                        {processInlineFormatting(header)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
+              <tbody>
+                {dataRows.map((row, rowIdx) => (
+                  <tr key={rowIdx} className="even:bg-slate-50">
+                    {row.map((cell, cellIdx) => (
+                      <td
+                        key={cellIdx}
+                        className="px-4 py-2 text-slate-700 border-b border-slate-200"
+                      >
+                        {processInlineFormatting(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+
+        i = j - 1; // Skip processed lines
+      }
+      // Regular paragraphs
+      else {
+        elements.push(
+          <p
+            key={currentIndex++}
+            className="mb-4 leading-relaxed text-slate-700"
+          >
+            {processInlineFormatting(line)}
+          </p>
+        );
+      }
     }
 
-    // Handle regular text with bold formatting
-    const processedLine = line
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>");
+    return elements;
+  };
 
-    return (
-      <div
-        key={index}
-        className="mb-2 leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: processedLine }}
-      />
+  // Process inline formatting (bold, italic, code, links)
+  const processInlineFormatting = (text: string) => {
+    // Handle inline code first
+    text = text.replace(
+      /`([^`]+)`/g,
+      '<code class="bg-slate-100 text-slate-800 px-1 py-0.5 rounded font-mono text-sm">$1</code>'
     );
+
+    // Handle bold
+    text = text.replace(
+      /\*\*([^*]+)\*\*/g,
+      '<strong class="font-bold text-slate-900">$1</strong>'
+    );
+
+    // Handle italic
+    text = text.replace(
+      /\*([^*]+)\*/g,
+      '<em class="italic text-slate-700">$1</em>'
+    );
+
+    // Handle links
+    text = text.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" class="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+
+    // Handle strikethrough
+    text = text.replace(
+      /~~([^~]+)~~/g,
+      '<del class="line-through text-slate-500">$1</del>'
+    );
+
+    return <span dangerouslySetInnerHTML={{ __html: text }} />;
   };
 
   return (
-    <div className="prose prose-sm max-w-none">
-      {content.split("\n").map(renderLine)}
-    </div>
+    <div className="prose prose-sm max-w-none">{renderMarkdown(content)}</div>
   );
 };
 
 const ChatPanel = ({
   userIdea,
-  mcpServerUrl = "https://0ae639c5b561.ngrok-free.app/chat",
+  mcpServerUrl = "https://1946dc82ab95.ngrok-free.app/chat",
 }: ChatPanelProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
       type: "ai",
-      content: `Hello Sir, Tell me the idea which you want to bring to life. I will help you build it step by step.`,
+      content: `# Welcome! 🚀
+
+Hello Sir, Tell me the **idea** which you want to bring to life. I will help you build it step by step.
+
+## What I can help you with:
+
+- **Research & Analysis**: Market research, competitor analysis, feasibility studies
+- **Technical Planning**: Architecture design, technology stack recommendations
+- **Implementation**: Step-by-step development guidance
+- **Testing & Deployment**: Quality assurance and launch strategies
+
+> Just describe your idea and I'll provide comprehensive guidance!
+
+---
+
+*Ready to start? Share your vision below!*`,
       timestamp: new Date(),
     },
   ]);
@@ -168,7 +381,6 @@ const ChatPanel = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const formatResearchOutput = (output: string): string => {
-    // Keep the markdown formatting for the enhanced renderer
     return output.trim();
   };
 
@@ -192,10 +404,10 @@ const ChatPanel = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
           message: currentMessage,
+          session_id: "a8c11c8223b5bc2ef9080c91178899c9",
         }),
       });
 
@@ -205,7 +417,6 @@ const ChatPanel = ({
 
       const data: ServerResponse = await response.json();
 
-      // Enhanced debugging
       console.log("=== FULL SERVER RESPONSE ===");
       console.log(JSON.stringify(data, null, 2));
 
@@ -213,7 +424,6 @@ const ChatPanel = ({
 
       let aiContent = "";
 
-      // Check if assistant field exists and has content
       if (data.assistant) {
         aiContent = data.assistant;
         console.log(
@@ -224,7 +434,6 @@ const ChatPanel = ({
         console.log("✗ No assistant content found");
       }
 
-      // Enhanced tools processing
       if (data.tools && Array.isArray(data.tools) && data.tools.length > 0) {
         console.log(`✓ Found ${data.tools.length} tools`);
 
@@ -240,7 +449,6 @@ const ChatPanel = ({
           }
         });
 
-        // Look for research tool with more flexible matching
         const researchTool = data.tools.find(
           (tool) => tool.name && tool.name.toLowerCase().includes("research")
         );
@@ -250,14 +458,13 @@ const ChatPanel = ({
           const formattedOutput = formatResearchOutput(researchTool.output);
 
           if (aiContent) {
-            aiContent += "\n\n--- Research Report ---\n\n" + formattedOutput;
+            aiContent += "\n\n## Research Report\n\n" + formattedOutput;
           } else {
-            aiContent = "--- Research Report ---\n\n" + formattedOutput;
+            aiContent = "## Research Report\n\n" + formattedOutput;
           }
           console.log("✓ Research output added to AI content");
         } else {
           console.log("✗ No research tool found or no output");
-          // Try to get any tool output
           const anyToolWithOutput = data.tools.find((tool) => tool.output);
           if (anyToolWithOutput) {
             console.log(`✓ Found tool with output: ${anyToolWithOutput.name}`);
@@ -267,12 +474,10 @@ const ChatPanel = ({
 
             if (aiContent) {
               aiContent +=
-                `\n\n--- ${anyToolWithOutput.name} Output ---\n\n` +
-                formattedOutput;
+                `\n\n## ${anyToolWithOutput.name} Output\n\n` + formattedOutput;
             } else {
               aiContent =
-                `--- ${anyToolWithOutput.name} Output ---\n\n` +
-                formattedOutput;
+                `## ${anyToolWithOutput.name} Output\n\n` + formattedOutput;
             }
           }
         }
@@ -280,12 +485,15 @@ const ChatPanel = ({
         console.log("✗ No tools found in response");
       }
 
-      // Fallback if no content found
       if (!aiContent) {
-        aiContent =
-          "I received your message but couldn't generate a proper response. Please check the debug info below.\n\n" +
-          "Raw server response:\n" +
-          JSON.stringify(data, null, 2);
+        aiContent = `## Error Response
+
+I received your message but couldn't generate a proper response. Please check the debug info below.
+
+### Raw server response:
+\`\`\`json
+${JSON.stringify(data, null, 2)}
+\`\`\``;
         console.log("✗ Using fallback content");
       }
 
@@ -303,7 +511,15 @@ const ChatPanel = ({
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: "ai",
-        content: `Sorry, I encountered an error while processing your request: ${error}`,
+        content: `## Error ❌
+
+Sorry, I encountered an error while processing your request:
+
+\`\`\`
+${error}
+\`\`\`
+
+Please try again or check your connection.`,
         timestamp: new Date(),
       };
 
@@ -322,27 +538,26 @@ const ChatPanel = ({
   }, [messages, isLoading]);
 
   return (
-    <div className="h-full flex flex-col chat-bg">
-      {/* Always use chat background */}
+    <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border chat-bg">
+      <div className="p-4 border-b border-gray-200 bg-gray-50">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-            <Bot className="w-4 h-4 text-primary" />
+          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+            <Bot className="w-4 h-4 text-blue-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm text-foreground">
+            <h3 className="font-semibold text-sm text-gray-900">
               AI Assistant
             </h3>
-            <p className="text-xs text-foreground/60">
-              Guiding your build process
+            <p className="text-xs text-gray-500">
+              Guiding your build process with enhanced markdown support
             </p>
           </div>
         </div>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4 chat-bg">
+      <ScrollArea className="flex-1 p-4 bg-gray-50">
         <div className="space-y-4">
           {messages.map((message) => (
             <div
@@ -352,22 +567,30 @@ const ChatPanel = ({
               }`}
             >
               {message.type === "ai" && (
-                <Avatar className="w-6 h-6">
-                  <AvatarFallback className="bg-primary">
-                    <Bot className="w-3 h-3 text-primary-foreground" />
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarFallback className="bg-blue-600">
+                    <Bot className="w-4 h-4 text-white" />
                   </AvatarFallback>
                 </Avatar>
               )}
 
               <div
-                className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                className={`max-w-[85%] p-4 rounded-2xl text-sm ${
                   message.type === "user"
-                    ? "bg-primary text-primary-foreground ml-auto"
-                    : "bg-card border border-border text-foreground"
+                    ? "bg-blue-600 text-white ml-auto"
+                    : "bg-white border border-gray-200 text-gray-900 shadow-sm"
                 }`}
               >
-                <MarkdownRenderer content={message.content} />
-                <p className={`text-xs mt-1 opacity-70`}>
+                {message.type === "user" ? (
+                  <div className="whitespace-pre-wrap">{message.content}</div>
+                ) : (
+                  <MarkdownRenderer content={message.content} />
+                )}
+                <p
+                  className={`text-xs mt-3 ${
+                    message.type === "user" ? "text-blue-100" : "text-gray-400"
+                  }`}
+                >
                   {message.timestamp.toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -376,9 +599,9 @@ const ChatPanel = ({
               </div>
 
               {message.type === "user" && (
-                <Avatar className="w-6 h-6">
-                  <AvatarFallback className="bg-secondary">
-                    <User className="w-3 h-3" />
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarFallback className="bg-gray-600">
+                    <User className="w-4 h-4 text-white" />
                   </AvatarFallback>
                 </Avatar>
               )}
@@ -388,43 +611,42 @@ const ChatPanel = ({
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex space-x-3 justify-start">
-              <Avatar className="w-6 h-6">
-                <AvatarFallback className="bg-primary">
-                  <Bot className="w-3 h-3 text-primary-foreground" />
+              <Avatar className="w-8 h-8">
+                <AvatarFallback className="bg-blue-600">
+                  <Bot className="w-4 h-4 text-white" />
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-card border border-border p-3 rounded-2xl">
+              <div className="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-foreground" />
-                  <span className="text-sm text-foreground/60">
-                    AI is thinking...
+                  <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                  <span className="text-sm text-gray-600">
+                    AI is processing your request...
                   </span>
                 </div>
               </div>
             </div>
           )}
-          
-          {/* Invisible element to scroll to */}
+
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t border-border chat-bg">
+      <div className="p-4 border-t border-gray-200 bg-white">
         <div className="flex space-x-2">
           <Input
-            placeholder="Ask me anything about your project..."
+            placeholder="Describe your idea or ask a question..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && !isLoading && sendMessage()}
-            className="flex-1 bg-card border-border text-foreground placeholder:text-foreground/50 rounded-2xl"
+            className="flex-1 bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={isLoading}
           />
           <Button
             onClick={sendMessage}
             size="sm"
             disabled={!newMessage.trim() || isLoading}
-            className="px-3 bg-primary hover:btn-primary text-primary-foreground rounded-2xl"
+            className="px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
