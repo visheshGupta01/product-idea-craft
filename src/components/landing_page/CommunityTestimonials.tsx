@@ -115,41 +115,41 @@ const CommunityTestimonials: React.FC = () => {
   );
 
   return (
-    <section className="mt-10 bg-gradient-to-b from-[#e4eff3] to-[#ffd9ec] text-black py-20 px-6 font-['Poppins'] rounded-t-[24px]">
-      {/* Heading */}
-      <div className="text-center mb-10">
-        <h2 className="text-4xl font-bold mb-6">
+    <section className="mt-10 bg-gradient-to-b from-[#e4eff3] to-[#ffd9ec] text-black py-12 md:py-20 px-4 sm:px-6 font-['Poppins'] rounded-t-[24px]">
+      {/* Heading - Responsive */}
+      <div className="text-center mb-6 md:mb-10">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6">
           Built with You, Backed by You
         </h2>
 
-        {/* Community Box */}
-        <div className="bg-white border border-gray-300 rounded-xl py-6 px-8 max-w-5xl mx-auto mb-10">
-          <div className="flex justify-between items-center w-full mb-2">
+        {/* Community Box - Responsive */}
+        <div className="bg-white border border-gray-300 rounded-xl py-4 md:py-6 px-4 md:px-8 max-w-5xl mx-auto mb-6 md:mb-10">
+          <div className="flex flex-col sm:flex-row justify-between items-center w-full mb-2 gap-4 sm:gap-0">
             <div className="flex items-center space-x-[-12px]">
               <img
                 src="https://randomuser.me/api/portraits/men/11.jpg"
-                className="w-10 h-10 rounded-full border-2 border-white"
+                className="w-8 md:w-10 h-8 md:h-10 rounded-full border-2 border-white"
                 alt="Avatar 1"
               />
               <img
                 src="https://randomuser.me/api/portraits/women/22.jpg"
-                className="w-10 h-10 rounded-full border-2 border-white"
+                className="w-8 md:w-10 h-8 md:h-10 rounded-full border-2 border-white"
                 alt="Avatar 2"
               />
               <img
                 src="https://randomuser.me/api/portraits/lego/3.jpg"
-                className="w-10 h-10 rounded-full border-2 border-white"
+                className="w-8 md:w-10 h-8 md:h-10 rounded-full border-2 border-white"
                 alt="Avatar 3"
               />
-              <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-300 flex items-center justify-center text-sm font-semibold">
+              <div className="w-8 md:w-10 h-8 md:h-10 rounded-full border-2 border-white bg-gray-300 flex items-center justify-center text-xs md:text-sm font-semibold">
                 +1
               </div>
             </div>
-            <button className="bg-[#ff0080] text-white font-semibold px-6 py-2 rounded-md text-sm">
+            <button className="bg-[#ff0080] text-white font-semibold px-4 md:px-6 py-2 rounded-md text-xs md:text-sm">
               Start Now
             </button>
           </div>
-          <p className="text-sm text-[#3366cc] text-left">
+          <p className="text-xs md:text-sm text-[#3366cc] text-center sm:text-left">
             We are creating an Imagine.bo Community, be part of it!
           </p>
         </div>

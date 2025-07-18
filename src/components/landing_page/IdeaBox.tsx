@@ -60,23 +60,23 @@ const IdeaBox: React.FC = () => {
 
         {/* White Input Area */}
         <div className="bg-white w-full h-[258px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
-          {/* Input + icons row */}
-          <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-4 font-poppins text-gray-800">
+          {/* Input + icons row - Responsive */}
+          <div className="flex flex-col gap-4 items-center w-full mb-4 font-poppins text-gray-800">
             <textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
               placeholder="Start building your new idea by describing your application/website vision in detail."
-              className="flex-1 mt-4 px-4 py-3 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
+              className="flex-1 w-full px-4 py-3 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
               style={{
                 border: "none",
                 boxShadow: "none",
                 outline: "none",
                 textAlign: "left",
-                minHeight: "100px",
+                minHeight: "80px",
               }}
               onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && handleSubmit()}
             />
-            <div className="flex gap-2 items-center justify-center">
+            <div className="flex gap-2 items-center justify-center w-full sm:w-auto">
               <button className="p-3 w-12 h-12 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center">
                 <Mic className="w-4 h-4 text-gray-700" />
               </button>
@@ -86,11 +86,11 @@ const IdeaBox: React.FC = () => {
             </div>
           </div>
 
-          {/* Pink Button - flush bottom, left & right */}
+          {/* Pink Button - Responsive */}
           <button 
             onClick={handleSubmit}
             disabled={!idea.trim()}
-            className="absolute bottom-0 left-1 right-1 h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[27px] mb-1 font-normal font-supply text-lg transition"
+            className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition"
           >
             Start Building my Idea →
           </button>
