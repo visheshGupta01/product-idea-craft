@@ -62,19 +62,19 @@ const IdeaBox: React.FC = () => {
         <div className="bg-white w-full h-[258px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
           {/* Input + icons row */}
           <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-4 font-poppins text-gray-800">
-            <input
-              type="text"
+            <textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
               placeholder="Start building your new idea by describing your application/website vision in detail."
-              className="flex-1 mt-4 px-4 py-3 rounded-md bg-white text-sm focus:outline-none font-poppins"
+              className="flex-1 mt-4 px-4 py-3 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
               style={{
                 border: "none",
                 boxShadow: "none",
                 outline: "none",
                 textAlign: "left",
+                minHeight: "100px",
               }}
-              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+              onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && handleSubmit()}
             />
             <div className="flex gap-2 items-center justify-center">
               <button className="p-3 w-12 h-12 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center">
