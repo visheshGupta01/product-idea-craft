@@ -267,3 +267,18 @@
 .animate-delay-300 { animation-delay: 0.3s; }
 .animate-delay-400 { animation-delay: 0.4s; }
 .animate-delay-500 { animation-delay: 0.5s; }
+
+
+@font-face {
+  font-family: 'Supply';
+  src: url('./assets/supply.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/Poppins-Regular.ttf') format('ttf');
+  font-weight: bold;
+  font-style: normal;
+}

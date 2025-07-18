@@ -163,21 +163,21 @@ const CommunityTestimonials: React.FC = () => {
             custom={direction}
             initial={{
               x: direction > 0 ? 1000 : -1000,
-              opacity: 0
+              opacity: 0,
             }}
             animate={{
               x: 0,
-              opacity: 1
+              opacity: 1,
             }}
             exit={{
               x: direction > 0 ? -1000 : 1000,
-              opacity: 0
+              opacity: 0,
             }}
             transition={{
               type: "spring",
               stiffness: 300,
               damping: 30,
-              duration: 0.5
+              duration: 0.5,
             }}
             className="space-y-6"
           >
@@ -187,11 +187,11 @@ const CommunityTestimonials: React.FC = () => {
                   key={`${currentSlide}-${idx}`}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ 
+                  transition={{
                     delay: idx * 0.1,
-                    duration: 0.3
+                    duration: 0.3,
                   }}
-                  className="bg-[#b3d4e0] rounded-[24px] text-base text-black font-['Supply'] w-full min-h-[210px] flex flex-col items-center justify-center text-center px-4 py-6 hover:scale-105 transition-transform duration-200"
+                  className="bg-[#b3d4e0] rounded-[24px] text-base text-black font-poppins w-full min-h-[210px] flex flex-col items-center justify-center text-center px-4 py-6 hover:scale-105 transition-transform duration-200"
                 >
                   <p className="mb-4 leading-relaxed">"{t.quote}"</p>
                   <div className="flex items-start mt-4 w-full max-w-[260px] gap-3">
@@ -215,11 +215,11 @@ const CommunityTestimonials: React.FC = () => {
                   key={`${currentSlide}-${idx + 3}`}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ 
+                  transition={{
                     delay: (idx + 3) * 0.1,
-                    duration: 0.3
+                    duration: 0.3,
                   }}
-                  className="bg-[#b3d4e0] rounded-[24px] text-base text-black font-['Supply'] w-full min-h-[210px] flex flex-col items-center justify-center text-center px-4 py-6 hover:scale-105 transition-transform duration-200"
+                  className="bg-[#b3d4e0] rounded-[24px] text-base text-black font-poppins w-full min-h-[210px] flex flex-col items-center justify-center text-center px-4 py-6 hover:scale-105 transition-transform duration-200"
                 >
                   <p className="mb-4 leading-relaxed">"{t.quote}"</p>
                   <div className="flex items-start mt-4 w-full max-w-[260px] gap-3">

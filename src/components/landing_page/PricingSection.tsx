@@ -1,4 +1,5 @@
-  import React, { useState } from "react";
+import React, { useState } from "react";
+  import { motion } from "framer-motion";
 
   interface Plan {
     name: string;
@@ -82,33 +83,39 @@
       <section className="bg-[#0f1116] text-white py-20 px-6 font-['Poppins'] text-center">
         <h2 className="text-6xl font-bold mb-2">Lean Pricing.</h2>
         <h3 className="text-6xl font-bold mb-8">Limitless Potential.</h3>
-
         {/* Billing Toggle */}
         <div className="max-w-6xl mx-auto flex justify-start mb-12">
-          <div className="border border-gray-500 rounded-[10px] px-1 py-1 flex">
+          <div className="relative border border-gray-500 rounded-[10px] px-1 py-1 flex w-[160px] h-[40px] overflow-hidden">
+            {/* Sliding Background */}
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-[8px] bg-[#FF0E8E]/30 z-0"
+              style={{
+                left: billing === "Monthly" ? "4px" : "50%",
+                transform: billing === "Yearly" ? "translateX(-4px)" : "none",
+              }}
+            />
+
+            {/* Buttons */}
             <button
               onClick={() => setBilling("Monthly")}
-              className={`px-4 py-1 text-sm transition-all duration-200 ${
-                billing === "Monthly"
-                  ? "bg-[#FF0E8E]/30 text-white rounded-[10px]"
-                  : "text-white"
+              className={`w-1/2 h-full relative z-10 flex items-center justify-center text-sm font-medium transition-all duration-200 ${
+                billing === "Monthly" ? "text-white" : "text-white/70"
               }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBilling("Yearly")}
-              className={`px-4 py-1 text-sm transition-all duration-200 ${
-                billing === "Yearly"
-                  ? "bg-[#FF0E8E]/30 text-white rounded-[10px]"
-                  : "text-white"
+              className={`w-1/2 h-full relative z-10 flex items-center justify-center text-sm font-medium transition-all duration-200 ${
+                billing === "Yearly" ? "text-white" : "text-white/70"
               }`}
             >
               Yearly
             </button>
           </div>
         </div>
-
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl min-h-[400px] mx-auto">
           {plans.map((plan, idx) => (
@@ -159,7 +166,6 @@
             </div>
           ))}
         </div>
-
         <p className="mt-12 text-sm text-gray-400">
           Don’t find a plan that suits you?{" "}
           <span className="text-pink-400 cursor-pointer hover:underline">

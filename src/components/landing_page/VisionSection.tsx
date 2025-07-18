@@ -8,7 +8,7 @@ export default function VisionSection() {
         <p className="uppercase text-l tracking-widest text-[#22282A] font-['Supply'] mb-4">
           [End-to-End Idea to Product Deployment]
         </p>
-        <h1 className="text-6xl font-bold text-foreground leading-tight">
+        <h1 className="text-6xl font-bold text-[#22282A] leading-tight">
           Vision to Launch,
           <br />
           Seamless Development,

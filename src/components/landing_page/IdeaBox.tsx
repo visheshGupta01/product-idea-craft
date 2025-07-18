@@ -11,16 +11,34 @@ const IdeaBox: React.FC = () => {
       <div className="relative bg-[#1b2123] w-full  border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
         {/* Header Text */}
         <div className="py-[40px] flex items-center justify-center">
-          <h2 className="text-[48px] font-medium font-['Poppins'] text-center mb-0">
+          <h2 className="text-[48px] font-medium font-poppins text-center mb-0">
             <span className="text-white">Let’s </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF512F] to-[#DD2476] to-[#8A38A5]">
+            <span
+              className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, #F45F44, #EC10AC, #803DD2, #0770FD)",
+              }}
+            >
               Build{" "}
             </span>
             <span className="text-white">Your Next </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF512F] to-[#EC10AC] to-[#803DD2] to-[#DD2476]">
+            <span
+              className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, #F45F44, #EC10AC, #803DD2, #0770FD)",
+              }}
+            >
               Big
             </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F45F44] to-[#EC10AC] to-[#803DD2] to-[#0770FD]">
+            <span
+              className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, #F45F44, #EC10AC, #803DD2, #0770FD)",
+              }}
+            >
               {" "}
               Idea!
             </span>
@@ -30,16 +48,16 @@ const IdeaBox: React.FC = () => {
         {/* White Input Area */}
         <div className="bg-white w-full h-[258px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
           {/* Input + icons row */}
-          <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-4 font-poppins text-customGray">
+          <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-4 font-poppins text-gray-800">
             <input
               type="text"
               placeholder="Start building your new idea by describing your application/website vision in detail."
-              className="flex-1 mt-4 px-4 py-3 rounded-md text-sm focus:outline-none font-['Poppins']"
+              className="flex-1 mt-4 px-4 py-3 rounded-md bg-white text-sm focus:outline-none font-poppins"
               style={{
                 border: "none",
                 boxShadow: "none",
                 outline: "none",
-                color: "customGray",
+                // color: "gray",
                 textAlign: "left",
               }}
             />

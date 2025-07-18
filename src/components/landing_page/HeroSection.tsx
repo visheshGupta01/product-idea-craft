@@ -14,8 +14,10 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* Imagine.bo Title Box (1222 × 105) */}
-      <div className="mx-auto mb-2 w-[1222px] h-[105px] flex items-center justify-center font-poppins font-bold">
-        <h1 className="text-[70px] font-semibold leading-none">Imagine.bo</h1>
+      <div className="mx-auto mb-2 w-[1222px] h-[105px] flex items-center justify-center font-bold">
+        <h1 className="text-[70px] font-semibold font-poppins leading-none">
+          Imagine.bo
+        </h1>
       </div>
 
       {/* Tagline Box (1204 × 52) */}
@@ -26,8 +28,8 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* Powered by Tag (567 × 44) */}
-      <div className="border border-[#B1C5CE] inline-flex  text-gray-300 flex items-center justify-center text-sm rounded-[10px] mb-10 px-2 py-1 ">
-        Powered by AI & SDE * no coding required
+      <div className="border border-[#B1C5CE] inline-flex  text-gray-300  items-center justify-center text-sm rounded-[10px] mb-10 px-2 py-1 ">
+        Powered by AI & SDE * No coding required
       </div>
     </section>
   );

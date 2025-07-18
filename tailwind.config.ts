@@ -23,6 +23,8 @@ export default {
 				'impact': ['"Et Mono"', 'Impact', 'sans-serif'],
 				'satoshi': ['"Satoshi Variable"', 'sans-serif'],
 				'poppins': ['Poppins', 'sans-serif'],
+				'supply': ['Supply', 'sans-serif'],
+
 			},
 			colors: {
 				border: 'hsl(var(--border))',
