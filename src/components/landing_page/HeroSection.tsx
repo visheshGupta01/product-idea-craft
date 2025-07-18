@@ -1,5 +1,5 @@
 import React from "react";
-import LogoIcon from "../assets/ImagineboIcon.svg"; // Make sure TypeScript can import SVGs via module declaration
+import LogoIcon from "../../assets/ImagineboIcon.svg"; // Make sure TypeScript can import SVGs via module declaration
 
 const HeroSection: React.FC = () => {
   return (

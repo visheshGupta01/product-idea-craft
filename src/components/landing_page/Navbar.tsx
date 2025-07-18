@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../assets/ImagineboDarkBackground.svg"; // Adjust if needed
+import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
 
 const Navbar: React.FC = () => {
   return (

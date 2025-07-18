@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import topImage2 from "../assets/822a470b3f92f4e89a684608248843b76ede5af2.jpg";
-import sharedImage from "../assets/408b142b8addbd9ba2f44202fa23d561c9035fec.jpg";
-import sharedImage2 from "../assets/55c057e645dba2c4c69d6f962c313a217ecfa537.jpg";
+import topImage2 from "../../assets/822a470b3f92f4e89a684608248843b76ede5af2.jpg";
+import sharedImage from "../../assets/408b142b8addbd9ba2f44202fa23d561c9035fec.jpg";
+import sharedImage2 from "../../assets/55c057e645dba2c4c69d6f962c313a217ecfa537.jpg";
 
 interface Project {
   title: string;
