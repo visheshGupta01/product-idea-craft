@@ -10,6 +10,7 @@ type User = {
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userIdea, setUserIdea] = useState<string | null>(null);
 
   const login = async (email: string, password: string) => {
     // In real app: send request to backend
@@ -37,7 +38,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, signup }}>
+    <UserContext.Provider value={{ user, userIdea, login, logout, signup, setUserIdea }}>
       {children}
     </UserContext.Provider>
   );

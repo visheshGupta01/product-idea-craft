@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import UserProvider from "@/context/UserProvider";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 
 
@@ -23,6 +24,11 @@ const App = () => {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

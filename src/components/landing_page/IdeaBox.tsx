@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Mic, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
 
 const IdeaBox: React.FC = () => {
+  const [idea, setIdea] = useState("");
+  const { setUserIdea } = useUser();
+  const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    if (idea.trim()) {
+      setUserIdea(idea.trim());
+      navigate("/dashboard");
+    }
+  };
+
   return (
     <section className="relative px-5 flex justify-center items-start bg-[#1B2123]">
       {/* Blue Box Behind the Black Box */}
@@ -51,15 +64,17 @@ const IdeaBox: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-4 font-poppins text-gray-800">
             <input
               type="text"
+              value={idea}
+              onChange={(e) => setIdea(e.target.value)}
               placeholder="Start building your new idea by describing your application/website vision in detail."
               className="flex-1 mt-4 px-4 py-3 rounded-md bg-white text-sm focus:outline-none font-poppins"
               style={{
                 border: "none",
                 boxShadow: "none",
                 outline: "none",
-                // color: "gray",
                 textAlign: "left",
               }}
+              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
             />
             <div className="flex gap-2 items-center justify-center">
               <button className="p-3 w-12 h-12 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center">
@@ -72,7 +87,11 @@ const IdeaBox: React.FC = () => {
           </div>
 
           {/* Pink Button - flush bottom, left & right */}
-          <button className="absolute bottom-0 left-1 right-1 h-[60px] bg-[#FF00A9] hover:bg-pink-600 text-white rounded-[27px] mb-1 font-normal font-supply text-lg transition">
+          <button 
+            onClick={handleSubmit}
+            disabled={!idea.trim()}
+            className="absolute bottom-0 left-1 right-1 h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[27px] mb-1 font-normal font-supply text-lg transition"
+          >
             Start Building my Idea →
           </button>
         </div>
