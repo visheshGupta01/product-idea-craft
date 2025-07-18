@@ -1,0 +1,173 @@
+  import React, { useState } from "react";
+
+  interface Plan {
+    name: string;
+    price: number;
+    desc: string;
+    features: string[];
+    button: string;
+  }
+
+  const monthlyPlans: Plan[] = [
+    {
+      name: "Free",
+      price: 0,
+      desc: "Perfect for **early-stage builders** exploring AI-generated sites.",
+      features: ["Generate up to 3 projects/month", "Access to core AI prompts"],
+      button: "Get Starter Plan",
+    },
+    {
+      name: "Pro",
+      price: 19,
+      desc: "For **creators and indie founders** who want more flexibility.",
+      features: [
+        "Unlimited projects",
+        "Custom domains",
+        "Full prompt library access",
+      ],
+      button: "Get Pro Plan",
+    },
+    {
+      name: "Team",
+      price: 49,
+      desc: "For **growing businesses** with advanced needs.",
+      features: [
+        "Unlimited projects",
+        "Custom domains",
+        "Full prompt library access",
+        "Export code (HTML/CSS)",
+      ],
+      button: "Get Team Plan",
+    },
+  ];
+
+  const yearlyPlans: Plan[] = [
+    {
+      name: "Free",
+      price: 0,
+      desc: "Perfect for **early-stage builders** exploring AI-generated sites.",
+      features: ["Generate up to 3 projects/month", "Access to core AI prompts"],
+      button: "Get Starter Plan",
+    },
+    {
+      name: "Pro",
+      price: 190,
+      desc: "Annual Pro plan for **creators and indie founders** with 2 months free.",
+      features: [
+        "Unlimited projects",
+        "Custom domains",
+        "Full prompt library access",
+      ],
+      button: "Get Pro Plan",
+    },
+    {
+      name: "Team",
+      price: 490,
+      desc: "Best value for **growing businesses** and fast-growing teams.",
+      features: [
+        "Unlimited projects",
+        "Custom domains",
+        "Full prompt library access",
+        "Export code (HTML/CSS)",
+      ],
+      button: "Get Team Plan",
+    },
+  ];
+
+  const PricingSection: React.FC = () => {
+    const [billing, setBilling] = useState<"Monthly" | "Yearly">("Monthly");
+    const plans = billing === "Monthly" ? monthlyPlans : yearlyPlans;
+
+    return (
+      <section className="bg-[#0f1116] text-white py-20 px-6 font-['Poppins'] text-center">
+        <h2 className="text-6xl font-bold mb-2">Lean Pricing.</h2>
+        <h3 className="text-6xl font-bold mb-8">Limitless Potential.</h3>
+
+        {/* Billing Toggle */}
+        <div className="max-w-6xl mx-auto flex justify-start mb-12">
+          <div className="border border-gray-500 rounded-[10px] px-1 py-1 flex">
+            <button
+              onClick={() => setBilling("Monthly")}
+              className={`px-4 py-1 text-sm transition-all duration-200 ${
+                billing === "Monthly"
+                  ? "bg-[#FF0E8E]/30 text-white rounded-[10px]"
+                  : "text-white"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBilling("Yearly")}
+              className={`px-4 py-1 text-sm transition-all duration-200 ${
+                billing === "Yearly"
+                  ? "bg-[#FF0E8E]/30 text-white rounded-[10px]"
+                  : "text-white"
+              }`}
+            >
+              Yearly
+            </button>
+          </div>
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl min-h-[400px] mx-auto">
+          {plans.map((plan, idx) => (
+            <div
+              key={idx}
+              className="bg-[#D5E1E7] text-black rounded-xl px-6 py-6 flex flex-col items-center text-center h-full"
+            >
+              <div className="flex flex-col items-center flex-grow w-full">
+                <h4 className="text-lg font-semibold mb-2">{plan.name}</h4>
+
+                <div className="w-full py-3 border-t border-b font-poppins border-[#2C2C2C] mb-4">
+                  <div className="text-4xl font-bold">
+                    <sup className="align-super text-xl">$</sup>
+                    {plan.price}
+                    <span className="text-base font-medium text-gray-700">
+                      {billing === "Monthly" ? <sub>/mo</sub> : <sub>/yr</sub>}
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-sm mb-4 max-w-xs">
+                  {plan.desc
+                    .split("**")
+                    .map((text, i) =>
+                      i % 2 === 1 ? (
+                        <strong key={i}>{text}</strong>
+                      ) : (
+                        <span key={i}>{text}</span>
+                      )
+                    )}
+                </p>
+
+                <ul className="text-sm text-left mb-6 w-full max-w-xs">
+                  {plan.features.map((f, i) => (
+                    <li
+                      key={i}
+                      className="mb-2 font-semibold list-disc list-inside"
+                    >
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <button className="bg-[#fb02a5] hover:bg-[#d62a86] text-white px-6 py-2 rounded-md text-sm font-supply font-semibold mt-auto">
+                {plan.button}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-12 text-sm text-gray-400">
+          Don’t find a plan that suits you?{" "}
+          <span className="text-pink-400 cursor-pointer hover:underline">
+            Talk to Us
+          </span>
+        </p>
+      </section>
+    );
+  };
+
+  export default PricingSection;

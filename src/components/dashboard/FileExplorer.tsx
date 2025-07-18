@@ -122,7 +122,9 @@ const FileTreeItem: React.FC<{
   onFileSelect: (file: FileNode) => void;
   selectedFile: string | null;
 }> = ({ node, level, onFileSelect, selectedFile }) => {
-  const [isExpanded, setIsExpanded] = useState(level === 0 ? true : false);
+const [isExpanded, setIsExpanded] = useState(
+  level === 0 && node.type === "folder"
+);
 
   const handleClick = () => {
     if (node.type === "folder") {

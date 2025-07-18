@@ -22,25 +22,24 @@ interface ServerResponse {
   assistant: string;
   tools?: Array<{
     name: string;
-    output: string;
+    output: string | null;
   }>;
 }
 
-// Enhanced markdown renderer using react-markdown (simulated)
+// Enhanced markdown renderer with improved list handling
 const MarkdownRenderer = ({ content }: { content: string }) => {
-  // Custom component for rendering markdown elements
   const renderMarkdown = (text: string) => {
-    // Split text into lines for processing
     const lines = text.split("\n");
     const elements: React.ReactElement[] = [];
     let currentIndex = 0;
+    let i = 0;
 
-    for (let i = 0; i < lines.length; i++) {
+    while (i < lines.length) {
       const line = lines[i];
 
       // Skip empty lines
       if (!line.trim()) {
-        elements.push(<br key={currentIndex++} />);
+        i++;
         continue;
       }
 
@@ -49,7 +48,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h1
             key={currentIndex++}
-            className="text-2xl font-bold mb-4 mt-6 text-foreground border-b border-border pb-2"
+            className="text-2xl font-bold mb-2 mt-3 text-foreground border-b border-border pb-1"
           >
             {line.substring(2)}
           </h1>
@@ -58,7 +57,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h2
             key={currentIndex++}
-            className="text-xl font-bold mb-3 mt-6 text-foreground border-b border-border pb-2"
+            className="text-xl font-bold mb-2 mt-3 text-foreground border-b border-border pb-1"
           >
             {line.substring(3)}
           </h2>
@@ -67,7 +66,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h3
             key={currentIndex++}
-            className="text-lg font-bold mb-3 mt-6 text-foreground border-b border-border pb-1"
+            className="text-lg font-bold mb-2 mt-3 text-foreground border-b border-border pb-1"
           >
             {line.substring(4)}
           </h3>
@@ -76,7 +75,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h4
             key={currentIndex++}
-            className="text-md font-semibold mb-2 mt-4 text-foreground"
+            className="text-md font-semibold mb-1 mt-2 text-foreground"
           >
             {line.substring(5)}
           </h4>
@@ -85,7 +84,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h5
             key={currentIndex++}
-            className="text-sm font-semibold mb-2 mt-4 text-foreground"
+            className="text-sm font-semibold mb-1 mt-2 text-foreground"
           >
             {line.substring(6)}
           </h5>
@@ -94,7 +93,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <h6
             key={currentIndex++}
-            className="text-sm font-semibold mb-2 mt-4 text-muted-foreground"
+            className="text-sm font-semibold mb-1 mt-2 text-muted-foreground"
           >
             {line.substring(7)}
           </h6>
@@ -107,10 +106,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         line.trim() === "___"
       ) {
         elements.push(
-          <hr
-            key={currentIndex++}
-            className="my-6 border-t-2 border-border"
-          />
+          <hr key={currentIndex++} className="my-3 border-t-2 border-border" />
         );
       }
       // Code blocks (fenced)
@@ -125,7 +121,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         }
 
         elements.push(
-          <div key={currentIndex++} className="my-4">
+          <div key={currentIndex++} className="my-2">
             <div className="bg-muted border border-border rounded-lg overflow-hidden">
               {language && (
                 <div className="bg-muted/50 px-4 py-2 text-sm font-mono text-muted-foreground border-b border-border">
@@ -156,7 +152,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         elements.push(
           <blockquote
             key={currentIndex++}
-            className="border-l-4 border-primary bg-primary/10 pl-4 py-2 my-4 italic text-muted-foreground"
+            className="border-l-4 border-primary bg-primary/10 pl-4 py-2 my-2 italic text-muted-foreground"
           >
             {quoteLines.map((quoteLine, idx) => (
               <p key={idx} className="mb-1 last:mb-0">
@@ -168,80 +164,11 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
 
         i = j - 1; // Skip processed lines
       }
-      // Lists - FIXED VERSION
+      // Enhanced Lists with proper nesting and indentation
       else if (line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/)) {
-        const listItems = [];
-        let j = i;
-        const firstMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
-        const isOrdered = firstMatch && firstMatch[2].match(/\d+\./);
-        const baseIndent = firstMatch ? firstMatch[1].length : 0;
-
-        // Process all consecutive list items
-        while (j < lines.length) {
-          const currentLine = lines[j];
-
-          // Skip empty lines within lists
-          if (currentLine.match(/^\s*$/)) {
-            j++;
-            continue;
-          }
-
-          const listMatch = currentLine.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
-
-          if (listMatch) {
-            const indent = listMatch[1].length;
-            const marker = listMatch[2];
-            const content = listMatch[3];
-
-            // Check if this is the same type of list
-            const isCurrentOrdered = marker.match(/\d+\./);
-
-            // Same list type and similar indentation level
-            if (!!isCurrentOrdered === !!isOrdered && indent === baseIndent) {
-              listItems.push({
-                content: content,
-                originalNumber: isCurrentOrdered
-                  ? marker.replace(".", "")
-                  : null,
-              });
-              j++;
-            } else {
-              // Different list type or indentation - end current list
-              break;
-            }
-          } else if (currentLine.match(/^\s{2,}/) && listItems.length > 0) {
-            // Continuation of previous item (indented content)
-            const lastItem = listItems[listItems.length - 1];
-            lastItem.content += " " + currentLine.trim();
-            j++;
-          } else {
-            // Not a list item or continuation - end list
-            break;
-          }
-        }
-
-        const ListComponent = isOrdered ? "ol" : "ul";
-        const listProps = isOrdered
-          ? { start: listItems[0]?.originalNumber || 1 }
-          : {};
-
-        elements.push(
-          <ListComponent
-            key={currentIndex++}
-            className={`my-4 ${
-              isOrdered ? "list-decimal" : "list-disc"
-            } list-inside space-y-2`}
-            {...listProps}
-          >
-            {listItems.map((item, idx) => (
-              <li key={idx} className="text-foreground leading-relaxed">
-                {processInlineFormatting(item.content)}
-              </li>
-            ))}
-          </ListComponent>
-        );
-
-        i = j - 1; // Skip processed lines
+        const { listElement, nextIndex } = processNestedList(lines, i);
+        elements.push(React.cloneElement(listElement, { key: currentIndex++ }));
+        i = nextIndex - 1;
       }
       // Tables
       else if (line.includes("|") && line.split("|").length > 2) {
@@ -304,7 +231,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
           </div>
         );
 
-        i = j - 1; // Skip processed lines
+        i = j - 1;
       }
       // Regular paragraphs
       else {
@@ -317,9 +244,121 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
           </p>
         );
       }
+
+      i++;
     }
 
     return elements;
+  };
+
+  // Enhanced nested list processing
+  const processNestedList = (lines: string[], startIndex: number) => {
+    const listItems: Array<{
+      content: string;
+      level: number;
+      isOrdered: boolean;
+      originalNumber?: string;
+      children?: any[];
+    }> = [];
+
+    let i = startIndex;
+
+    while (i < lines.length) {
+      const line = lines[i];
+
+      // Skip empty lines
+      if (line.match(/^\s*$/)) {
+        i++;
+        continue;
+      }
+
+      const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
+
+      if (!listMatch) {
+        // Check if it's a continuation line (indented but not a list item)
+        if (line.match(/^\s{2,}/) && listItems.length > 0) {
+          const lastItem = listItems[listItems.length - 1];
+          lastItem.content += " " + line.trim();
+          i++;
+          continue;
+        }
+        break;
+      }
+
+      const indent = listMatch[1];
+      const marker = listMatch[2];
+      const content = listMatch[3];
+      const level = Math.floor(indent.length / 2); // 2 spaces per level
+      const isOrdered = marker.match(/\d+\./) !== null;
+
+      listItems.push({
+        content,
+        level,
+        isOrdered,
+        originalNumber: isOrdered ? marker.replace(".", "") : undefined,
+      });
+
+      i++;
+    }
+
+    // Build nested structure
+    const buildNestedList = (
+      items: typeof listItems,
+      currentLevel: number = 0
+    ): React.ReactElement => {
+      const currentLevelItems = items.filter(
+        (item) => item.level === currentLevel
+      );
+      const isOrdered =
+        currentLevelItems.length > 0 && currentLevelItems[0].isOrdered;
+
+      const ListComponent = isOrdered ? "ol" : "ul";
+      const listProps =
+        isOrdered && currentLevelItems[0]?.originalNumber
+          ? { start: parseInt(currentLevelItems[0].originalNumber) || 1 }
+          : {};
+
+      return (
+        <ListComponent
+          className={`my-4 ${isOrdered ? "list-decimal" : "list-disc"} ${
+            currentLevel === 0 ? "list-inside" : "list-outside ml-6"
+          } space-y-2`}
+          {...listProps}
+        >
+          {currentLevelItems.map((item, idx) => {
+            const nextLevelItems = items.filter(
+              (nextItem, nextIdx) =>
+                nextItem.level === currentLevel + 1 &&
+                items.findIndex((i) => i === nextItem) >
+                  items.findIndex((i) => i === item) &&
+                (idx === currentLevelItems.length - 1 ||
+                  items.findIndex((i) => i === nextItem) <
+                    items.findIndex((i) => i === currentLevelItems[idx + 1]))
+            );
+
+            return (
+              <li key={idx} className="text-foreground leading-relaxed">
+                {processInlineFormatting(item.content)}
+                {nextLevelItems.length > 0 && (
+                  <div className="mt-2">
+                    {buildNestedList(nextLevelItems, currentLevel + 1)}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ListComponent>
+      );
+    };
+
+    if (listItems.length === 0) {
+      return { listElement: <div />, nextIndex: i };
+    }
+
+    return {
+      listElement: buildNestedList(listItems),
+      nextIndex: i,
+    };
   };
 
   // Process inline formatting (bold, italic, code, links)
@@ -364,7 +403,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
 
 const ChatPanel = ({
   userIdea,
-  mcpServerUrl = "https://1946dc82ab95.ngrok-free.app/chat",
+  mcpServerUrl = "https://6c279fd45df5.ngrok-free.app/chat",
 }: ChatPanelProps) => {
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
@@ -395,8 +434,127 @@ Hello Sir, Tell me the **idea** which you want to bring to life. I will help you
   const [debugInfo, setDebugInfo] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const formatResearchOutput = (output: string): string => {
-    return output.trim();
+  const formatSitemapJson = (jsonData: any) => {
+    let data;
+    try {
+      // Handle if it's already an object
+      if (typeof jsonData === "object" && jsonData !== null) {
+        data = jsonData;
+      } else {
+        // Try to parse as JSON string
+        data = JSON.parse(jsonData);
+      }
+    } catch (e) {
+      // If parsing fails, return the original data as string
+      return typeof jsonData === "string"
+        ? jsonData
+        : JSON.stringify(jsonData, null, 2);
+    }
+
+    // Format the JSON into readable markdown
+    let formatted = `# Project Structure: ${data.project_name}\n\n`;
+    formatted += `**Type:** ${data.project_type}\n`;
+    formatted += `**Domain:** ${data.domain}\n\n`;
+    formatted += `## Description\n${data.description}\n\n`;
+
+    // Tech stack
+    formatted += `## Technology Stack\n`;
+    formatted += `- **Frontend:** ${data.tech_stack.frontend}\n`;
+    formatted += `- **Backend:** ${data.tech_stack.backend}\n`;
+    formatted += `- **Database:** ${data.tech_stack.database}\n\n`;
+
+    // Pages
+    formatted += `## Pages\n`;
+    data.pages.forEach((page, index) => {
+      formatted += `### ${index + 1}. ${page.name}\n`;
+      formatted += `${page.description}\n\n`;
+      formatted += `**Components:** ${page.components.join(", ")}\n\n`;
+    });
+
+    // Database models
+    formatted += `## Database Models\n`;
+    data.database_models.forEach((model, index) => {
+      formatted += `### ${index + 1}. ${model.model_name}\n`;
+      formatted += `**Fields:**\n`;
+      Object.entries(model.fields).forEach(([field, type]) => {
+        formatted += `- ${field}: ${type}\n`;
+      });
+      formatted += `\n**Relationships:**\n`;
+      model.relationships.forEach((rel) => {
+        formatted += `- ${rel}\n`;
+      });
+      formatted += `\n`;
+    });
+
+    // API Routes
+    formatted += `## API Routes\n`;
+    data.backend_api_routes.forEach((route, index) => {
+      formatted += `### ${index + 1}. ${route.method} ${route.route}\n`;
+      formatted += `**Function:** ${route.controller_function}\n`;
+      formatted += `**Description:** ${route.description}\n\n`;
+    });
+
+    return formatted;
+  };
+
+  // Enhanced function to clean tool output and remove tool names
+  const cleanToolOutput = (output: string | any, toolName: string): string => {
+    if (!output) return "";
+
+    // Convert to string if it's not already
+    let cleaned =
+      typeof output === "string" ? output : JSON.stringify(output, null, 2);
+    cleaned = cleaned.trim();
+
+    // For sitemap_user_idea, try to extract JSON if it's wrapped in other text
+    if (toolName === "sitemap_user_idea") {
+      if (typeof output === "object") {
+        // If it's already an object, stringify it
+        cleaned = JSON.stringify(output, null, 2);
+      } else {
+        // If it's a string, try to extract JSON
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          cleaned = jsonMatch[0];
+        }
+      }
+    }
+    // Remove tool name from the beginning if present
+    const toolNameVariations = [
+      toolName,
+      toolName.toLowerCase(),
+      toolName.toUpperCase(),
+      toolName.replace(/[_-]/g, " "),
+      toolName.replace(/[_-]/g, " ").toLowerCase(),
+    ];
+
+    for (const variation of toolNameVariations) {
+      const patterns = [
+        new RegExp(`^${variation}:?\\s*`, "i"),
+        new RegExp(`^\\[${variation}\\]:?\\s*`, "i"),
+        new RegExp(`^${variation}\\s+output:?\\s*`, "i"),
+        new RegExp(`^${variation}\\s+result:?\\s*`, "i"),
+      ];
+
+      for (const pattern of patterns) {
+        cleaned = cleaned.replace(pattern, "");
+      }
+    }
+
+    // Remove common prefixes that might indicate tool output
+    const commonPrefixes = [
+      /^Tool output:?\s*/i,
+      /^Result:?\s*/i,
+      /^Response:?\s*/i,
+      /^Output:?\s*/i,
+      /^\[.*?\]:?\s*/,
+    ];
+
+    for (const prefix of commonPrefixes) {
+      cleaned = cleaned.replace(prefix, "");
+    }
+
+    return cleaned.trim();
   };
 
   const sendMessage = async () => {
@@ -452,63 +610,79 @@ Hello Sir, Tell me the **idea** which you want to bring to life. I will help you
       if (data.tools && Array.isArray(data.tools) && data.tools.length > 0) {
         console.log(`✓ Found ${data.tools.length} tools`);
 
-        data.tools.forEach((tool, index) => {
-          console.log(`Tool ${index + 1}:`);
+        // Filter out tools with null or empty output
+        const validTools = data.tools.filter((tool) => {
+          const hasValidOutput =
+            tool.output !== null &&
+            tool.output !== undefined &&
+            tool.output.toString().trim() !== "";
+
+          console.log(
+            `Tool "${tool.name}": ${
+              hasValidOutput ? "valid" : "invalid"
+            } output`
+          );
+          return hasValidOutput;
+        });
+
+        console.log(`✓ Valid tools after filtering: ${validTools.length}`);
+
+        validTools.forEach((tool, index) => {
+          console.log(`Valid Tool ${index + 1}:`);
           console.log(`  Name: "${tool.name}"`);
-          console.log(`  Has output: ${!!tool.output}`);
-          console.log(`  Output length: ${tool.output?.length || 0}`);
+          console.log(`  Output type: ${typeof tool.output}`);
+          console.log(
+            `  Output length: ${tool.output?.toString().length || 0}`
+          );
           if (tool.output) {
+            const outputStr = tool.output.toString();
             console.log(
-              `  Output preview: "${tool.output.substring(0, 100)}..."`
+              `  Output preview: "${outputStr.substring(0, 100)}..."`
             );
           }
         });
 
-        const researchTool = data.tools.find(
-          (tool) => tool.name && tool.name.toLowerCase().includes("research")
-        );
+        // Process all valid tools equally (no prioritization)
+        validTools.forEach((tool, index) => {
+          let cleanedOutput = cleanToolOutput(tool.output, tool.name);
 
-        if (researchTool && researchTool.output) {
-          console.log("✓ Research tool found with output");
-          const formattedOutput = formatResearchOutput(researchTool.output);
-
-          if (aiContent) {
-            aiContent += "\n\n## Research Report\n\n" + formattedOutput;
-          } else {
-            aiContent = "## Research Report\n\n" + formattedOutput;
-          }
-          console.log("✓ Research output added to AI content");
-        } else {
-          console.log("✗ No research tool found or no output");
-          const anyToolWithOutput = data.tools.find((tool) => tool.output);
-          if (anyToolWithOutput) {
-            console.log(`✓ Found tool with output: ${anyToolWithOutput.name}`);
-            const formattedOutput = formatResearchOutput(
-              anyToolWithOutput.output
-            );
-
-            if (aiContent) {
-              aiContent +=
-                `\n\n## ${anyToolWithOutput.name} Output\n\n` + formattedOutput;
-            } else {
-              aiContent =
-                `## ${anyToolWithOutput.name} Output\n\n` + formattedOutput;
+          // Special handling for sitemap_user_idea
+          if (tool.name === "sitemap_user_idea" && cleanedOutput) {
+            try {
+              cleanedOutput = formatSitemapJson(cleanedOutput);
+            } catch (e) {
+              console.log("Failed to format sitemap JSON:", e);
+              // Keep the original output if formatting fails
             }
           }
-        }
+
+          if (cleanedOutput) {
+            const sectionTitle = tool.name
+              .replace(/[_-]/g, " ")
+              .replace(/\b\w/g, (l) => l.toUpperCase());
+
+            if (aiContent) {
+              aiContent += `\n\n## ${sectionTitle}\n\n` + cleanedOutput;
+            } else {
+              aiContent = `## ${sectionTitle}\n\n` + cleanedOutput;
+            }
+            console.log(`✓ Tool "${tool.name}" output added to AI content`);
+          }
+        });
       } else {
-        console.log("✗ No tools found in response");
+        console.log("✗ No valid tools found in response");
       }
 
       if (!aiContent) {
-        aiContent = `## Error Response
+        aiContent = `## No Response Available
 
-I received your message but couldn't generate a proper response. Please check the debug info below.
+I received your message but couldn't generate a proper response. This might be due to:
 
-### Raw server response:
-\`\`\`json
-${JSON.stringify(data, null, 2)}
-\`\`\``;
+- All tools returned null or empty output
+- Server response format issues
+- Network connectivity problems
+
+Please try rephrasing your request or check the connection.`;
         console.log("✗ Using fallback content");
       }
 
@@ -545,8 +719,7 @@ Please try again or check your connection.`,
   };
 
   const scrollToTopOfNewMessage = () => {
-    // Find the last message element and scroll to its top
-    const messageElements = document.querySelectorAll('[data-message-id]');
+    const messageElements = document.querySelectorAll("[data-message-id]");
     if (messageElements.length > 0) {
       const lastMessage = messageElements[messageElements.length - 1];
       lastMessage.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -562,16 +735,16 @@ Please try again or check your connection.`,
   };
 
   const downloadAsText = (content: string, messageId: string) => {
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `message-${messageId}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     toast({
       title: "Downloaded",
       description: "Message has been downloaded as a text file.",
@@ -590,7 +763,10 @@ Please try again or check your connection.`,
       style={{ backgroundColor: "#1a1a1a" }}
     >
       {/* Messages */}
-      <ScrollArea className="flex-1 pt-4 pl-4 pr-4" style={{ backgroundColor: "#1a1a1a" }}>
+      <ScrollArea
+        className="flex-1 pt-4 pl-4 pr-4"
+        style={{ backgroundColor: "#1a1a1a" }}
+      >
         <div className="w-full">
           {messages.map((message, index) => (
             <div
@@ -633,7 +809,9 @@ Please try again or check your connection.`,
                   }`}
                 >
                   {message.type === "user" ? (
-                    <div className="whitespace-pre-wrap">{message.content}</div>
+                    <div className="whitespace-pre-wrap text-left">
+                      {message.content}
+                    </div>
                   ) : (
                     <div className="prose prose-sm max-w-none !text-black [&_*]:!text-black">
                       <MarkdownRenderer content={message.content} />
