@@ -5,7 +5,6 @@ import HeroSection from '@/components/landing_page/HeroSection';
 import IdeaBox from '@/components/landing_page/IdeaBox';
 import Navbar from '@/components/landing_page/Navbar';
 import PricingSection from '@/components/landing_page/PricingSection';
-import StackedCards from '@/components/landing_page/StackedCards';
 import  Footer  from '@/components/landing_page/Footer';
 import VisionSection from '@/components/landing_page/VisionSection';
 
