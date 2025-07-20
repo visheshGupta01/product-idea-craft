@@ -55,31 +55,31 @@ const FAQSection: React.FC = () => {
 
   return (
     <section className="bg-[#0f1116] text-black font-['Poppins'] py-5 px-4 flex justify-center">
-      <div className="bg-gradient-to-b from-[#dbe5ed] to-[#fcddec] rounded-2xl max-w-4xl w-full p-10">
-        {/* Heading */}
-        <h2 className="text-[80px] mt-4 text-[#1E1E1E] font-bold font-poppins text-center mb-2">
+      <div className="bg-gradient-to-b from-[#dbe5ed] to-[#fcddec] rounded-2xl max-w-4xl w-full p-6 md:p-10">
+        {/* Heading - Responsive */}
+        <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-[80px] mt-2 md:mt-4 text-[#1E1E1E] font-bold font-poppins text-center mb-2">
           FAQ
         </h2>
-        <p className="text-center text-2xl text-[#1E1E1E] mb-16">
+        <p className="text-center text-lg sm:text-xl md:text-2xl text-[#1E1E1E] mb-8 md:mb-16">
           Queries you might have about Imagine.bo
         </p>
 
-        {/* Accordion */}
+        {/* Accordion - Responsive */}
         {faqData.map((faq, index) => (
-          <div key={index} className="border-b border-gray-300 py-4">
+          <div key={index} className="border-b border-gray-300 py-3 md:py-4">
             <button
-              className="flex font-poppins justify-between w-full text-xl text-left"
+              className="flex font-poppins justify-between w-full text-base sm:text-lg md:text-xl text-left"
               onClick={() => toggleOpen(index)}
             >
-              <span className="font-semibold">{faq.question}</span>
+              <span className="font-semibold pr-4">{faq.question}</span>
               {openIndex === index ? (
-                <Minus className="w-5 h-5" />
+                <Minus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
               ) : (
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
               )}
             </button>
             {openIndex === index && (
-              <p className="text-lg mt-2 font-poppins text-gray-700">
+              <p className="text-sm sm:text-base md:text-lg mt-2 font-poppins text-gray-700">
                 {faq.answer}
               </p>
             )}

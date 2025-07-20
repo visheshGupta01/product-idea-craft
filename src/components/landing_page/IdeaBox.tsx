@@ -60,37 +60,38 @@ const IdeaBox: React.FC = () => {
 
         {/* White Input Area */}
         <div className="bg-white w-full h-[258px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
-          {/* Input + icons row */}
-          <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-4 font-poppins text-gray-800">
+          {/* Input area with floating buttons */}
+          <div className="relative w-full mb-4 font-poppins text-gray-800">
             <textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
               placeholder="Start building your new idea by describing your application/website vision in detail."
-              className="flex-1 mt-4 px-4 py-3 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
+              className="w-full px-4 py-3 pr-24 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
               style={{
                 border: "none",
                 boxShadow: "none",
                 outline: "none",
                 textAlign: "left",
-                minHeight: "100px",
+                minHeight: "120px",
               }}
               onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && handleSubmit()}
             />
-            <div className="flex gap-2 items-center justify-center">
-              <button className="p-3 w-12 h-12 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center">
-                <Mic className="w-4 h-4 text-gray-700" />
+            {/* Floating buttons in top right */}
+            <div className="absolute top-3 right-3 flex gap-2">
+              <button className="p-2 w-8 h-8 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center">
+                <Mic className="w-3 h-3 text-gray-700" />
               </button>
-              <button className="p-3 w-12 h-12 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
-                <Plus className="w-4 h-4 text-gray-700" />
+              <button className="p-2 w-8 h-8 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+                <Plus className="w-3 h-3 text-gray-700" />
               </button>
             </div>
           </div>
 
-          {/* Pink Button - flush bottom, left & right */}
+          {/* Pink Button - Responsive */}
           <button 
             onClick={handleSubmit}
             disabled={!idea.trim()}
-            className="absolute bottom-0 left-1 right-1 h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[27px] mb-1 font-normal font-supply text-lg transition"
+            className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition"
           >
             Start Building my Idea →
           </button>
