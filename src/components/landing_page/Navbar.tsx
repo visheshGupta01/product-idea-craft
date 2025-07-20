@@ -10,7 +10,7 @@ const Navbar: React.FC = () => {
           <img
             src={Logo}
             alt="Imagine.bo"
-            className="h-7 w-auto object-contain"
+            className="h-10 object-contain"
           />
         </div>
 

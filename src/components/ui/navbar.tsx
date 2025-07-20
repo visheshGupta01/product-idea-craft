@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Rocket } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface NavbarProps {
   onPublish?: () => void;
@@ -13,10 +14,9 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
       {/* Logo */}
       <div className="flex items-center space-x-2">
         <div className="flex items-center justify-center w-32 h-7 rounded-lg">
-          <img
-            src="ImagineboDarkBackground.svg"
-            className="text-white"
-          />
+          <Link to="/">
+            <img src="ImagineboDarkBackground.svg" className="text-white" />
+          </Link>
         </div>
       </div>
 
