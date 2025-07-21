@@ -56,54 +56,63 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         </AvatarFallback>
       </Avatar>
 
-      <div className={`flex-1 space-y-3 ${isUser ? "text-right" : ""}`}>
-        <div className={`flex items-center gap-2 ${isUser ? "justify-end" : "justify-start"}`}>
+      <div className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}>
+        <div className="mb-2">
           <span className="text-sm font-semibold text-chat-foreground">
             {isUser ? "You" : "AI Assistant"}
           </span>
-          <span className="text-xs text-muted-foreground opacity-70">
-            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </span>
         </div>
 
-        <div
-          className={`rounded-2xl p-4 max-w-none shadow-sm border ${
-            isUser
-              ? "bg-primary text-primary-foreground ml-8 border-primary/20"
-              : "bg-background text-foreground mr-8 border-border"
-          }`}
-        >
+        <div className="relative group">
+          <div
+            className={`rounded-2xl p-4 shadow-sm border inline-block max-w-md ${
+              isUser
+                ? "bg-primary text-primary-foreground border-primary/20"
+                : "bg-background text-foreground border-border"
+            }`}
+          >
+            {isUser ? (
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {message.content}
+              </p>
+            ) : (
+              <MarkdownRenderer content={message.content} />
+            )}
+          </div>
+
+          {/* Action buttons */}
           {isUser ? (
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-              {message.content}
-            </p>
+            <div className="absolute bottom-1 left-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => copyToClipboard(message.content)}
+                className="h-6 w-6 p-0 hover:bg-chat-accent-bg border border-border/50 rounded-full"
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+            </div>
           ) : (
-            <MarkdownRenderer content={message.content} />
+            <div className="absolute bottom-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => copyToClipboard(message.content)}
+                className="h-6 w-6 p-0 hover:bg-chat-accent-bg border border-border/50 rounded-full"
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => downloadAsText(message.content)}
+                className="h-6 w-6 p-0 hover:bg-chat-accent-bg border border-border/50 rounded-full"
+              >
+                <Download className="w-3 h-3" />
+              </Button>
+            </div>
           )}
         </div>
-
-        {!isUser && (
-          <div className={`flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 ${isUser ? "justify-end" : "justify-start"}`}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => copyToClipboard(message.content)}
-              className="h-7 px-3 text-xs hover:bg-chat-accent-bg border border-border/50"
-            >
-              <Copy className="w-3 h-3 mr-1" />
-              Copy
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => downloadAsText(message.content)}
-              className="h-7 px-3 text-xs hover:bg-chat-accent-bg border border-border/50"
-            >
-              <Download className="w-3 h-3 mr-1" />
-              Download
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
