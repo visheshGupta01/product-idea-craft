@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Bot, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { ChatPanelProps, Message } from "@/types";
 import { useMcpChat } from "@/hooks/useMcpChat";
@@ -9,7 +10,8 @@ import { CHAT_CONFIG } from "@/utils/constants";
 
 const ChatPanel = ({ userIdea }: ChatPanelProps) => {
   const { initialMcpResponse, clearInitialResponse } = useUser();
-  
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   // Initialize messages based on whether we have an initial MCP response
   const getInitialMessages = (): Message[] => {
     if (initialMcpResponse) {
@@ -28,7 +30,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
         },
       ];
     }
-    
+
     return [
       {
         id: "1",
@@ -39,7 +41,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
     ];
   };
 
-  const { messages, isLoading, messagesEndRef, sendMessage } = useMcpChat(getInitialMessages());
+  const { messages, isLoading, sendMessage } = useMcpChat(getInitialMessages());
 
   // Clear the initial response from context when component mounts
   useEffect(() => {
@@ -48,26 +50,50 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
     }
   }, [initialMcpResponse, clearInitialResponse]);
 
+  const scrollToTopOfNewMessage = () => {
+    const messageElements = document.querySelectorAll("[data-message-id]");
+    if (messageElements.length > 0) {
+      const lastMessage = messageElements[messageElements.length - 1];
+      lastMessage.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      scrollToTopOfNewMessage();
+    }
+  }, [messages, isLoading]);
+
   return (
-    <div className="flex flex-col h-full bg-gray-900 rounded-xl overflow-hidden">
-      {/* Messages Area */}
-      <ScrollArea className="flex-1 p-6">
-        <div className="space-y-4 max-w-2xl mx-auto">
+    <div
+      className="h-full flex flex-col"
+      style={{ backgroundColor: "#1a1a1a" }}
+    >
+      {/* Messages */}
+      <ScrollArea
+        className="flex-1 pt-4 pl-4 pr-4"
+        style={{ backgroundColor: "#1a1a1a" }}
+      >
+        <div className="w-full">
           {messages.map((message, index) => (
-            <div key={message.id} className="group animate-fade-in">
-              <MessageBubble message={message} />
-            </div>
+            <MessageBubble
+              key={message.id}
+              message={message}
+              isWelcomeMessage={message.id === "1" && !initialMcpResponse}
+            />
           ))}
 
+          {/* Loading indicator with exact styling from original */}
           {isLoading && (
-            <div className="flex justify-center items-center p-6">
-              <div className="flex items-center gap-3 text-gray-400 bg-gray-800 px-4 py-2 rounded-full">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animate-delay-100"></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animate-delay-200"></div>
+            <div className="flex items-start space-x-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
+                <Bot className="w-4 h-4 text-white" />
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md">
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span className="text-sm text-white">AI is typing...</span>
                 </div>
-                <span className="text-sm font-medium">AI is thinking...</span>
               </div>
             </div>
           )}
@@ -76,12 +102,8 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
         </div>
       </ScrollArea>
 
-      {/* Input Area */}
-      <div className="p-6 pt-0">
-        <div className="max-w-2xl mx-auto">
-          <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
-        </div>
-      </div>
+      {/* Input */}
+      <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
     </div>
   );
 };

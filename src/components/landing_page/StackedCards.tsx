@@ -17,43 +17,27 @@ interface CardData {
 const cardData: CardData[] = [
   {
     id: 1,
-    title: "Launch Together",
+    title: "Share your vision",
     description: "Strategic product launch support",
     content:
-      "Once in building phase, your launch marketing—whether that's preparing for Product Hunt, crafting social media content, or setting up email campaigns—to help you make a strong first impression is set up if required. When it's time to go live, we'll launch your product side by side. From deployment to early user onboarding, we handle the rollout smoothly.",
+      "Tell us what you’re dreaming of—your product idea, the problem it solves, and the audience it serves. We’ll work with you to refine your concept and align on the goals, features, and direction before anything gets built with the power of AI.",
     image: card1,
   },
   {
     id: 2,
-    title: "Advanced Technology",
+    title: "Imagine.bo builds",
     description: "Leveraging cutting-edge tools and frameworks",
     content:
-      "We utilize the latest technologies to build scalable, performant applications that meet modern standards and requirements. Our tech stack is carefully chosen to ensure optimal performance and maintainability.",
+      "Once it understands your vision, design and development gets to work. From wireframes to working code, we help with the building from the backend integration. To bring your product to life with a focus on usability, performance, and polish.",
     image: card2,
   },
   {
     id: 3,
-    title: "User Experience",
+    title: "Launch Together",
     description: "Crafting meaningful digital experiences",
     content:
-      "Every element is carefully considered to create intuitive workflows that delight users and achieve business objectives. We focus on creating seamless interactions that feel natural and engaging.",
+      "Once in building phase, your launch marketing—whether that’s preparing for Product Hunt, crafting social media content, or setting up email campaigns—to help you make a strong first impression is set up if required. When it’s time to go live, we’ll launch your product side by side. From deployment to early user onboarding, we handle the rollout smoothly.",
     image: card3,
-  },
-  {
-    id: 4,
-    title: "Performance Focused",
-    description: "Optimized for speed and efficiency",
-    content:
-      "We prioritize performance optimization to ensure fast loading times and smooth interactions across all devices. Every component is built with performance in mind from the ground up.",
-    image: card4,
-  },
-  {
-    id: 5,
-    title: "Future Ready",
-    description: "Built for tomorrow's challenges",
-    content:
-      "Our solutions are architected with scalability and maintainability in mind, ready to evolve with your business needs. We build with the future in mind, ensuring longevity and adaptability.",
-    image: card5,
   },
 ];
 
