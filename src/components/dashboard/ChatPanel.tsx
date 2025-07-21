@@ -49,23 +49,10 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
   }, [initialMcpResponse, clearInitialResponse]);
 
   return (
-    <div className="flex flex-col h-full chat-bg border border-border rounded-lg shadow-lg">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-chat-accent-bg">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground text-sm font-bold">AI</span>
-          </div>
-          <h2 className="text-lg font-semibold text-chat-foreground">AI Assistant</h2>
-        </div>
-        <div className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-background/10">
-          {userIdea ? `Project: ${userIdea.substring(0, 25)}...` : "New Chat"}
-        </div>
-      </div>
-
+    <div className="flex flex-col h-full bg-gray-900 rounded-xl overflow-hidden">
       {/* Messages Area */}
-      <ScrollArea className="flex-1 p-0">
-        <div className="space-y-0">
+      <ScrollArea className="flex-1 p-6">
+        <div className="space-y-4 max-w-2xl mx-auto">
           {messages.map((message, index) => (
             <div key={message.id} className="group animate-fade-in">
               <MessageBubble message={message} />
@@ -74,11 +61,11 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
 
           {isLoading && (
             <div className="flex justify-center items-center p-6">
-              <div className="flex items-center gap-3 text-muted-foreground bg-chat-accent-bg px-4 py-2 rounded-full">
+              <div className="flex items-center gap-3 text-gray-400 bg-gray-800 px-4 py-2 rounded-full">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse animate-delay-100"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse animate-delay-200"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animate-delay-100"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animate-delay-200"></div>
                 </div>
                 <span className="text-sm font-medium">AI is thinking...</span>
               </div>
@@ -90,8 +77,10 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
       </ScrollArea>
 
       {/* Input Area */}
-      <div className="border-t border-border bg-chat-accent-bg">
-        <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
+      <div className="p-6 pt-0">
+        <div className="max-w-2xl mx-auto">
+          <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
+        </div>
       </div>
     </div>
   );
