@@ -63,6 +63,10 @@ export default function StackedCards() {
 
   useEffect(() => {
     let ticking = false;
+    let lastProgress = 0;
+
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
 
     const handleScroll = () => {
       if (!containerRef.current) return;
@@ -76,15 +80,20 @@ export default function StackedCards() {
         const startOffset = rect.top;
         const endOffset = rect.bottom - windowHeight;
 
-        let progress = 0;
+        let rawProgress = 0;
         if (startOffset <= 0 && endOffset >= 0) {
-          progress = Math.abs(startOffset) / (containerHeight - windowHeight);
-          progress = Math.max(0, Math.min(progress, 1));
+          rawProgress = Math.abs(startOffset) / (containerHeight - windowHeight);
+          rawProgress = Math.max(0, Math.min(rawProgress, 1));
         } else if (endOffset < 0) {
-          progress = 1;
+          rawProgress = 1;
         }
 
-        setScrollProgress(progress);
+        // Apply easing and smoothing
+        const easedProgress = easeOutCubic(rawProgress);
+        const smoothProgress = lerp(lastProgress, easedProgress, 0.12);
+        
+        setScrollProgress(smoothProgress);
+        lastProgress = smoothProgress;
         ticking = false;
       };
 
@@ -221,9 +230,10 @@ const AnimatedCard = memo(function AnimatedCard({
       }}
       transition={{
         type: "spring",
-        stiffness: 450,
-        damping: 35,
-        mass: 0.8,
+        stiffness: 280,
+        damping: 28,
+        mass: 0.6,
+        velocity: 2,
       }}
       whileHover={{
         scale: state === "current" ? 1.02 : undefined,
