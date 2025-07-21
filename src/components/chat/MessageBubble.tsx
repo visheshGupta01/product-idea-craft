@@ -49,28 +49,28 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   const isUser = message.type === "user";
 
   return (
-    <div className={`flex gap-3 p-4 ${isUser ? "flex-row-reverse" : ""}`}>
-      <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarFallback className={isUser ? "bg-primary text-primary-foreground" : "bg-secondary"}>
-          {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+    <div className={`flex gap-4 p-4 hover:bg-chat-accent-bg/50 transition-colors ${isUser ? "flex-row-reverse" : ""}`}>
+      <Avatar className="w-9 h-9 flex-shrink-0 shadow-sm">
+        <AvatarFallback className={isUser ? "bg-primary text-primary-foreground shadow-md" : "bg-accent text-accent-foreground shadow-md"}>
+          {isUser ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
         </AvatarFallback>
       </Avatar>
 
-      <div className={`flex-1 space-y-2 ${isUser ? "text-right" : ""}`}>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
+      <div className={`flex-1 space-y-3 ${isUser ? "text-right" : ""}`}>
+        <div className={`flex items-center gap-2 ${isUser ? "justify-end" : "justify-start"}`}>
+          <span className="text-sm font-semibold text-chat-foreground">
             {isUser ? "You" : "AI Assistant"}
           </span>
-          <span className="text-xs text-muted-foreground">
-            {message.timestamp.toLocaleTimeString()}
+          <span className="text-xs text-muted-foreground opacity-70">
+            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
 
         <div
-          className={`rounded-lg p-3 max-w-none ${
+          className={`rounded-2xl p-4 max-w-none shadow-sm border ${
             isUser
-              ? "bg-primary text-primary-foreground ml-8"
-              : "bg-muted text-foreground mr-8"
+              ? "bg-primary text-primary-foreground ml-8 border-primary/20"
+              : "bg-background text-foreground mr-8 border-border"
           }`}
         >
           {isUser ? (
@@ -83,12 +83,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         </div>
 
         {!isUser && (
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className={`flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 ${isUser ? "justify-end" : "justify-start"}`}>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(message.content)}
-              className="h-6 px-2 text-xs"
+              className="h-7 px-3 text-xs hover:bg-chat-accent-bg border border-border/50"
             >
               <Copy className="w-3 h-3 mr-1" />
               Copy
@@ -97,7 +97,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               variant="ghost"
               size="sm"
               onClick={() => downloadAsText(message.content)}
-              className="h-6 px-2 text-xs"
+              className="h-7 px-3 text-xs hover:bg-chat-accent-bg border border-border/50"
             >
               <Download className="w-3 h-3 mr-1" />
               Download

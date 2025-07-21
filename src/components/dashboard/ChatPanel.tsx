@@ -49,26 +49,38 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
   }, [initialMcpResponse, clearInitialResponse]);
 
   return (
-    <div className="flex flex-col h-full bg-background border border-border rounded-lg">
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <h2 className="text-lg font-semibold text-foreground">AI Assistant</h2>
-        <div className="text-sm text-muted-foreground">
-          {userIdea ? `Project: ${userIdea.substring(0, 30)}...` : "New Chat"}
+    <div className="flex flex-col h-full chat-bg border border-border rounded-lg shadow-lg">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-border bg-chat-accent-bg">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground text-sm font-bold">AI</span>
+          </div>
+          <h2 className="text-lg font-semibold text-chat-foreground">AI Assistant</h2>
+        </div>
+        <div className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-background/10">
+          {userIdea ? `Project: ${userIdea.substring(0, 25)}...` : "New Chat"}
         </div>
       </div>
 
+      {/* Messages Area */}
       <ScrollArea className="flex-1 p-0">
-        <div className="space-y-1">
-          {messages.map((message) => (
-            <div key={message.id} className="group">
+        <div className="space-y-0">
+          {messages.map((message, index) => (
+            <div key={message.id} className="group animate-fade-in">
               <MessageBubble message={message} />
             </div>
           ))}
 
           {isLoading && (
-            <div className="flex justify-center items-center p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <span className="text-sm">AI is thinking...</span>
+            <div className="flex justify-center items-center p-6">
+              <div className="flex items-center gap-3 text-muted-foreground bg-chat-accent-bg px-4 py-2 rounded-full">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse animate-delay-100"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse animate-delay-200"></div>
+                </div>
+                <span className="text-sm font-medium">AI is thinking...</span>
               </div>
             </div>
           )}
@@ -77,7 +89,10 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
         </div>
       </ScrollArea>
 
-      <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
+      {/* Input Area */}
+      <div className="border-t border-border bg-chat-accent-bg">
+        <ChatInput onSendMessage={sendMessage} isLoading={isLoading} />
+      </div>
     </div>
   );
 };
