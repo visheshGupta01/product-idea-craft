@@ -203,22 +203,31 @@ const AnimatedCard = memo(function AnimatedCard({
 
   return (
     <motion.div
-      className="bg-[#B1C5CE] absolute w-full max-w-4xl border-0 shadow-xl backdrop-blur-sm overflow-hidden rounded-3xl"
+      className="bg-[#B1C5CE] absolute w-full max-w-4xl border-0 shadow-2xl backdrop-blur-sm overflow-hidden rounded-3xl"
       animate={{
         y: animation.y,
         scale: animation.scale,
         filter: animation.filter,
         opacity: animation.opacity,
+        rotateX: state === "exiting" ? transitionProgress * 5 : 0,
+        rotateY: state === "entering" ? (1 - transitionProgress) * 3 : 0,
       }}
       style={{
         zIndex: animation.zIndex,
-        background: "#B1C5CE",
+        background: "linear-gradient(135deg, #B1C5CE 0%, #A8BAC5 100%)",
         willChange: "transform, filter, opacity",
+        transformStyle: "preserve-3d",
+        perspective: "1000px",
       }}
       transition={{
         type: "spring",
-        stiffness: 400,
-        damping: 40,
+        stiffness: 450,
+        damping: 35,
+        mass: 0.8,
+      }}
+      whileHover={{
+        scale: state === "current" ? 1.02 : undefined,
+        boxShadow: state === "current" ? "0 25px 50px -12px rgba(0, 0, 0, 0.25)" : undefined,
       }}
     >
       <div
@@ -227,37 +236,84 @@ const AnimatedCard = memo(function AnimatedCard({
         }`}
       >
         {/* Visual Section */}
-        <div
+        <motion.div
           className={`w-1/2 relative bg-[#D9D9D9] ${
             index % 2 === 0 ? "rounded-l-3xl" : "rounded-r-3xl"
           }`}
+          animate={{
+            backgroundPosition: state === "current" ? "0% 0%" : "100% 100%",
+          }}
+          transition={{ duration: 2, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
         >
           <div
-            className={`absolute inset-0 bg-gradient-to-br from-stone-200/90 to-stone-300/70 ${
+            className={`absolute inset-0 bg-gradient-to-br from-stone-200/90 via-stone-250/80 to-stone-300/70 ${
               index % 2 === 0 ? "rounded-l-3xl" : "rounded-r-3xl"
             }`}
           />
-          <div className="relative z-10 w-full h-full flex items-center justify-center">
-            <div className="w-40 h-40 bg-stone-300/40 rounded-2xl border border-stone-400/30" />
-          </div>
-        </div>
+          <motion.div 
+            className="relative z-10 w-full h-full flex items-center justify-center"
+            animate={{
+              backgroundImage: state === "current" 
+                ? "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 70%)"
+                : "none"
+            }}
+          >
+            <motion.img
+              src={card.image}
+              alt={card.title}
+              className="w-48 h-48 object-cover rounded-2xl shadow-lg"
+              animate={{
+                scale: state === "current" ? 1 : 0.95,
+                filter: state === "current" ? "brightness(1.1) contrast(1.05)" : "brightness(0.9)",
+              }}
+              transition={{
+                duration: 0.6,
+                ease: "easeOut"
+              }}
+            />
+          </motion.div>
+        </motion.div>
 
         {/* Content Section */}
-        <div
+        <motion.div
           className={`w-1/2 p-10 flex flex-col justify-start space-y-8 ${
             index % 2 === 0 ? "rounded-r-3xl" : "rounded-l-3xl"
           }`}
+          animate={{
+            x: state === "current" ? 0 : (index % 2 === 0 ? 10 : -10),
+          }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="pt-6">
-            <h2 className="text-[28px] font-poppins font-semibold text-[#000000] mb-4 leading-tight">
+          <motion.div 
+            className="pt-6"
+            animate={{
+              y: state === "current" ? 0 : 5,
+              opacity: state === "current" ? 1 : 0.8,
+            }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <motion.h2 
+              className="text-[28px] font-poppins font-semibold text-[#000000] mb-4 leading-tight"
+              animate={{
+                scale: state === "current" ? 1.02 : 1,
+                textShadow: state === "current" ? "0 2px 4px rgba(0,0,0,0.1)" : "none",
+              }}
+            >
               {card.title}
-            </h2>
-          </div>
+            </motion.h2>
+          </motion.div>
 
-          <p className="text-[#000000] font-medium text-[18px] font-poppins leading-relaxed text-base">
+          <motion.p 
+            className="text-[#000000] font-medium text-[18px] font-poppins leading-relaxed text-base"
+            animate={{
+              y: state === "current" ? 0 : 10,
+              opacity: state === "current" ? 1 : 0.7,
+            }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
             {card.content}
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
     </motion.div>
   );
