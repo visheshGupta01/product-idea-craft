@@ -1,27 +1,8 @@
 
 import { ReactNode, useState } from "react";
 import { UserContext } from "./UserContext";
-
-type User = {
-  name: string;
-  email: string;
-  avatar: string;
-  verified?: boolean;
-};
-
-interface InitialMcpResponse {
-  userMessage: string;
-  aiResponse: string;
-  timestamp: Date;
-}
-
-interface ServerResponse {
-  assistant: string;
-  tools?: Array<{
-    name: string;
-    output: string | null;
-  }>;
-}
+import { User, InitialMcpResponse } from "@/types";
+import { mcpService } from "@/services/mcpService";
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -58,67 +39,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setIsProcessingIdea(true);
     
     try {
-      const mcpServerUrl = "https://6c279fd45df5bc2ef9080c91178899c9";
+      const aiResponse = await mcpService.sendMessage(idea);
       
-      const response = await fetch(mcpServerUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: idea,
-          session_id: "a8c11c8223b5bc2ef9080c91178899c9",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: ServerResponse = await response.json();
-      
-      let aiContent = "";
-      
-      if (data.assistant) {
-        aiContent = data.assistant;
-      }
-
-      // Process tools if available
-      if (data.tools && Array.isArray(data.tools) && data.tools.length > 0) {
-        const validTools = data.tools.filter((tool) => 
-          tool.output !== null && 
-          tool.output !== undefined && 
-          tool.output.toString().trim() !== ""
-        );
-
-        validTools.forEach((tool) => {
-          let cleanedOutput = tool.output?.toString().trim() || "";
-          
-          if (cleanedOutput) {
-            const sectionTitle = tool.name
-              .replace(/[_-]/g, " ")
-              .replace(/\b\w/g, (l) => l.toUpperCase());
-
-            if (aiContent) {
-              aiContent += `\n\n## ${sectionTitle}\n\n` + cleanedOutput;
-            } else {
-              aiContent = `## ${sectionTitle}\n\n` + cleanedOutput;
-            }
-          }
-        });
-      }
-
-      if (!aiContent) {
-        aiContent = `## Welcome! 🚀
-
-I've received your idea: "${idea}"
-
-I'm processing your request and will help you build it step by step. Let me analyze your requirements and provide you with a comprehensive plan.`;
-      }
-
       setInitialMcpResponse({
         userMessage: idea,
-        aiResponse: aiContent,
+        aiResponse,
         timestamp: new Date(),
       });
 

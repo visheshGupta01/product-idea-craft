@@ -1,8 +1,10 @@
 
 import React, { useState } from "react";
-import { Mic, Plus, Loader2 } from "lucide-react";
+import { Mic, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { UI_CONFIG } from "@/utils/constants";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
@@ -73,7 +75,7 @@ const IdeaBox: React.FC = () => {
                 boxShadow: "none",
                 outline: "none",
                 textAlign: "left",
-                minHeight: "120px",
+                minHeight: UI_CONFIG.IDEA_BOX_MAX_HEIGHT,
               }}
               onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && !isProcessingIdea && handleSubmit()}
               disabled={isProcessingIdea}
@@ -102,10 +104,7 @@ const IdeaBox: React.FC = () => {
             className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
           >
             {isProcessingIdea ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Processing your idea...
-              </>
+              <LoadingSpinner size="sm" text="Processing your idea..." />
             ) : (
               "Start Building my Idea →"
             )}

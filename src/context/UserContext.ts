@@ -1,19 +1,6 @@
 
 import React, { createContext, useContext } from "react";
-
-// Define types
-interface User {
-    name: string;
-    email: string;
-    avatar: string;
-    verified?: boolean
-  }
-
-interface InitialMcpResponse {
-  userMessage: string;
-  aiResponse: string;
-  timestamp: Date;
-}
+import { User, InitialMcpResponse } from "@/types";
 
 interface UserContextType {
   user: User | null;
