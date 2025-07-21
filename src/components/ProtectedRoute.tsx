@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
@@ -7,9 +8,10 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { userIdea } = useUser();
+  const { userIdea, isProcessingIdea, initialMcpResponse } = useUser();
 
-  if (!userIdea) {
+  // Allow access if user has an idea, is processing an idea, or has an initial response
+  if (!userIdea && !isProcessingIdea && !initialMcpResponse) {
     return <Navigate to="/" replace />;
   }
 

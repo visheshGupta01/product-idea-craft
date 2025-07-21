@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Bot, User, Loader2, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/context/UserContext";
 
 interface ChatPanelProps {
   userIdea: string;
@@ -403,14 +404,35 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
 
 const ChatPanel = ({
   userIdea,
-  mcpServerUrl = "https://6c279fd45df5.ngrok-free.app/chat",
+  mcpServerUrl = "https://6c279fd45df5bc2ef9080c91178899c9",
 }: ChatPanelProps) => {
   const { toast } = useToast();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      type: "ai",
-      content: `# Welcome! 🚀
+  const { initialMcpResponse, clearInitialResponse } = useUser();
+  
+  // Initialize messages based on whether we have an initial MCP response
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (initialMcpResponse) {
+      return [
+        {
+          id: "1",
+          type: "user",
+          content: initialMcpResponse.userMessage,
+          timestamp: initialMcpResponse.timestamp,
+        },
+        {
+          id: "2",
+          type: "ai",
+          content: initialMcpResponse.aiResponse,
+          timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
+        },
+      ];
+    }
+    
+    return [
+      {
+        id: "1",
+        type: "ai",
+        content: `# Welcome! 🚀
 
 Hello Sir, Tell me the **idea** which you want to bring to life. I will help you build it step by step.
 
@@ -426,13 +448,22 @@ Hello Sir, Tell me the **idea** which you want to bring to life. I will help you
 ---
 
 *Ready to start? Share your vision below!*`,
-      timestamp: new Date(),
-    },
-  ]);
+        timestamp: new Date(),
+      },
+    ];
+  });
+
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Clear the initial response from context when component mounts
+  useEffect(() => {
+    if (initialMcpResponse) {
+      clearInitialResponse();
+    }
+  }, [initialMcpResponse, clearInitialResponse]);
 
   const formatSitemapJson = (jsonData: any) => {
     let data;

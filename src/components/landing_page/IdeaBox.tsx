@@ -1,16 +1,17 @@
+
 import React, { useState } from "react";
-import { Mic, Plus } from "lucide-react";
+import { Mic, Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
-  const { setUserIdea } = useUser();
+  const { sendIdeaToMcp, isProcessingIdea } = useUser();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    if (idea.trim()) {
-      setUserIdea(idea.trim());
+  const handleSubmit = async () => {
+    if (idea.trim() && !isProcessingIdea) {
+      await sendIdeaToMcp(idea.trim());
       navigate("/dashboard");
     }
   };
@@ -21,11 +22,11 @@ const IdeaBox: React.FC = () => {
       <div className="absolute bottom-0 w-full h-[220px] bg-[#d5e1e7] translate-y-[40%] z-0"></div>
 
       {/* Black Box */}
-      <div className="relative bg-[#1b2123] w-full  border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
+      <div className="relative bg-[#1b2123] w-full border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
         {/* Header Text */}
         <div className="py-[40px] flex items-center justify-center">
           <h2 className="text-[48px] font-medium font-poppins text-center mb-0">
-            <span className="text-white">Let’s </span>
+            <span className="text-white">Let's </span>
             <span
               className="text-transparent bg-clip-text"
               style={{
@@ -74,14 +75,21 @@ const IdeaBox: React.FC = () => {
                 textAlign: "left",
                 minHeight: "120px",
               }}
-              onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && handleSubmit()}
+              onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && !isProcessingIdea && handleSubmit()}
+              disabled={isProcessingIdea}
             />
             {/* Floating buttons in top right */}
             <div className="absolute top-3 right-3 flex gap-2">
-              <button className="p-2 w-8 h-8 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center">
+              <button 
+                className="p-2 w-8 h-8 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center disabled:opacity-50"
+                disabled={isProcessingIdea}
+              >
                 <Mic className="w-3 h-3 text-gray-700" />
               </button>
-              <button className="p-2 w-8 h-8 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+              <button 
+                className="p-2 w-8 h-8 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
+                disabled={isProcessingIdea}
+              >
                 <Plus className="w-3 h-3 text-gray-700" />
               </button>
             </div>
@@ -90,10 +98,17 @@ const IdeaBox: React.FC = () => {
           {/* Pink Button - Responsive */}
           <button 
             onClick={handleSubmit}
-            disabled={!idea.trim()}
-            className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition"
+            disabled={!idea.trim() || isProcessingIdea}
+            className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
           >
-            Start Building my Idea →
+            {isProcessingIdea ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Processing your idea...
+              </>
+            ) : (
+              "Start Building my Idea →"
+            )}
           </button>
         </div>
       </div>

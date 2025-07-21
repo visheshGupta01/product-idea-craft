@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from './dashboard/Sidebar';
 import ChatPanel from './dashboard/ChatPanel';
@@ -8,7 +9,7 @@ import MyProjectsPage from './dashboard/MyProjectsPage';
 import UserProfilePage from './dashboard/UserProfilePage';
 import Navbar from './ui/navbar';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import IDE from './dashboard/FileExplorerAndCoder';
+import { useUser } from '@/context/UserContext';
 
 interface MainDashboardProps {
   userIdea: string;
@@ -25,6 +26,8 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
     description: userIdea,
     status: 'in-progress'
   });
+
+  const { initialMcpResponse } = useUser();
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(false);
@@ -66,8 +69,9 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
       case 'user-profile':
         return <UserProfilePage onLogout={handleLogout} />;
       default:
-        // Show fullscreen chat until frontend creation is completed
-        if (!isFrontendCreated) {
+        // Show fullscreen chat if we have initial MCP response but frontend isn't created
+        // OR if we don't have initial response (fallback to original behavior)
+        if (!isFrontendCreated || initialMcpResponse) {
           return (
             <div className="h-full">
               <ChatPanel userIdea={userIdea} />
@@ -75,7 +79,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
           );
         }
         
-        // Show normal layout after frontend creation
+        // Show normal layout after frontend creation and initial response is processed
         return (
           <ResizablePanelGroup
             direction="horizontal"
