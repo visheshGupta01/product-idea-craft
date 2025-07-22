@@ -1,4 +1,5 @@
 import React from "react";
+import { SitemapRenderer } from "./SitemapRenderer";
 
 interface MarkdownRendererProps {
   content: string;
@@ -372,6 +373,31 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
 
     return <span dangerouslySetInnerHTML={{ __html: text }} />;
   };
+
+  // Check for sitemap data
+  const sitemapMatch = content.match(/__SITEMAP_DATA__(.*?)__SITEMAP_DATA__/s);
+  if (sitemapMatch) {
+    try {
+      const sitemapData = JSON.parse(sitemapMatch[1]);
+      const beforeSitemap = content.substring(0, content.indexOf('__SITEMAP_DATA__'));
+      const afterSitemap = content.substring(content.lastIndexOf('__SITEMAP_DATA__') + '__SITEMAP_DATA__'.length);
+      
+      return (
+        <div className="space-y-6">
+          {beforeSitemap.trim() && (
+            <div className="prose prose-sm max-w-none">{renderMarkdown(beforeSitemap.trim())}</div>
+          )}
+          <SitemapRenderer data={sitemapData} />
+          {afterSitemap.trim() && (
+            <div className="prose prose-sm max-w-none">{renderMarkdown(afterSitemap.trim())}</div>
+          )}
+        </div>
+      );
+    } catch (error) {
+      console.error("Error parsing sitemap data:", error);
+      // Fall back to regular markdown rendering
+    }
+  }
 
   return (
     <div className="prose prose-sm max-w-none">{renderMarkdown(content)}</div>

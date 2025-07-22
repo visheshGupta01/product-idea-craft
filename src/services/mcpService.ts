@@ -54,17 +54,28 @@ export class McpService {
       );
 
       validTools.forEach((tool) => {
-        let cleanedOutput = tool.output?.toString().trim() || "";
-        
-        if (cleanedOutput) {
-          const sectionTitle = tool.name
-            .replace(/[_-]/g, " ")
-            .replace(/\b\w/g, (l) => l.toUpperCase());
-
+        if (tool.name === "sitemap_user_idea" && typeof tool.output === "object") {
+          // Handle structured sitemap data
+          const sitemapData = tool.output;
           if (aiContent) {
-            aiContent += `\n\n## ${sectionTitle}\n\n` + cleanedOutput;
+            aiContent += `\n\n## Project Sitemap\n\n__SITEMAP_DATA__${JSON.stringify(sitemapData)}__SITEMAP_DATA__`;
           } else {
-            aiContent = `## ${sectionTitle}\n\n` + cleanedOutput;
+            aiContent = `## Project Sitemap\n\n__SITEMAP_DATA__${JSON.stringify(sitemapData)}__SITEMAP_DATA__`;
+          }
+        } else {
+          // Handle regular string output
+          let cleanedOutput = tool.output?.toString().trim() || "";
+          
+          if (cleanedOutput) {
+            const sectionTitle = tool.name
+              .replace(/[_-]/g, " ")
+              .replace(/\b\w/g, (l) => l.toUpperCase());
+
+            if (aiContent) {
+              aiContent += `\n\n## ${sectionTitle}\n\n` + cleanedOutput;
+            } else {
+              aiContent = `## ${sectionTitle}\n\n` + cleanedOutput;
+            }
           }
         }
       });
