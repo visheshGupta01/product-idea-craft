@@ -1,6 +1,6 @@
 import { ServerResponse } from "@/types";
 
-const DEFAULT_MCP_SERVER_URL = "https://6c279fd45df5bc2ef9080c91178899c9";
+const DEFAULT_MCP_SERVER_URL = "https://imaginebo.onrender.com/chat";
 const DEFAULT_SESSION_ID = "a8c11c8223b5bc2ef9080c91178899c9";
 
 export class McpService {
