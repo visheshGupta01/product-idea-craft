@@ -21,6 +21,14 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
     return newMessage;
   }, [scrollToBottom]);
 
+  const updateMessage = useCallback((messageId: string, content: string) => {
+    setMessages(prev => 
+      prev.map(msg => 
+        msg.id === messageId ? { ...msg, content } : msg
+      )
+    );
+  }, []);
+
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading) return;
 console.log("Sending message:", content.trim());
@@ -35,27 +43,37 @@ console.log("Sending message:", content.trim());
 
     setIsLoading(true);
 
+    // Create placeholder AI message for streaming
+    const aiMessage = addMessage({
+      type: "ai",
+      content: "",
+      timestamp: new Date(),
+    });
+
     try {
-      const aiResponse = await mcpService.sendMessage(content.trim());
-      console.log("AI Response:", aiResponse);
-      // Add AI response
-      addMessage({
-        type: "ai",
-        content: aiResponse,
-        timestamp: new Date(),
-      });
-      console.log("Updated Messages:", messages);
+      let streamingContent = "";
+      
+      await mcpService.sendMessageStream(
+        content.trim(),
+        // onChunk: update message content as chunks arrive
+        (chunk: string) => {
+          streamingContent += chunk;
+          updateMessage(aiMessage.id, streamingContent);
+          setTimeout(scrollToBottom, 50);
+        },
+        // onComplete: final processing if needed
+        (fullResponse: string) => {
+          updateMessage(aiMessage.id, fullResponse);
+          setTimeout(scrollToBottom, 100);
+        }
+      );
     } catch (error) {
       console.error("Error in chat:", error);
-      addMessage({
-        type: "ai",
-        content: "I apologize, but I'm having trouble processing your request right now. Please try again later.",
-        timestamp: new Date(),
-      });
+      updateMessage(aiMessage.id, "I apologize, but I'm having trouble processing your request right now. Please try again later.");
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, addMessage]);
+  }, [isLoading, addMessage, updateMessage, scrollToBottom]);
 
   return {
     messages,
@@ -63,6 +81,7 @@ console.log("Sending message:", content.trim());
     messagesEndRef,
     sendMessage,
     addMessage,
+    updateMessage,
     scrollToBottom,
   };
 };
