@@ -197,7 +197,7 @@ export class McpService {
 
 I've received your message: "${originalMessage}"
 
-I'm unable to process it at this time as MCP serve is not working.`;
+I'm unable to process it at this time as MCP server is not working.`;
   }
 }
 

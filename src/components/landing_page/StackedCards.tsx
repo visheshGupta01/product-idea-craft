@@ -214,14 +214,7 @@ const AnimatedCard = memo(function AnimatedCard({
             index % 2 === 0 ? "rounded-l-3xl" : "rounded-r-3xl"
           }`}
         >
-          <div
-            className={`absolute inset-0 bg-gradient-to-br from-stone-200/90 to-stone-300/70 ${
-              index % 2 === 0 ? "rounded-l-3xl" : "rounded-r-3xl"
-            }`}
-          />
-          <div className="relative z-10 w-full h-full flex items-center justify-center">
-            <div className="w-40 h-40 bg-stone-300/40 rounded-2xl border border-stone-400/30" />
-          </div>
+          <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
         </div>
 
         {/* Content Section */}
