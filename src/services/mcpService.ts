@@ -1,15 +1,13 @@
 import { ServerResponse } from "@/types";
-
-const DEFAULT_MCP_SERVER_URL = "https://imaginebo.onrender.com/chat";
-const DEFAULT_SESSION_ID = "a8c11c8223b5bc2ef9080c91178899c9";
+import { MCP_CONFIG } from "@/utils/constants";
 
 export class McpService {
   private serverUrl: string;
   private sessionId: string;
 
   constructor(serverUrl?: string, sessionId?: string) {
-    this.serverUrl = serverUrl || DEFAULT_MCP_SERVER_URL;
-    this.sessionId = sessionId || DEFAULT_SESSION_ID;
+    this.serverUrl = serverUrl || MCP_CONFIG.DEFAULT_SERVER_URL;
+    this.sessionId = sessionId || MCP_CONFIG.DEFAULT_SESSION_ID;
   }
 
   async sendMessage(message: string): Promise<string> {
