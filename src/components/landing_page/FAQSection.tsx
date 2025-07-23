@@ -68,14 +68,14 @@ const FAQSection: React.FC = () => {
         {faqData.map((faq, index) => (
           <div key={index} className="border-b border-gray-300 py-3 md:py-4">
             <button
-              className="flex font-poppins justify-between w-full text-base sm:text-lg md:text-xl text-left"
+              className="flex font-poppins justify-between items-start w-full text-base sm:text-lg md:text-xl text-left"
               onClick={() => toggleOpen(index)}
             >
-              <span className="font-semibold pr-4">{faq.question}</span>
+              <span className="font-semibold pr-4 flex-1">{faq.question}</span>
               {openIndex === index ? (
-                <Minus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
+                <Minus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 mt-1" />
               ) : (
-                <Plus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
+                <Plus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 mt-1" />
               )}
             </button>
             {openIndex === index && (
