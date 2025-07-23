@@ -1,6 +1,6 @@
 // MCP Server Configuration
 export const MCP_CONFIG = {
-  DEFAULT_SERVER_URL: "https://imaginebo.onrender.com/chat",
+  DEFAULT_SERVER_URL: "https://b218ca4778cf.ngrok-free.app/chat",
   DEFAULT_SESSION_ID: "a8c11c8223b5bc2ef9080c91178899c9",
   TIMEOUT: 30000, // 30 seconds
 } as const;
