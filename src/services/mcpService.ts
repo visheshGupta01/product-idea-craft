@@ -3,7 +3,7 @@ import { MCP_CONFIG } from "@/utils/constants";
 
 export class McpService {
   private serverUrl: string;
-  private sessionId: string;
+  private sessionId: string
 
   constructor(serverUrl?: string, sessionId?: string) {
     this.serverUrl = serverUrl || MCP_CONFIG.DEFAULT_SERVER_URL;
