@@ -55,7 +55,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   return (
     <div
       data-message-id={message.id}
-      className={`group flex items-end space-x-3 ${
+      className={`group flex items-start space-x-3 ${
         isUser ? "flex-row-reverse space-x-reverse" : ""
       } mb-4`}
     >
