@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState, memo } from "react";
 import { motion } from "framer-motion";
-import card1 from "@/assets/card-1.jpg";
-import card2 from "@/assets/card-2.jpg";
-import card3 from "@/assets/card-3.jpg";
-import card4 from "@/assets/card-4.jpg";
-import card5 from "@/assets/card-5.jpg";
+import card1 from "@/assets/card-1.png";
+import card2 from "@/assets/card-2.png";
+import card3 from "@/assets/card-3.png";
 
 interface CardData {
   id: number;
@@ -17,7 +15,7 @@ interface CardData {
 const cardData: CardData[] = [
   {
     id: 1,
-    title: "Share your vision",
+    title: "Start with Your Vision",
     description: "Strategic product launch support",
     content:
       "Tell us what you’re dreaming of—your product idea, the problem it solves, and the audience it serves. We’ll work with you to refine your concept and align on the goals, features, and direction before anything gets built with the power of AI.",
@@ -25,18 +23,18 @@ const cardData: CardData[] = [
   },
   {
     id: 2,
-    title: "Imagine.bo builds",
+    title: "Plans with Purpose",
     description: "Leveraging cutting-edge tools and frameworks",
     content:
-      "Once it understands your vision, design and development gets to work. From wireframes to working code, we help with the building from the backend integration. To bring your product to life with a focus on usability, performance, and polish.",
+      "Imagine.bo doesn’t just generate—it thinks. Every response is backed by deep AI analysis and pattern recognition to shape your layout, structure, and content with clarity. The result: a website that makes sense for your audience and your goals.",
     image: card2,
   },
   {
     id: 3,
-    title: "Launch Together",
+    title: "Support That Stays With You Support That Stays With You",
     description: "Crafting meaningful digital experiences",
     content:
-      "Once in building phase, your launch marketing—whether that’s preparing for Product Hunt, crafting social media content, or setting up email campaigns—to help you make a strong first impression is set up if required. When it’s time to go live, we’ll launch your product side by side. From deployment to early user onboarding, we handle the rollout smoothly.",
+      "Imagine.bo isn’t just a build-and-forget tool. As your project takes shape, our team supports you through critical development phases—helping with custom code integration, backend logic, deployment pipelines, and even scaling strategies. And after you go live, we’re still here—for updates, debugging, and improvements",
     image: card3,
   },
 ];

@@ -20,6 +20,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
     const messageToSend = newMessage;
     setNewMessage(""); // Clear input immediately
+    console.log("Sending message:", messageToSend);
     await onSendMessage(messageToSend);
   };
 

@@ -13,6 +13,7 @@ export class McpService {
   }
 
   async sendMessage(message: string): Promise<string> {
+    console.log("Sending message to MCP server:", message);
     try {
       const response = await fetch(this.serverUrl, {
         method: "POST",
@@ -30,6 +31,7 @@ export class McpService {
       }
 
       const data: ServerResponse = await response.json();
+      console.log("Received response from MCP server:", data);
       
       return this.processServerResponse(data, message);
     } catch (error) {
@@ -40,7 +42,6 @@ export class McpService {
 
   private processServerResponse(data: ServerResponse, originalMessage: string): string {
     let aiContent = "";
-    
     if (data.assistant) {
       aiContent = data.assistant;
     }
@@ -65,7 +66,7 @@ export class McpService {
         } else {
           // Handle regular string output
           let cleanedOutput = tool.output?.toString().trim() || "";
-          
+          console.log("Tool output:", cleanedOutput);
           if (cleanedOutput) {
             const sectionTitle = tool.name
               .replace(/[_-]/g, " ")
@@ -73,8 +74,10 @@ export class McpService {
 
             if (aiContent) {
               aiContent += `\n\n## ${sectionTitle}\n\n` + cleanedOutput;
+              console.log("Final Output:", aiContent);
             } else {
               aiContent = `## ${sectionTitle}\n\n` + cleanedOutput;
+              console.log("Final Output:", aiContent);
             }
           }
         }
@@ -89,11 +92,12 @@ export class McpService {
   }
 
   private createFallbackResponse(originalMessage: string): string {
+    console.log("Creating fallback response for:", originalMessage);
     return `## Welcome! 🚀
 
 I've received your message: "${originalMessage}"
 
-I'm processing your request and will help you build it step by step. Let me analyze your requirements and provide you with a comprehensive plan.`;
+I'm unable to process it at this time as MCP serve is not working.`;
   }
 }
 

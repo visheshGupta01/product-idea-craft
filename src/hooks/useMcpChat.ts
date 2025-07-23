@@ -23,7 +23,7 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading) return;
-
+console.log("Sending message:", content.trim());
     // Add user message
     addMessage({
       type: "user",
@@ -31,17 +31,20 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
       timestamp: new Date(),
     });
 
+    console.log("Chat History:", messages);
+
     setIsLoading(true);
 
     try {
       const aiResponse = await mcpService.sendMessage(content.trim());
-      
+      console.log("AI Response:", aiResponse);
       // Add AI response
       addMessage({
         type: "ai",
         content: aiResponse,
         timestamp: new Date(),
       });
+      console.log("Updated Messages:", messages);
     } catch (error) {
       console.error("Error in chat:", error);
       addMessage({
