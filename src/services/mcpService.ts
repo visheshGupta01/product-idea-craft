@@ -107,10 +107,26 @@ export class McpService {
                   fullResponseContent += jsonData.content;
                 } else if (jsonData.type === 'tool_result' && jsonData.tool) {
                   // Tool result - process and add to full response
-                  const toolOutput = jsonData.tool.output || '';
+                  let toolOutput = '';
+                  
+                  if (jsonData.tool.name === "sitemap_user_idea" && typeof jsonData.tool.output === "object") {
+                    // Handle structured sitemap data
+                    const sitemapData = jsonData.tool.output;
+                    toolOutput = `\n\n## Project Sitemap\n\n__SITEMAP_DATA__${JSON.stringify(sitemapData)}__SITEMAP_DATA__`;
+                  } else {
+                    // Handle regular string output
+                    toolOutput = jsonData.tool.output?.toString().trim() || '';
+                    if (toolOutput) {
+                      const sectionTitle = jsonData.tool.name
+                        .replace(/[_-]/g, " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase());
+                      toolOutput = `\n\n## ${sectionTitle}\n\n${toolOutput}`;
+                    }
+                  }
+                  
                   if (toolOutput) {
-                    onChunk(`\n\n${toolOutput}`);
-                    fullResponseContent += `\n\n${toolOutput}`;
+                    onChunk(toolOutput);
+                    fullResponseContent += toolOutput;
                   }
                 } else if (jsonData.type === 'complete') {
                   // Stream is complete - call onComplete with accumulated content
