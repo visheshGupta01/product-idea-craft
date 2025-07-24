@@ -31,9 +31,10 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading) return;
-console.log("Sending message:", content.trim());
+    console.log("Sending message:", content.trim());
+    
     // Add user message
-    addMessage({
+    const userMessage = addMessage({
       type: "user",
       content: content.trim(),
       timestamp: new Date(),
@@ -53,13 +54,25 @@ console.log("Sending message:", content.trim());
     try {
       let streamingContent = "";
       
+      // Add smooth typewriter effect
+      const addCharacterWithDelay = (char: string, delay: number = 15) => {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => {
+            streamingContent += char;
+            updateMessage(aiMessage.id, streamingContent);
+            setTimeout(scrollToBottom, 50);
+            resolve();
+          }, delay);
+        });
+      };
+      
       await mcpService.sendMessageStream(
         content.trim(),
-        // onChunk: update message content as chunks arrive
-        (chunk: string) => {
-          streamingContent += chunk;
-          updateMessage(aiMessage.id, streamingContent);
-          setTimeout(scrollToBottom, 50);
+        // onChunk: update message content with typewriter effect
+        async (chunk: string) => {
+          for (const char of chunk) {
+            await addCharacterWithDelay(char);
+          }
         },
         // onComplete: final processing if needed
         (fullResponse: string) => {
@@ -73,7 +86,7 @@ console.log("Sending message:", content.trim());
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, addMessage, updateMessage, scrollToBottom]);
+  }, [isLoading, addMessage, updateMessage, scrollToBottom, messages]);
 
   return {
     messages,

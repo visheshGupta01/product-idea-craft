@@ -37,7 +37,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const sendIdeaToMcp = async (idea: string) => {
     setIsProcessingIdea(true);
-    setUserIdea(idea);
     
     // Create initial response object for streaming
     const initialResponse: InitialMcpResponse = {
@@ -50,16 +49,28 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     try {
       let streamingContent = "";
       
+      // Add smooth typewriter effect
+      const addCharacterWithDelay = (char: string, delay: number = 15) => {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => {
+            streamingContent += char;
+            setInitialMcpResponse({
+              userMessage: idea,
+              aiResponse: streamingContent,
+              timestamp: new Date(),
+            });
+            resolve();
+          }, delay);
+        });
+      };
+      
       await mcpService.sendMessageStream(
         idea,
-        // onChunk: update response as chunks arrive
-        (chunk: string) => {
-          streamingContent += chunk;
-          setInitialMcpResponse({
-            userMessage: idea,
-            aiResponse: streamingContent,
-            timestamp: new Date(),
-          });
+        // onChunk: update response with typewriter effect
+        async (chunk: string) => {
+          for (const char of chunk) {
+            await addCharacterWithDelay(char);
+          }
         },
         // onComplete: final processing
         (fullResponse: string) => {
@@ -74,10 +85,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error sending idea to MCP server:", error);
       
-      // Fallback response
-      setInitialMcpResponse({
-        userMessage: idea,
-        aiResponse: `## Welcome! 🚀
+      // Fallback response with typewriter effect
+      const fallbackText = `## Welcome! 🚀
 
 I've received your idea: "${idea}"
 
@@ -87,9 +96,22 @@ Please let me know if you'd like to:
 - Discuss the technical architecture
 - Plan the user interface
 - Define the core features
-- Explore implementation options`,
-        timestamp: new Date(),
-      });
+- Explore implementation options`;
+
+      let streamingContent = "";
+      const typeResponse = async () => {
+        for (const char of fallbackText) {
+          streamingContent += char;
+          setInitialMcpResponse({
+            userMessage: idea,
+            aiResponse: streamingContent,
+            timestamp: new Date(),
+          });
+          await new Promise(resolve => setTimeout(resolve, 15));
+        }
+      };
+      
+      typeResponse();
     } finally {
       setIsProcessingIdea(false);
     }

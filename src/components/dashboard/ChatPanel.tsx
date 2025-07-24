@@ -9,26 +9,32 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { CHAT_CONFIG } from "@/utils/constants";
 
 const ChatPanel = ({ userIdea }: ChatPanelProps) => {
-  const { initialMcpResponse, clearInitialResponse } = useUser();
+  const { initialMcpResponse, clearInitialResponse, isProcessingIdea } = useUser();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize messages based on whether we have an initial MCP response
   const getInitialMessages = (): Message[] => {
-    if (initialMcpResponse) {
-      return [
+    if (initialMcpResponse && initialMcpResponse.userMessage) {
+      const messages: Message[] = [
         {
           id: "1",
           type: "user",
           content: initialMcpResponse.userMessage,
           timestamp: initialMcpResponse.timestamp,
-        },
-        {
+        }
+      ];
+      
+      // Only add AI message if there's content
+      if (initialMcpResponse.aiResponse) {
+        messages.push({
           id: "2",
           type: "ai",
           content: initialMcpResponse.aiResponse,
           timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
-        },
-      ];
+        });
+      }
+      
+      return messages;
     }
 
     return [
@@ -83,8 +89,8 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
             />
           ))}
 
-          {/* Loading indicator with exact styling from original */}
-          {isLoading && (
+          {/* Combined loading indicator - show when either loading or processing idea */}
+          {(isLoading || isProcessingIdea) && (
             <div className="flex items-start space-x-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
                 <Bot className="w-4 h-4 text-white" />
@@ -92,7 +98,9 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
               <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md">
                 <div className="flex items-center space-x-2">
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span className="text-sm text-white">AI is typing...</span>
+                  <span className="text-sm text-white">
+                    {isProcessingIdea ? "AI is thinking..." : "AI is typing..."}
+                  </span>
                 </div>
               </div>
             </div>
