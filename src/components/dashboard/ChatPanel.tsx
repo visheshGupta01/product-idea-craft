@@ -29,7 +29,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
       
       const newMessages: Message[] = [
         {
-          id: "1",
+          id: "user-1",
           type: "user",
           content: initialMcpResponse.userMessage,
           timestamp: initialMcpResponse.timestamp,
@@ -39,7 +39,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
       // Only add AI message if there's content
       if (initialMcpResponse.aiResponse) {
         newMessages.push({
-          id: "2",
+          id: "ai-1",
           type: "ai",
           content: initialMcpResponse.aiResponse,
           timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
