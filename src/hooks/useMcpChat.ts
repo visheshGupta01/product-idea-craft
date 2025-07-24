@@ -54,25 +54,13 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
     try {
       let streamingContent = "";
       
-      // Add smooth typewriter effect
-      const addCharacterWithDelay = (char: string, delay: number = 15) => {
-        return new Promise<void>((resolve) => {
-          setTimeout(() => {
-            streamingContent += char;
-            updateMessage(aiMessage.id, streamingContent);
-            setTimeout(scrollToBottom, 50);
-            resolve();
-          }, delay);
-        });
-      };
-      
       await mcpService.sendMessageStream(
         content.trim(),
-        // onChunk: update message content with typewriter effect
-        async (chunk: string) => {
-          for (const char of chunk) {
-            await addCharacterWithDelay(char);
-          }
+        // onChunk: update message content as chunks arrive
+        (chunk: string) => {
+          streamingContent += chunk;
+          updateMessage(aiMessage.id, streamingContent);
+          setTimeout(scrollToBottom, 50);
         },
         // onComplete: final processing if needed
         (fullResponse: string) => {
