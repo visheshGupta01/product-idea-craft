@@ -96,5 +96,6 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
     addMessage,
     updateMessage,
     scrollToBottom,
+    setMessages,
   };
 };
