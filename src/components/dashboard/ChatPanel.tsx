@@ -49,6 +49,10 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
 
   const { messages, isLoading, sendMessage } = useMcpChat(getInitialMessages());
 
+  // Debug logging
+  console.log("ChatPanel - messages:", messages);
+  console.log("ChatPanel - initialMcpResponse:", initialMcpResponse);
+
   // Clear the initial response from context when component mounts
   useEffect(() => {
     if (initialMcpResponse) {

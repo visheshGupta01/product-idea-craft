@@ -8,6 +8,10 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
   const [messageIdCounter, setMessageIdCounter] = useState(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Debug logging
+  console.log("useMcpChat - Current messages:", messages);
+  console.log("useMcpChat - Initial messages:", initialMessages);
+
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
