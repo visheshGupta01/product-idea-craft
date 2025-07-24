@@ -27,26 +27,31 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
     if (initialMcpResponse && initialMcpResponse.userMessage) {
       console.log("ChatPanel - Processing initialMcpResponse:", initialMcpResponse);
       
-      const newMessages: Message[] = [
-        {
-          id: "user-1",
+      setMessages(prevMessages => {
+        // Keep the welcome message and add the new ones
+        const welcomeMessage = prevMessages.find(msg => msg.id === "1");
+        const newMessages: Message[] = welcomeMessage ? [welcomeMessage] : [];
+        
+        // Add user message
+        newMessages.push({
+          id: `initial-user-${Date.now()}`,
           type: "user",
           content: initialMcpResponse.userMessage,
           timestamp: initialMcpResponse.timestamp,
-        }
-      ];
-      
-      // Only add AI message if there's content
-      if (initialMcpResponse.aiResponse) {
-        newMessages.push({
-          id: "ai-1",
-          type: "ai",
-          content: initialMcpResponse.aiResponse,
-          timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
         });
-      }
-      
-      setMessages(newMessages);
+        
+        // Only add AI message if there's content
+        if (initialMcpResponse.aiResponse) {
+          newMessages.push({
+            id: `initial-ai-${Date.now()}`,
+            type: "ai",
+            content: initialMcpResponse.aiResponse,
+            timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
+          });
+        }
+        
+        return newMessages;
+      });
     }
   }, [initialMcpResponse, setMessages]);
 
