@@ -37,7 +37,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const sendIdeaToMcp = async (idea: string) => {
     setIsProcessingIdea(true);
-    setUserIdea(idea);
     
     // Create initial response object for streaming
     const initialResponse: InitialMcpResponse = {
