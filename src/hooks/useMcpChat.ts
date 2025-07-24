@@ -51,33 +51,18 @@ console.log("Sending message:", content.trim());
     });
 
     try {
-      let fullContent = "";
-      let displayContent = "";
-      let isStreaming = true;
-      
-      // Smooth typewriter effect
-      const typewriterEffect = () => {
-        if (displayContent.length < fullContent.length && isStreaming) {
-          displayContent = fullContent.slice(0, displayContent.length + 1);
-          updateMessage(aiMessage.id, displayContent);
-          setTimeout(scrollToBottom, 10);
-          setTimeout(typewriterEffect, 15); // Adjust speed here (lower = faster)
-        }
-      };
+      let streamingContent = "";
       
       await mcpService.sendMessageStream(
         content.trim(),
-        // onChunk: accumulate content and trigger typewriter effect
+        // onChunk: update message content as chunks arrive
         (chunk: string) => {
-          fullContent += chunk;
-          if (displayContent.length === fullContent.length - chunk.length) {
-            typewriterEffect();
-          }
+          streamingContent += chunk;
+          updateMessage(aiMessage.id, streamingContent);
+          setTimeout(scrollToBottom, 50);
         },
-        // onComplete: ensure all content is displayed
+        // onComplete: final processing if needed
         (fullResponse: string) => {
-          isStreaming = false;
-          fullContent = fullResponse;
           updateMessage(aiMessage.id, fullResponse);
           setTimeout(scrollToBottom, 100);
         }
