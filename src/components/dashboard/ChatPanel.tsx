@@ -53,12 +53,16 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
   console.log("ChatPanel - messages:", messages);
   console.log("ChatPanel - initialMcpResponse:", initialMcpResponse);
 
-  // Clear the initial response from context when component mounts
+  // Clear the initial response from context after messages are initialized
   useEffect(() => {
-    if (initialMcpResponse) {
-      clearInitialResponse();
+    if (initialMcpResponse && messages.length > 0) {
+      // Only clear after we've successfully initialized messages
+      const timer = setTimeout(() => {
+        clearInitialResponse();
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [initialMcpResponse, clearInitialResponse]);
+  }, [initialMcpResponse, clearInitialResponse, messages.length]);
 
   const scrollToTopOfNewMessage = () => {
     const messageElements = document.querySelectorAll("[data-message-id]");
