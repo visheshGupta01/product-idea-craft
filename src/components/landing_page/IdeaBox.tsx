@@ -62,7 +62,7 @@ const IdeaBox: React.FC = () => {
         </div>
 
         {/* White Input Area */}
-        <div className="bg-white w-full h-[258px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
+        <div className="bg-white w-full h-[238px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
           {/* Input area with floating buttons */}
           <div className="relative w-full mb-4 font-poppins text-gray-800">
             <textarea
