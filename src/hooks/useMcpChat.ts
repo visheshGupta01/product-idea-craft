@@ -5,6 +5,7 @@ import { mcpService } from "@/services/mcpService";
 export const useMcpChat = (initialMessages: Message[] = []) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
+  const [messageIdCounter, setMessageIdCounter] = useState(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -14,12 +15,13 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
   const addMessage = useCallback((message: Omit<Message, "id">) => {
     const newMessage: Message = {
       ...message,
-      id: Date.now().toString(),
+      id: `msg-${messageIdCounter}-${Date.now()}`, // More unique ID
     };
+    setMessageIdCounter(prev => prev + 1);
     setMessages(prev => [...prev, newMessage]);
     setTimeout(scrollToBottom, 100);
     return newMessage;
-  }, [scrollToBottom]);
+  }, [scrollToBottom, messageIdCounter]);
 
   const updateMessage = useCallback((messageId: string, content: string) => {
     setMessages(prev => 
