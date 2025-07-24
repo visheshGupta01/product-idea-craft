@@ -3,9 +3,15 @@ import { Message } from "@/types";
 import { mcpService } from "@/services/mcpService";
 
 export const useMcpChat = (initialMessages: Message[] = []) => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    console.log("useMcpChat - Initializing with messages:", initialMessages);
+    return initialMessages;
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [messageIdCounter, setMessageIdCounter] = useState(1);
+  const [messageIdCounter, setMessageIdCounter] = useState(() => {
+    // Start counter after initial messages
+    return initialMessages.length > 0 ? initialMessages.length + 1 : 1;
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Debug logging
