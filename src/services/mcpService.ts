@@ -41,7 +41,9 @@ export class McpService {
   async sendMessageStream(
     message: string, 
     onChunk: (chunk: string) => void,
-    onComplete: (fullResponse: string) => void
+    onComplete: (fullResponse: string) => void,
+    onToolStart?: () => void,
+    onToolEnd?: () => void
   ): Promise<void> {
     try {
       const response = await fetch(this.serverUrl, {
@@ -105,19 +107,39 @@ export class McpService {
                   // Regular text content - stream it immediately
                   onChunk(jsonData.content);
                   fullResponseContent += jsonData.content;
+                } else if (jsonData.type === 'tool_start') {
+                  // Tool processing started - notify UI
+                  onToolStart?.();
                 } else if (jsonData.type === 'tool_result' && jsonData.tool) {
                   // Tool result - process and add to full response
-                  const toolOutput = jsonData.tool.output || '';
+                  onToolEnd?.(); // Tool finished processing
+                  let toolOutput = '';
+                  
+                  if (jsonData.tool.name === "sitemap_user_idea" && typeof jsonData.tool.output === "object") {
+                    // Handle structured sitemap data
+                    const sitemapData = jsonData.tool.output;
+                    toolOutput = `\n\n## Project Sitemap\n\n__SITEMAP_DATA__${JSON.stringify(sitemapData)}__SITEMAP_DATA__`;
+                  } else {
+                    // Handle regular string output
+                    toolOutput = jsonData.tool.output?.toString().trim() || '';
+                    if (toolOutput) {
+                      const sectionTitle = jsonData.tool.name
+                        .replace(/[_-]/g, " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase());
+                      toolOutput = `\n\n## ${sectionTitle}\n\n${toolOutput}`;
+                    }
+                  }
+                  
                   if (toolOutput) {
-                    onChunk(`\n\n${toolOutput}`);
-                    fullResponseContent += `\n\n${toolOutput}`;
+                    onChunk(toolOutput);
+                    fullResponseContent += toolOutput;
                   }
                 } else if (jsonData.type === 'complete') {
                   // Stream is complete - call onComplete with accumulated content
+                  onToolEnd?.(); // Ensure tool state is cleared
                   onComplete(fullResponseContent);
                   return;
                 }
-                // Ignore other types like 'tool_start', 'json', 'block_stop'
                 
               } catch (parseError) {
                 console.warn("Failed to parse streaming line:", line, parseError);
