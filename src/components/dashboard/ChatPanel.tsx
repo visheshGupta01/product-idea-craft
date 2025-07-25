@@ -13,7 +13,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize with default messages first
-  const { messages, isLoading, sendMessage, setMessages } = useMcpChat([
+  const { messages, isLoading, isProcessingTools, sendMessage, setMessages } = useMcpChat([
     {
       id: "1",
       type: "ai",
@@ -104,7 +104,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
             />
           ))}
 
-          {/* Enhanced loading indicator - show when either loading or processing idea */}
+          {/* Enhanced loading indicator - show when loading or processing */}
           {(isLoading || isProcessingIdea) && (
             <div className="flex items-start space-x-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center animate-pulse">
@@ -126,6 +126,30 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
                     This may take a moment while I process your request
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Tool processing indicator - show when tools are running after AI started responding */}
+          {isProcessingTools && !isLoading && (
+            <div className="flex items-start space-x-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center animate-pulse">
+                <Bot className="w-4 h-4 text-white" />
+              </div>
+              <div className="bg-gradient-to-r from-orange-100/10 to-yellow-100/5 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md border border-orange-200/10">
+                <div className="flex items-center space-x-3">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                  <span className="text-sm text-white/90 font-medium">
+                    Running tools...
+                  </span>
+                </div>
+                <div className="mt-2 text-xs text-white/60">
+                  Gathering additional information for you
+                </div>
               </div>
             </div>
           )}
