@@ -8,18 +8,13 @@ import { UI_CONFIG } from "@/utils/constants";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
-  const { sendIdeaToMcp, setUserIdea, isProcessingIdea } = useUser();
+  const { sendIdeaToMcp, isProcessingIdea } = useUser();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (idea.trim() && !isProcessingIdea) {
-      // Set the idea and navigate first
-      setUserIdea(idea.trim());
+      await sendIdeaToMcp(idea.trim());
       navigate("/dashboard");
-      // Start processing after navigation
-      setTimeout(() => {
-        sendIdeaToMcp(idea.trim());
-      }, 100);
     }
   };
 
@@ -67,7 +62,7 @@ const IdeaBox: React.FC = () => {
         </div>
 
         {/* White Input Area */}
-        <div className="bg-white w-full h-[238px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
+        <div className="bg-white w-full h-[258px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
           {/* Input area with floating buttons */}
           <div className="relative w-full mb-4 font-poppins text-gray-800">
             <textarea

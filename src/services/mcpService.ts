@@ -41,9 +41,7 @@ export class McpService {
   async sendMessageStream(
     message: string, 
     onChunk: (chunk: string) => void,
-    onComplete: (fullResponse: string) => void,
-    onToolStart?: () => void,
-    onToolEnd?: () => void
+    onComplete: (fullResponse: string) => void
   ): Promise<void> {
     try {
       const response = await fetch(this.serverUrl, {
@@ -74,7 +72,6 @@ export class McpService {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedData = '';
-      let fullResponseContent = '';
 
       try {
         while (true) {
@@ -85,84 +82,50 @@ export class McpService {
           const chunk = decoder.decode(value, { stream: true });
           accumulatedData += chunk;
           
-          // Parse lines from accumulated data
+          // Try to parse complete JSON responses from the stream
           const lines = accumulatedData.split('\n');
           accumulatedData = lines.pop() || ''; // Keep incomplete line
           
           for (const line of lines) {
             if (line.trim()) {
               try {
-                // Handle MCP streaming format
+                // Handle different streaming formats
                 let jsonData;
                 if (line.startsWith('data: ')) {
-                  const jsonStr = line.slice(6).trim();
+                  // SSE format
+                  const jsonStr = line.slice(6);
                   if (jsonStr === '[DONE]') continue;
                   jsonData = JSON.parse(jsonStr);
                 } else {
+                  // Direct JSON format
                   jsonData = JSON.parse(line);
                 }
                 
-                // Process different types of streaming data
-                if (jsonData.type === 'text' && jsonData.content) {
-                  // Regular text content - stream it immediately
+                // Process streaming chunk
+                if (jsonData.assistant) {
+                  onChunk(jsonData.assistant);
+                } else if (jsonData.content) {
                   onChunk(jsonData.content);
-                  fullResponseContent += jsonData.content;
-                } else if (jsonData.type === 'tool_start') {
-                  // Tool processing started - notify UI
-                  onToolStart?.();
-                } else if (jsonData.type === 'tool_result' && jsonData.tool) {
-                  // Tool result - process and add to full response
-                  onToolEnd?.(); // Tool finished processing
-                  let toolOutput = '';
-                  
-                  if (jsonData.tool.name === "sitemap_user_idea" && typeof jsonData.tool.output === "object") {
-                    // Handle structured sitemap data
-                    const sitemapData = jsonData.tool.output;
-                    toolOutput = `\n\n## Project Sitemap\n\n__SITEMAP_DATA__${JSON.stringify(sitemapData)}__SITEMAP_DATA__`;
-                  } else {
-                    // Handle regular string output
-                    toolOutput = jsonData.tool.output?.toString().trim() || '';
-                    if (toolOutput) {
-                      const sectionTitle = jsonData.tool.name
-                        .replace(/[_-]/g, " ")
-                        .replace(/\b\w/g, (l) => l.toUpperCase());
-                      toolOutput = `\n\n## ${sectionTitle}\n\n${toolOutput}`;
-                    }
-                  }
-                  
-                  if (toolOutput) {
-                    onChunk(toolOutput);
-                    fullResponseContent += toolOutput;
-                  }
-                } else if (jsonData.type === 'complete') {
-                  // Stream is complete - call onComplete with accumulated content
-                  onToolEnd?.(); // Ensure tool state is cleared
-                  onComplete(fullResponseContent);
-                  return;
+                } else if (typeof jsonData === 'string') {
+                  onChunk(jsonData);
                 }
-                
               } catch (parseError) {
-                console.warn("Failed to parse streaming line:", line, parseError);
+                // If not JSON, treat as direct text
+                onChunk(line);
               }
             }
           }
         }
         
-        // If we reach here, streaming is done - call onComplete with accumulated content
-        if (fullResponseContent) {
-          onComplete(fullResponseContent);
-        } else {
-          // Handle any remaining data as fallback
-          if (accumulatedData.trim()) {
-            try {
-              const finalData = JSON.parse(accumulatedData);
-              const fullResponse = this.processServerResponse(finalData, message);
-              onComplete(fullResponse);
-            } catch {
-              onComplete(accumulatedData);
-            }
-          } else {
-            onComplete(this.createFallbackResponse(message));
+        // Handle any remaining data
+        if (accumulatedData.trim()) {
+          try {
+            const finalData = JSON.parse(accumulatedData);
+            const fullResponse = this.processServerResponse(finalData, message);
+            onComplete(fullResponse);
+          } catch {
+            // If final data isn't JSON, it might be the complete response
+            onComplete(accumulatedData);
           }
         }
         

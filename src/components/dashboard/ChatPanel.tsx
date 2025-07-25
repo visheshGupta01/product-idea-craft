@@ -9,67 +9,46 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { CHAT_CONFIG } from "@/utils/constants";
 
 const ChatPanel = ({ userIdea }: ChatPanelProps) => {
-  const { initialMcpResponse, clearInitialResponse, isProcessingIdea } = useUser();
+  const { initialMcpResponse, clearInitialResponse } = useUser();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with default messages first
-  const { messages, isLoading, isProcessingTools, sendMessage, setMessages } = useMcpChat([
-    {
-      id: "1",
-      type: "ai",
-      content: CHAT_CONFIG.DEFAULT_WELCOME_MESSAGE,
-      timestamp: new Date(),
-    },
-  ]);
-
-  // Update messages when initialMcpResponse becomes available
-  useEffect(() => {
-    if (initialMcpResponse && initialMcpResponse.userMessage) {
-      console.log("ChatPanel - Processing initialMcpResponse:", initialMcpResponse);
-      
-      setMessages(prevMessages => {
-        // Keep the welcome message and add the new ones
-        const welcomeMessage = prevMessages.find(msg => msg.id === "1");
-        const newMessages: Message[] = welcomeMessage ? [welcomeMessage] : [];
-        
-        // Add user message
-        newMessages.push({
-          id: `initial-user-${Date.now()}`,
+  // Initialize messages based on whether we have an initial MCP response
+  const getInitialMessages = (): Message[] => {
+    if (initialMcpResponse) {
+      return [
+        {
+          id: "1",
           type: "user",
           content: initialMcpResponse.userMessage,
           timestamp: initialMcpResponse.timestamp,
-        });
-        
-        // Only add AI message if there's content
-        if (initialMcpResponse.aiResponse) {
-          newMessages.push({
-            id: `initial-ai-${Date.now()}`,
-            type: "ai",
-            content: initialMcpResponse.aiResponse,
-            timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
-          });
-        }
-        
-        return newMessages;
-      });
+        },
+        {
+          id: "2",
+          type: "ai",
+          content: initialMcpResponse.aiResponse,
+          timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
+        },
+      ];
     }
-  }, [initialMcpResponse, setMessages]);
 
-  // Debug logging
-  console.log("ChatPanel - messages:", messages);
-  console.log("ChatPanel - initialMcpResponse:", initialMcpResponse);
+    return [
+      {
+        id: "1",
+        type: "ai",
+        content: CHAT_CONFIG.DEFAULT_WELCOME_MESSAGE,
+        timestamp: new Date(),
+      },
+    ];
+  };
 
-  // Clear the initial response from context after messages are processed
+  const { messages, isLoading, sendMessage } = useMcpChat(getInitialMessages());
+
+  // Clear the initial response from context when component mounts
   useEffect(() => {
-    if (initialMcpResponse && messages.length > 1) {
-      // Only clear after we've successfully processed the initial response
-      const timer = setTimeout(() => {
-        console.log("ChatPanel - Clearing initialMcpResponse");
-        clearInitialResponse();
-      }, 500);
-      return () => clearTimeout(timer);
+    if (initialMcpResponse) {
+      clearInitialResponse();
     }
-  }, [initialMcpResponse, clearInitialResponse, messages.length]);
+  }, [initialMcpResponse, clearInitialResponse]);
 
   const scrollToTopOfNewMessage = () => {
     const messageElements = document.querySelectorAll("[data-message-id]");
@@ -104,51 +83,16 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
             />
           ))}
 
-          {/* Enhanced loading indicator - show when loading or processing */}
-          {(isLoading || isProcessingIdea) && (
+          {/* Loading indicator with exact styling from original */}
+          {isLoading && (
             <div className="flex items-start space-x-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center animate-pulse">
+              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
                 <Bot className="w-4 h-4 text-white" />
               </div>
-              <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md border border-white/10">
-                <div className="flex items-center space-x-3">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                  <span className="text-sm text-white/90 font-medium">
-                    {isProcessingIdea ? "AI is analyzing and using tools..." : "AI is responding..."}
-                  </span>
-                </div>
-                {isProcessingIdea && (
-                  <div className="mt-2 text-xs text-white/60">
-                    This may take a moment while I process your request
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Tool processing indicator - show when tools are running after AI started responding */}
-          {isProcessingTools && !isLoading && (
-            <div className="flex items-start space-x-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center animate-pulse">
-                <Bot className="w-4 h-4 text-white" />
-              </div>
-              <div className="bg-gradient-to-r from-orange-100/10 to-yellow-100/5 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md border border-orange-200/10">
-                <div className="flex items-center space-x-3">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                  <span className="text-sm text-white/90 font-medium">
-                    Running tools...
-                  </span>
-                </div>
-                <div className="mt-2 text-xs text-white/60">
-                  Gathering additional information for you
+              <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-2xl rounded-bl-md">
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span className="text-sm text-white">AI is typing...</span>
                 </div>
               </div>
             </div>

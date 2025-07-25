@@ -37,6 +37,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const sendIdeaToMcp = async (idea: string) => {
     setIsProcessingIdea(true);
+    setUserIdea(idea);
     
     // Create initial response object for streaming
     const initialResponse: InitialMcpResponse = {
@@ -47,21 +48,36 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setInitialMcpResponse(initialResponse);
     
     try {
-      let streamingContent = "";
+      let fullContent = "";
+      let displayContent = "";
+      let isStreaming = true;
+      
+      // Smooth typewriter effect for initial response
+      const typewriterEffect = () => {
+        if (displayContent.length < fullContent.length && isStreaming) {
+          displayContent = fullContent.slice(0, displayContent.length + 1);
+          setInitialMcpResponse({
+            userMessage: idea,
+            aiResponse: displayContent,
+            timestamp: new Date(),
+          });
+          setTimeout(typewriterEffect, 15); // Same speed as chat
+        }
+      };
       
       await mcpService.sendMessageStream(
         idea,
-        // onChunk: update response as chunks arrive
+        // onChunk: accumulate content and trigger typewriter effect
         (chunk: string) => {
-          streamingContent += chunk;
-          setInitialMcpResponse({
-            userMessage: idea,
-            aiResponse: streamingContent,
-            timestamp: new Date(),
-          });
+          fullContent += chunk;
+          if (displayContent.length === fullContent.length - chunk.length) {
+            typewriterEffect();
+          }
         },
-        // onComplete: final processing
+        // onComplete: ensure all content is displayed
         (fullResponse: string) => {
+          isStreaming = false;
+          fullContent = fullResponse;
           setInitialMcpResponse({
             userMessage: idea,
             aiResponse: fullResponse,

@@ -3,51 +3,25 @@ import { Message } from "@/types";
 import { mcpService } from "@/services/mcpService";
 
 export const useMcpChat = (initialMessages: Message[] = []) => {
-  const [messages, setMessages] = useState<Message[]>(() => {
-    console.log("useMcpChat - Initializing with messages:", initialMessages);
-    return initialMessages;
-  });
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
-  const [isProcessingTools, setIsProcessingTools] = useState(false);
-  const [messageIdCounter, setMessageIdCounter] = useState(() => {
-    // Start counter after initial messages
-    return initialMessages.length > 0 ? initialMessages.length + 1 : 1;
-  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Debug logging
-  console.log("useMcpChat - Current messages:", messages);
-  console.log("useMcpChat - Initial messages:", initialMessages);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
- const addMessage = useCallback((message: Omit<Message, "id">) => {
-  // Log the message being added to track undefined content
-  console.log("useMcpChat - Adding message:", message);
-  
-  if (!message.content) {
-    console.error("useMcpChat - Warning: Adding message with undefined/empty content:", message);
-  }
-  
-  const newMessage: Message = {
-    ...message,
-    id: `msg-${crypto.randomUUID()}`, // Unique ID every time
-  };
-  setMessages(prev => [...prev, newMessage]);
-  setTimeout(scrollToBottom, 100);
-  return newMessage;
-}, [scrollToBottom]);
-
+  const addMessage = useCallback((message: Omit<Message, "id">) => {
+    const newMessage: Message = {
+      ...message,
+      id: Date.now().toString(),
+    };
+    setMessages(prev => [...prev, newMessage]);
+    setTimeout(scrollToBottom, 100);
+    return newMessage;
+  }, [scrollToBottom]);
 
   const updateMessage = useCallback((messageId: string, content: string) => {
-    console.log("useMcpChat - Updating message:", messageId, "with content:", content);
-    
-    if (content === undefined || content === null) {
-      console.error("useMcpChat - Warning: Updating message with undefined/null content:", messageId, content);
-    }
-    
     setMessages(prev => 
       prev.map(msg => 
         msg.id === messageId ? { ...msg, content } : msg
@@ -57,10 +31,9 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading) return;
-    console.log("Sending message:", content.trim());
-    
+console.log("Sending message:", content.trim());
     // Add user message
-    const userMessage = addMessage({
+    addMessage({
       type: "user",
       content: content.trim(),
       timestamp: new Date(),
@@ -70,74 +43,60 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
 
     setIsLoading(true);
 
-    // Don't create AI message yet - let loading indicator show first
-    let aiMessage: Message | null = null;
+    // Create placeholder AI message for streaming
+    const aiMessage = addMessage({
+      type: "ai",
+      content: "",
+      timestamp: new Date(),
+    });
 
     try {
-      let streamingContent = "";
+      let fullContent = "";
+      let displayContent = "";
+      let isStreaming = true;
+      
+      // Smooth typewriter effect
+      const typewriterEffect = () => {
+        if (displayContent.length < fullContent.length && isStreaming) {
+          displayContent = fullContent.slice(0, displayContent.length + 1);
+          updateMessage(aiMessage.id, displayContent);
+          setTimeout(scrollToBottom, 10);
+          setTimeout(typewriterEffect, 15); // Adjust speed here (lower = faster)
+        }
+      };
       
       await mcpService.sendMessageStream(
         content.trim(),
-        // onChunk: create AI message on first chunk and update content
+        // onChunk: accumulate content and trigger typewriter effect
         (chunk: string) => {
-          // Create AI message on first chunk
-          if (!aiMessage) {
-            aiMessage = addMessage({
-              type: "ai",
-              content: "",
-              timestamp: new Date(),
-            });
-            setIsLoading(false); // Hide loading indicator when message starts
+          fullContent += chunk;
+          if (displayContent.length === fullContent.length - chunk.length) {
+            typewriterEffect();
           }
-          
-          streamingContent += chunk;
-          updateMessage(aiMessage.id, streamingContent);
-          setTimeout(scrollToBottom, 50);
         },
-        // onComplete: final processing if needed
+        // onComplete: ensure all content is displayed
         (fullResponse: string) => {
-          if (aiMessage) {
-            updateMessage(aiMessage.id, fullResponse);
-            setTimeout(scrollToBottom, 100);
-          }
-          setIsProcessingTools(false); // Clear tool processing state
-        },
-        // onToolStart: show tool processing indicator
-        () => {
-          setIsProcessingTools(true);
-        },
-        // onToolEnd: hide tool processing indicator
-        () => {
-          setIsProcessingTools(false);
+          isStreaming = false;
+          fullContent = fullResponse;
+          updateMessage(aiMessage.id, fullResponse);
+          setTimeout(scrollToBottom, 100);
         }
       );
     } catch (error) {
       console.error("Error in chat:", error);
-      
-      // Create AI message for error if it doesn't exist
-      if (!aiMessage) {
-        aiMessage = addMessage({
-          type: "ai",
-          content: "",
-          timestamp: new Date(),
-        });
-      }
-      
       updateMessage(aiMessage.id, "I apologize, but I'm having trouble processing your request right now. Please try again later.");
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, addMessage, updateMessage, scrollToBottom, messages]);
+  }, [isLoading, addMessage, updateMessage, scrollToBottom]);
 
   return {
     messages,
     isLoading,
-    isProcessingTools,
     messagesEndRef,
     sendMessage,
     addMessage,
     updateMessage,
     scrollToBottom,
-    setMessages,
   };
 };
