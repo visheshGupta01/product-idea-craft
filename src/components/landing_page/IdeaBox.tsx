@@ -83,16 +83,16 @@ const IdeaBox: React.FC = () => {
             {/* Floating buttons in top right */}
             <div className="absolute top-3 right-3 flex gap-2">
               <button 
-                className="p-2 w-[50px] h-[50px] flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center disabled:opacity-50"
+                className="p-2 w-8 h-8 flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center disabled:opacity-50"
                 disabled={isProcessingIdea}
               >
-                <Mic className="w-[20px] h-[20px] text-gray-700" />
+                <Mic className="w-3 h-3 text-gray-700" />
               </button>
               <button 
-                className="p-2 w-[50px] h-[50px] flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
+                className="p-2 w-8 h-8 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
                 disabled={isProcessingIdea}
               >
-                <Plus className="w-[20px] h-[20px] text-gray-700" />
+                <Plus className="w-3 h-3 text-gray-700" />
               </button>
             </div>
           </div>
@@ -104,7 +104,7 @@ const IdeaBox: React.FC = () => {
             className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
           >
             {isProcessingIdea ? (
-              <LoadingSpinner size="sm" text="Processing your idea" />
+              <LoadingSpinner size="sm" text="Processing your idea..." />
             ) : (
               "Start Building my Idea →"
             )}

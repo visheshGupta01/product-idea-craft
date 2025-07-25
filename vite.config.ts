@@ -8,9 +8,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "0.0.0.0",
     port: 8000,
+    // Add CORS configuration if needed
     cors: true,
-    allowedHosts: ['65a428fbbd04.ngrok-free.app'], // ✅ Updated ngrok subdomain
+    // If you need to proxy API requests to avoid CORS issues
     // proxy: {
+    //   // Proxy API requests to avoid CORS issues
     //   '/api': {
     //     target: 'https://713f60dd7948.ngrok-free.app',
     //     changeOrigin: true,
@@ -32,4 +34,6 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Remove allowedHosts as it's not a valid Vite config option
+  // For ngrok, the main issue is CORS on your backend server
 }));
