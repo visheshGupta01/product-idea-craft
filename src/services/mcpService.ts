@@ -72,6 +72,7 @@ export class McpService {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedData = '';
+      let fullResponseContent = '';
 
       try {
         while (true) {
@@ -82,50 +83,64 @@ export class McpService {
           const chunk = decoder.decode(value, { stream: true });
           accumulatedData += chunk;
           
-          // Try to parse complete JSON responses from the stream
+          // Parse lines from accumulated data
           const lines = accumulatedData.split('\n');
           accumulatedData = lines.pop() || ''; // Keep incomplete line
           
           for (const line of lines) {
             if (line.trim()) {
               try {
-                // Handle different streaming formats
+                // Handle MCP streaming format
                 let jsonData;
                 if (line.startsWith('data: ')) {
-                  // SSE format
-                  const jsonStr = line.slice(6);
+                  const jsonStr = line.slice(6).trim();
                   if (jsonStr === '[DONE]') continue;
                   jsonData = JSON.parse(jsonStr);
                 } else {
-                  // Direct JSON format
                   jsonData = JSON.parse(line);
                 }
                 
-                // Process streaming chunk
-                if (jsonData.assistant) {
-                  onChunk(jsonData.assistant);
-                } else if (jsonData.content) {
+                // Process different types of streaming data
+                if (jsonData.type === 'text' && jsonData.content) {
+                  // Regular text content - stream it immediately
                   onChunk(jsonData.content);
-                } else if (typeof jsonData === 'string') {
-                  onChunk(jsonData);
+                  fullResponseContent += jsonData.content;
+                } else if (jsonData.type === 'tool_result' && jsonData.tool) {
+                  // Tool result - process and add to full response
+                  const toolOutput = jsonData.tool.output || '';
+                  if (toolOutput) {
+                    onChunk(`\n\n${toolOutput}`);
+                    fullResponseContent += `\n\n${toolOutput}`;
+                  }
+                } else if (jsonData.type === 'complete') {
+                  // Stream is complete - call onComplete with accumulated content
+                  onComplete(fullResponseContent);
+                  return;
                 }
+                // Ignore other types like 'tool_start', 'json', 'block_stop'
+                
               } catch (parseError) {
-                // If not JSON, treat as direct text
-                onChunk(line);
+                console.warn("Failed to parse streaming line:", line, parseError);
               }
             }
           }
         }
         
-        // Handle any remaining data
-        if (accumulatedData.trim()) {
-          try {
-            const finalData = JSON.parse(accumulatedData);
-            const fullResponse = this.processServerResponse(finalData, message);
-            onComplete(fullResponse);
-          } catch {
-            // If final data isn't JSON, it might be the complete response
-            onComplete(accumulatedData);
+        // If we reach here, streaming is done - call onComplete with accumulated content
+        if (fullResponseContent) {
+          onComplete(fullResponseContent);
+        } else {
+          // Handle any remaining data as fallback
+          if (accumulatedData.trim()) {
+            try {
+              const finalData = JSON.parse(accumulatedData);
+              const fullResponse = this.processServerResponse(finalData, message);
+              onComplete(fullResponse);
+            } catch {
+              onComplete(accumulatedData);
+            }
+          } else {
+            onComplete(this.createFallbackResponse(message));
           }
         }
         

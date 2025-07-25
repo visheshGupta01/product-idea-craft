@@ -8,13 +8,18 @@ import { UI_CONFIG } from "@/utils/constants";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
-  const { sendIdeaToMcp, isProcessingIdea } = useUser();
+  const { sendIdeaToMcp, setUserIdea, isProcessingIdea } = useUser();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (idea.trim() && !isProcessingIdea) {
-      await sendIdeaToMcp(idea.trim());
+      // Set the idea and navigate first
+      setUserIdea(idea.trim());
       navigate("/dashboard");
+      // Start processing after navigation
+      setTimeout(() => {
+        sendIdeaToMcp(idea.trim());
+      }, 100);
     }
   };
 

@@ -5,7 +5,12 @@ import { mcpService } from "@/services/mcpService";
 export const useMcpChat = (initialMessages: Message[] = []) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
+  const [messageIdCounter, setMessageIdCounter] = useState(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Debug logging
+  console.log("useMcpChat - Current messages:", messages);
+  console.log("useMcpChat - Initial messages:", initialMessages);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -14,12 +19,13 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
   const addMessage = useCallback((message: Omit<Message, "id">) => {
     const newMessage: Message = {
       ...message,
-      id: Date.now().toString(),
+      id: `msg-${messageIdCounter}-${Date.now()}`, // More unique ID
     };
+    setMessageIdCounter(prev => prev + 1);
     setMessages(prev => [...prev, newMessage]);
     setTimeout(scrollToBottom, 100);
     return newMessage;
-  }, [scrollToBottom]);
+  }, [scrollToBottom, messageIdCounter]);
 
   const updateMessage = useCallback((messageId: string, content: string) => {
     setMessages(prev => 
@@ -31,9 +37,10 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading) return;
-console.log("Sending message:", content.trim());
+    console.log("Sending message:", content.trim());
+    
     // Add user message
-    addMessage({
+    const userMessage = addMessage({
       type: "user",
       content: content.trim(),
       timestamp: new Date(),
@@ -73,7 +80,7 @@ console.log("Sending message:", content.trim());
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, addMessage, updateMessage, scrollToBottom]);
+  }, [isLoading, addMessage, updateMessage, scrollToBottom, messages]);
 
   return {
     messages,
