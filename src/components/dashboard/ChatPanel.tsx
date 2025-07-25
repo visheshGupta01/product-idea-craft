@@ -12,10 +12,22 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
   const { initialMcpResponse, clearInitialResponse, isProcessingIdea } = useUser();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize messages based on whether we have an initial MCP response
-  const getInitialMessages = (): Message[] => {
+  // Initialize with default messages first
+  const { messages, isLoading, sendMessage, setMessages } = useMcpChat([
+    {
+      id: "1",
+      type: "ai",
+      content: CHAT_CONFIG.DEFAULT_WELCOME_MESSAGE,
+      timestamp: new Date(),
+    },
+  ]);
+
+  // Update messages when initialMcpResponse becomes available
+  useEffect(() => {
     if (initialMcpResponse && initialMcpResponse.userMessage) {
-      const messages: Message[] = [
+      console.log("ChatPanel - Processing initialMcpResponse:", initialMcpResponse);
+      
+      const newMessages: Message[] = [
         {
           id: "1",
           type: "user",
@@ -26,7 +38,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
       
       // Only add AI message if there's content
       if (initialMcpResponse.aiResponse) {
-        messages.push({
+        newMessages.push({
           id: "2",
           type: "ai",
           content: initialMcpResponse.aiResponse,
@@ -34,31 +46,25 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
         });
       }
       
-      return messages;
+      setMessages(newMessages);
     }
-
-    return [
-      {
-        id: "1",
-        type: "ai",
-        content: CHAT_CONFIG.DEFAULT_WELCOME_MESSAGE,
-        timestamp: new Date(),
-      },
-    ];
-  };
-
-  const { messages, isLoading, sendMessage } = useMcpChat(getInitialMessages());
+  }, [initialMcpResponse, setMessages]);
 
   // Debug logging
   console.log("ChatPanel - messages:", messages);
   console.log("ChatPanel - initialMcpResponse:", initialMcpResponse);
 
-  // Clear the initial response from context when component mounts
+  // Clear the initial response from context after messages are processed
   useEffect(() => {
-    if (initialMcpResponse) {
-      clearInitialResponse();
+    if (initialMcpResponse && messages.length > 1) {
+      // Only clear after we've successfully processed the initial response
+      const timer = setTimeout(() => {
+        console.log("ChatPanel - Clearing initialMcpResponse");
+        clearInitialResponse();
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [initialMcpResponse, clearInitialResponse]);
+  }, [initialMcpResponse, clearInitialResponse, messages.length]);
 
   const scrollToTopOfNewMessage = () => {
     const messageElements = document.querySelectorAll("[data-message-id]");
