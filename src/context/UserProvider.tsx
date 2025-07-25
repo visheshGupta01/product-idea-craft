@@ -37,17 +37,39 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const sendIdeaToMcp = async (idea: string) => {
     setIsProcessingIdea(true);
+    setUserIdea(idea);
+    
+    // Create initial response object for streaming
+    const initialResponse: InitialMcpResponse = {
+      userMessage: idea,
+      aiResponse: "",
+      timestamp: new Date(),
+    };
+    setInitialMcpResponse(initialResponse);
     
     try {
-      const aiResponse = await mcpService.sendMessage(idea);
+      let streamingContent = "";
       
-      setInitialMcpResponse({
-        userMessage: idea,
-        aiResponse,
-        timestamp: new Date(),
-      });
-
-      setUserIdea(idea);
+      await mcpService.sendMessageStream(
+        idea,
+        // onChunk: update response as chunks arrive
+        (chunk: string) => {
+          streamingContent += chunk;
+          setInitialMcpResponse({
+            userMessage: idea,
+            aiResponse: streamingContent,
+            timestamp: new Date(),
+          });
+        },
+        // onComplete: final processing
+        (fullResponse: string) => {
+          setInitialMcpResponse({
+            userMessage: idea,
+            aiResponse: fullResponse,
+            timestamp: new Date(),
+          });
+        }
+      );
       
     } catch (error) {
       console.error("Error sending idea to MCP server:", error);
@@ -68,8 +90,6 @@ Please let me know if you'd like to:
 - Explore implementation options`,
         timestamp: new Date(),
       });
-      
-      setUserIdea(idea);
     } finally {
       setIsProcessingIdea(false);
     }
