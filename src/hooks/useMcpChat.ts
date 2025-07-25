@@ -22,16 +22,16 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  const addMessage = useCallback((message: Omit<Message, "id">) => {
-    const newMessage: Message = {
-      ...message,
-      id: `msg-${messageIdCounter}-${Date.now()}`, // More unique ID
-    };
-    setMessageIdCounter(prev => prev + 1);
-    setMessages(prev => [...prev, newMessage]);
-    setTimeout(scrollToBottom, 100);
-    return newMessage;
-  }, [scrollToBottom, messageIdCounter]);
+ const addMessage = useCallback((message: Omit<Message, "id">) => {
+  const newMessage: Message = {
+    ...message,
+    id: `msg-${crypto.randomUUID()}`, // Unique ID every time
+  };
+  setMessages(prev => [...prev, newMessage]);
+  setTimeout(scrollToBottom, 100);
+  return newMessage;
+}, [scrollToBottom]);
+
 
   const updateMessage = useCallback((messageId: string, content: string) => {
     setMessages(prev => 

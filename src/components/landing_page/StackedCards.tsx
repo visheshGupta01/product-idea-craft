@@ -34,7 +34,7 @@ const cardData: CardData[] = [
     title: "Support That Stays With You Support That Stays With You",
     description: "Crafting meaningful digital experiences",
     content:
-      "Imagine.bo isn’t just a build-and-forget tool. As your project takes shape, our team supports you through critical development phases—helping with custom code integration, backend logic, deployment pipelines, and even scaling strategies. And after you go live, we’re still here—for updates, debugging, and improvements",
+      "As your project takes shape, our team supports you through critical development phases. Helps with custom code integration, backend logic, deployment pipelines, and even scaling strategies. And after you go live, we’re still here for updates, debugging, and improvements.",
     image: card3,
   },
 ];
@@ -123,9 +123,9 @@ const AnimatedCard = memo(function AnimatedCard({
   const getCardState = () => {
     if (index < currentCardIndex) return "previous";
     if (index === currentCardIndex)
-      return transitionProgress > 0.5 ? "exiting" : "current";
+      return transitionProgress > 0.5 ? "previous" : "current";
     if (index === currentCardIndex + 1)
-      return transitionProgress > 0.5 ? "entering" : "next";
+      return transitionProgress > 0.5 ? "current" : "next";
     return "future";
   };
 
@@ -140,28 +140,15 @@ const AnimatedCard = memo(function AnimatedCard({
             0.5 + (currentCardIndex - index - 1) * 0.3,
             2
           )}px)`,
-          opacity: Math.max(0.7, 0.9 - (currentCardIndex - index - 1) * 0.08),
+          opacity: Math.max(
+            0.7,
+            0.9 - (currentCardIndex - index - 1) * 0.08 - 200
+          ),
           zIndex: totalCards - (currentCardIndex - index) - 1,
         }
       : state === "current"
       ? {
           y: 0,
-          scale: 1,
-          filter: "blur(0px)",
-          opacity: 1,
-          zIndex: totalCards,
-        }
-      : state === "exiting"
-      ? {
-          y: -transitionProgress * 30 - 60,
-          scale: 1 - transitionProgress * 0.1,
-          filter: `blur(${transitionProgress * 1}px)`,
-          opacity: 1 - transitionProgress * 0.3,
-          zIndex: totalCards - 1,
-        }
-      : state === "entering"
-      ? {
-          y: (1 - transitionProgress) * 100,
           scale: 1,
           filter: "blur(0px)",
           opacity: 1,
