@@ -56,32 +56,50 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
 
     setIsLoading(true);
 
-    // Create placeholder AI message for streaming
-    const aiMessage = addMessage({
-      type: "ai",
-      content: "",
-      timestamp: new Date(),
-    });
+    // Don't create AI message yet - let loading indicator show first
+    let aiMessage: Message | null = null;
 
     try {
       let streamingContent = "";
       
       await mcpService.sendMessageStream(
         content.trim(),
-        // onChunk: update message content as chunks arrive
+        // onChunk: create AI message on first chunk and update content
         (chunk: string) => {
+          // Create AI message on first chunk
+          if (!aiMessage) {
+            aiMessage = addMessage({
+              type: "ai",
+              content: "",
+              timestamp: new Date(),
+            });
+            setIsLoading(false); // Hide loading indicator when message starts
+          }
+          
           streamingContent += chunk;
           updateMessage(aiMessage.id, streamingContent);
           setTimeout(scrollToBottom, 50);
         },
         // onComplete: final processing if needed
         (fullResponse: string) => {
-          updateMessage(aiMessage.id, fullResponse);
-          setTimeout(scrollToBottom, 100);
+          if (aiMessage) {
+            updateMessage(aiMessage.id, fullResponse);
+            setTimeout(scrollToBottom, 100);
+          }
         }
       );
     } catch (error) {
       console.error("Error in chat:", error);
+      
+      // Create AI message for error if it doesn't exist
+      if (!aiMessage) {
+        aiMessage = addMessage({
+          type: "ai",
+          content: "",
+          timestamp: new Date(),
+        });
+      }
+      
       updateMessage(aiMessage.id, "I apologize, but I'm having trouble processing your request right now. Please try again later.");
     } finally {
       setIsLoading(false);
