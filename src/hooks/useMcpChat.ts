@@ -24,6 +24,13 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
   }, []);
 
  const addMessage = useCallback((message: Omit<Message, "id">) => {
+  // Log the message being added to track undefined content
+  console.log("useMcpChat - Adding message:", message);
+  
+  if (!message.content) {
+    console.error("useMcpChat - Warning: Adding message with undefined/empty content:", message);
+  }
+  
   const newMessage: Message = {
     ...message,
     id: `msg-${crypto.randomUUID()}`, // Unique ID every time
@@ -35,6 +42,12 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
 
 
   const updateMessage = useCallback((messageId: string, content: string) => {
+    console.log("useMcpChat - Updating message:", messageId, "with content:", content);
+    
+    if (content === undefined || content === null) {
+      console.error("useMcpChat - Warning: Updating message with undefined/null content:", messageId, content);
+    }
+    
     setMessages(prev => 
       prev.map(msg => 
         msg.id === messageId ? { ...msg, content } : msg

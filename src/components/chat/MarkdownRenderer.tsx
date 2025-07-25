@@ -6,6 +6,11 @@ interface MarkdownRendererProps {
 }
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
+  // Safety check for undefined content
+  if (!content) {
+    console.error("MarkdownRenderer received undefined content:", content);
+    return <span>Loading...</span>;
+  }
   const renderMarkdown = (text: string) => {
     const lines = text.split("\n");
     const elements: React.ReactElement[] = [];
