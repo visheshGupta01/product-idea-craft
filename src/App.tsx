@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Verify from "./pages/Verify";
 import { useEffect } from "react";
 
 
@@ -44,6 +47,9 @@ const App = () => {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/verify" element={<Verify />} />
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Dashboard />

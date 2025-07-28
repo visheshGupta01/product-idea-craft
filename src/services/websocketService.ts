@@ -15,7 +15,7 @@ class WebSocketService {
 
   async createSession(): Promise<string> {
     try {
-      const response = await fetch('/create/session', {
+      const response = await fetch('https://d6d57fc4551a.ngrok-free.app/create/session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ class WebSocketService {
           this.sessionId = sessionId;
         }
 
-        const wsUrl = `ws://localhost:8080/ws${this.sessionId ? `?session_id=${this.sessionId}` : ''}`;
+        const wsUrl = `wss://d6d57fc4551a.ngrok-free.app/ws${this.sessionId ? `?session_id=${this.sessionId}` : ''}`;
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
