@@ -104,15 +104,15 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         }
 
         elements.push(
-          <div key={currentIndex++} className="my-2">
-            <div className="bg-muted border border-border rounded-lg overflow-hidden">
+          <div key={currentIndex++} className="my-4">
+            <div className="bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/20 rounded-lg overflow-hidden shadow-lg backdrop-blur-sm">
               {language && (
-                <div className="bg-muted/50 px-4 py-2 text-sm font-mono text-muted-foreground border-b border-border">
+                <div className="bg-primary/20 px-4 py-2 text-sm font-mono text-primary border-b border-primary/30">
                   {language}
                 </div>
               )}
-              <pre className="p-4 overflow-x-auto">
-                <code className="text-sm font-mono text-foreground">
+              <pre className="p-6 overflow-x-auto">
+                <code className="text-sm font-mono text-foreground leading-relaxed">
                   {codeLines.join("\n")}
                 </code>
               </pre>
