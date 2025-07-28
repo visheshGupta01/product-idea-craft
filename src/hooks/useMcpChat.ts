@@ -33,7 +33,7 @@ export const useMcpChat = (initialMessages: Message[] = []) => {
   
   const newMessage: Message = {
     ...message,
-    id: `msg-${crypto.randomUUID()}`, // Unique ID every time
+    id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Unique ID every time
   };
   setMessages(prev => [...prev, newMessage]);
   setTimeout(scrollToBottom, 100);
