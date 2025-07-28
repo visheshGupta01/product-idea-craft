@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { ChatPanelProps, Message } from "@/types";
-import { useMcpChat } from "@/hooks/useMcpChat";
+import { useWebSocketChat } from "@/hooks/useWebSocketChat";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { CHAT_CONFIG } from "@/utils/constants";
@@ -13,7 +13,7 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize with default messages first
-  const { messages, isLoading, isProcessingTools, sendMessage, setMessages } = useMcpChat([
+  const { messages, isLoading, isProcessingTools, isConnected, sendMessage, setMessages } = useWebSocketChat([
     {
       id: "1",
       type: "ai",
