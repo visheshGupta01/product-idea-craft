@@ -22,7 +22,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
 
       {/* Frontend Generation Task with Complete Button or Publish Button */}
       <div className="flex items-center space-x-3">
-        {!isFrontendCreated ? (
+        {/* {!isFrontendCreated ? (
           <div className="flex items-center space-x-2 bg-sidebar-accent border border-sidebar-border rounded-lg px-3 py-1">
             <span className="text-sm text-sidebar-foreground">
               Frontend Generation
@@ -47,7 +47,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
           >
             Publish
           </Button>
-        )}
+        )} */}
       </div>
     </div>
   );

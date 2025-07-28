@@ -1,6 +1,6 @@
 // MCP Server Configuration
 export const MCP_CONFIG = {
-  DEFAULT_SERVER_URL: "https://mcp-l1mh.onrender.com/chat",
+  DEFAULT_SERVER_URL: "https://mcp-88h7.onrender.com/chat",
   DEFAULT_SESSION_ID: "a8c11c8223b5bc2ef9080c91178899c9",
   TIMEOUT: 30000, // 30 seconds
 } as const;
