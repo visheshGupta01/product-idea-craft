@@ -87,7 +87,7 @@ export class WebSocketService {
       const messageHandler = (event: MessageEvent) => {
         try {
           const data = JSON.parse(event.data);
-          
+          console.log("Received WebSocket message:", data);
           // Process different types of streaming data
           if (data.type === 'text' && data.content) {
             // Regular text content - stream it immediately

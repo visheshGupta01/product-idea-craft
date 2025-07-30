@@ -16,11 +16,12 @@ export class AuthService {
   constructor() {
     // Load token from localStorage on initialization
     this.token = localStorage.getItem('auth_token');
+    console.log('AuthService initialized with token:', this.token);
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,9 +30,10 @@ export class AuthService {
       });
 
       const data = await response.json();
-
-      if (data.success && data.token) {
+console.log('Login response:', data);
+      if (data.token) {
         this.token = data.token;
+        console.log('Setting token:', data.token);
         localStorage.setItem('auth_token', data.token);
         if (data.session_id) {
           localStorage.setItem('session_id', data.session_id);
@@ -48,35 +50,45 @@ export class AuthService {
     }
   }
 
-  async signup(name: string, email: string, password: string): Promise<AuthResponse> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+async signup(name: string, email: string, password: string): Promise<AuthResponse> {
+  try {
+    const [firstName, ...rest] = name.trim().split(" ");
+    const lastName = rest.join(" "); // Handles names like "John Smith Doe"
+console.log('Signup data:', { firstName, lastName, email, password });
+    const response = await fetch(`${API_BASE_URL}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password,
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
+    console.log('Signup response:', data);
 
-      if (data.success && data.token) {
-        this.token = data.token;
-        localStorage.setItem('auth_token', data.token);
-        if (data.session_id) {
-          localStorage.setItem('session_id', data.session_id);
-        }
+    if (data.success && data.token) {
+      this.token = data.token;
+      localStorage.setItem('auth_token', data.token);
+      if (data.session_id) {
+        localStorage.setItem('session_id', data.session_id);
       }
-
-      return data;
-    } catch (error) {
-      console.error('Signup error:', error);
-      return {
-        success: false,
-        message: 'Network error. Please try again.',
-      };
     }
+
+    return data;
+  } catch (error) {
+    console.error('Signup error:', error);
+    return {
+      success: false,
+      message: 'Network error. Please try again.',
+    };
   }
+}
+
 
   async validateToken(): Promise<AuthResponse> {
     if (!this.token) {
@@ -84,7 +96,7 @@ export class AuthService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/validate`, {
+      const response = await fetch(`${API_BASE_URL}/verify`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${this.token}`,
@@ -114,7 +126,7 @@ export class AuthService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/create-session`, {
+      const response = await fetch(`${API_BASE_URL}/create/session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +136,7 @@ export class AuthService {
       });
 
       const data = await response.json();
-
+console.log('Create session response:', data);
       if (data.success && data.session_id) {
         localStorage.setItem('session_id', data.session_id);
       }
