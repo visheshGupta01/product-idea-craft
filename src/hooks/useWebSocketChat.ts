@@ -88,9 +88,12 @@ export const useWebSocketChat = (sessionId: string) => {
         // onComplete: final processing
         (fullResponse: string) => {
           updateMessage(aiMessage.id, fullResponse);
-          setIsLoading(false);
-          setIsProcessingTools(false);
-          console.log("WebSocket stream completed, clearing all loading states");
+          // Force clear all loading states
+          setTimeout(() => {
+            setIsLoading(false);
+            setIsProcessingTools(false);
+            console.log("WebSocket stream completed, clearing all loading states");
+          }, 100);
         },
         // onToolStart: tool processing started
         () => {
