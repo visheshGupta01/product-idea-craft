@@ -110,8 +110,8 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
             />
           ))}
 
-          {/* Enhanced loading indicator - show when loading or processing */}
-          {(isLoading || isProcessingIdea) && (
+          {/* Enhanced loading indicator - show only when loading or processing idea but not when we have messages */}
+          {(isLoading || (isProcessingIdea && messages.length <= 1)) && (
             <div className="flex items-start space-x-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center animate-pulse">
                 <Bot className="w-4 h-4 text-white" />

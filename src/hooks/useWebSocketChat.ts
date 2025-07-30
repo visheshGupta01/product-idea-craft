@@ -90,14 +90,17 @@ export const useWebSocketChat = (sessionId: string) => {
           updateMessage(aiMessage.id, fullResponse);
           setIsLoading(false);
           setIsProcessingTools(false);
+          console.log("WebSocket stream completed, clearing all loading states");
         },
         // onToolStart: tool processing started
         () => {
           setIsProcessingTools(true);
+          console.log("Tool processing started");
         },
         // onToolEnd: tool processing finished
         () => {
           setIsProcessingTools(false);
+          console.log("Tool processing ended");
         }
       );
     } catch (error) {
@@ -110,8 +113,10 @@ export const useWebSocketChat = (sessionId: string) => {
         timestamp: new Date(),
       });
       
+      // Ensure all loading states are cleared on error
       setIsLoading(false);
       setIsProcessingTools(false);
+      console.log("Error occurred, clearing all loading states");
     }
   };
 
