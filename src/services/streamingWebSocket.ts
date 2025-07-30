@@ -19,6 +19,8 @@ export class StreamingWebSocketClient {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3;
   private reconnectDelay = 2000;
+  private isToolOutputStreaming = false;
+  private toolOutputBuffer = '';
 
   constructor(sessionId: string) {
     this.sessionId = sessionId;
@@ -70,6 +72,10 @@ export class StreamingWebSocketClient {
 
     let fullContent = '';
     let isComplete = false;
+    
+    // Reset tool streaming state for new message
+    this.isToolOutputStreaming = false;
+    this.toolOutputBuffer = '';
 
     const messageHandler = (event: MessageEvent) => {
       if (isComplete) return;
@@ -94,17 +100,20 @@ export class StreamingWebSocketClient {
         switch (data.type) {
           case 'content':
             if (data.text) {
+              console.log("📝 Content chunk received:", data.text.length, "characters");
               fullContent += data.text;
               callbacks.onContent(data.text);
             }
             break;
 
           case 'tool_use':
+            console.log("🔧 Tool execution started");
+            this.isToolOutputStreaming = true;
+            this.toolOutputBuffer = '';
             callbacks.onToolStart();
             break;
 
           case 'tool_result':
-            callbacks.onToolEnd();
             let toolOutput = '';
             
             // Handle different content formats
@@ -129,11 +138,20 @@ export class StreamingWebSocketClient {
               toolOutput = data.text;
             }
             
-            console.log("🔧 Tool output received:", toolOutput.length, "characters");
+            console.log("🔧 Tool output chunk received:", toolOutput.length, "characters");
+            console.log("🔧 Tool output preview:", toolOutput.substring(0, 100) + (toolOutput.length > 100 ? '...' : ''));
             
             if (toolOutput) {
+              this.toolOutputBuffer += toolOutput;
               fullContent += toolOutput;
               callbacks.onContent(toolOutput);
+            }
+            
+            // Check if this tool_result indicates completion
+            if (data.is_final || data.final || data.complete) {
+              console.log("🔧 Tool execution completed. Total buffer length:", this.toolOutputBuffer.length);
+              this.isToolOutputStreaming = false;
+              callbacks.onToolEnd();
             }
             break;
 
@@ -141,7 +159,12 @@ export class StreamingWebSocketClient {
           case 'complete':
             if (!isComplete) {
               isComplete = true;
-              callbacks.onToolEnd(); // Ensure tools are cleared
+              // If we were streaming tool output, end it now
+              if (this.isToolOutputStreaming) {
+                console.log("🔧 Force-ending tool output on stream completion. Buffer length:", this.toolOutputBuffer.length);
+                this.isToolOutputStreaming = false;
+                callbacks.onToolEnd();
+              }
               callbacks.onComplete(fullContent);
               this.cleanup(messageHandler);
             }
