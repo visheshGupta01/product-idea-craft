@@ -107,15 +107,29 @@ export class StreamingWebSocketClient {
             callbacks.onToolEnd();
             let toolOutput = '';
             
-            if (data.content && Array.isArray(data.content)) {
-              data.content.forEach((block: any) => {
-                if (block.type === 'text' && block.text) {
-                  toolOutput += block.text;
-                }
-              });
-            } else if (data.content && typeof data.content === 'string') {
-              toolOutput = data.content;
+            // Handle different content formats
+            if (data.content) {
+              if (Array.isArray(data.content)) {
+                data.content.forEach((block: any) => {
+                  if (block.type === 'text' && block.text) {
+                    toolOutput += block.text;
+                  } else if (typeof block === 'string') {
+                    toolOutput += block;
+                  }
+                });
+              } else if (typeof data.content === 'string') {
+                toolOutput = data.content;
+              } else if (data.content.text) {
+                toolOutput = data.content.text;
+              }
             }
+            
+            // Also check for direct text property
+            if (data.text && !toolOutput) {
+              toolOutput = data.text;
+            }
+            
+            console.log("🔧 Tool output received:", toolOutput.length, "characters");
             
             if (toolOutput) {
               fullContent += toolOutput;
