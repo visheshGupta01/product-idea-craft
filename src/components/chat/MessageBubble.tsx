@@ -53,34 +53,36 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.type === "user";
 
   return (
-    <div className={`flex items-start space-x-3 ${isUser ? "flex-row-reverse space-x-reverse" : ""}`}>
-      <Avatar className="w-8 h-8">
-        <AvatarFallback>
+    <div className={`flex items-start space-x-3 mb-6 ${isUser ? "flex-row-reverse space-x-reverse" : ""}`}>
+      <Avatar className="w-8 h-8 flex-shrink-0">
+        <AvatarFallback className={isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"}>
           {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
         </AvatarFallback>
       </Avatar>
       
-      <div className={`flex flex-col space-y-2 text-sm max-w-xs lg:max-w-2xl xl:max-w-3xl ${isUser ? "items-end" : "items-start"}`}>
-        <div className={`px-4 py-2 rounded-lg ${
+      <div className={`flex flex-col space-y-2 max-w-[75%] ${isUser ? "items-end" : "items-start"}`}>
+        <div className={`px-4 py-3 rounded-2xl shadow-sm ${
           isUser
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted"
+            ? "bg-blue-500 text-white rounded-br-sm"
+            : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-bl-sm"
         }`}>
           {isUser ? (
-            <div className="whitespace-pre-wrap">
+            <div className="whitespace-pre-wrap text-sm leading-relaxed">
               {message.content}
             </div>
           ) : (
-            <EnhancedMarkdownRenderer content={message.content} />
+            <div className="text-sm leading-relaxed">
+              <EnhancedMarkdownRenderer content={message.content} />
+            </div>
           )}
         </div>
         
         {!isWelcomeMessage && (
-          <div className="flex space-x-1">
+          <div className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity ${isUser ? "justify-end" : "justify-start"}`}>
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0"
+              className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => copyToClipboard(message.content)}
             >
               <Copy className="h-3 w-3" />
@@ -89,7 +91,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0"
+                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
                 onClick={() => downloadAsText(message.content, message.id)}
               >
                 <Download className="h-3 w-3" />
