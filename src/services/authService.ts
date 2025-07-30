@@ -21,7 +21,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ async signup(name: string, email: string, password: string): Promise<AuthRespons
     const [firstName, ...rest] = name.trim().split(" ");
     const lastName = rest.join(" "); // Handles names like "John Smith Doe"
 console.log('Signup data:', { firstName, lastName, email, password });
-    const response = await fetch(`${API_BASE_URL}/signup`, {
+    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ console.log('Signup data:', { firstName, lastName, email, password });
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/verify`, {
+      const response = await fetch(`${API_BASE_URL}/auth/verify-token`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${this.token}`,
@@ -116,6 +116,22 @@ console.log('Signup data:', { firstName, lastName, email, password });
       return {
         success: false,
         message: 'Token validation failed',
+      };
+    }
+  }
+
+  async verifyEmail(token: string): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/verify?token=${token}`, {
+        method: 'GET',
+      });
+
+      return await response.json();
+    } catch (error) {
+      console.error('Email verification error:', error);
+      return {
+        success: false,
+        message: 'Email verification failed',
       };
     }
   }

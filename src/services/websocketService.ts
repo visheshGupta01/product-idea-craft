@@ -88,39 +88,36 @@ export class WebSocketService {
         try {
           const data = JSON.parse(event.data);
           console.log("Received WebSocket message:", data);
-          // Process different types of streaming data
-          if (data.type === 'text' && data.content) {
+          
+          // Handle different types of messages
+          if (data.type === 'content' && data.text) {
             // Regular text content - stream it immediately
-            onChunk(data.content);
-            fullResponseContent += data.content;
-          } else if (data.type === 'tool_start') {
+            onChunk(data.text);
+            fullResponseContent += data.text;
+          } else if (data.type === 'tool_use') {
             // Tool processing started - notify UI
             onToolStart?.();
-          } else if (data.type === 'tool_result' && data.tool) {
+          } else if (data.type === 'tool_result') {
             // Tool result - process and add to full response
             onToolEnd?.(); // Tool finished processing
             let toolOutput = '';
             
-            if (data.tool.name === "sitemap_user_idea" && typeof data.tool.output === "object") {
-              // Handle structured sitemap data
-              const sitemapData = data.tool.output;
-              toolOutput = `\n\n## Project Sitemap\n\n__SITEMAP_DATA__${JSON.stringify(sitemapData)}__SITEMAP_DATA__`;
-            } else {
-              // Handle regular string output
-              toolOutput = data.tool.output?.toString().trim() || '';
-              if (toolOutput) {
-                const sectionTitle = data.tool.name
-                  .replace(/[_-]/g, " ")
-                  .replace(/\b\w/g, (l) => l.toUpperCase());
-                toolOutput = `\n\n## ${sectionTitle}\n\n${toolOutput}`;
-              }
+            if (data.content && Array.isArray(data.content)) {
+              // Handle array of content blocks
+              data.content.forEach((block: any) => {
+                if (block.type === 'text' && block.text) {
+                  toolOutput += block.text;
+                }
+              });
+            } else if (data.content && typeof data.content === 'string') {
+              toolOutput = data.content;
             }
             
             if (toolOutput) {
               onChunk(toolOutput);
               fullResponseContent += toolOutput;
             }
-          } else if (data.type === 'complete') {
+          } else if (data.type === 'message_stop' || data.type === 'complete') {
             // Stream is complete
             onToolEnd?.(); // Ensure tool state is cleared
             onComplete(fullResponseContent);
@@ -130,9 +127,18 @@ export class WebSocketService {
             // Handle error response
             this.ws?.removeEventListener('message', messageHandler);
             reject(new Error(data.message || 'WebSocket error'));
+          } else if (data.text) {
+            // Fallback for simple text messages
+            onChunk(data.text);
+            fullResponseContent += data.text;
           }
         } catch (parseError) {
           console.warn("Failed to parse WebSocket message:", event.data, parseError);
+          // Try to handle as plain text
+          if (typeof event.data === 'string') {
+            onChunk(event.data);
+            fullResponseContent += event.data;
+          }
         }
       };
 
