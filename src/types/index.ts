@@ -13,7 +13,7 @@ export interface Message {
   timestamp: Date;
 }
 
-export interface InitialMcpResponse {
+export interface InitialResponse {
   userMessage: string;
   aiResponse: string;
   timestamp: Date;

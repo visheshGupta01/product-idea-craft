@@ -5,21 +5,34 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { UI_CONFIG } from "@/utils/constants";
+import { LoginModal } from "../auth/LoginModal";
+import { SignupModal } from "../auth/SignupModal";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
-  const { sendIdeaToMcp, setUserIdea, isProcessingIdea } = useUser();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const { sendIdeaWithAuth, setUserIdea, isProcessingIdea, isAuthenticated } = useUser();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    if (idea.trim() && !isProcessingIdea) {
-      // Set the idea and navigate first
-      setUserIdea(idea.trim());
+    if (!idea.trim() || isProcessingIdea) return;
+
+    if (!isAuthenticated) {
+      // Show login modal if not authenticated
+      setShowLoginModal(true);
+      return;
+    }
+
+    const result = await sendIdeaWithAuth(idea.trim());
+    
+    if (result.success && result.session_id) {
+      // Successfully created session, navigate to dashboard
       navigate("/dashboard");
-      // Start processing after navigation
-      setTimeout(() => {
-        sendIdeaToMcp(idea.trim());
-      }, 100);
+    } else {
+      // Handle error
+      console.error("Failed to create session:", result.message);
+      alert(result.message || "Failed to process your idea. Please try again.");
     }
   };
 
@@ -116,6 +129,24 @@ const IdeaBox: React.FC = () => {
           </button>
         </div>
       </div>
+      
+      {/* Authentication Modals */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSwitchToSignup={() => {
+          setShowLoginModal(false);
+          setShowSignupModal(true);
+        }}
+      />
+      <SignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onSwitchToLogin={() => {
+          setShowSignupModal(false);
+          setShowLoginModal(true);
+        }}
+      />
     </section>
   );
 };

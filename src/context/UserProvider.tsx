@@ -1,114 +1,116 @@
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { UserContext } from "./UserContext";
-import { User, InitialMcpResponse } from "@/types";
-import { mcpService } from "@/services/mcpService";
+import { User, InitialResponse } from "@/types";
+import { authService } from "@/services/authService";
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userIdea, setUserIdea] = useState<string | null>(null);
-  const [initialMcpResponse, setInitialMcpResponse] = useState<InitialMcpResponse | null>(null);
+  const [initialResponse, setInitialResponse] = useState<InitialResponse | null>(null);
   const [isProcessingIdea, setIsProcessingIdea] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const result = await authService.validateToken();
+      if (result.success && result.user) {
+        setUser(result.user);
+        setIsAuthenticated(true);
+        const storedSessionId = authService.getSessionId();
+        setSessionId(storedSessionId);
+      }
+    };
+    checkAuth();
+  }, []);
 
   const login = async (email: string, password: string) => {
-    // In real app: send request to backend
-    const userData = {
-      name: email.split("@")[0],
-      email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-    };
-    setUser(userData);
+    const result = await authService.login(email, password);
+    if (result.success && result.user) {
+      setUser(result.user);
+      setIsAuthenticated(true);
+      if (result.session_id) {
+        setSessionId(result.session_id);
+      }
+    }
+    return { success: result.success, message: result.message };
   };
 
   const logout = () => {
+    authService.logout();
     setUser(null);
+    setIsAuthenticated(false);
+    setSessionId(null);
+    setUserIdea(null);
+    setInitialResponse(null);
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    // In real app: send signup request to backend
-    const userData = {
-      name,
-      email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      verified: false, // Initially not verified
-    };
-    setUser(userData);
+    const result = await authService.signup(name, email, password);
+    if (result.success && result.user) {
+      setUser(result.user);
+      setIsAuthenticated(true);
+      if (result.session_id) {
+        setSessionId(result.session_id);
+      }
+    }
+    return { success: result.success, message: result.message };
   };
 
-  const sendIdeaToMcp = async (idea: string) => {
+  const sendIdeaWithAuth = async (idea: string) => {
+    if (!isAuthenticated) {
+      return { success: false, message: "Please login first" };
+    }
+
     setIsProcessingIdea(true);
     
-    // Create initial response object for streaming
-    const initialResponse: InitialMcpResponse = {
-      userMessage: idea,
-      aiResponse: "",
-      timestamp: new Date(),
-    };
-    setInitialMcpResponse(initialResponse);
-    
     try {
-      let streamingContent = "";
+      // Create session with the idea
+      const result = await authService.createSessionWithIdea(idea);
       
-      await mcpService.sendMessageStream(
-        idea,
-        // onChunk: update response as chunks arrive
-        (chunk: string) => {
-          streamingContent += chunk;
-          setInitialMcpResponse({
-            userMessage: idea,
-            aiResponse: streamingContent,
-            timestamp: new Date(),
-          });
-        },
-        // onComplete: final processing
-        (fullResponse: string) => {
-          setInitialMcpResponse({
-            userMessage: idea,
-            aiResponse: fullResponse,
-            timestamp: new Date(),
-          });
-        }
-      );
-      
+      if (result.success && result.session_id) {
+        setSessionId(result.session_id);
+        setUserIdea(idea);
+        
+        // Create initial response for display
+        const initialResponse: InitialResponse = {
+          userMessage: idea,
+          aiResponse: "",
+          timestamp: new Date(),
+        };
+        setInitialResponse(initialResponse);
+        
+        return { success: true, session_id: result.session_id };
+      } else {
+        return { success: false, message: result.message };
+      }
     } catch (error) {
-      console.error("Error sending idea to MCP server:", error);
-      
-      // Fallback response
-      setInitialMcpResponse({
-        userMessage: idea,
-        aiResponse: `## Welcome! 🚀
-
-I've received your idea: "${idea}"
-
-I'm ready to help you build it step by step. Let's start by analyzing your requirements and creating a comprehensive development plan.
-
-Please let me know if you'd like to:
-- Discuss the technical architecture
-- Plan the user interface
-- Define the core features
-- Explore implementation options`,
-        timestamp: new Date(),
-      });
+      console.error("Error creating session with idea:", error);
+      return { success: false, message: "Failed to process idea" };
     } finally {
       setIsProcessingIdea(false);
     }
   };
 
   const clearInitialResponse = () => {
-    setInitialMcpResponse(null);
+    setInitialResponse(null);
   };
 
   return (
     <UserContext.Provider value={{ 
       user, 
       userIdea, 
-      initialMcpResponse,
+      initialResponse,
       isProcessingIdea,
+      isAuthenticated,
+      sessionId,
       login, 
       logout, 
       signup, 
       setUserIdea,
-      sendIdeaToMcp,
+      sendIdeaWithAuth,
       clearInitialResponse
     }}>
       {children}

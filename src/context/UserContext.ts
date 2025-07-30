@@ -1,17 +1,19 @@
 
 import React, { createContext, useContext } from "react";
-import { User, InitialMcpResponse } from "@/types";
+import { User, InitialResponse } from "@/types";
 
 interface UserContextType {
   user: User | null;
   userIdea: string | null;
-  initialMcpResponse: InitialMcpResponse | null;
+  initialResponse: InitialResponse | null;
   isProcessingIdea: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  isAuthenticated: boolean;
+  sessionId: string | null;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
-  signup: (name: string, email: string, password: string, verified: boolean) => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   setUserIdea: (idea: string) => void;
-  sendIdeaToMcp: (idea: string) => Promise<void>;
+  sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string }>;
   clearInitialResponse: () => void;
 }
 
@@ -19,13 +21,15 @@ interface UserContextType {
 export const UserContext = createContext<UserContextType>({
   user: null,
   userIdea: null,
-  initialMcpResponse: null,
+  initialResponse: null,
   isProcessingIdea: false,
-  login: async () => {},
+  isAuthenticated: false,
+  sessionId: null,
+  login: async () => ({ success: false }),
   logout: () => {},
-  signup: async () => {},
+  signup: async () => ({ success: false }),
   setUserIdea: () => {},
-  sendIdeaToMcp: async () => {},
+  sendIdeaWithAuth: async () => ({ success: false }),
   clearInitialResponse: () => {},
 });
 
