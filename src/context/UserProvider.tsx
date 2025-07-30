@@ -15,7 +15,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   // Check authentication on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const result = await authService.validateToken();
+      // const result = await authService.validateToken();
       if (result.success && result.user) {
         setUser(result.user);
         setIsAuthenticated(true);

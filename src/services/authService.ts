@@ -21,7 +21,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ async signup(name: string, email: string, password: string): Promise<AuthRespons
     const [firstName, ...rest] = name.trim().split(" ");
     const lastName = rest.join(" "); // Handles names like "John Smith Doe"
 console.log('Signup data:', { firstName, lastName, email, password });
-    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+    const response = await fetch(`${API_BASE_URL}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,39 +90,39 @@ console.log('Signup data:', { firstName, lastName, email, password });
 }
 
 
-  async validateToken(): Promise<AuthResponse> {
-    if (!this.token) {
-      return { success: false, message: 'No token found' };
-    }
+  // async validateToken(): Promise<AuthResponse> {
+  //   if (!this.token) {
+  //     return { success: false, message: 'No token found' };
+  //   }
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/verify-token`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-        },
-      });
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/verify`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Authorization': `Bearer ${this.token}`,
+  //       },
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (!data.success) {
-        this.logout();
-      }
+  //     if (!data.success) {
+  //       this.logout();
+  //     }
 
-      return data;
-    } catch (error) {
-      console.error('Token validation error:', error);
-      this.logout();
-      return {
-        success: false,
-        message: 'Token validation failed',
-      };
-    }
-  }
+  //     return data;
+  //   } catch (error) {
+  //     console.error('Token validation error:', error);
+  //     this.logout();
+  //     return {
+  //       success: false,
+  //       message: 'Token validation failed',
+  //     };
+  //   }
+  // }
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/verify?token=${token}`, {
+      const response = await fetch(`${API_BASE_URL}/verify?token=${token}`, {
         method: 'GET',
       });
 
