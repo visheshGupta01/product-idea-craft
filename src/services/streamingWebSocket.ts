@@ -21,6 +21,13 @@ export class StreamingWebSocketClient {
   private reconnectDelay = 2000;
   private isToolOutputStreaming = false;
   private toolOutputBuffer = '';
+  
+  // Content integrity tracking
+  private expectedContentLength = 0;
+  private actualContentLength = 0;
+  private lastContentTimestamp = 0;
+  private contentTimeout: NodeJS.Timeout | null = null;
+  private readonly CONTENT_TIMEOUT_MS = 5000; // 5 seconds timeout
 
   constructor(sessionId: string) {
     this.sessionId = sessionId;
@@ -73,9 +80,46 @@ export class StreamingWebSocketClient {
     let fullContent = '';
     let isComplete = false;
     
-    // Reset tool streaming state for new message
+    // Reset all tracking state for new message
     this.isToolOutputStreaming = false;
     this.toolOutputBuffer = '';
+    this.actualContentLength = 0;
+    this.expectedContentLength = 0;
+    this.lastContentTimestamp = Date.now();
+    
+    // Clear any existing timeout
+    if (this.contentTimeout) {
+      clearTimeout(this.contentTimeout);
+      this.contentTimeout = null;
+    }
+
+    // Set up content timeout safety mechanism
+    const setupContentTimeout = () => {
+      if (this.contentTimeout) {
+        clearTimeout(this.contentTimeout);
+      }
+      this.contentTimeout = setTimeout(() => {
+        if (!isComplete) {
+          console.warn("⚠️ Content timeout reached. Forcing completion with current content.");
+          console.warn(`📊 Final content stats: Expected: ${this.expectedContentLength}, Actual: ${this.actualContentLength}, Full length: ${fullContent.length}`);
+          if (!isComplete) {
+            isComplete = true;
+            if (this.isToolOutputStreaming) {
+              callbacks.onToolEnd();
+            }
+            callbacks.onComplete(fullContent);
+            this.cleanup(messageHandler);
+          }
+        }
+      }, this.CONTENT_TIMEOUT_MS);
+    };
+
+    const updateContentStats = (newContent: string) => {
+      this.actualContentLength += newContent.length;
+      this.lastContentTimestamp = Date.now();
+      console.log(`📊 Content stats: Added ${newContent.length} chars, Total: ${this.actualContentLength}, Full: ${fullContent.length}`);
+      setupContentTimeout(); // Reset timeout on new content
+    };
 
     const messageHandler = (event: MessageEvent) => {
       if (isComplete) return;
@@ -86,11 +130,21 @@ export class StreamingWebSocketClient {
         const data: any = JSON.parse(event.data);
         console.log("📋 Parsed message:", data);
 
+        // Check for expected content length in metadata
+        if (data.expected_length) {
+          this.expectedContentLength = data.expected_length;
+          console.log(`📏 Expected content length: ${this.expectedContentLength}`);
+        }
+
         // Check for done: true to complete streaming
         if (data.done === true) {
           if (!isComplete) {
+            console.log(`✅ Stream completed. Content integrity check: Expected: ${this.expectedContentLength}, Actual: ${this.actualContentLength}, Full: ${fullContent.length}`);
             isComplete = true;
-            callbacks.onToolEnd(); // Ensure tools are cleared
+            if (this.contentTimeout) clearTimeout(this.contentTimeout);
+            if (this.isToolOutputStreaming) {
+              callbacks.onToolEnd();
+            }
             callbacks.onComplete(fullContent);
             this.cleanup(messageHandler);
           }
@@ -102,6 +156,7 @@ export class StreamingWebSocketClient {
             if (data.text) {
               console.log("📝 Content chunk received:", data.text.length, "characters");
               fullContent += data.text;
+              updateContentStats(data.text);
               callbacks.onContent(data.text);
             }
             break;
@@ -144,6 +199,7 @@ export class StreamingWebSocketClient {
             if (toolOutput) {
               this.toolOutputBuffer += toolOutput;
               fullContent += toolOutput;
+              updateContentStats(toolOutput);
               callbacks.onContent(toolOutput);
             }
             
@@ -224,6 +280,11 @@ export class StreamingWebSocketClient {
 
   private cleanup(messageHandler: (event: MessageEvent) => void) {
     this.ws?.removeEventListener('message', messageHandler);
+    // Clear timeout on cleanup
+    if (this.contentTimeout) {
+      clearTimeout(this.contentTimeout);
+      this.contentTimeout = null;
+    }
   }
 
   disconnect() {
