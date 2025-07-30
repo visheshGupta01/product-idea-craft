@@ -128,10 +128,12 @@ export const useStreamingChat = (sessionId: string): StreamingChatState & Stream
           console.log("✅ Tool processing ended");
         },
         onComplete: (fullContent: string) => {
-          updateMessage(aiMessage.id, fullContent);
+          // Use the accumulated streaming content if it's longer than fullContent
+          const finalContent = streamingContent.length > fullContent.length ? streamingContent : fullContent;
+          updateMessage(aiMessage.id, finalContent);
           setIsStreaming(false);
           setIsProcessingTools(false);
-          console.log("🎉 Streaming completed");
+          console.log("🎉 Streaming completed with content length:", finalContent.length);
         },
         onError: (error: Error) => {
           console.error("❌ Streaming error:", error);
