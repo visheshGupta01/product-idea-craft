@@ -48,9 +48,9 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     }
   }, [messages.length, addMessage]);
 
-  // Handle initial response from user context
+  // Handle initial response from user context and send message
   useEffect(() => {
-    if (initialResponse) {
+    if (initialResponse && sessionId) {
       // Add user message
       addMessage({
         type: "user",
@@ -58,10 +58,13 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
         timestamp: initialResponse.timestamp,
       });
 
+      // Send the message to get AI response
+      sendMessage(initialResponse.userMessage);
+
       // Clear from context
       clearInitialResponse();
     }
-  }, [initialResponse, addMessage, clearInitialResponse]);
+  }, [initialResponse, sessionId, addMessage, sendMessage, clearInitialResponse]);
 
   // Auto-scroll on new messages
   useEffect(() => {

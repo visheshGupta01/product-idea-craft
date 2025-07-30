@@ -153,7 +153,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(React.cloneElement(listElement, { key: currentIndex++ }));
         i = nextIndex - 1;
       }
-      // Tables
+      // Enhanced Tables with better styling
       else if (line.includes("|") && line.split("|").length > 2) {
         const tableLines = [line];
         let j = i + 1;
@@ -180,15 +180,15 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         const dataRows = hasHeader ? rows.slice(2) : rows;
 
         elements.push(
-          <div key={currentIndex++} className="my-4 overflow-x-auto">
-            <table className="min-w-full border border-border rounded-lg">
+          <div key={currentIndex++} className="my-6 overflow-x-auto shadow-sm rounded-lg border border-border">
+            <table className="min-w-full divide-y divide-border">
               {headerRow && (
-                <thead className="bg-muted">
+                <thead className="bg-gradient-to-r from-primary/10 to-accent/5">
                   <tr>
                     {headerRow.map((header, idx) => (
                       <th
                         key={idx}
-                        className="px-4 py-2 text-left font-semibold text-foreground border-b border-border"
+                        className="px-6 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider border-r border-border last:border-r-0"
                       >
                         {processInlineFormatting(header)}
                       </th>
@@ -196,13 +196,13 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
                   </tr>
                 </thead>
               )}
-              <tbody>
+              <tbody className="bg-background divide-y divide-border">
                 {dataRows.map((row, rowIdx) => (
-                  <tr key={rowIdx} className="even:bg-muted/50">
+                  <tr key={rowIdx} className="hover:bg-muted/50 transition-colors">
                     {row.map((cell, cellIdx) => (
                       <td
                         key={cellIdx}
-                        className="px-4 py-2 text-foreground border-b border-border"
+                        className="px-6 py-4 whitespace-nowrap text-sm text-foreground border-r border-border last:border-r-0"
                       >
                         {processInlineFormatting(cell)}
                       </td>

@@ -139,14 +139,19 @@ export class StreamingWebSocketClient {
         // Check for done: true to complete streaming
         if (data.done === true) {
           if (!isComplete) {
-            console.log(`✅ Stream completed. Content integrity check: Expected: ${this.expectedContentLength}, Actual: ${this.actualContentLength}, Full: ${fullContent.length}`);
-            isComplete = true;
-            if (this.contentTimeout) clearTimeout(this.contentTimeout);
-            if (this.isToolOutputStreaming) {
-              callbacks.onToolEnd();
-            }
-            callbacks.onComplete(fullContent);
-            this.cleanup(messageHandler);
+            console.log(`✅ Stream completed with done=true. Content integrity check: Expected: ${this.expectedContentLength}, Actual: ${this.actualContentLength}, Full: ${fullContent.length}`);
+            // Add a small delay to allow any pending content to arrive
+            setTimeout(() => {
+              if (!isComplete) {
+                isComplete = true;
+                if (this.contentTimeout) clearTimeout(this.contentTimeout);
+                if (this.isToolOutputStreaming) {
+                  callbacks.onToolEnd();
+                }
+                callbacks.onComplete(fullContent);
+                this.cleanup(messageHandler);
+              }
+            }, 100); // 100ms delay to catch any late content
           }
           return;
         }
@@ -214,15 +219,22 @@ export class StreamingWebSocketClient {
           case 'message_stop':
           case 'complete':
             if (!isComplete) {
-              isComplete = true;
-              // If we were streaming tool output, end it now
-              if (this.isToolOutputStreaming) {
-                console.log("🔧 Force-ending tool output on stream completion. Buffer length:", this.toolOutputBuffer.length);
-                this.isToolOutputStreaming = false;
-                callbacks.onToolEnd();
-              }
-              callbacks.onComplete(fullContent);
-              this.cleanup(messageHandler);
+              console.log(`✅ Stream completed with ${data.type}. Final content length: ${fullContent.length}`);
+              // Add a small delay to ensure all content is processed
+              setTimeout(() => {
+                if (!isComplete) {
+                  isComplete = true;
+                  if (this.contentTimeout) clearTimeout(this.contentTimeout);
+                  // If we were streaming tool output, end it now
+                  if (this.isToolOutputStreaming) {
+                    console.log("🔧 Force-ending tool output on stream completion. Buffer length:", this.toolOutputBuffer.length);
+                    this.isToolOutputStreaming = false;
+                    callbacks.onToolEnd();
+                  }
+                  callbacks.onComplete(fullContent);
+                  this.cleanup(messageHandler);
+                }
+              }, 100); // 100ms delay
             }
             break;
 
