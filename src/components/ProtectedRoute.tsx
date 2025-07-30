@@ -8,10 +8,10 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { userIdea, isProcessingIdea, initialMcpResponse } = useUser();
+  const { userIdea, isProcessingIdea, initialResponse, isAuthenticated, sessionId } = useUser();
 
-  // Allow access if user has an idea, is processing an idea, or has an initial response
-  if (!userIdea && !isProcessingIdea && !initialMcpResponse) {
+  // Allow access if user is authenticated and has a session
+  if (!isAuthenticated || (!userIdea && !isProcessingIdea && !initialResponse && !sessionId)) {
     return <Navigate to="/" replace />;
   }
 
