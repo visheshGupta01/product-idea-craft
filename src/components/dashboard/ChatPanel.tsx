@@ -3,79 +3,73 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { ChatPanelProps, Message } from "@/types";
-import { useWebSocketChat } from "@/hooks/useWebSocketChat";
+import { useMcpChat } from "@/hooks/useMcpChat";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { CHAT_CONFIG } from "@/utils/constants";
 
 const ChatPanel = ({ userIdea }: ChatPanelProps) => {
-  const { initialResponse, clearInitialResponse, isProcessingIdea, sessionId } = useUser();
+  const { initialMcpResponse, clearInitialResponse, isProcessingIdea } = useUser();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize WebSocket chat hook
-  const { messages, isLoading, isProcessingTools, sendMessage, setMessages, initializeWebSocket } = useWebSocketChat(sessionId || '');
+  // Initialize with default messages first
+  const { messages, isLoading, isProcessingTools, sendMessage, setMessages } = useMcpChat([
+    {
+      id: "1",
+      type: "ai",
+      content: CHAT_CONFIG.DEFAULT_WELCOME_MESSAGE,
+      timestamp: new Date(),
+    },
+  ]);
 
-  // Initialize WebSocket connection and welcome message
+  // Update messages when initialMcpResponse becomes available
   useEffect(() => {
-    if (sessionId) {
-      initializeWebSocket();
-    }
-    
-    // Set welcome message if no messages yet
-    if (messages.length === 0) {
-      setMessages([{
-        id: "welcome",
-        type: "ai",
-        content: CHAT_CONFIG.DEFAULT_WELCOME_MESSAGE,
-        timestamp: new Date(),
-      }]);
-    }
-  }, [sessionId, initializeWebSocket, messages.length, setMessages]);
-
-  // Update messages when initialResponse becomes available
-  useEffect(() => {
-    if (initialResponse && initialResponse.userMessage) {
-      console.log("ChatPanel - Processing initialResponse:", initialResponse);
+    if (initialMcpResponse && initialMcpResponse.userMessage) {
+      console.log("ChatPanel - Processing initialMcpResponse:", initialMcpResponse);
       
       setMessages(prevMessages => {
         // Keep the welcome message and add the new ones
-        const welcomeMessage = prevMessages.find(msg => msg.id === "welcome");
+        const welcomeMessage = prevMessages.find(msg => msg.id === "1");
         const newMessages: Message[] = welcomeMessage ? [welcomeMessage] : [];
         
         // Add user message
         newMessages.push({
           id: `initial-user-${Date.now()}`,
           type: "user",
-          content: initialResponse.userMessage,
-          timestamp: initialResponse.timestamp,
+          content: initialMcpResponse.userMessage,
+          timestamp: initialMcpResponse.timestamp,
         });
         
         // Only add AI message if there's content
-        if (initialResponse.aiResponse) {
+        if (initialMcpResponse.aiResponse) {
           newMessages.push({
             id: `initial-ai-${Date.now()}`,
             type: "ai",
-            content: initialResponse.aiResponse,
-            timestamp: new Date(initialResponse.timestamp.getTime() + 1000),
+            content: initialMcpResponse.aiResponse,
+            timestamp: new Date(initialMcpResponse.timestamp.getTime() + 1000),
           });
         }
         
         return newMessages;
       });
     }
-  }, [initialResponse, setMessages]);
+  }, [initialMcpResponse, setMessages]);
+
+  // Debug logging
+  console.log("ChatPanel - messages:", messages);
+  console.log("ChatPanel - initialMcpResponse:", initialMcpResponse);
 
   // Clear the initial response from context after messages are processed
   useEffect(() => {
-    if (initialResponse && messages.length > 1) {
+    if (initialMcpResponse && messages.length > 1) {
       // Only clear after we've successfully processed the initial response
       const timer = setTimeout(() => {
-        console.log("ChatPanel - Clearing initialResponse");
+        console.log("ChatPanel - Clearing initialMcpResponse");
         clearInitialResponse();
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [initialResponse, clearInitialResponse, messages.length]);
+  }, [initialMcpResponse, clearInitialResponse, messages.length]);
 
   const scrollToTopOfNewMessage = () => {
     const messageElements = document.querySelectorAll("[data-message-id]");
@@ -106,12 +100,12 @@ const ChatPanel = ({ userIdea }: ChatPanelProps) => {
             <MessageBubble
               key={message.id}
               message={message}
-              isWelcomeMessage={message.id === "welcome" && !initialResponse}
+              isWelcomeMessage={message.id === "1" && !initialMcpResponse}
             />
           ))}
 
-          {/* Enhanced loading indicator - show only when loading or processing idea but not when we have messages */}
-          {(isLoading || (isProcessingIdea && messages.length <= 1)) && (
+          {/* Enhanced loading indicator - show when loading or processing */}
+          {(isLoading || isProcessingIdea) && (
             <div className="flex items-start space-x-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center animate-pulse">
                 <Bot className="w-4 h-4 text-white" />

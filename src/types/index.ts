@@ -1,6 +1,6 @@
 // Core type definitions
 export interface User {
-  firstName: string;
+  name: string;
   email: string;
   avatar: string;
   verified?: boolean;
@@ -13,7 +13,7 @@ export interface Message {
   timestamp: Date;
 }
 
-export interface InitialResponse {
+export interface InitialMcpResponse {
   userMessage: string;
   aiResponse: string;
   timestamp: Date;

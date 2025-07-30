@@ -1,8 +1,8 @@
-// WebSocket Configuration
-export const WS_CONFIG = {
-  BASE_URL: "ws://localhost:8000/ws",
-  RECONNECT_ATTEMPTS: 3,
-  RECONNECT_DELAY: 2000,
+// MCP Server Configuration
+export const MCP_CONFIG = {
+  DEFAULT_SERVER_URL: "https://mcp-7vh5.onrender.com/chat",
+  DEFAULT_SESSION_ID: "a8c11c8223b5bc2ef9080c91178899c9",
+  TIMEOUT: 30000, // 30 seconds
 } as const;
 
 // Chat Configuration

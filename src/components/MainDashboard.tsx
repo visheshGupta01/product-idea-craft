@@ -27,7 +27,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
     status: 'in-progress'
   });
 
-  const { initialResponse } = useUser();
+  const { initialMcpResponse } = useUser();
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(false);
@@ -71,7 +71,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
       default:
         // Show fullscreen chat if we have initial MCP response but frontend isn't created
         // OR if we don't have initial response (fallback to original behavior)
-        if (!isFrontendCreated || initialResponse) {
+        if (!isFrontendCreated || initialMcpResponse) {
           return (
             <div className="h-full">
               <ChatPanel userIdea={userIdea} />
