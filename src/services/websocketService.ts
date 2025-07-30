@@ -89,9 +89,15 @@ export class WebSocketService {
         // Prevent processing after completion
         if (isComplete) return;
 
+        console.log("🔄 RAW WebSocket event.data:", event.data);
+        console.log("🔄 WebSocket event.data type:", typeof event.data);
+
         try {
           const data = JSON.parse(event.data);
-          console.log("Received WebSocket message:", data);
+          console.log("✅ PARSED WebSocket message:", data);
+          console.log("📊 Message type:", data.type);
+          console.log("📊 Message content:", data.content);
+          console.log("📊 Message text:", data.text);
           
           // Handle different types of messages
           if (data.type === 'content' && data.text) {
