@@ -77,8 +77,19 @@ export class StreamingWebSocketClient {
       console.log("📨 Raw WebSocket message:", event.data);
 
       try {
-        const data: StreamingMessage = JSON.parse(event.data);
-        console.log("📋 Parsed message:", { type: data.type, hasText: !!data.text, hasContent: !!data.content });
+        const data: any = JSON.parse(event.data);
+        console.log("📋 Parsed message:", data);
+
+        // Check for done: true to complete streaming
+        if (data.done === true) {
+          if (!isComplete) {
+            isComplete = true;
+            callbacks.onToolEnd(); // Ensure tools are cleared
+            callbacks.onComplete(fullContent);
+            this.cleanup(messageHandler);
+          }
+          return;
+        }
 
         switch (data.type) {
           case 'content':

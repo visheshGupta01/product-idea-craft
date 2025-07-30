@@ -53,84 +53,47 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.type === "user";
 
   return (
-    <div
-      data-message-id={message.id}
-      className={`group flex items-start space-x-3 ${
-        isUser ? "flex-row-reverse space-x-reverse" : ""
-      } mb-4`}
-    >
-      {/* Avatar */}
-      <div className="flex-shrink-0">
-        {message.type === "ai" ? (
-          <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
-            <Bot className="w-4 h-4 text-white" />
-          </div>
-        ) : (
-          <div className="w-8 h-8 rounded-full overflow-hidden">
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
-              alt="User Avatar"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Message bubble */}
-      <div className={`max-w-[70%] ${isUser ? "text-right" : ""}`}>
-        <div
-          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-            isUser
-              ? "bg-blue-300 text-black rounded-br-md"
-              : "bg-[#D9D9D9] text-black rounded-bl-md backdrop-blur-sm"
-          }`}
-        >
+    <div className={`flex items-start space-x-3 ${isUser ? "flex-row-reverse space-x-reverse" : ""}`}>
+      <Avatar className="w-8 h-8">
+        <AvatarFallback>
+          {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+        </AvatarFallback>
+      </Avatar>
+      
+      <div className={`flex flex-col space-y-2 text-sm max-w-xs lg:max-w-2xl xl:max-w-3xl ${isUser ? "items-end" : "items-start"}`}>
+        <div className={`px-4 py-2 rounded-lg ${
+          isUser
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted"
+        }`}>
           {isUser ? (
-            <div className="whitespace-pre-wrap text-left">
+            <div className="whitespace-pre-wrap">
               {message.content}
             </div>
           ) : (
-            <div className="!text-black [&_*]:!text-black">
-              <EnhancedMarkdownRenderer content={message.content} />
-            </div>
+            <EnhancedMarkdownRenderer content={message.content} />
           )}
         </div>
-
-        {/* Copy and Download buttons - only show for non-welcome messages */}
+        
         {!isWelcomeMessage && (
-          <div
-            className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 mt-2 ${
-              isUser ? "justify-start" : "justify-end"
-            }`}
-          >
-            {isUser ? (
+          <div className="flex space-x-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              onClick={() => copyToClipboard(message.content)}
+            >
+              <Copy className="h-3 w-3" />
+            </Button>
+            {!isUser && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 bg-white/10 hover:bg-white/20 border-0"
-                onClick={() => copyToClipboard(message.content)}
+                className="h-6 w-6 p-0"
+                onClick={() => downloadAsText(message.content, message.id)}
               >
-                <Copy className="h-3 w-3 text-white" />
+                <Download className="h-3 w-3" />
               </Button>
-            ) : (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 bg-white/10 hover:bg-white/20 border-0"
-                  onClick={() => copyToClipboard(message.content)}
-                >
-                  <Copy className="h-3 w-3 text-white" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 bg-white/10 hover:bg-white/20 border-0"
-                  onClick={() => downloadAsText(message.content, message.id)}
-                >
-                  <Download className="h-3 w-3 text-white" />
-                </Button>
-              </>
             )}
           </div>
         )}
