@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { VerificationModal } from "./VerificationModal";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
   const { signup } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,11 +47,8 @@ export const SignupModal: React.FC<SignupModalProps> = ({
     try {
       const result = await signup(name, email, password);
       if (result.success) {
-        onClose();
-        setName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
+        // Show verification modal instead of closing immediately
+        setShowVerificationModal(true);
       } else {
         setError(result.message || "Signup failed");
       }
@@ -66,85 +65,99 @@ export const SignupModal: React.FC<SignupModalProps> = ({
     setPassword("");
     setConfirmPassword("");
     setError("");
+    setShowVerificationModal(false);
     onClose();
   };
 
+  const handleVerificationClose = () => {
+    setShowVerificationModal(false);
+    handleClose(); // Close the signup modal too
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create Your Account</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Enter your full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={isLoading}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isLoading}
-              required
-            />
-          </div>
-          {error && (
-            <div className="text-red-500 text-sm">{error}</div>
-          )}
-          <div className="flex flex-col space-y-2">
-            <Button 
-              type="submit" 
-              disabled={isLoading || !name.trim() || !email.trim() || !password.trim() || password !== confirmPassword}
-            >
-              {isLoading ? <LoadingSpinner size="sm" text="Creating account..." /> : "Sign Up"}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onSwitchToLogin}
-              disabled={isLoading}
-            >
-              Already have an account? Login
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={isOpen && !showVerificationModal} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Create Your Account</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
+            {error && (
+              <div className="text-red-500 text-sm">{error}</div>
+            )}
+            <div className="flex flex-col space-y-2">
+              <Button 
+                type="submit" 
+                disabled={isLoading || !name.trim() || !email.trim() || !password.trim() || password !== confirmPassword}
+              >
+                {isLoading ? <LoadingSpinner size="sm" text="Creating account..." /> : "Sign Up"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onSwitchToLogin}
+                disabled={isLoading}
+              >
+                Already have an account? Login
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <VerificationModal
+        isOpen={showVerificationModal}
+        onClose={handleVerificationClose}
+        email={email}
+      />
+    </>
   );
 };

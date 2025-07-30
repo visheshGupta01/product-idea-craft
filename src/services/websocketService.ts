@@ -83,8 +83,12 @@ export class WebSocketService {
       }
 
       let fullResponseContent = '';
+      let isComplete = false;
 
       const messageHandler = (event: MessageEvent) => {
+        // Prevent processing after completion
+        if (isComplete) return;
+
         try {
           const data = JSON.parse(event.data);
           console.log("Received WebSocket message:", data);
@@ -118,30 +122,53 @@ export class WebSocketService {
               fullResponseContent += toolOutput;
             }
           } else if (data.type === 'message_stop' || data.type === 'complete') {
-            // Stream is complete
-            onToolEnd?.(); // Ensure tool state is cleared
-            onComplete(fullResponseContent);
-            this.ws?.removeEventListener('message', messageHandler);
-            resolve();
+            // Stream is complete - prevent duplicate processing
+            if (!isComplete) {
+              isComplete = true;
+              onToolEnd?.(); // Ensure tool state is cleared
+              onComplete(fullResponseContent);
+              this.ws?.removeEventListener('message', messageHandler);
+              resolve();
+            }
           } else if (data.type === 'error') {
             // Handle error response
-            this.ws?.removeEventListener('message', messageHandler);
-            reject(new Error(data.message || 'WebSocket error'));
-          } else if (data.text) {
-            // Fallback for simple text messages
+            if (!isComplete) {
+              isComplete = true;
+              this.ws?.removeEventListener('message', messageHandler);
+              reject(new Error(data.message || 'WebSocket error'));
+            }
+          } else if (data.text && !data.type) {
+            // Fallback for simple text messages without type
             onChunk(data.text);
             fullResponseContent += data.text;
           }
         } catch (parseError) {
           console.warn("Failed to parse WebSocket message:", event.data, parseError);
-          // Try to handle as plain text
-          if (typeof event.data === 'string') {
-            onChunk(event.data);
-            fullResponseContent += event.data;
+          // Try to handle as plain text only if it's actually text and not complete
+          if (typeof event.data === 'string' && !isComplete) {
+            try {
+              // Check if it's a completion message in plain text
+              if (event.data.includes('complete') || event.data.includes('message_stop')) {
+                if (!isComplete) {
+                  isComplete = true;
+                  onComplete(fullResponseContent);
+                  this.ws?.removeEventListener('message', messageHandler);
+                  resolve();
+                }
+              } else {
+                onChunk(event.data);
+                fullResponseContent += event.data;
+              }
+            } catch {
+              // Ignore parsing errors for non-JSON messages
+            }
           }
         }
       };
 
+      // Remove any existing listeners to prevent duplicates
+      this.ws.removeEventListener('message', messageHandler);
+      
       // Add message listener
       this.ws.addEventListener('message', messageHandler);
 
