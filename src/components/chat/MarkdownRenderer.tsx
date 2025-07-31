@@ -115,8 +115,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
                   {language}
                 </div>
               )}
-              <pre className="p-6 overflow-x-auto">
-                <code className="text-sm font-mono text-black leading-relaxed">
+              <pre className="p-6 overflow-x-auto max-w-full">
+                <code className="text-sm font-mono text-black leading-relaxed break-words whitespace-pre-wrap">
                   {codeLines.join("\n")}
                 </code>
               </pre>
@@ -184,8 +184,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         const dataRows = hasHeader ? rows.slice(2) : rows;
 
         elements.push(
-          <div key={currentIndex++} className="my-6 overflow-x-auto shadow-sm rounded-lg border border-border">
-            <table className="min-w-full divide-y divide-border">
+           <div key={currentIndex++} className="my-6 overflow-x-auto shadow-sm rounded-lg border border-border max-w-full">
+             <table className="min-w-full divide-y divide-border">
               {headerRow && (
                 <thead className="bg-gradient-to-r from-primary/10 to-accent/5">
                   <tr>
@@ -204,10 +204,10 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
                 {dataRows.map((row, rowIdx) => (
                   <tr key={rowIdx} className="hover:bg-muted/50 transition-colors">
                     {row.map((cell, cellIdx) => (
-                      <td
-                        key={cellIdx}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-black border-r border-border last:border-r-0"
-                      >
+                       <td
+                         key={cellIdx}
+                         className="px-6 py-4 text-sm text-black border-r border-border last:border-r-0 break-words max-w-xs"
+                       >
                         {processInlineFormatting(cell)}
                       </td>
                     ))}
@@ -442,6 +442,6 @@ const processToolOutput = (text: string) => {
   }
 
   return (
-    <div className="prose prose-sm max-w-none">{renderMarkdown(cleanedContent)}</div>
+    <div className="prose prose-sm max-w-none overflow-hidden break-words">{renderMarkdown(cleanedContent)}</div>
   );
 };

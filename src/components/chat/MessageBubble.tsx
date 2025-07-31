@@ -69,12 +69,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       </Avatar>
 
       <div
-        className={`flex flex-col space-y-2 max-w-[75%] ${
+        className={`flex flex-col space-y-2 max-w-[75%] min-w-0 ${
           isUser ? "items-end" : "items-start"
         }`}
       >
         <div
-          className={`px-4 py-3 rounded-2xl shadow-sm ${
+          className={`px-4 py-3 rounded-2xl shadow-sm overflow-hidden break-words ${
             isUser
               ? "bg-blue-300  text-black rounded-br-sm"
               : "bg-[#D9D9D9] text-black rounded-bl-sm"
