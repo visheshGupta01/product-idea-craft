@@ -6,18 +6,10 @@ interface MarkdownRendererProps {
 }
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  // Safety check for undefined content
   if (!content) {
-    console.error("MarkdownRenderer received undefined content:", content);
     return <span>Loading...</span>;
   }
-  
-  console.log("MarkdownRenderer processing content:", content.substring(0, 200) + "...");
-  
-  // Check if content contains tool output patterns
-  if (content.includes('[Tool Output for lov-')) {
-    console.log("Tool output detected in content!");
-  }
+
   const renderMarkdown = (text: string) => {
     const lines = text.split("\n");
     const elements: React.ReactElement[] = [];
