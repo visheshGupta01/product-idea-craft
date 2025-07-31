@@ -53,19 +53,33 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.type === "user";
 
   return (
-    <div className={`flex items-start space-x-3 mb-6 ${isUser ? "flex-row-reverse space-x-reverse" : ""}`}>
+    <div
+      className={`flex items-start space-x-3 mb-6 ${
+        isUser ? "flex-row-reverse space-x-reverse" : ""
+      }`}
+    >
       <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarFallback className={isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"}>
+        <AvatarFallback
+          className={
+            isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"
+          }
+        >
           {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
         </AvatarFallback>
       </Avatar>
-      
-      <div className={`flex flex-col space-y-2 max-w-[75%] ${isUser ? "items-end" : "items-start"}`}>
-        <div className={`px-4 py-3 rounded-2xl shadow-sm ${
-          isUser
-            ? "bg-blue-500 text-white rounded-br-sm"
-            : "bg-gray-800 text-white rounded-bl-sm"
-        }`}>
+
+      <div
+        className={`flex flex-col space-y-2 max-w-[75%] ${
+          isUser ? "items-end" : "items-start"
+        }`}
+      >
+        <div
+          className={`px-4 py-3 rounded-2xl shadow-sm ${
+            isUser
+              ? "bg-blue-300  text-black rounded-br-sm"
+              : "bg-[#D9D9D9] text-black rounded-bl-sm"
+          }`}
+        >
           {isUser ? (
             <div className="whitespace-pre-wrap text-sm leading-relaxed">
               {message.content}
@@ -76,9 +90,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             </div>
           )}
         </div>
-        
+
         {!isWelcomeMessage && (
-          <div className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity ${isUser ? "justify-end" : "justify-start"}`}>
+          <div
+            className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity ${
+              isUser ? "justify-end" : "justify-start"
+            }`}
+          >
             <Button
               variant="ghost"
               size="sm"

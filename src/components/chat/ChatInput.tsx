@@ -32,7 +32,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="p-6 bg-black">
+    <div className="pb-6 bg-[#22282A]">
       <div className="w-full">
         <div className="relative">
           <Input
