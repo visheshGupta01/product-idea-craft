@@ -48,7 +48,7 @@ export const EnhancedMarkdownRenderer: React.FC<EnhancedMarkdownRendererProps> =
 
   // Regular markdown rendering
   return (
-    <div className="prose prose-sm max-w-none">
+    <div className="prose prose-sm max-w-none dark:prose-invert">
       <ReactMarkdown 
         rehypePlugins={[rehypeHighlight]}
         components={{
