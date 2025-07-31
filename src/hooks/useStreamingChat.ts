@@ -116,8 +116,13 @@ export const useStreamingChat = (sessionId: string): StreamingChatState & Stream
 
       const callbacks: StreamingCallbacks = {
         onContent: (text: string) => {
+          console.log("📝 Hook receiving content:", text.length, "chars");
+          if (text.includes('[Tool') || text.includes('tool')) {
+            console.log("🔧 Tool-related content in hook:", text.substring(0, 200));
+          }
           streamingContent += text;
           updateMessage(aiMessage.id, streamingContent);
+          console.log("📝 Updated message with total content:", streamingContent.length, "chars");
         },
         onToolStart: () => {
           console.log("🔧 Tool processing started in hook");

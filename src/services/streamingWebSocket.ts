@@ -147,6 +147,7 @@ export class StreamingWebSocketClient {
           // Only enter tool mode when we actually detect tool usage
           if (content.includes('[Tool Use Started]:')) {
             console.log("🔧 Tool execution started - entering tool mode");
+            console.log("🔧 Tool start content:", content);
             if (!isInToolMode) {
               isInToolMode = true;
               callbacks.onToolStart();
@@ -155,12 +156,17 @@ export class StreamingWebSocketClient {
             callbacks.onContent(content);
           } else if (content.includes('[Tool Output for') && content.includes(']:')) {
             console.log("🔧 Tool output received");
+            console.log("🔧 Tool output content:", content);
+            console.log("🔧 Full content so far:", fullContent.length, "chars");
             // Keep tool mode active, don't end here
             fullContent += content;
             callbacks.onContent(content);
           } else {
             // Regular streaming text content
             console.log("📝 Content chunk received:", content.length, "characters");
+            if (content.length < 100) {
+              console.log("📝 Content preview:", content);
+            }
             fullContent += content;
             callbacks.onContent(content);
           }
