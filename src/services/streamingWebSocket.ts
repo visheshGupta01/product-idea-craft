@@ -1,7 +1,7 @@
 export interface StreamingMessage {
-  type: 'content' | 'tool_use' | 'tool_result' | 'message_stop' | 'complete' | 'error';
+  type: 'done' | 'error';
+  tool?: string;
   text?: string;
-  content?: any;
   message?: string;
 }
 
@@ -19,15 +19,6 @@ export class StreamingWebSocketClient {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3;
   private reconnectDelay = 2000;
-  private isToolOutputStreaming = false;
-  private toolOutputBuffer = '';
-  
-  // Content integrity tracking
-  private expectedContentLength = 0;
-  private actualContentLength = 0;
-  private lastContentTimestamp = 0;
-  private contentTimeout: NodeJS.Timeout | null = null;
-  private readonly CONTENT_TIMEOUT_MS = 5000; // 5 seconds timeout
 
   constructor(sessionId: string) {
     this.sessionId = sessionId;
@@ -79,195 +70,66 @@ export class StreamingWebSocketClient {
 
     let fullContent = '';
     let isComplete = false;
-    
-    // Reset all tracking state for new message
-    this.isToolOutputStreaming = false;
-    this.toolOutputBuffer = '';
-    this.actualContentLength = 0;
-    this.expectedContentLength = 0;
-    this.lastContentTimestamp = Date.now();
-    
-    // Clear any existing timeout
-    if (this.contentTimeout) {
-      clearTimeout(this.contentTimeout);
-      this.contentTimeout = null;
-    }
-
-    // Set up content timeout safety mechanism
-    const setupContentTimeout = () => {
-      if (this.contentTimeout) {
-        clearTimeout(this.contentTimeout);
-      }
-      this.contentTimeout = setTimeout(() => {
-        if (!isComplete) {
-          console.warn("⚠️ Content timeout reached. Forcing completion with current content.");
-          console.warn(`📊 Final content stats: Expected: ${this.expectedContentLength}, Actual: ${this.actualContentLength}, Full length: ${fullContent.length}`);
-          if (!isComplete) {
-            isComplete = true;
-            if (this.isToolOutputStreaming) {
-              callbacks.onToolEnd();
-            }
-            callbacks.onComplete(fullContent);
-            this.cleanup(messageHandler);
-          }
-        }
-      }, this.CONTENT_TIMEOUT_MS);
-    };
-
-    const updateContentStats = (newContent: string) => {
-      this.actualContentLength += newContent.length;
-      this.lastContentTimestamp = Date.now();
-      console.log(`📊 Content stats: Added ${newContent.length} chars, Total: ${this.actualContentLength}, Full: ${fullContent.length}`);
-      setupContentTimeout(); // Reset timeout on new content
-    };
+    let isInToolMode = false;
 
     const messageHandler = (event: MessageEvent) => {
       if (isComplete) return;
 
       console.log("📨 Raw WebSocket message:", event.data);
 
+      // Handle JSON messages (completion signals)
       try {
         const data: any = JSON.parse(event.data);
-        console.log("📋 Parsed message:", data);
+        console.log("📋 Parsed JSON message:", data);
 
-        // Check for expected content length in metadata
-        if (data.expected_length) {
-          this.expectedContentLength = data.expected_length;
-          console.log(`📏 Expected content length: ${this.expectedContentLength}`);
-        }
-
-        // Check for done: true to complete streaming
-        if (data.done === true) {
+        // Handle completion signal from backend
+        if (data.type === 'done' && data.tool === 'claude') {
+          console.log("✅ Stream completed with done signal");
           if (!isComplete) {
-            console.log(`✅ Stream completed with done=true. Content integrity check: Expected: ${this.expectedContentLength}, Actual: ${this.actualContentLength}, Full: ${fullContent.length}`);
-            // Add a small delay to allow any pending content to arrive
-            setTimeout(() => {
-              if (!isComplete) {
-                isComplete = true;
-                if (this.contentTimeout) clearTimeout(this.contentTimeout);
-                if (this.isToolOutputStreaming) {
-                  callbacks.onToolEnd();
-                }
-                callbacks.onComplete(fullContent);
-                this.cleanup(messageHandler);
-              }
-            }, 100); // 100ms delay to catch any late content
+            isComplete = true;
+            if (isInToolMode) {
+              callbacks.onToolEnd();
+            }
+            callbacks.onComplete(fullContent);
+            this.cleanup(messageHandler);
           }
           return;
         }
 
-        switch (data.type) {
-          case 'content':
-            if (data.text) {
-              console.log("📝 Content chunk received:", data.text.length, "characters");
-              fullContent += data.text;
-              updateContentStats(data.text);
-              callbacks.onContent(data.text);
-            }
-            break;
-
-          case 'tool_use':
-            console.log("🔧 Tool execution started");
-            this.isToolOutputStreaming = true;
-            this.toolOutputBuffer = '';
-            callbacks.onToolStart();
-            break;
-
-          case 'tool_result':
-            let toolOutput = '';
-            
-            // Handle different content formats
-            if (data.content) {
-              if (Array.isArray(data.content)) {
-                data.content.forEach((block: any) => {
-                  if (block.type === 'text' && block.text) {
-                    toolOutput += block.text;
-                  } else if (typeof block === 'string') {
-                    toolOutput += block;
-                  }
-                });
-              } else if (typeof data.content === 'string') {
-                toolOutput = data.content;
-              } else if (data.content.text) {
-                toolOutput = data.content.text;
-              }
-            }
-            
-            // Also check for direct text property
-            if (data.text && !toolOutput) {
-              toolOutput = data.text;
-            }
-            
-            console.log("🔧 Tool output chunk received:", toolOutput.length, "characters");
-            console.log("🔧 Tool output preview:", toolOutput.substring(0, 100) + (toolOutput.length > 100 ? '...' : ''));
-            
-            if (toolOutput) {
-              this.toolOutputBuffer += toolOutput;
-              fullContent += toolOutput;
-              updateContentStats(toolOutput);
-              callbacks.onContent(toolOutput);
-            }
-            
-            // Check if this tool_result indicates completion
-            if (data.is_final || data.final || data.complete) {
-              console.log("🔧 Tool execution completed. Total buffer length:", this.toolOutputBuffer.length);
-              this.isToolOutputStreaming = false;
-              callbacks.onToolEnd();
-            }
-            break;
-
-          case 'message_stop':
-          case 'complete':
-            if (!isComplete) {
-              console.log(`✅ Stream completed with ${data.type}. Final content length: ${fullContent.length}`);
-              // Add a small delay to ensure all content is processed
-              setTimeout(() => {
-                if (!isComplete) {
-                  isComplete = true;
-                  if (this.contentTimeout) clearTimeout(this.contentTimeout);
-                  // If we were streaming tool output, end it now
-                  if (this.isToolOutputStreaming) {
-                    console.log("🔧 Force-ending tool output on stream completion. Buffer length:", this.toolOutputBuffer.length);
-                    this.isToolOutputStreaming = false;
-                    callbacks.onToolEnd();
-                  }
-                  callbacks.onComplete(fullContent);
-                  this.cleanup(messageHandler);
-                }
-              }, 100); // 100ms delay
-            }
-            break;
-
-          case 'error':
-            if (!isComplete) {
-              isComplete = true;
-              this.cleanup(messageHandler);
-              callbacks.onError(new Error(data.message || 'WebSocket streaming error'));
-            }
-            break;
-
-          default:
-            // Handle messages without type but with text
-            if (data.text && !data.type) {
-              fullContent += data.text;
-              callbacks.onContent(data.text);
-            }
-            break;
+        // Handle error messages
+        if (data.type === 'error') {
+          if (!isComplete) {
+            isComplete = true;
+            this.cleanup(messageHandler);
+            callbacks.onError(new Error(data.message || 'WebSocket streaming error'));
+          }
+          return;
         }
       } catch (parseError) {
-        console.warn("Failed to parse WebSocket message:", event.data, parseError);
-        
-        // Handle plain text fallback
+        // Not JSON, handle as text content
         if (typeof event.data === 'string' && !isComplete) {
-          if (event.data.includes('complete') || event.data.includes('message_stop')) {
-            if (!isComplete) {
-              isComplete = true;
-              callbacks.onComplete(fullContent);
-              this.cleanup(messageHandler);
+          const content = event.data;
+          
+          // Detect tool output by looking for tool output patterns
+          if (content.includes('[Tool Use Started]:')) {
+            console.log("🔧 Tool execution started");
+            isInToolMode = true;
+            callbacks.onToolStart();
+            fullContent += content;
+            callbacks.onContent(content);
+          } else if (content.includes('[Tool Output for') && content.includes(']:')) {
+            console.log("🔧 Tool output received");
+            if (isInToolMode) {
+              callbacks.onToolEnd();
+              isInToolMode = false;
             }
+            fullContent += content;
+            callbacks.onContent(content);
           } else {
-            fullContent += event.data;
-            callbacks.onContent(event.data);
+            // Regular streaming text content
+            console.log("📝 Content chunk received:", content.length, "characters");
+            fullContent += content;
+            callbacks.onContent(content);
           }
         }
       }
@@ -292,11 +154,6 @@ export class StreamingWebSocketClient {
 
   private cleanup(messageHandler: (event: MessageEvent) => void) {
     this.ws?.removeEventListener('message', messageHandler);
-    // Clear timeout on cleanup
-    if (this.contentTimeout) {
-      clearTimeout(this.contentTimeout);
-      this.contentTimeout = null;
-    }
   }
 
   disconnect() {
