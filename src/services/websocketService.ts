@@ -1,5 +1,4 @@
 import { ServerResponse } from "@/types";
-import { MarkdownRenderer } from "@/components/chat/MarkdownRenderer";
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -127,12 +126,9 @@ export class WebSocketService {
   }
   
             if (toolOutput) {
-    console.log("🔧 Tool output content:", toolOutput);
-    const renderedToolOutput = <MarkdownRenderer content={ toolOutput } />;
-    console.log("🔧 Tool output:", renderedToolOutput);
-    onChunk(renderedToolOutput);
-    fullResponseContent += renderedToolOutput;
-  }
+              onChunk(toolOutput);
+              fullResponseContent += toolOutput;
+            }
 } else if (data.type === 'message_stop' || data.type === 'complete') {
             // Stream is complete - prevent duplicate processing
             if (!isComplete) {
