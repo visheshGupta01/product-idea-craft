@@ -1,194 +1,68 @@
-import { ServerResponse } from "@/types";
+import { WebSocketMessage, MCPRequest, MCPResponse, ChatMessage, ToolOutput } from '../types/chat';
 
-export class WebSocketService {
+class WebSocketService {
   private ws: WebSocket | null = null;
-  private sessionId: string;
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 3;
-  private reconnectDelay = 2000;
+  private maxReconnectAttempts = 5;
+  private reconnectDelay = 1000;
+  private messageHandlers: Map<string, (message: WebSocketMessage) => void> = new Map();
+  private requestQueue: MCPRequest[] = [];
+  private pendingRequests: Map<string, (response: MCPResponse) => void> = new Map();
+  
+  private baseUrl = 'ws://localhost:8000';
+  private sessionId: string | null = null;
+  private token: string | null = null;
 
-  constructor(sessionId: string) {
-    this.sessionId = sessionId;
+  constructor() {
+    this.token = localStorage.getItem('token');
   }
 
-  connect(): Promise<void> {
+  async connect(sessionId: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
-        const wsUrl = `ws://localhost:8000/ws?s_id=${this.sessionId}`;
+        this.sessionId = sessionId;
+        const wsUrl = `${this.baseUrl}/ws/${sessionId}`;
+        
         this.ws = new WebSocket(wsUrl);
-
+        
         this.ws.onopen = () => {
-          console.log("WebSocket connected");
+          console.log('WebSocket connected');
           this.reconnectAttempts = 0;
-          resolve();
+          
+          // Send authentication if token exists
+          if (this.token) {
+            this.sendMessage({
+              type: 'auth',
+              data: { token: this.token }
+            });
+          }
+          
+          // Process queued requests
+          this.processRequestQueue();
+          resolve(true);
         };
-
+        
+        this.ws.onmessage = (event) => {
+          try {
+            const message: WebSocketMessage = JSON.parse(event.data);
+            this.handleMessage(message);
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        };
+        
+        this.ws.onclose = (event) => {
+          console.log('WebSocket closed:', event.code, event.reason);
+          this.handleDisconnect();
+        };
+        
         this.ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
+          console.error('WebSocket error:', error);
           reject(error);
         };
-
-        this.ws.onclose = () => {
-          console.log("WebSocket disconnected");
-          this.handleReconnect();
-        };
+        
       } catch (error) {
-        console.error("Error creating WebSocket:", error);
-        reject(error);
-      }
-    });
-  }
-
-  private handleReconnect() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
-      setTimeout(() => {
-        this.connect().catch(console.error);
-      }, this.reconnectDelay);
-    }
-  }
-
-  sendMessage(message: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-        reject(new Error("WebSocket is not connected"));
-        return;
-      }
-
-      try {
-        this.ws.send(JSON.stringify({
-          message,
-          session_id: this.sessionId,
-        }));
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  sendMessageStream(
-    message: string,
-    onChunk: (chunk: string) => void,
-    onComplete: (fullResponse: string) => void,
-    onToolStart?: () => void,
-    onToolEnd?: () => void
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-        reject(new Error("WebSocket is not connected"));
-        return;
-      }
-
-      let fullResponseContent = '';
-      let isComplete = false;
-
-      const messageHandler = (event: MessageEvent) => {
-        // Prevent processing after completion
-        if (isComplete) return;
-
-        console.log("🔄 RAW WebSocket event.data:", event.data);
-        console.log("🔄 WebSocket event.data type:", typeof event.data);
-
-        try {
-          const data = JSON.parse(event.data);
-          console.log("✅ PARSED WebSocket message:", data);
-          console.log("📊 Message type:", data.type);
-          console.log("📊 Message content:", data.content);
-          console.log("📊 Message text:", data.text);
-          
-          // Handle different types of messages
-          if (data.type === 'content' && data.text) {
-            // Regular text content - stream it immediately
-            onChunk(data.text);
-            fullResponseContent += data.text;
-          } else if (data.type === 'tool_use') {
-            // Tool processing started - notify UI
-            onToolStart?.();
-          } else if (data.type === 'tool_result') {
-  // Tool result - process and add to full response
-  onToolEnd?.(); // Tool finished processing
-  let toolOutput = '';
-  
-  if (data.content && Array.isArray(data.content)) {
-    // Handle array of content blocks
-    data.content.forEach((block: any) => {
-      if (block.type === 'text' && block.text) {
-        toolOutput += block.text;
-      }
-      console.log("🔧 Tool output block:", block);
-    });
-  } else if (data.content && typeof data.content === 'string') {
-    toolOutput = data.content;
-    console.log("🔧 Tool output content:", toolOutput);
-  }
-  
-            if (toolOutput) {
-              onChunk(toolOutput);
-              fullResponseContent += toolOutput;
-            }
-} else if (data.type === 'message_stop' || data.type === 'complete') {
-            // Stream is complete - prevent duplicate processing
-            if (!isComplete) {
-              isComplete = true;
-              onToolEnd?.(); // Ensure tool state is cleared
-              onComplete(fullResponseContent);
-              this.ws?.removeEventListener('message', messageHandler);
-              resolve();
-            }
-          } else if (data.type === 'error') {
-            // Handle error response
-            if (!isComplete) {
-              isComplete = true;
-              this.ws?.removeEventListener('message', messageHandler);
-              reject(new Error(data.message || 'WebSocket error'));
-            }
-          } else if (data.text && !data.type) {
-            // Fallback for simple text messages without type
-            onChunk(data.text);
-            fullResponseContent += data.text;
-          }
-        } catch (parseError) {
-          console.warn("Failed to parse WebSocket message:", event.data, parseError);
-          // Try to handle as plain text only if it's actually text and not complete
-          if (typeof event.data === 'string' && !isComplete) {
-            try {
-              // Check if it's a completion message in plain text
-              if (event.data.includes('complete') || event.data.includes('message_stop')) {
-                if (!isComplete) {
-                  isComplete = true;
-                  onComplete(fullResponseContent);
-                  this.ws?.removeEventListener('message', messageHandler);
-                  resolve();
-                }
-              } else {
-                onChunk(event.data);
-                fullResponseContent += event.data;
-              }
-            } catch {
-              // Ignore parsing errors for non-JSON messages
-            }
-          }
-        }
-      };
-
-      // Remove any existing listeners to prevent duplicates
-      this.ws.removeEventListener('message', messageHandler);
-      
-      // Add message listener
-      this.ws.addEventListener('message', messageHandler);
-
-      // Send the message
-      try {
-        this.ws.send(JSON.stringify({
-          message,
-          session_id: this.sessionId,
-          stream: true,
-        }));
-      } catch (error) {
-        this.ws.removeEventListener('message', messageHandler);
+        console.error('Error creating WebSocket connection:', error);
         reject(error);
       }
     });
@@ -199,9 +73,141 @@ export class WebSocketService {
       this.ws.close();
       this.ws = null;
     }
+    this.sessionId = null;
+    this.messageHandlers.clear();
+    this.pendingRequests.clear();
   }
 
   isConnected(): boolean {
-    return this.ws?.readyState === WebSocket.OPEN;
+    return this.ws !== null && this.ws.readyState === WebSocket.OPEN;
+  }
+
+  sendMessage(message: WebSocketMessage): void {
+    if (!this.isConnected()) {
+      console.warn('WebSocket not connected, queueing message');
+      return;
+    }
+
+    try {
+      this.ws!.send(JSON.stringify(message));
+    } catch (error) {
+      console.error('Error sending WebSocket message:', error);
+    }
+  }
+
+  sendChatMessage(content: string, messageId: string): void {
+    this.sendMessage({
+      type: 'message',
+      data: {
+        content,
+        messageId,
+        timestamp: new Date().toISOString()
+      },
+      messageId
+    });
+  }
+
+  sendMCPRequest(request: MCPRequest): Promise<MCPResponse> {
+    return new Promise((resolve, reject) => {
+      if (!this.isConnected()) {
+        this.requestQueue.push(request);
+        reject(new Error('WebSocket not connected'));
+        return;
+      }
+
+      this.pendingRequests.set(request.id, resolve);
+      
+      this.sendMessage({
+        type: 'mcp_request',
+        data: request,
+        messageId: request.id
+      });
+
+      // Set timeout for request
+      setTimeout(() => {
+        if (this.pendingRequests.has(request.id)) {
+          this.pendingRequests.delete(request.id);
+          reject(new Error('MCP request timeout'));
+        }
+      }, 30000);
+    });
+  }
+
+  onMessage(handler: (message: WebSocketMessage) => void): () => void {
+    const id = Math.random().toString(36);
+    this.messageHandlers.set(id, handler);
+    
+    return () => {
+      this.messageHandlers.delete(id);
+    };
+  }
+
+  onToolOutput(handler: (toolOutput: ToolOutput) => void): () => void {
+    return this.onMessage((message) => {
+      if (message.type === 'tool_output' && message.data) {
+        handler({
+          toolName: message.data.toolName || 'unknown',
+          content: message.data.content || '',
+          timestamp: new Date(message.data.timestamp || Date.now()),
+          status: message.data.status || 'success'
+        });
+      }
+    });
+  }
+
+  onStreamingMessage(handler: (content: string, messageId: string, isComplete: boolean) => void): () => void {
+    return this.onMessage((message) => {
+      if (message.type === 'message' && message.data) {
+        const { content, messageId, isComplete } = message.data;
+        handler(content || '', messageId || '', isComplete || false);
+      }
+    });
+  }
+
+  private handleMessage(message: WebSocketMessage): void {
+    // Handle MCP responses
+    if (message.type === 'mcp_response' && message.messageId) {
+      const resolver = this.pendingRequests.get(message.messageId);
+      if (resolver) {
+        resolver(message.data as MCPResponse);
+        this.pendingRequests.delete(message.messageId);
+        return;
+      }
+    }
+
+    // Broadcast to all handlers
+    this.messageHandlers.forEach(handler => {
+      try {
+        handler(message);
+      } catch (error) {
+        console.error('Error in message handler:', error);
+      }
+    });
+  }
+
+  private handleDisconnect(): void {
+    this.ws = null;
+    
+    if (this.reconnectAttempts < this.maxReconnectAttempts && this.sessionId) {
+      this.reconnectAttempts++;
+      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      
+      setTimeout(() => {
+        if (this.sessionId) {
+          this.connect(this.sessionId);
+        }
+      }, this.reconnectDelay * this.reconnectAttempts);
+    }
+  }
+
+  private processRequestQueue(): void {
+    while (this.requestQueue.length > 0 && this.isConnected()) {
+      const request = this.requestQueue.shift();
+      if (request) {
+        this.sendMCPRequest(request);
+      }
+    }
   }
 }
+
+export const websocketService = new WebSocketService();

@@ -3,11 +3,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Bot, User, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Message } from "@/types";
+import { ChatMessage } from "../../types/chat";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface MessageBubbleProps {
-  message: Message;
+  message: ChatMessage;
   isWelcomeMessage?: boolean;
 }
 
@@ -50,7 +50,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     });
   };
 
-  const isUser = message.type === "user";
+  const isUser = message.sender === "user";
 
   return (
     <div className={`flex items-start space-x-3 mb-6 ${isUser ? "flex-row-reverse space-x-reverse" : ""}`}>

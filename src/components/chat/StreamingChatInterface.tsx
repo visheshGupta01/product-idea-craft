@@ -1,137 +1,155 @@
-import React, { useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, Bot } from "lucide-react";
-import { MessageBubble } from "./MessageBubble";
-import { ChatInput } from "./ChatInput";
-import { useStreamingChat } from "@/hooks/useStreamingChat";
-import { useUser } from "@/context/UserContext";
+import React, { useEffect, useRef, useState } from 'react';
+import { useStreamingChat } from '../../hooks/useStreamingChat';
+import { ChatInput } from './ChatInput';
+import { MessageBubble } from './MessageBubble';
+import { ToolOutputRenderer } from './ToolOutputRenderer';
+import { LoadingSpinner } from '../ui/loading-spinner';
 
 interface StreamingChatInterfaceProps {
-  userIdea?: string;
+  sessionId: string;
+  onSessionUpdate?: (sessionId: string) => void;
 }
 
-export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea }) => {
-  const { sessionId, initialResponse, clearInitialResponse } = useUser();
+export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
+  sessionId,
+  onSessionUpdate
+}) => {
   const {
     messages,
-    isStreaming,
-    isProcessingTools,
-    messagesEndRef,
+    toolOutputs,
+    streamingState,
     sendMessage,
-    addMessage,
-    scrollToBottom,
-    connect
-  } = useStreamingChat(sessionId || "");
+    clearMessages,
+    isInitialized,
+    initializeSession
+  } = useStreamingChat();
 
-  // Initialize connection when sessionId is available
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isInitializing, setIsInitializing] = useState(false);
+
+  // Initialize session
   useEffect(() => {
-    if (sessionId) {
-      connect().then(success => {
-        if (success) {
-          console.log("✅ WebSocket connected successfully");
-        } else {
-          console.error("❌ Failed to connect WebSocket");
-        }
-      });
+    if (sessionId && !isInitialized) {
+      setIsInitializing(true);
+      initializeSession(sessionId)
+        .then((success) => {
+          if (success) {
+            console.log('Chat session initialized successfully');
+          } else {
+            console.error('Failed to initialize chat session');
+          }
+        })
+        .finally(() => {
+          setIsInitializing(false);
+        });
     }
-  }, [sessionId, connect]);
+  }, [sessionId, isInitialized, initializeSession]);
 
-  // Add welcome message
+  // Auto-scroll to bottom
   useEffect(() => {
-    if (messages.length === 0) {
-      addMessage({
-        type: "ai",
-        content: "Hello! I'm here to help you build your idea. What would you like to create today?",
-        timestamp: new Date(),
-      });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, toolOutputs]);
+
+  const handleSendMessage = (content: string) => {
+    if (!streamingState.isConnected) {
+      console.warn('Cannot send message: not connected');
+      return;
     }
-  }, [messages.length, addMessage]);
+    sendMessage(content);
+  };
 
-  // Handle initial response from user context and send message
-  useEffect(() => {
-    if (initialResponse && sessionId) {
-      // Add user message
-      addMessage({
-        type: "user",
-        content: initialResponse.userMessage,
-        timestamp: initialResponse.timestamp,
-      });
+  if (isInitializing) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-3">
+          <LoadingSpinner />
+          <span className="text-muted-foreground">Initializing chat session...</span>
+        </div>
+      </div>
+    );
+  }
 
-      // Send the message to get AI response
-      sendMessage(initialResponse.userMessage);
-
-      // Clear from context
-      clearInitialResponse();
-    }
-  }, [initialResponse, sessionId, addMessage, sendMessage, clearInitialResponse]);
-
-  // Auto-scroll on new messages
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [messages, isStreaming, scrollToBottom]);
-
-  const showLoadingIndicator = isStreaming && messages.length > 0;
-  const showToolsIndicator = isProcessingTools;
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-destructive mb-2">Failed to initialize chat session</div>
+          <button 
+            onClick={() => initializeSession(sessionId)}
+            className="text-primary hover:underline"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
-      <ScrollArea className="flex-1 p-6">
-        <div className="space-y-6 max-w-4xl mx-auto">
-          {messages.map((message, index) => (
-            <div key={message.id} className="group">
-              <MessageBubble
-                message={message}
-                isWelcomeMessage={index === 0 && message.type === "ai"}
-              />
-            </div>
-          ))}
-
-          {/* Streaming indicator */}
-          {showLoadingIndicator && (
-            <div className="flex items-start space-x-3">
-              <Avatar className="w-8 h-8 flex-shrink-0">
-                <AvatarFallback className="bg-purple-500 text-white">
-                  <Bot className="w-4 h-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-                <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-purple-500" />
-                  <span className="text-sm text-gray-600 dark:text-gray-300">AI is thinking...</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Tools processing indicator */}
-          {showToolsIndicator && (
-            <div className="flex items-start space-x-3">
-              <Avatar className="w-8 h-8 flex-shrink-0">
-                <AvatarFallback className="bg-purple-500 text-white">
-                  <Bot className="w-4 h-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-                <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-                  <span className="text-sm text-gray-600 dark:text-gray-300">Running tools...</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
+    <div className="flex flex-col h-full bg-background">
+      {/* Connection Status */}
+      {streamingState.error && (
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-2 rounded-md mx-4 mt-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Connection Error:</span>
+            <span className="text-sm">{streamingState.error}</span>
+          </div>
         </div>
-      </ScrollArea>
+      )}
 
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-        <div className="max-w-4xl mx-auto">
-          <ChatInput onSendMessage={sendMessage} isLoading={isStreaming} />
+      {!streamingState.isConnected && !streamingState.error && (
+        <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-4 py-2 rounded-md mx-4 mt-4">
+          <div className="flex items-center gap-2">
+            <LoadingSpinner />
+            <span className="text-sm">Connecting to server...</span>
+          </div>
         </div>
+      )}
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.length === 0 && (
+          <div className="text-center text-muted-foreground mt-8">
+            <div className="text-lg font-medium mb-2">Welcome to ImagineBo</div>
+            <div className="text-sm">Start a conversation by typing a message below.</div>
+          </div>
+        )}
+
+        {messages.map((message) => (
+          <div key={message.id}>
+            <MessageBubble message={message} />
+            
+            {/* Show tool outputs for this message */}
+            {message.sender === 'bot' && toolOutputs.has(message.id) && (
+              <ToolOutputRenderer toolOutputs={toolOutputs.get(message.id)!} />
+            )}
+          </div>
+        ))}
+
+        {/* Streaming indicator */}
+        {streamingState.isStreaming && (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <LoadingSpinner />
+            <span className="text-sm">Thinking...</span>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Chat Input */}
+      <div className="border-t border-border p-4 bg-background">
+        <ChatInput 
+          onSendMessage={handleSendMessage}
+          disabled={!streamingState.isConnected || streamingState.isStreaming}
+          placeholder={
+            !streamingState.isConnected 
+              ? "Connecting..." 
+              : streamingState.isStreaming 
+                ? "Please wait..." 
+                : "Type your message..."
+          }
+        />
       </div>
     </div>
   );

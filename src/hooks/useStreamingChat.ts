@@ -1,181 +1,136 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { Message } from "@/types";
-import { StreamingWebSocketClient, StreamingCallbacks } from "@/services/streamingWebSocket";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { streamingWebSocketService } from '../services/streamingWebSocket';
+import { ChatMessage, ToolOutput, StreamingState } from '../types/chat';
 
-export interface StreamingChatState {
-  messages: Message[];
-  isStreaming: boolean;
-  isProcessingTools: boolean;
-  messagesEndRef: React.RefObject<HTMLDivElement>;
-}
-
-export interface StreamingChatActions {
-  sendMessage: (content: string) => Promise<void>;
-  addMessage: (message: Omit<Message, "id">) => Message;
-  updateMessage: (messageId: string, content: string) => void;
+interface UseStreamingChatReturn {
+  messages: ChatMessage[];
+  toolOutputs: Map<string, ToolOutput[]>;
+  streamingState: StreamingState;
+  sendMessage: (content: string) => void;
   clearMessages: () => void;
-  scrollToBottom: () => void;
-  connect: () => Promise<boolean>;
-  disconnect: () => void;
+  isInitialized: boolean;
+  initializeSession: (sessionId: string) => Promise<boolean>;
 }
 
-export const useStreamingChat = (sessionId: string): StreamingChatState & StreamingChatActions => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [isProcessingTools, setIsProcessingTools] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const wsClientRef = useRef<StreamingWebSocketClient | null>(null);
+export const useStreamingChat = (): UseStreamingChatReturn => {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [toolOutputs, setToolOutputs] = useState<Map<string, ToolOutput[]>>(new Map());
+  const [streamingState, setStreamingState] = useState<StreamingState>(
+    streamingWebSocketService.getState()
+  );
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  const messageMapRef = useRef<Map<string, ChatMessage>>(new Map());
+  const cleanupFunctionsRef = useRef<(() => void)[]>([]);
 
-  // Initialize WebSocket client
-  useEffect(() => {
-    if (sessionId && !wsClientRef.current) {
-      wsClientRef.current = new StreamingWebSocketClient(sessionId);
+  const initializeSession = useCallback(async (sessionId: string): Promise<boolean> => {
+    try {
+      const success = await streamingWebSocketService.initializeSession(sessionId);
+      setIsInitialized(success);
+      return success;
+    } catch (error) {
+      console.error('Failed to initialize chat session:', error);
+      setIsInitialized(false);
+      return false;
     }
-  }, [sessionId]);
-
-  const generateId = useCallback(() => {
-    return Date.now().toString() + Math.random().toString(36).substr(2, 9);
   }, []);
 
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  const sendMessage = useCallback((content: string) => {
+    if (!streamingState.isConnected) {
+      console.warn('Cannot send message: not connected');
+      return;
+    }
 
-  const addMessage = useCallback((message: Omit<Message, "id">): Message => {
-    const newMessage: Message = {
-      ...message,
-      id: generateId(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    return newMessage;
-  }, [generateId]);
-
-  const updateMessage = useCallback((messageId: string, content: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId ? { ...msg, content } : msg
-      )
-    );
-  }, []);
+    streamingWebSocketService.sendMessage(content);
+  }, [streamingState.isConnected]);
 
   const clearMessages = useCallback(() => {
     setMessages([]);
+    setToolOutputs(new Map());
+    messageMapRef.current.clear();
   }, []);
 
-  const connect = useCallback(async (): Promise<boolean> => {
-    if (!wsClientRef.current) {
-      console.error("WebSocket client not initialized");
-      return false;
-    }
+  // Set up listeners
+  useEffect(() => {
+    const cleanupFunctions: (() => void)[] = [];
 
-    try {
-      if (!wsClientRef.current.isConnected()) {
-        await wsClientRef.current.connect();
-      }
-      return true;
-    } catch (error) {
-      console.error("Failed to connect WebSocket:", error);
-      return false;
-    }
-  }, []);
-
-  const disconnect = useCallback(() => {
-    if (wsClientRef.current) {
-      wsClientRef.current.disconnect();
-    }
-  }, []);
-
-  const sendMessage = useCallback(async (content: string): Promise<void> => {
-    if (!content.trim() || !wsClientRef.current) return;
-
-    // Add user message
-    const userMessage = addMessage({
-      type: "user",
-      content: content.trim(),
-      timestamp: new Date(),
+    // State changes
+    const unsubscribeState = streamingWebSocketService.onStateChange((newState) => {
+      setStreamingState(newState);
     });
+    cleanupFunctions.push(unsubscribeState);
 
-    // Set streaming state
-    setIsStreaming(true);
-
-    try {
-      // Ensure connection
-      const isConnected = await connect();
-      if (!isConnected) {
-        throw new Error("Failed to establish WebSocket connection");
-      }
-
-      // Create AI message placeholder
-      const aiMessage = addMessage({
-        type: "ai",
-        content: "",
-        timestamp: new Date(),
-      });
-
-      let streamingContent = "";
-
-      const callbacks: StreamingCallbacks = {
-        onContent: (text: string) => {
-          streamingContent += text;
-          updateMessage(aiMessage.id, streamingContent);
-        },
-        onToolStart: () => {
-          setIsProcessingTools(true);
-          console.log("🔧 Tool processing started");
-        },
-        onToolEnd: () => {
-          setIsProcessingTools(false);
-          console.log("✅ Tool processing ended");
-        },
-        onComplete: (fullContent: string) => {
-          // Use the accumulated streaming content if it's longer than fullContent
-          const finalContent = streamingContent.length > fullContent.length ? streamingContent : fullContent;
-          updateMessage(aiMessage.id, finalContent);
-          setIsStreaming(false);
-          setIsProcessingTools(false);
-          console.log("🎉 Streaming completed with content length:", finalContent.length);
-        },
-        onError: (error: Error) => {
-          console.error("❌ Streaming error:", error);
-          
-          updateMessage(aiMessage.id, 
-            `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error.message}`
-          );
-          
-          setIsStreaming(false);
-          setIsProcessingTools(false);
-        }
-      };
-
-      await wsClientRef.current.sendStreamingMessage(content, callbacks);
-
-    } catch (error) {
-      console.error("Error in sendMessage:", error);
+    // Message updates
+    const unsubscribeMessages = streamingWebSocketService.onMessage((message) => {
+      messageMapRef.current.set(message.id, message);
       
-      // Add error message
-      addMessage({
-        type: "ai",
-        content: `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date(),
+      setMessages(prevMessages => {
+        const existingIndex = prevMessages.findIndex(m => m.id === message.id);
+        
+        if (existingIndex >= 0) {
+          // Update existing message
+          const newMessages = [...prevMessages];
+          newMessages[existingIndex] = message;
+          return newMessages;
+        } else {
+          // Add new message
+          return [...prevMessages, message];
+        }
       });
+    });
+    cleanupFunctions.push(unsubscribeMessages);
 
-      // Clear loading states
-      setIsStreaming(false);
-      setIsProcessingTools(false);
-    }
-  }, [addMessage, updateMessage, connect]);
+    // Tool output updates
+    const unsubscribeToolOutputs = streamingWebSocketService.onToolOutput((toolOutput) => {
+      const messageId = streamingState.currentMessageId;
+      if (!messageId) return;
+
+      setToolOutputs(prevOutputs => {
+        const newOutputs = new Map(prevOutputs);
+        const existing = newOutputs.get(messageId) || [];
+        
+        // Check if this tool output already exists (by toolName and timestamp)
+        const existingIndex = existing.findIndex(
+          output => output.toolName === toolOutput.toolName && 
+                   Math.abs(output.timestamp.getTime() - toolOutput.timestamp.getTime()) < 1000
+        );
+
+        if (existingIndex >= 0) {
+          // Update existing tool output
+          existing[existingIndex] = toolOutput;
+        } else {
+          // Add new tool output
+          existing.push(toolOutput);
+        }
+
+        newOutputs.set(messageId, existing);
+        return newOutputs;
+      });
+    });
+    cleanupFunctions.push(unsubscribeToolOutputs);
+
+    cleanupFunctionsRef.current = cleanupFunctions;
+
+    return () => {
+      cleanupFunctions.forEach(cleanup => cleanup());
+    };
+  }, [streamingState.currentMessageId]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanupFunctionsRef.current.forEach(cleanup => cleanup());
+      streamingWebSocketService.disconnect();
+    };
+  }, []);
 
   return {
     messages,
-    isStreaming,
-    isProcessingTools,
-    messagesEndRef,
+    toolOutputs,
+    streamingState,
     sendMessage,
-    addMessage,
-    updateMessage,
     clearMessages,
-    scrollToBottom,
-    connect,
-    disconnect,
+    isInitialized,
+    initializeSession
   };
 };

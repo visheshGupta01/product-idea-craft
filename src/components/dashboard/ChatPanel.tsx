@@ -1,11 +1,17 @@
 import React from "react";
-import { ChatPanelProps } from "@/types";
-import { StreamingChatInterface } from "@/components/chat/StreamingChatInterface";
+import { StreamingChatInterface } from "../chat/StreamingChatInterface";
+import { useUser } from "../../context/UserContext";
+
+interface ChatPanelProps {
+  userIdea?: string;
+}
 
 const ChatPanel = ({ userIdea }: ChatPanelProps) => {
+  const { sessionId } = useUser();
+  
   return (
     <div className="h-full w-full">
-      <StreamingChatInterface userIdea={userIdea} />
+      <StreamingChatInterface sessionId={sessionId || ''} />
     </div>
   );
 };

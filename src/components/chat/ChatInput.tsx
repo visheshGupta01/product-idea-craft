@@ -4,28 +4,29 @@ import { Input } from "@/components/ui/input";
 import { Send, Loader2 } from "lucide-react";
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => Promise<void>;
-  isLoading: boolean;
+  onSendMessage: (message: string) => void;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
-  isLoading,
+  disabled = false,
+  placeholder = "Message..."
 }) => {
   const [newMessage, setNewMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || isLoading) return;
+    if (!newMessage.trim() || disabled) return;
 
     const messageToSend = newMessage;
-    setNewMessage(""); // Clear input immediately
-    console.log("Sending message:", messageToSend);
-    await onSendMessage(messageToSend);
+    setNewMessage("");
+    onSendMessage(messageToSend);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !disabled) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -49,7 +50,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             disabled={!newMessage.trim()}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-transparent text-white rounded-full shadow-sm"
           >
-            {isLoading ? (
+            {disabled ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <Send className="w-4 h-4" />
