@@ -40,7 +40,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="w-full bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full bg-[#1A1F21] border-gray-600 text-white placeholder:text-gray-300 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
             disabled={false}
           />
           <Button

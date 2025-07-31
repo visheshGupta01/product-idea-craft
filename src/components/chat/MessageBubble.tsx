@@ -100,7 +100,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 w-7 p-0 hover:bg-gray-600 text-gray-300"
+              className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
               onClick={() => copyToClipboard(message.content)}
             >
               <Copy className="h-3 w-3" />
@@ -109,7 +109,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 hover:bg-gray-600 text-gray-300"
+                className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
                 onClick={() => downloadAsText(message.content, message.id)}
               >
                 <Download className="h-3 w-3" />

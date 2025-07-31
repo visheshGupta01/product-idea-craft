@@ -98,15 +98,15 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
                   <Bot className="w-4 h-4" />
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3">
+              <div className="bg-[#D9D9D9] rounded-2xl rounded-bl-sm px-4 py-3">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                  <Loader2 className="h-4 w-4 animate-spin text-black" />
                   {showToolsIndicator ? (
-                    <span className="text-sm text-gray-300">
+                    <span className="text-sm text-black">
                       Running Tools...
                     </span>
                   ) : (
-                    <span className="text-sm text-gray-300">
+                    <span className="text-sm text-black">
                       AI is thinking...
                     </span>
                   )}
