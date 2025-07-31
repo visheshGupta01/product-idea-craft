@@ -88,8 +88,10 @@ export class StreamingWebSocketClient {
           if (!isComplete) {
             isComplete = true;
             if (isInToolMode) {
+              console.log("🔧 Ending tool mode on completion");
               callbacks.onToolEnd();
             }
+            console.log("🎯 Calling onComplete with content length:", fullContent.length);
             callbacks.onComplete(fullContent);
             this.cleanup(messageHandler);
           }
@@ -119,10 +121,7 @@ export class StreamingWebSocketClient {
             callbacks.onContent(content);
           } else if (content.includes('[Tool Output for') && content.includes(']:')) {
             console.log("🔧 Tool output received");
-            if (isInToolMode) {
-              callbacks.onToolEnd();
-              isInToolMode = false;
-            }
+            // Don't end tool mode here - wait for the completion signal
             fullContent += content;
             callbacks.onContent(content);
           } else {
