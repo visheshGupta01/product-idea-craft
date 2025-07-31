@@ -10,6 +10,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     return <span>Loading...</span>;
   }
 
+  // Debug logging
+  console.log("MarkdownRenderer received content:", content.substring(0, 500));
+  console.log("Content contains tool output:", content.includes('[Tool Output'));
+  console.log("Content length:", content.length);
+
   const renderMarkdown = (text: string) => {
     const lines = text.split("\n");
     const elements: React.ReactElement[] = [];
@@ -379,14 +384,34 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
   };
 
   // Process tool outputs and integrate seamlessly into content
-  const processToolOutput = (text: string) => {
-    // Remove tool output markers and integrate content seamlessly
-    const cleanedText = text.replace(
-      /\[Tool Output for lov-[^:]+\]:\s*/g,
-      ''
-    );
-    return cleanedText;
-  };
+const processToolOutput = (text: string) => {
+  return text.replace(
+    /\[Tool Output for ([^\]]+)\]:\s*([\s\S]*?)(?=\n\S|\Z)/g,
+    (match, toolName, toolOutput) => {
+      try {
+        // If it looks like JSON and is a sitemap tool
+        if (toolName.startsWith("sitemap")) {
+          const json = JSON.parse(toolOutput);
+          return `\n__SITEMAP_DATA__${JSON.stringify(json)}__SITEMAP_DATA__\n`;
+        }
+
+        // If it's a quoted markdown string
+        if (toolOutput.trim().startsWith('"')) {
+          const markdown = JSON.parse(toolOutput);
+          return `\n${markdown}\n`;
+        }
+
+        // If it's unquoted markdown
+        return `\n${toolOutput}\n`;
+      } catch (e) {
+        console.error(`Failed to parse tool output for "${toolName}":`, e);
+        return "";
+      }
+    }
+  );
+};
+
+
 
   // Clean tool outputs and treat them as regular content
   const cleanedContent = processToolOutput(content);
