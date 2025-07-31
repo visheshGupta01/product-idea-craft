@@ -378,92 +378,26 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     return <span dangerouslySetInnerHTML={{ __html: text }} />;
   };
 
-  // Process tool outputs
+  // Process tool outputs and integrate seamlessly into content
   const processToolOutput = (text: string) => {
-    const toolOutputRegex = /\[Tool Output for (lov-[^:]+)\]:\s*([\s\S]*?)(?=\n\[Tool Output for |$)/g;
-    const parts: Array<{ type: 'text' | 'tool'; content: string; toolName?: string }> = [];
-    let lastIndex = 0;
-    let match;
-
-    while ((match = toolOutputRegex.exec(text)) !== null) {
-      // Add text before this tool output
-      if (match.index > lastIndex) {
-        const beforeText = text.slice(lastIndex, match.index).trim();
-        if (beforeText) {
-          parts.push({ type: 'text', content: beforeText });
-        }
-      }
-
-      // Add tool output
-      const toolName = match[1];
-      const toolContent = match[2].trim();
-      parts.push({ type: 'tool', content: toolContent, toolName });
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    // Add remaining text
-    if (lastIndex < text.length) {
-      const remainingText = text.slice(lastIndex).trim();
-      if (remainingText) {
-        parts.push({ type: 'text', content: remainingText });
-      }
-    }
-
-    return parts.length > 0 ? parts : [{ type: 'text', content: text }];
+    // Remove tool output markers and integrate content seamlessly
+    const cleanedText = text.replace(
+      /\[Tool Output for lov-[^:]+\]:\s*/g,
+      ''
+    );
+    return cleanedText;
   };
 
-  // Check for tool outputs first
-  const toolOutputParts = processToolOutput(content);
-  
-  if (toolOutputParts.length > 1 || (toolOutputParts.length === 1 && toolOutputParts[0].type === 'tool')) {
-    // Mixed content with tool outputs
-    return (
-      <div className="space-y-4">
-        {toolOutputParts.map((part, index) => {
-          if (part.type === 'tool') {
-            const getToolIcon = (toolName: string) => {
-              if (toolName.includes('write')) return '✏️';
-              if (toolName.includes('read') || toolName.includes('view')) return '👁️';
-              if (toolName.includes('search')) return '🔍';
-              if (toolName.includes('delete')) return '🗑️';
-              if (toolName.includes('rename')) return '📝';
-              if (toolName.includes('dependency')) return '📦';
-              return '🔧';
-            };
-
-            return (
-              <div key={index} className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm">{getToolIcon(part.toolName!)}</span>
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                    {part.toolName}
-                  </span>
-                </div>
-                <div className="prose prose-sm max-w-none dark:prose-invert">
-                  {renderMarkdown(part.content)}
-                </div>
-              </div>
-            );
-          } else {
-            return (
-              <div key={index} className="prose prose-sm max-w-none">
-                {renderMarkdown(part.content)}
-              </div>
-            );
-          }
-        })}
-      </div>
-    );
-  }
+  // Clean tool outputs and treat them as regular content
+  const cleanedContent = processToolOutput(content);
 
   // Check for sitemap data
-  const sitemapMatch = content.match(/__SITEMAP_DATA__(.*?)__SITEMAP_DATA__/s);
+  const sitemapMatch = cleanedContent.match(/__SITEMAP_DATA__(.*?)__SITEMAP_DATA__/s);
   if (sitemapMatch) {
     try {
       const sitemapData = JSON.parse(sitemapMatch[1]);
-      const beforeSitemap = content.substring(0, content.indexOf('__SITEMAP_DATA__'));
-      const afterSitemap = content.substring(content.lastIndexOf('__SITEMAP_DATA__') + '__SITEMAP_DATA__'.length);
+      const beforeSitemap = cleanedContent.substring(0, cleanedContent.indexOf('__SITEMAP_DATA__'));
+      const afterSitemap = cleanedContent.substring(cleanedContent.lastIndexOf('__SITEMAP_DATA__') + '__SITEMAP_DATA__'.length);
       
       return (
         <div className="space-y-6">
@@ -483,6 +417,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
   }
 
   return (
-    <div className="prose prose-sm max-w-none">{renderMarkdown(content)}</div>
+    <div className="prose prose-sm max-w-none">{renderMarkdown(cleanedContent)}</div>
   );
 };
