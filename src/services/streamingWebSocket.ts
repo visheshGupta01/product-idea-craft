@@ -71,6 +71,39 @@ export class StreamingWebSocketClient {
     let fullContent = '';
     let isComplete = false;
     let isInToolMode = false;
+    let completionTimeout: NodeJS.Timeout | null = null;
+
+    // Robust completion handler to prevent race conditions
+    const handleCompletion = () => {
+      if (isComplete) return;
+      
+      console.log("🎯 Completing stream - toolMode:", isInToolMode, "contentLength:", fullContent.length);
+      isComplete = true;
+      
+      // Clear timeout
+      if (completionTimeout) {
+        clearTimeout(completionTimeout);
+        completionTimeout = null;
+      }
+      
+      // End tool mode if active
+      if (isInToolMode) {
+        console.log("🔧 Ending tool mode on completion");
+        callbacks.onToolEnd();
+        isInToolMode = false;
+      }
+      
+      // Complete the stream
+      console.log("✅ Calling onComplete with content length:", fullContent.length);
+      callbacks.onComplete(fullContent);
+      this.cleanup(messageHandler);
+    };
+
+    // Set completion timeout as fallback (30 seconds)
+    completionTimeout = setTimeout(() => {
+      console.warn("⚠️ Stream completion timeout reached, forcing completion");
+      handleCompletion();
+    }, 30000);
 
     const messageHandler = (event: MessageEvent) => {
       if (isComplete) return;
@@ -85,16 +118,7 @@ export class StreamingWebSocketClient {
         // Handle completion signal from backend
         if (data.type === 'done' && data.tool === 'claude') {
           console.log("✅ Stream completed with done signal");
-          if (!isComplete) {
-            isComplete = true;
-            if (isInToolMode) {
-              console.log("🔧 Ending tool mode on completion");
-              callbacks.onToolEnd();
-            }
-            console.log("🎯 Calling onComplete with content length:", fullContent.length);
-            callbacks.onComplete(fullContent);
-            this.cleanup(messageHandler);
-          }
+          handleCompletion();
           return;
         }
 
@@ -102,6 +126,14 @@ export class StreamingWebSocketClient {
         if (data.type === 'error') {
           if (!isComplete) {
             isComplete = true;
+            if (completionTimeout) {
+              clearTimeout(completionTimeout);
+              completionTimeout = null;
+            }
+            if (isInToolMode) {
+              callbacks.onToolEnd();
+              isInToolMode = false;
+            }
             this.cleanup(messageHandler);
             callbacks.onError(new Error(data.message || 'WebSocket streaming error'));
           }
@@ -112,16 +144,18 @@ export class StreamingWebSocketClient {
         if (typeof event.data === 'string' && !isComplete) {
           const content = event.data;
           
-          // Detect tool output by looking for tool output patterns
+          // Only enter tool mode when we actually detect tool usage
           if (content.includes('[Tool Use Started]:')) {
-            console.log("🔧 Tool execution started");
-            isInToolMode = true;
-            callbacks.onToolStart();
+            console.log("🔧 Tool execution started - entering tool mode");
+            if (!isInToolMode) {
+              isInToolMode = true;
+              callbacks.onToolStart();
+            }
             fullContent += content;
             callbacks.onContent(content);
           } else if (content.includes('[Tool Output for') && content.includes(']:')) {
             console.log("🔧 Tool output received");
-            // Don't end tool mode here - wait for the completion signal
+            // Keep tool mode active, don't end here
             fullContent += content;
             callbacks.onContent(content);
           } else {
@@ -140,12 +174,17 @@ export class StreamingWebSocketClient {
 
     // Send message
     try {
+      console.log("🚀 Sending message to WebSocket");
       this.ws.send(JSON.stringify({
         message,
         session_id: this.sessionId,
         stream: true,
       }));
     } catch (error) {
+      if (completionTimeout) {
+        clearTimeout(completionTimeout);
+        completionTimeout = null;
+      }
       this.cleanup(messageHandler);
       throw error;
     }
