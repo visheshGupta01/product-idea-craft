@@ -116,47 +116,34 @@ export const useStreamingChat = (sessionId: string): StreamingChatState & Stream
 
       const callbacks: StreamingCallbacks = {
         onContent: (text: string) => {
-          console.log("📝 Hook receiving content:", text.length, "chars");
-          if (text.includes('[Tool') || text.includes('tool')) {
-            console.log("🔧 Tool-related content in hook:", text.substring(0, 200));
-          }
           streamingContent += text;
           updateMessage(aiMessage.id, streamingContent);
-          console.log("📝 Updated message with total content:", streamingContent.length, "chars");
         },
         onToolStart: () => {
-          console.log("🔧 Tool processing started in hook");
           setIsProcessingTools(true);
+          console.log("🔧 Tool processing started");
         },
         onToolEnd: () => {
-          console.log("✅ Tool processing ended in hook");
           setIsProcessingTools(false);
+          console.log("✅ Tool processing ended");
         },
         onComplete: (fullContent: string) => {
-          console.log("🎉 Stream completion in hook - clearing all states");
-          
           // Use the accumulated streaming content if it's longer than fullContent
           const finalContent = streamingContent.length > fullContent.length ? streamingContent : fullContent;
           updateMessage(aiMessage.id, finalContent);
-          
-          // Always clear both states on completion
           setIsStreaming(false);
           setIsProcessingTools(false);
-          
-          console.log("✅ All states cleared - content length:", finalContent.length);
+          console.log("🎉 Streaming completed with content length:", finalContent.length);
         },
         onError: (error: Error) => {
-          console.error("❌ Streaming error in hook:", error);
+          console.error("❌ Streaming error:", error);
           
           updateMessage(aiMessage.id, 
             `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error.message}`
           );
           
-          // Always clear both states on error
           setIsStreaming(false);
           setIsProcessingTools(false);
-          
-          console.log("🧹 States cleared after error");
         }
       };
 
