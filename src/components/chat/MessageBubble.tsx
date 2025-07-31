@@ -64,7 +64,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         <div className={`px-4 py-3 rounded-2xl shadow-sm ${
           isUser
             ? "bg-blue-500 text-white rounded-br-sm"
-            : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-bl-sm"
+            : "bg-gray-800 text-white rounded-bl-sm"
         }`}>
           {isUser ? (
             <div className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -82,7 +82,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="h-7 w-7 p-0 hover:bg-gray-600 text-gray-300"
               onClick={() => copyToClipboard(message.content)}
             >
               <Copy className="h-3 w-3" />
@@ -91,7 +91,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="h-7 w-7 p-0 hover:bg-gray-600 text-gray-300"
                 onClick={() => downloadAsText(message.content, message.id)}
               >
                 <Download className="h-3 w-3" />

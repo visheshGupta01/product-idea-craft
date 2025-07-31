@@ -78,7 +78,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
   const showToolsIndicator = isProcessingTools;
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-black">
       <ScrollArea className="flex-1 p-6">
         <div className="space-y-6 max-w-4xl mx-auto">
           {messages.map((message, index) => (
@@ -98,15 +98,15 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
                   <Bot className="w-4 h-4" />
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
+              <div className="bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-purple-500" />
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
                   {showToolsIndicator ? (
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                    <span className="text-sm text-gray-300">
                       Running Tools...
                     </span>
                   ) : (
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                    <span className="text-sm text-gray-300">
                       AI is thinking...
                     </span>
                   )}
@@ -119,7 +119,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
         </div>
       </ScrollArea>
 
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+      <div className="bg-black">
         <div className="max-w-4xl mx-auto">
           <ChatInput onSendMessage={sendMessage} isLoading={isStreaming} />
         </div>
