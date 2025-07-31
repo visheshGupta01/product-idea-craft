@@ -35,7 +35,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <h1
             key={currentIndex++}
-            className="text-2xl font-bold mb-2 mt-3 text-foreground border-b border-border pb-1"
+            className="text-2xl font-bold mb-2 mt-3 text-black border-b border-border pb-1"
           >
             {line.substring(2)}
           </h1>
@@ -44,7 +44,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <h2
             key={currentIndex++}
-            className="text-xl font-bold mb-2 mt-3 text-foreground border-b border-border pb-1"
+            className="text-xl font-bold mb-2 mt-3 text-black border-b border-border pb-1"
           >
             {line.substring(3)}
           </h2>
@@ -53,7 +53,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <h3
             key={currentIndex++}
-            className="text-lg font-bold mb-2 mt-3 text-foreground border-b border-border pb-1"
+            className="text-lg font-bold mb-2 mt-3 text-black border-b border-border pb-1"
           >
             {line.substring(4)}
           </h3>
@@ -62,7 +62,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <h4
             key={currentIndex++}
-            className="text-md font-semibold mb-1 mt-2 text-foreground"
+            className="text-md font-semibold mb-1 mt-2 text-black"
           >
             {line.substring(5)}
           </h4>
@@ -71,7 +71,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <h5
             key={currentIndex++}
-            className="text-sm font-semibold mb-1 mt-2 text-foreground"
+            className="text-sm font-semibold mb-1 mt-2 text-black"
           >
             {line.substring(6)}
           </h5>
@@ -80,7 +80,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <h6
             key={currentIndex++}
-            className="text-sm font-semibold mb-1 mt-2 text-muted-foreground"
+            className="text-sm font-semibold mb-1 mt-2 text-muted-black"
           >
             {line.substring(7)}
           </h6>
@@ -116,7 +116,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
                 </div>
               )}
               <pre className="p-6 overflow-x-auto">
-                <code className="text-sm font-mono text-foreground leading-relaxed">
+                <code className="text-sm font-mono text-black leading-relaxed">
                   {codeLines.join("\n")}
                 </code>
               </pre>
@@ -139,7 +139,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <blockquote
             key={currentIndex++}
-            className="border-l-4 border-primary bg-primary/10 pl-4 py-2 my-2 italic text-muted-foreground"
+            className="border-l-4 border-primary bg-primary/10 pl-4 py-2 my-2 italic text-muted-black"
           >
             {quoteLines.map((quoteLine, idx) => (
               <p key={idx} className="mb-1 last:mb-0">
@@ -206,7 +206,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
                     {row.map((cell, cellIdx) => (
                       <td
                         key={cellIdx}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-foreground border-r border-border last:border-r-0"
+                        className="px-6 py-4 whitespace-nowrap text-sm text-black border-r border-border last:border-r-0"
                       >
                         {processInlineFormatting(cell)}
                       </td>
@@ -225,7 +225,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <p
             key={currentIndex++}
-            className="mb-4 leading-relaxed text-foreground"
+            className="mb-4 leading-relaxed text-black"
           >
             {processInlineFormatting(line)}
           </p>
@@ -309,7 +309,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         <ListComponent
           className={`my-4 ${isOrdered ? "list-decimal" : "list-disc"} ${
             currentLevel === 0 ? "list-inside" : "list-outside ml-6"
-          } space-y-2`}
+          } space-y-2 text-black marker:text-black`}
           {...listProps}
         >
           {currentLevelItems.map((item, idx) => {
@@ -324,7 +324,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
             );
 
             return (
-              <li key={idx} className="text-foreground leading-relaxed">
+              <li key={idx} className="text-black leading-relaxed">
                 {processInlineFormatting(item.content)}
                 {nextLevelItems.length > 0 && (
                   <div className="mt-2">
@@ -353,19 +353,19 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     // Handle inline code first
     text = text.replace(
       /`([^`]+)`/g,
-      '<code class="bg-muted text-foreground px-1 py-0.5 rounded font-mono text-sm">$1</code>'
+      '<code class="bg-muted text-black px-1 py-0.5 rounded font-mono text-sm">$1</code>'
     );
 
     // Handle bold
     text = text.replace(
       /\*\*([^*]+)\*\*/g,
-      '<strong class="font-bold text-foreground">$1</strong>'
+      '<strong class="font-bold text-black">$1</strong>'
     );
 
     // Handle italic
     text = text.replace(
       /\*([^*]+)\*/g,
-      '<em class="italic text-foreground">$1</em>'
+      '<em class="italic text-black">$1</em>'
     );
 
     // Handle links
@@ -377,7 +377,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     // Handle strikethrough
     text = text.replace(
       /~~([^~]+)~~/g,
-      '<del class="line-through text-muted-foreground">$1</del>'
+      '<del class="line-through text-muted-black">$1</del>'
     );
 
     return <span dangerouslySetInnerHTML={{ __html: text }} />;

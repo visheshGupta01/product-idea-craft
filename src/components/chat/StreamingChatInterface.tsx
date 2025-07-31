@@ -78,9 +78,9 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
   const showToolsIndicator = isProcessingTools;
 
   return (
-    <div className="flex flex-col h-full bg-[#22282A]">
+    <div className="flex flex-col h-full bg-[#1E1E1E]">
       <ScrollArea className="flex-1 p-6">
-        <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="space-y-6 max-w-3xl mx-auto">
           {messages.map((message, index) => (
             <div key={message.id} className="group">
               <MessageBubble
@@ -102,9 +102,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
                 <div className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin text-black" />
                   {showToolsIndicator ? (
-                    <span className="text-sm text-black">
-                      Running Tools...
-                    </span>
+                    <span className="text-sm text-black">Running Tools...</span>
                   ) : (
                     <span className="text-sm text-black">
                       AI is thinking...
