@@ -1,4 +1,5 @@
 import { ServerResponse } from "@/types";
+import { MarkdownRenderer } from "@/components/chat/MarkdownRenderer";
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -108,26 +109,31 @@ export class WebSocketService {
             // Tool processing started - notify UI
             onToolStart?.();
           } else if (data.type === 'tool_result') {
-            // Tool result - process and add to full response
-            onToolEnd?.(); // Tool finished processing
-            let toolOutput = '';
-            
-            if (data.content && Array.isArray(data.content)) {
-              // Handle array of content blocks
-              data.content.forEach((block: any) => {
-                if (block.type === 'text' && block.text) {
-                  toolOutput += block.text;
-                }
-              });
-            } else if (data.content && typeof data.content === 'string') {
-              toolOutput = data.content;
-            }
-            
+  // Tool result - process and add to full response
+  onToolEnd?.(); // Tool finished processing
+  let toolOutput = '';
+  
+  if (data.content && Array.isArray(data.content)) {
+    // Handle array of content blocks
+    data.content.forEach((block: any) => {
+      if (block.type === 'text' && block.text) {
+        toolOutput += block.text;
+      }
+      console.log("🔧 Tool output block:", block);
+    });
+  } else if (data.content && typeof data.content === 'string') {
+    toolOutput = data.content;
+    console.log("🔧 Tool output content:", toolOutput);
+  }
+  
             if (toolOutput) {
-              onChunk(toolOutput);
-              fullResponseContent += toolOutput;
-            }
-          } else if (data.type === 'message_stop' || data.type === 'complete') {
+    console.log("🔧 Tool output content:", toolOutput);
+    const renderedToolOutput = <MarkdownRenderer content={ toolOutput } />;
+    console.log("🔧 Tool output:", renderedToolOutput);
+    onChunk(renderedToolOutput);
+    fullResponseContent += renderedToolOutput;
+  }
+} else if (data.type === 'message_stop' || data.type === 'complete') {
             // Stream is complete - prevent duplicate processing
             if (!isComplete) {
               isComplete = true;

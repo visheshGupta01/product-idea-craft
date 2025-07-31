@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Bot, User, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "@/types";
-import { EnhancedMarkdownRenderer } from "./EnhancedMarkdownRenderer";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface MessageBubbleProps {
   message: Message;
@@ -72,7 +72,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             </div>
           ) : (
             <div className="text-sm leading-relaxed">
-              <EnhancedMarkdownRenderer content={message.content} />
+              <MarkdownRenderer content={message.content} />
             </div>
           )}
         </div>
