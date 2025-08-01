@@ -183,40 +183,46 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         const headerRow = hasHeader ? rows[0] : null;
         const dataRows = hasHeader ? rows.slice(2) : rows;
 
-        elements.push(
-           <div key={currentIndex++} className="my-6 overflow-x-auto shadow-sm rounded-lg border border-border max-w-full">
-             <table className="min-w-full divide-y divide-border">
-              {headerRow && (
-                <thead className="bg-gradient-to-r from-primary/10 to-accent/5">
-                  <tr>
-                    {headerRow.map((header, idx) => (
-                      <th
-                        key={idx}
-                        className="px-6 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider border-r border-border last:border-r-0"
-                      >
-                        {processInlineFormatting(header)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-              )}
-              <tbody className="bg-background divide-y divide-border">
-                {dataRows.map((row, rowIdx) => (
-                  <tr key={rowIdx} className="hover:bg-muted/50 transition-colors">
-                    {row.map((cell, cellIdx) => (
-                       <td
-                         key={cellIdx}
-                         className="px-6 py-4 text-sm text-black border-r border-border last:border-r-0 break-words max-w-xs"
-                       >
-                        {processInlineFormatting(cell)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
+       elements.push(
+         <div
+           key={currentIndex++}
+           className="my-6 overflow-x-auto shadow-md rounded-xl border border-border max-w-full"
+         >
+           <table className="min-w-full text-sm text-left text-black">
+             {headerRow && (
+               <thead className="bg-primary text-white">
+                 <tr>
+                   {headerRow.map((header, idx) => (
+                     <th
+                       key={idx}
+                       className="px-6 py-3 font-semibold uppercase tracking-wider border-r border-border last:border-r-0"
+                     >
+                       {processInlineFormatting(header)}
+                     </th>
+                   ))}
+                 </tr>
+               </thead>
+             )}
+             <tbody className="bg-white divide-y divide-border">
+               {dataRows.map((row, rowIdx) => (
+                 <tr
+                   key={rowIdx}
+                   className="hover:bg-accent/10 transition-colors duration-200"
+                 >
+                   {row.map((cell, cellIdx) => (
+                     <td
+                       key={cellIdx}
+                       className="px-6 py-4 border-r border-border last:border-r-0 break-words max-w-xs text-sm"
+                     >
+                       {processInlineFormatting(cell)}
+                     </td>
+                   ))}
+                 </tr>
+               ))}
+             </tbody>
+           </table>
+         </div>
+       );
 
         i = j - 1;
       }

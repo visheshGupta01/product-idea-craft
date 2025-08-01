@@ -42,8 +42,10 @@ export class WebSocketService {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
+      console.log(
+        `Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      );
+
       setTimeout(() => {
         this.connect().catch(console.error);
       }, this.reconnectDelay);
@@ -58,10 +60,12 @@ export class WebSocketService {
       }
 
       try {
-        this.ws.send(JSON.stringify({
-          message,
-          session_id: this.sessionId,
-        }));
+        this.ws.send(
+          JSON.stringify({
+            message,
+            session_id: this.sessionId,
+          })
+        );
         resolve();
       } catch (error) {
         reject(error);
@@ -82,7 +86,7 @@ export class WebSocketService {
         return;
       }
 
-      let fullResponseContent = '';
+      let fullResponseContent = "";
       let isComplete = false;
 
       const messageHandler = (event: MessageEvent) => {
@@ -98,52 +102,52 @@ export class WebSocketService {
           console.log("📊 Message type:", data.type);
           console.log("📊 Message content:", data.content);
           console.log("📊 Message text:", data.text);
-          
+
           // Handle different types of messages
-          if (data.type === 'content' && data.text) {
+          if (data.type === "content" && data.text) {
             // Regular text content - stream it immediately
             onChunk(data.text);
             fullResponseContent += data.text;
-          } else if (data.type === 'tool_use') {
+          } else if (data.type === "tool_use") {
             // Tool processing started - notify UI
             onToolStart?.();
-          } else if (data.type === 'tool_result') {
-  // Tool result - process and add to full response
-  onToolEnd?.(); // Tool finished processing
-  let toolOutput = '';
-  
-  if (data.content && Array.isArray(data.content)) {
-    // Handle array of content blocks
-    data.content.forEach((block: any) => {
-      if (block.type === 'text' && block.text) {
-        toolOutput += block.text;
-      }
-      console.log("🔧 Tool output block:", block);
-    });
-  } else if (data.content && typeof data.content === 'string') {
-    toolOutput = data.content;
-    console.log("🔧 Tool output content:", toolOutput);
-  }
-  
+          } else if (data.type === "tool_result") {
+            // Tool result - process and add to full response
+            onToolEnd?.(); // Tool finished processing
+            let toolOutput = "";
+
+            if (data.content && Array.isArray(data.content)) {
+              // Handle array of content blocks
+              data.content.forEach((block: any) => {
+                if (block.type === "text" && block.text) {
+                  toolOutput += block.text;
+                }
+                console.log("🔧 Tool output block:", block);
+              });
+            } else if (data.content && typeof data.content === "string") {
+              toolOutput = data.content;
+              console.log("🔧 Tool output content:", toolOutput);
+            }
+
             if (toolOutput) {
               onChunk(toolOutput);
               fullResponseContent += toolOutput;
             }
-} else if (data.type === 'message_stop' || data.type === 'complete') {
+          } else if (data.type === "message_stop" || data.type === "complete") {
             // Stream is complete - prevent duplicate processing
             if (!isComplete) {
               isComplete = true;
               onToolEnd?.(); // Ensure tool state is cleared
               onComplete(fullResponseContent);
-              this.ws?.removeEventListener('message', messageHandler);
+              this.ws?.removeEventListener("message", messageHandler);
               resolve();
             }
-          } else if (data.type === 'error') {
+          } else if (data.type === "error") {
             // Handle error response
             if (!isComplete) {
               isComplete = true;
-              this.ws?.removeEventListener('message', messageHandler);
-              reject(new Error(data.message || 'WebSocket error'));
+              this.ws?.removeEventListener("message", messageHandler);
+              reject(new Error(data.message || "WebSocket error"));
             }
           } else if (data.text && !data.type) {
             // Fallback for simple text messages without type
@@ -151,16 +155,23 @@ export class WebSocketService {
             fullResponseContent += data.text;
           }
         } catch (parseError) {
-          console.warn("Failed to parse WebSocket message:", event.data, parseError);
+          console.warn(
+            "Failed to parse WebSocket message:",
+            event.data,
+            parseError
+          );
           // Try to handle as plain text only if it's actually text and not complete
-          if (typeof event.data === 'string' && !isComplete) {
+          if (typeof event.data === "string" && !isComplete) {
             try {
               // Check if it's a completion message in plain text
-              if (event.data.includes('complete') || event.data.includes('message_stop')) {
+              if (
+                event.data.includes("complete") ||
+                event.data.includes("message_stop")
+              ) {
                 if (!isComplete) {
                   isComplete = true;
                   onComplete(fullResponseContent);
-                  this.ws?.removeEventListener('message', messageHandler);
+                  this.ws?.removeEventListener("message", messageHandler);
                   resolve();
                 }
               } else {
@@ -175,20 +186,22 @@ export class WebSocketService {
       };
 
       // Remove any existing listeners to prevent duplicates
-      this.ws.removeEventListener('message', messageHandler);
-      
+      this.ws.removeEventListener("message", messageHandler);
+
       // Add message listener
-      this.ws.addEventListener('message', messageHandler);
+      this.ws.addEventListener("message", messageHandler);
 
       // Send the message
       try {
-        this.ws.send(JSON.stringify({
-          message,
-          session_id: this.sessionId,
-          stream: true,
-        }));
+        this.ws.send(
+          JSON.stringify({
+            message,
+            session_id: this.sessionId,
+            stream: true,
+          })
+        );
       } catch (error) {
-        this.ws.removeEventListener('message', messageHandler);
+        this.ws.removeEventListener("message", messageHandler);
         reject(error);
       }
     });

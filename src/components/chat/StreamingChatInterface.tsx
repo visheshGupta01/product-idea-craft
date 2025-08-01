@@ -80,7 +80,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
   return (
     <div className="flex flex-col h-full bg-[#1E1E1E]">
       <ScrollArea className="flex-1 p-6">
-        <div className="space-y-6 max-w-3xl mx-auto">
+        <div className="space-y-6 max-w-5xl mx-auto">
           {messages.map((message, index) => (
             <div key={message.id} className="group">
               <MessageBubble
@@ -117,7 +117,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
         </div>
       </ScrollArea>
 
-      <div className="bg-[#22282A]">
+      <div className="bg-[#1E1E1E]">
         <div className="max-w-4xl mx-auto">
           <ChatInput onSendMessage={sendMessage} isLoading={isStreaming} />
         </div>
