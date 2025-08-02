@@ -4,6 +4,7 @@ export interface User {
   email: string;
   avatar: string;
   verified?: boolean;
+  userType: 'admin' | 'user';
 }
 
 export interface Message {
