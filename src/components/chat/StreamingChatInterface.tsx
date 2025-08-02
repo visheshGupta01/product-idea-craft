@@ -9,9 +9,10 @@ import { useUser } from "@/context/UserContext";
 
 interface StreamingChatInterfaceProps {
   userIdea?: string;
+  onFrontendGenerated?: (url: string) => void;
 }
 
-export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea }) => {
+export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea, onFrontendGenerated }) => {
   const { sessionId, initialResponse, clearInitialResponse } = useUser();
   const {
     messages,
@@ -22,7 +23,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     addMessage,
     scrollToBottom,
     connect
-  } = useStreamingChat(sessionId || "");
+  } = useStreamingChat(sessionId || "", onFrontendGenerated);
 
   // Initialize connection when sessionId is available
   useEffect(() => {

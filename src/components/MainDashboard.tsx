@@ -31,6 +31,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
   // Auto-collapse sidebar on non-main screens
   useEffect(() => {
@@ -47,6 +48,12 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
     window.addEventListener('frontendComplete', handleFrontendComplete);
     return () => window.removeEventListener('frontendComplete', handleFrontendComplete);
   }, []);
+
+  const handleFrontendGenerated = (url: string) => {
+    setPreviewUrl(url);
+    setIsFrontendCreated(true);
+    console.log("🎯 Preview URL set:", url);
+  };
 
   const handleLogout = () => {
     // Navigate back to the idea submission screen
@@ -74,7 +81,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
         if (!isFrontendCreated || initialResponse) {
           return (
             <div className="h-full">
-              <ChatPanel userIdea={userIdea} />
+              <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
             </div>
           );
         }
@@ -93,7 +100,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
               className="hidden lg:block"
             >
               <div className="h-full border-r border-border">
-                <ChatPanel userIdea={userIdea} />
+                <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
               </div>
             </ResizablePanel>
 
@@ -106,7 +113,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
               collapsible={true}
             >
               <div className="h-full bg-background">
-                <PreviewCodePanel />
+                <PreviewCodePanel previewUrl={previewUrl} />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>

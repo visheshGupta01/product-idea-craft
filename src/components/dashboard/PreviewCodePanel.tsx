@@ -10,7 +10,11 @@ import { Code, Expand, Monitor, Tablet, Smartphone, Save, Globe } from 'lucide-r
 
 
 
-const PreviewCodePanel = () => {
+interface PreviewCodePanelProps {
+  previewUrl?: string;
+}
+
+const PreviewCodePanel = ({ previewUrl }: PreviewCodePanelProps) => {
   const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [showCode, setShowCode] = useState(false);
@@ -21,6 +25,13 @@ const PreviewCodePanel = () => {
   const [iframeSrc, setIframeSrc] = useState(
     "https://94153f317dee.ngrok-free.app/"
   );
+
+  // Update iframe src when previewUrl changes
+  useEffect(() => {
+    if (previewUrl) {
+      setIframeSrc(previewUrl);
+    }
+  }, [previewUrl]);
 
   const handleFileSelect = (file: FileNode) => {
     setSelectedFile(file);

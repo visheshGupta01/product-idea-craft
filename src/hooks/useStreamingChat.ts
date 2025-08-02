@@ -17,9 +17,10 @@ export interface StreamingChatActions {
   scrollToBottom: () => void;
   connect: () => Promise<boolean>;
   disconnect: () => void;
+  onFrontendGenerated?: (url: string) => void;
 }
 
-export const useStreamingChat = (sessionId: string): StreamingChatState & StreamingChatActions => {
+export const useStreamingChat = (sessionId: string, onFrontendGenerated?: (url: string) => void): StreamingChatState & StreamingChatActions => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
@@ -118,6 +119,16 @@ export const useStreamingChat = (sessionId: string): StreamingChatState & Stream
         onContent: (text: string) => {
           streamingContent += text;
           updateMessage(aiMessage.id, streamingContent);
+          
+          // Check for frontend_code_generator tool output with ngrok URL
+          if (text.includes('[Tool Output for frontend_code_generator]:') && text.includes('ngrok')) {
+            const urlMatch = text.match(/https?:\/\/[^\s"]+\.ngrok[^\s"']*/);
+            if (urlMatch && onFrontendGenerated) {
+              const ngrokUrl = urlMatch[0];
+              console.log("🚀 Frontend generated with URL:", ngrokUrl);
+              onFrontendGenerated(ngrokUrl);
+            }
+          }
         },
         onToolStart: () => {
           setIsProcessingTools(true);
@@ -177,5 +188,6 @@ export const useStreamingChat = (sessionId: string): StreamingChatState & Stream
     scrollToBottom,
     connect,
     disconnect,
+    onFrontendGenerated,
   };
 };
