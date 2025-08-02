@@ -36,13 +36,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         onClose();
         setEmail("");
         setPassword("");
-        
-        // Redirect based on user type
-        if (result.userType === 'admin') {
-          window.location.href = '/admin';
-        } else {
-          window.location.href = '/dashboard';
-        }
       } else {
         setError(result.message || "Login failed");
       }

@@ -49,13 +49,6 @@ export const SignupModal: React.FC<SignupModalProps> = ({
       if (result.success) {
         // Show verification modal instead of closing immediately
         setShowVerificationModal(true);
-        
-        // Redirect based on user type after verification
-        if (result.userType === 'admin') {
-          setTimeout(() => window.location.href = '/admin', 2000);
-        } else {
-          setTimeout(() => window.location.href = '/dashboard', 2000);
-        }
       } else {
         setError(result.message || "Signup failed");
       }

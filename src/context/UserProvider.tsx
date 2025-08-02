@@ -11,22 +11,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isProcessingIdea, setIsProcessingIdea] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [userType, setUserType] = useState<'admin' | 'user' | null>(null);
 
   // Check authentication on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = authService.getToken();
-      const storedUserType = authService.getUserType();
+      // Token validation temporarily disabled
       const storedSessionId = authService.getSessionId();
-      
-      if (token) {
-        setIsAuthenticated(true);
-        if (storedUserType) {
-          setUserType(storedUserType);
-        }
-      }
-      
       if (storedSessionId) {
         setSessionId(storedSessionId);
       }
@@ -39,25 +29,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (result.success && result.user) {
       setUser(result.user);
       setIsAuthenticated(true);
-      if (result.userType) {
-        setUserType(result.userType);
-      }
       if (result.session_id) {
         setSessionId(result.session_id);
       }
     }
-    return { 
-      success: result.success, 
-      message: result.message,
-      userType: result.userType 
-    };
+    return { success: result.success, message: result.message };
   };
 
   const logout = () => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
-    setUserType(null);
     setSessionId(null);
     setUserIdea(null);
     setInitialResponse(null);
@@ -68,18 +50,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (result.success && result.user) {
       setUser(result.user);
       setIsAuthenticated(true);
-      if (result.userType) {
-        setUserType(result.userType);
-      }
       if (result.session_id) {
         setSessionId(result.session_id);
       }
     }
-    return { 
-      success: result.success, 
-      message: result.message,
-      userType: result.userType 
-    };
+    return { success: result.success, message: result.message };
   };
 
   const sendIdeaWithAuth = async (idea: string) => {
@@ -129,7 +104,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       isProcessingIdea,
       isAuthenticated,
       sessionId,
-      userType,
       login, 
       logout, 
       signup, 

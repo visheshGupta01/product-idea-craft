@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./components/dashboard/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,13 +25,8 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/dashboard" element={
-                  <ProtectedRoute requiredUserType="user">
+                  <ProtectedRoute>
                     <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin" element={
-                  <ProtectedRoute requiredUserType="admin">
-                    <AdminDashboard />
                   </ProtectedRoute>
                 } />
                 <Route path="*" element={<NotFound />} />

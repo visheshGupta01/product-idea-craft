@@ -5,21 +5,17 @@ const API_BASE_URL = "http://localhost:8000";
 export interface AuthResponse {
   success: boolean;
   user?: User;
-  jwt?: string;
-  userType?: 'admin' | 'user';
-  refreshToken?: string;
+  token?: string;
   session_id?: string;
   message?: string;
 }
 
 export class AuthService {
   private token: string | null = null;
-  private refreshToken: string | null = null;
 
   constructor() {
-    // Load tokens from localStorage on initialization
+    // Load token from localStorage on initialization
     this.token = localStorage.getItem('auth_token');
-    this.refreshToken = localStorage.getItem('refresh_token');
     console.log('AuthService initialized with token:', this.token);
   }
 
@@ -34,22 +30,11 @@ export class AuthService {
       });
 
       const data = await response.json();
-      console.log('Login response:', data);
-      
-      if (data.success && data.jwt) {
-        this.token = data.jwt;
-        console.log('Setting JWT token:', data.jwt);
-        localStorage.setItem('auth_token', data.jwt);
-        
-        if (data.refreshToken) {
-          this.refreshToken = data.refreshToken;
-          localStorage.setItem('refresh_token', data.refreshToken);
-        }
-        
-        if (data.userType) {
-          localStorage.setItem('user_type', data.userType);
-        }
-        
+console.log('Login response:', data);
+      if (data.token) {
+        this.token = data.token;
+        console.log('Setting token:', data.token);
+        localStorage.setItem('auth_token', data.token);
         if (data.session_id) {
           localStorage.setItem('session_id', data.session_id);
         }
@@ -86,19 +71,9 @@ console.log('Signup data:', { firstName, lastName, email, password });
     const data = await response.json();
     console.log('Signup response:', data);
 
-    if (data.success && data.jwt) {
-      this.token = data.jwt;
-      localStorage.setItem('auth_token', data.jwt);
-      
-      if (data.refreshToken) {
-        this.refreshToken = data.refreshToken;
-        localStorage.setItem('refresh_token', data.refreshToken);
-      }
-      
-      if (data.userType) {
-        localStorage.setItem('user_type', data.userType);
-      }
-      
+    if (data.success && data.token) {
+      this.token = data.token;
+      localStorage.setItem('auth_token', data.token);
       if (data.session_id) {
         localStorage.setItem('session_id', data.session_id);
       }
@@ -195,19 +170,8 @@ console.log('Create session response:', data);
 
   logout() {
     this.token = null;
-    this.refreshToken = null;
     localStorage.removeItem('auth_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user_type');
     localStorage.removeItem('session_id');
-  }
-
-  getUserType(): 'admin' | 'user' | null {
-    return localStorage.getItem('user_type') as 'admin' | 'user' | null;
-  }
-
-  getRefreshToken(): string | null {
-    return this.refreshToken;
   }
 
   getToken(): string | null {

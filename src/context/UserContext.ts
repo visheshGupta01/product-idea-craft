@@ -9,10 +9,9 @@ interface UserContextType {
   isProcessingIdea: boolean;
   isAuthenticated: boolean;
   sessionId: string | null;
-  userType: 'admin' | 'user' | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; userType?: 'admin' | 'user' }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
-  signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string; userType?: 'admin' | 'user' }>;
+  signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   setUserIdea: (idea: string) => void;
   sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string }>;
   clearInitialResponse: () => void;
@@ -26,7 +25,6 @@ export const UserContext = createContext<UserContextType>({
   isProcessingIdea: false,
   isAuthenticated: false,
   sessionId: null,
-  userType: null,
   login: async () => ({ success: false }),
   logout: () => {},
   signup: async () => ({ success: false }),
