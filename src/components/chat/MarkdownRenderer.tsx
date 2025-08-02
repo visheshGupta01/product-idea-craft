@@ -186,41 +186,45 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
        elements.push(
          <div
            key={currentIndex++}
-           className="my-6 overflow-x-auto shadow-md rounded-xl border border-border max-w-full"
+           className="my-6 w-full max-w-full overflow-hidden"
          >
-           <table className="min-w-full text-sm text-left text-black">
-             {headerRow && (
-               <thead className="bg-primary text-white">
-                 <tr>
-                   {headerRow.map((header, idx) => (
-                     <th
-                       key={idx}
-                       className="px-6 py-3 font-semibold uppercase tracking-wider border-r border-border last:border-r-0"
-                     >
-                       {processInlineFormatting(header)}
-                     </th>
-                   ))}
-                 </tr>
-               </thead>
-             )}
-             <tbody className="bg-white divide-y divide-border">
-               {dataRows.map((row, rowIdx) => (
-                 <tr
-                   key={rowIdx}
-                   className="hover:bg-accent/10 transition-colors duration-200"
-                 >
-                   {row.map((cell, cellIdx) => (
-                     <td
-                       key={cellIdx}
-                       className="px-6 py-4 border-r border-border last:border-r-0 break-words max-w-xs text-sm"
-                     >
-                       {processInlineFormatting(cell)}
-                     </td>
-                   ))}
-                 </tr>
-               ))}
-             </tbody>
-           </table>
+           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+             <table className="w-full text-sm text-left text-black border-collapse min-w-max">
+               {headerRow && (
+                 <thead className="bg-primary text-white">
+                   <tr>
+                     {headerRow.map((header, idx) => (
+                       <th
+                         key={idx}
+                         className="px-3 py-2 font-semibold text-xs uppercase tracking-wider border border-border whitespace-nowrap"
+                       >
+                         {processInlineFormatting(header)}
+                       </th>
+                     ))}
+                   </tr>
+                 </thead>
+               )}
+               <tbody className="bg-white divide-y divide-border">
+                 {dataRows.map((row, rowIdx) => (
+                   <tr
+                     key={rowIdx}
+                     className="hover:bg-accent/10 transition-colors duration-200"
+                   >
+                     {row.map((cell, cellIdx) => (
+                       <td
+                         key={cellIdx}
+                         className="px-3 py-2 border border-border text-xs max-w-[200px] overflow-hidden"
+                       >
+                         <div className="truncate" title={cell}>
+                           {processInlineFormatting(cell)}
+                         </div>
+                       </td>
+                     ))}
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+           </div>
          </div>
        );
 
@@ -448,6 +452,6 @@ const processToolOutput = (text: string) => {
   }
 
   return (
-    <div className="prose prose-sm max-w-none overflow-hidden break-words">{renderMarkdown(cleanedContent)}</div>
+    <div className="prose prose-sm max-w-none overflow-hidden break-words w-full">{renderMarkdown(cleanedContent)}</div>
   );
 };
