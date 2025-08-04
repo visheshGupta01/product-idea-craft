@@ -52,13 +52,6 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
   // Handle initial response from user context and send message
   useEffect(() => {
     if (initialResponse && sessionId) {
-      // Add user message
-      addMessage({
-        type: "user",
-        content: initialResponse.userMessage,
-        timestamp: initialResponse.timestamp,
-      });
-
       // Send the message to get AI response
       sendMessage(initialResponse.userMessage);
 

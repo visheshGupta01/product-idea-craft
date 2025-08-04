@@ -6,16 +6,58 @@ export interface AuthResponse {
   success: boolean;
   user?: User;
   token?: string;
+  refreshToken?: string;
+  role?: 'admin' | 'user';
   session_id?: string;
   message?: string;
 }
 
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  token: string;
+  refreshToken: string;
+  role: 'admin' | 'user';
+}
+
+export interface SignupResponse {
+  Success: boolean;
+  message: string;
+}
+
+export interface RefreshResponse {
+  Success: boolean;
+  message: string;
+  token: string;
+  refreshToken: string;
+  role: 'admin' | 'user';
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface VerificationResponse {
+  Success: boolean;
+  message: string;
+}
+
+export interface ResetPasswordResponse {
+  Success: boolean;
+  message: string;
+}
+
 export class AuthService {
   private token: string | null = null;
+  private refreshToken: string | null = null;
+  private userrole: 'admin' | 'user' | null = null;
 
   constructor() {
-    // Load token from localStorage on initialization
+    // Load tokens from localStorage on initialization
     this.token = localStorage.getItem('auth_token');
+    this.refreshToken = localStorage.getItem('refresh_token');
+    this.userrole = localStorage.getItem('user_role') as 'admin' | 'user' | null;
     console.log('AuthService initialized with token:', this.token);
   }
 
@@ -29,18 +71,31 @@ export class AuthService {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-console.log('Login response:', data);
-      if (data.token) {
+      const data: LoginResponse = await response.json();
+      console.log('Login response:', data);
+      
+      if (data.success && data.token) {
         this.token = data.token;
-        console.log('Setting token:', data.token);
+        this.refreshToken = data.refreshToken;
+        this.userrole = data.role;
+        
         localStorage.setItem('auth_token', data.token);
-        if (data.session_id) {
-          localStorage.setItem('session_id', data.session_id);
-        }
+        localStorage.setItem('refresh_token', data.refreshToken);
+        localStorage.setItem('user_role', data.role);
+        
+        return {
+          success: true,
+          token: data.token,
+          refreshToken: data.refreshToken,
+          role: data.role,
+          message: data.message
+        };
       }
 
-      return data;
+      return {
+        success: false,
+        message: data.message || 'Login failed'
+      };
     } catch (error) {
       console.error('Login error:', error);
       return {
@@ -50,75 +105,39 @@ console.log('Login response:', data);
     }
   }
 
-async signup(name: string, email: string, password: string): Promise<AuthResponse> {
-  try {
-    const [firstName, ...rest] = name.trim().split(" ");
-    const lastName = rest.join(" "); // Handles names like "John Smith Doe"
-console.log('Signup data:', { firstName, lastName, email, password });
-    const response = await fetch(`${API_BASE_URL}/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        password,
-      }),
-    });
+  async signup(name: string, email: string, password: string): Promise<AuthResponse> {
+    try {
+      const [firstName, ...rest] = name.trim().split(" ");
+      const lastName = rest.join(" ");
+      
+      const response = await fetch(`${API_BASE_URL}/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+        }),
+      });
 
-    const data = await response.json();
-    console.log('Signup response:', data);
+      const data: SignupResponse = await response.json();
+      console.log('Signup response:', data);
 
-    if (data.success && data.token) {
-      this.token = data.token;
-      localStorage.setItem('auth_token', data.token);
-      if (data.session_id) {
-        localStorage.setItem('session_id', data.session_id);
-      }
+      return {
+        success: data.Success,
+        message: data.message
+      };
+    } catch (error) {
+      console.error('Signup error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.',
+      };
     }
-
-    return data;
-  } catch (error) {
-    console.error('Signup error:', error);
-    return {
-      success: false,
-      message: 'Network error. Please try again.',
-    };
   }
-}
-
-
-  // async validateToken(): Promise<AuthResponse> {
-  //   if (!this.token) {
-  //     return { success: false, message: 'No token found' };
-  //   }
-
-  //   try {
-  //     const response = await fetch(`${API_BASE_URL}/verify`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Authorization': `Bearer ${this.token}`,
-  //       },
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (!data.success) {
-  //       this.logout();
-  //     }
-
-  //     return data;
-  //   } catch (error) {
-  //     console.error('Token validation error:', error);
-  //     this.logout();
-  //     return {
-  //       success: false,
-  //       message: 'Token validation failed',
-  //     };
-  //   }
-  // }
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
@@ -126,12 +145,119 @@ console.log('Signup data:', { firstName, lastName, email, password });
         method: 'GET',
       });
 
-      return await response.json();
+      const data: VerificationResponse = await response.json();
+      
+      return {
+        success: data.Success,
+        message: data.message
+      };
     } catch (error) {
       console.error('Email verification error:', error);
       return {
         success: false,
         message: 'Email verification failed',
+      };
+    }
+  }
+
+  async forgotPassword(email: string): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/forget/password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data: ForgotPasswordResponse = await response.json();
+      
+      return {
+        success: data.success,
+        message: data.message
+      };
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.',
+      };
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          token,
+          newPassword 
+        }),
+      });
+
+      const data: ResetPasswordResponse = await response.json();
+      
+      return {
+        success: data.Success,
+        message: data.message
+      };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.',
+      };
+    }
+  }
+
+  async refreshAccesstoken(): Promise<AuthResponse> {
+    if (!this.refreshToken) {
+      return { success: false, message: 'No refresh token available' };
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/refresh-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          refreshToken: this.refreshToken 
+        }),
+      });
+
+      const data: RefreshResponse = await response.json();
+      
+      if (data.Success && data.token) {
+        this.token = data.token;
+        this.refreshToken = data.refreshToken;
+        this.userrole = data.role;
+        
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('refresh_token', data.refreshToken);
+        localStorage.setItem('user_role', data.role);
+        
+        return {
+          success: true,
+          token: data.token,
+          refreshToken: data.refreshToken,
+          role: data.role,
+          message: data.message
+        };
+      }
+
+      return {
+        success: false,
+        message: data.message || 'token refresh failed'
+      };
+    } catch (error) {
+      console.error('token refresh error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.',
       };
     }
   }
@@ -152,7 +278,8 @@ console.log('Signup data:', { firstName, lastName, email, password });
       });
 
       const data = await response.json();
-console.log('Create session response:', data);
+      console.log('Create session response:', data);
+      
       if (data.success && data.session_id) {
         localStorage.setItem('session_id', data.session_id);
       }
@@ -170,12 +297,24 @@ console.log('Create session response:', data);
 
   logout() {
     this.token = null;
+    this.refreshToken = null;
+    this.userrole = null;
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_role');
     localStorage.removeItem('session_id');
   }
 
   getToken(): string | null {
     return this.token;
+  }
+
+  getrefreshToken(): string | null {
+    return this.refreshToken;
+  }
+
+  getUserRole(): 'admin' | 'user' | null {
+    return this.userrole;
   }
 
   getSessionId(): string | null {
@@ -184,6 +323,14 @@ console.log('Create session response:', data);
 
   isAuthenticated(): boolean {
     return !!this.token;
+  }
+
+  isAdmin(): boolean {
+    return this.userrole === 'admin';
+  }
+
+  isUser(): boolean {
+    return this.userrole === 'user';
   }
 }
 

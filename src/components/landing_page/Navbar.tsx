@@ -40,7 +40,6 @@ const Navbar: React.FC = () => {
         {/* Authentication block - Responsive */}
         {isAuthenticated ? (
           <div className="flex items-center gap-4">
-            <span className="text-white text-sm">Welcome, {user?.firstName}</span>
             <Button 
               onClick={logout}
               variant="outline"

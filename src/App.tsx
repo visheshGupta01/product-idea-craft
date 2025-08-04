@@ -5,13 +5,59 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
+import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
+import { useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const resetToken = searchParams.get('token');
+    const action = searchParams.get('action');
+    
+    if (resetToken && action === 'reset-password') {
+      setShowResetPassword(true);
+    }
+  }, [searchParams]);
+
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute requireAdmin>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      
+      <ResetPasswordModal
+        isOpen={showResetPassword}
+        onClose={() => setShowResetPassword(false)}
+        onSuccess={() => {
+          setShowResetPassword(false);
+          window.history.replaceState({}, '', '/');
+        }}
+      />
+    </>
+  );
+};
 
 const App = () => {
   return (
@@ -22,15 +68,7 @@ const App = () => {
           <Sonner />
           <UserProvider>
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AppContent />
             </BrowserRouter>
           </UserProvider>
         </TooltipProvider>

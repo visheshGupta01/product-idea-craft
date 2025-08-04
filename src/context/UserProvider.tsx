@@ -11,14 +11,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isProcessingIdea, setIsProcessingIdea] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
 
   // Check authentication on mount
   useEffect(() => {
     const checkAuth = async () => {
-      // Token validation temporarily disabled
+      const token = authService.getToken();
+      const role = authService.getUserRole();
       const storedSessionId = authService.getSessionId();
-      if (storedSessionId) {
-        setSessionId(storedSessionId);
+      if (token && role) {
+        setIsAuthenticated(true);
+        setUserRole(role);
+        if (storedSessionId) {
+          setSessionId(storedSessionId);
+        }
       }
     };
     checkAuth();
@@ -26,20 +32,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const result = await authService.login(email, password);
-    if (result.success && result.user) {
-      setUser(result.user);
+    if (result.success) {
       setIsAuthenticated(true);
+      setUserRole(result.role || null);
       if (result.session_id) {
         setSessionId(result.session_id);
       }
     }
-    return { success: result.success, message: result.message };
+    return { success: result.success, message: result.message, role: result.role };
   };
 
   const logout = () => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
+    setUserRole(null);
     setSessionId(null);
     setUserIdea(null);
     setInitialResponse(null);
@@ -47,12 +54,29 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = async (name: string, email: string, password: string) => {
     const result = await authService.signup(name, email, password);
-    if (result.success && result.user) {
-      setUser(result.user);
+    return { success: result.success, message: result.message };
+  };
+
+  const verifyEmail = async (token: string) => {
+    const result = await authService.verifyEmail(token);
+    return { success: result.success, message: result.message };
+  };
+
+  const forgotPassword = async (email: string) => {
+    const result = await authService.forgotPassword(email);
+    return { success: result.success, message: result.message };
+  };
+
+  const resetPassword = async (token: string, newPassword: string) => {
+    const result = await authService.resetPassword(token, newPassword);
+    return { success: result.success, message: result.message };
+  };
+
+  const refreshToken = async () => {
+    const result = await authService.refreshAccessToken();
+    if (result.success) {
       setIsAuthenticated(true);
-      if (result.session_id) {
-        setSessionId(result.session_id);
-      }
+      setUserRole(result.role || null);
     }
     return { success: result.success, message: result.message };
   };
@@ -104,9 +128,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       isProcessingIdea,
       isAuthenticated,
       sessionId,
+      userRole,
       login, 
       logout, 
-      signup, 
+      signup,
+      verifyEmail,
+      forgotPassword,
+      resetPassword,
+      refreshToken,
       setUserIdea,
       sendIdeaWithAuth,
       clearInitialResponse
