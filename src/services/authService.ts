@@ -213,7 +213,7 @@ export class AuthService {
     }
   }
 
-  async refreshAccesstoken(): Promise<AuthResponse> {
+  async refreshAccessToken(): Promise<AuthResponse> {
     if (!this.refreshToken) {
       return { success: false, message: 'No refresh token available' };
     }

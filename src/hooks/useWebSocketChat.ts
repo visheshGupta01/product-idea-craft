@@ -1,9 +1,15 @@
 import { useState, useRef, useCallback } from "react";
 import { Message } from "@/types";
 import { WebSocketService } from "@/services/websocketService";
+import { useChatPersistence } from "./useChatPersistence";
 
 export const useWebSocketChat = (sessionId: string) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { 
+    messages, 
+    addMessage: persistentAddMessage, 
+    updateMessage: persistentUpdateMessage,
+    setMessages 
+  } = useChatPersistence(sessionId);
   const [isLoading, setIsLoading] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -13,26 +19,8 @@ export const useWebSocketChat = (sessionId: string) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  const generateId = () => {
-    return Date.now().toString() + Math.random().toString(36).substr(2, 9);
-  };
-
-  const addMessage = (message: Omit<Message, "id">): Message => {
-    const newMessage: Message = {
-      ...message,
-      id: generateId(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    return newMessage;
-  };
-
-  const updateMessage = (messageId: string, content: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId ? { ...msg, content } : msg
-      )
-    );
-  };
+  const addMessage = persistentAddMessage;
+  const updateMessage = persistentUpdateMessage;
 
   const initializeWebSocket = async (): Promise<boolean> => {
     if (!wsServiceRef.current) {
