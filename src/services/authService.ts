@@ -185,21 +185,28 @@ export class AuthService {
     }
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<AuthResponse> {
+  async resetPassword(token: string, password: string, confirm_password: string): Promise<AuthResponse> {
+    console.log('Resetting password with token:', token);
+    console.log('New password:', password);
+    console.log({
+      token,
+      password,
+      confirm_password,
+    });
     try {
-      const response = await fetch(`${API_BASE_URL}/reset`, {
+      const response = await fetch(`${API_BASE_URL}/reset?token=${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
           token,
-          newPassword 
+          password,confirm_password
         }),
       });
 
       const data: ResetPasswordResponse = await response.json();
-      
+      console.log('Reset password response:', data);
       return {
         success: data.Success,
         message: data.message

@@ -82,7 +82,8 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
     setIsLoading(true);
     try {
-      const result = await resetPassword(resetToken, newPassword);
+      console.log(newPassword, resetToken)
+      const result = await resetPassword(resetToken, newPassword, confirmPassword);
       if (result.success) {
         toast({
           title: "Success",

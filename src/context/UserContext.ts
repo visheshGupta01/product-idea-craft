@@ -15,7 +15,7 @@ interface UserContextType {
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   verifyEmail: (token: string) => Promise<{ success: boolean; message?: string }>;
   forgotPassword: (email: string) => Promise<{ success: boolean; message?: string }>;
-  resetPassword: (token: string, newPassword: string) => Promise<{ success: boolean; message?: string }>;
+  resetPassword: (token: string, newPassword: string, confirm_password: string) => Promise<{ success: boolean; message?: string }>;
   refreshToken: () => Promise<{ success: boolean; message?: string }>;
   setUserIdea: (idea: string) => void;
   sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string }>;

@@ -67,8 +67,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return { success: result.success, message: result.message };
   };
 
-  const resetPassword = async (token: string, newPassword: string) => {
-    const result = await authService.resetPassword(token, newPassword);
+  const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
+    const result = await authService.resetPassword(token, newPassword, confirmPassword);
     return { success: result.success, message: result.message };
   };
 
