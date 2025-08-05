@@ -288,7 +288,7 @@ export class AuthService {
       console.log('Create session response:', data);
       
       if (data.success && data.session_id) {
-        localStorage.setItem('session_id', data.session_id);
+        sessionStorage.setItem('session_id', data.session_id);
       }
 
       return data;
@@ -309,7 +309,8 @@ export class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_role');
-    localStorage.removeItem('session_id');
+    sessionStorage.removeItem('session_id');
+    sessionStorage.removeItem('user_idea');
   }
 
   getToken(): string | null {
@@ -325,7 +326,15 @@ export class AuthService {
   }
 
   getSessionId(): string | null {
-    return localStorage.getItem('session_id');
+    return sessionStorage.getItem('session_id');
+  }
+
+  setUserIdea(idea: string): void {
+    sessionStorage.setItem('user_idea', idea);
+  }
+
+  getUserIdea(): string | null {
+    return sessionStorage.getItem('user_idea');
   }
 
   isAuthenticated(): boolean {

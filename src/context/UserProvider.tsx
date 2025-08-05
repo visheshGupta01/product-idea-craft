@@ -12,19 +12,31 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Check authentication on mount
+  // Check authentication and restore chat state on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = authService.getToken();
-      const role = authService.getUserRole();
-      const storedSessionId = authService.getSessionId();
-      if (token && role) {
-        setIsAuthenticated(true);
-        setUserRole(role);
-        if (storedSessionId) {
-          setSessionId(storedSessionId);
+      try {
+        const token = authService.getToken();
+        const role = authService.getUserRole();
+        const storedSessionId = authService.getSessionId();
+        const storedUserIdea = authService.getUserIdea();
+        
+        if (token && role) {
+          setIsAuthenticated(true);
+          setUserRole(role);
+          if (storedSessionId) {
+            setSessionId(storedSessionId);
+          }
+          if (storedUserIdea) {
+            setUserIdea(storedUserIdea);
+          }
         }
+      } catch (error) {
+        console.error('Error during auth check:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     checkAuth();
@@ -95,6 +107,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (result.success && result.session_id) {
         setSessionId(result.session_id);
         setUserIdea(idea);
+        // Persist the user idea to localStorage
+        authService.setUserIdea(idea);
         
         // Create initial response for display
         const initialResponse: InitialResponse = {
@@ -129,6 +143,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       isAuthenticated,
       sessionId,
       userRole,
+      isLoading,
       login, 
       logout, 
       signup,

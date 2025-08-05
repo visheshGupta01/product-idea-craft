@@ -3,6 +3,7 @@ export interface StreamingMessage {
   tool?: string;
   text?: string;
   message?: string;
+  success?: boolean;
 }
 
 export interface StreamingCallbacks {
@@ -80,11 +81,11 @@ export class StreamingWebSocketClient {
       // Handle JSON messages (completion signals)
       try {
         const data: any = JSON.parse(event.data);
-        console.log("📋 Parsed JSON message:", data);
+        console.log(" Parsed JSON message:", data);
 
         // Handle completion signal from backend
-        if (data.type === 'done' && data.tool === 'claude') {
-          console.log("✅ Stream completed with done signal");
+        if (data.success) {
+          console.log(" Stream completed with done signal");
           if (!isComplete) {
             isComplete = true;
             if (isInToolMode) {

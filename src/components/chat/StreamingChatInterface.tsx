@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2, Bot } from "lucide-react";
@@ -25,6 +25,9 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     connect
   } = useStreamingChat(sessionId || "", onFrontendGenerated);
 
+  const [isInitialized, setIsInitialized] = useState(false);
+  const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Initialize connection when sessionId is available
   useEffect(() => {
     if (sessionId) {
@@ -38,16 +41,33 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     }
   }, [sessionId, connect]);
 
-  // Add welcome message
+  // Add welcome message only for new sessions (with delay to allow message restoration)
   useEffect(() => {
-    if (messages.length === 0) {
-      addMessage({
-        type: "ai",
-        content: "Hello! I'm here to help you build your idea. What would you like to create today?",
-        timestamp: new Date(),
-      });
+    if (sessionId && !isInitialized) {
+      // Clear any existing timeout
+      if (initTimeoutRef.current) {
+        clearTimeout(initTimeoutRef.current);
+      }
+      
+      // Wait a bit for useChatPersistence to restore messages
+      initTimeoutRef.current = setTimeout(() => {
+        if (messages.length === 0) {
+          addMessage({
+            type: "ai",
+            content: "Hello! I'm here to help you build your idea. What would you like to create today?",
+            timestamp: new Date(),
+          });
+        }
+        setIsInitialized(true);
+      }, 100); // Small delay to allow message restoration
     }
-  }, [messages.length, addMessage]);
+    
+    return () => {
+      if (initTimeoutRef.current) {
+        clearTimeout(initTimeoutRef.current);
+      }
+    };
+  }, [sessionId, messages.length, addMessage, isInitialized]);
 
   // Handle initial response from user context and send message
   useEffect(() => {

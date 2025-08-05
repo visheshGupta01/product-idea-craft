@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Message } from "@/types";
 import { StreamingWebSocketClient, StreamingCallbacks } from "@/services/streamingWebSocket";
+import { useChatPersistence } from "./useChatPersistence";
 
 export interface StreamingChatState {
   messages: Message[];
@@ -21,7 +22,7 @@ export interface StreamingChatActions {
 }
 
 export const useStreamingChat = (sessionId: string, onFrontendGenerated?: (url: string) => void): StreamingChatState & StreamingChatActions => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, addMessage: persistAddMessage, updateMessage: persistUpdateMessage, clearMessages: persistClearMessages, setMessages } = useChatPersistence(sessionId);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,25 +44,16 @@ export const useStreamingChat = (sessionId: string, onFrontendGenerated?: (url: 
   }, []);
 
   const addMessage = useCallback((message: Omit<Message, "id">): Message => {
-    const newMessage: Message = {
-      ...message,
-      id: generateId(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    return newMessage;
-  }, [generateId]);
+    return persistAddMessage(message);
+  }, [persistAddMessage]);
 
   const updateMessage = useCallback((messageId: string, content: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId ? { ...msg, content } : msg
-      )
-    );
-  }, []);
+    persistUpdateMessage(messageId, content);
+  }, [persistUpdateMessage]);
 
   const clearMessages = useCallback(() => {
-    setMessages([]);
-  }, []);
+    persistClearMessages();
+  }, [persistClearMessages]);
 
   const connect = useCallback(async (): Promise<boolean> => {
     if (!wsClientRef.current) {

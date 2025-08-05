@@ -17,7 +17,7 @@ export const useChatPersistence = (sessionId: string | null) => {
       return;
     }
 
-    const savedSession = localStorage.getItem(`chat_session_${sessionId}`);
+    const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
     if (savedSession) {
       try {
         const session: ChatSession = JSON.parse(savedSession);
@@ -31,7 +31,7 @@ export const useChatPersistence = (sessionId: string | null) => {
     }
   }, [sessionId]);
 
-  // Save messages to localStorage whenever they change
+  // Save messages to sessionStorage whenever they change
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
 
@@ -41,7 +41,7 @@ export const useChatPersistence = (sessionId: string | null) => {
       lastUpdated: Date.now(),
     };
 
-    localStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
+    sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
   }, [sessionId, messages]);
 
   const addMessage = (message: Omit<Message, 'id'>): Message => {
@@ -63,16 +63,16 @@ export const useChatPersistence = (sessionId: string | null) => {
   const clearMessages = () => {
     setMessages([]);
     if (sessionId) {
-      localStorage.removeItem(`chat_session_${sessionId}`);
+      sessionStorage.removeItem(`chat_session_${sessionId}`);
     }
   };
 
   const clearAllSessions = () => {
-    // Clear all chat sessions from localStorage
-    const keys = Object.keys(localStorage);
+    // Clear all chat sessions from sessionStorage
+    const keys = Object.keys(sessionStorage);
     keys.forEach(key => {
       if (key.startsWith('chat_session_')) {
-        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
       }
     });
     setMessages([]);

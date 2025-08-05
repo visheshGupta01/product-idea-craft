@@ -2,6 +2,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
+import { authService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
 
@@ -11,7 +12,19 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
-  const { userIdea, isProcessingIdea, initialResponse, isAuthenticated, sessionId, userRole } = useUser();
+  const { userIdea, isProcessingIdea, initialResponse, isAuthenticated, sessionId, userRole, isLoading } = useUser();
+
+  // Show loading while authentication state is being restored
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Check if user is authenticated
   if (!isAuthenticated) {
@@ -45,9 +58,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
     );
   }
 
-  // For regular dashboard routes, check if user has session or idea
-  if (!requireAdmin && (!userIdea && !isProcessingIdea && !initialResponse && !sessionId)) {
-    return <Navigate to="/" replace />;
+  // For regular dashboard routes, check if user has session or idea (including persisted state)
+  if (!requireAdmin) {
+    const hasActiveChat = userIdea || isProcessingIdea || initialResponse || sessionId;
+    const hasPersistedChat = authService.getUserIdea() || authService.getSessionId();
+    
+    if (!hasActiveChat && !hasPersistedChat) {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <>{children}</>;
