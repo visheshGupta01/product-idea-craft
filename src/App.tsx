@@ -35,7 +35,7 @@ const AppContent = () => {
     <>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/dashboard" element={
+        <Route path="/c/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>

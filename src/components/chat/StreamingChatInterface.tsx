@@ -119,7 +119,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
                     <span className="text-sm text-black">Running Tools...</span>
                   ) : (
                     <span className="text-sm text-black">
-                      AI is thinking...
+                      AI is thinking
                     </span>
                   )}
                 </div>

@@ -19,7 +19,6 @@ const IdeaBox: React.FC = () => {
     if (!idea.trim() || isProcessingIdea) return;
 
     if (!isAuthenticated) {
-      // Show login modal if not authenticated
       setShowLoginModal(true);
       return;
     }
@@ -27,8 +26,7 @@ const IdeaBox: React.FC = () => {
     const result = await sendIdeaWithAuth(idea.trim());
     
     if (result.success && result.session_id) {
-      // Successfully created session, navigate to dashboard
-      navigate("/dashboard");
+      navigate(`/c/${result.session_id}`);
     } else {
       // Handle error
       console.error("Failed to create session:", result.message);
@@ -38,10 +36,7 @@ const IdeaBox: React.FC = () => {
 
   return (
     <section className="relative px-5 flex justify-center items-start bg-[#1B2123]">
-      {/* Blue Box Behind the Black Box */}
       <div className="absolute bottom-0 w-full h-[220px] bg-[#d5e1e7] translate-y-[40%] z-0"></div>
-
-      {/* Black Box */}
       <div className="relative bg-[#1b2123] w-full border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
         {/* Header Text */}
         <div className="py-[40px] flex items-center justify-center">
