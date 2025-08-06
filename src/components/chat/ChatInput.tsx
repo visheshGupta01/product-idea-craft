@@ -47,12 +47,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             onClick={handleSubmit}
             size="sm"
             disabled={!newMessage.trim()}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-transparent text-white rounded-full"
           >
             {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 text-white animate-spin" />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="w-4 text-white h-4" />
             )}
           </Button>
         </div>

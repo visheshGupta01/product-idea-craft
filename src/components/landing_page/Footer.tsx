@@ -1,5 +1,6 @@
 import React from "react";
 import { FaFacebookF, FaTwitter, FaYoutube } from "react-icons/fa";
+import LogoIcon from "../../assets/ImagineboIcon.svg";
 
 const socialIcons = [FaFacebookF, FaTwitter, FaYoutube];
 
@@ -36,7 +37,7 @@ const Footer: React.FC = () => {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <img
-            src="https://imagine.bo/logo.png" // Replace with actual logo path
+            src={LogoIcon}
             alt="Imagine Logo"
             className="h-6 w-auto"
           />

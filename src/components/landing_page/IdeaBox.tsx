@@ -90,18 +90,23 @@ const IdeaBox: React.FC = () => {
                 textAlign: "left",
                 minHeight: UI_CONFIG.IDEA_BOX_MAX_HEIGHT,
               }}
-              onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && !isProcessingIdea && handleSubmit()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault(); // prevent newline
+                  if (!isProcessingIdea) handleSubmit();
+                }
+              }}
               disabled={isProcessingIdea}
             />
             {/* Floating buttons in top right */}
             <div className="absolute top-3 right-3 flex gap-2">
-              <button 
+              <button
                 className="p-2 w-[50px] h-[50px] flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center disabled:opacity-50"
                 disabled={isProcessingIdea}
               >
                 <Mic className="w-[20px] h-[20px] text-gray-700" />
               </button>
-              <button 
+              <button
                 className="p-2 w-[50px] h-[50px] flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
                 disabled={isProcessingIdea}
               >
@@ -111,7 +116,7 @@ const IdeaBox: React.FC = () => {
           </div>
 
           {/* Pink Button - Responsive */}
-          <button 
+          <button
             onClick={handleSubmit}
             disabled={!idea.trim() || isProcessingIdea}
             className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
@@ -124,7 +129,7 @@ const IdeaBox: React.FC = () => {
           </button>
         </div>
       </div>
-      
+
       {/* Authentication Modals */}
       <LoginModal
         isOpen={showLoginModal}

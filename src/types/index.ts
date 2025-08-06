@@ -1,6 +1,7 @@
 // Core type definitions
 export interface User {
   firstName: string;
+  lastName: string;
   email: string;
   avatar: string;
   verified?: boolean;

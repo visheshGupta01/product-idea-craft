@@ -16,7 +16,7 @@ const HeroSection: React.FC = () => {
       {/* Imagine.bo Title Box - Responsive */}
       <div className="mx-auto mb-2 max-w-full flex items-center justify-center font-bold">
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[70px] font-semibold font-poppins leading-none">
-          Imagine.bo
+          imagine.bo
         </h1>
       </div>
 

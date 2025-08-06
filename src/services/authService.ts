@@ -107,17 +107,18 @@ export class AuthService {
 
   async signup(name: string, email: string, password: string): Promise<AuthResponse> {
     try {
-      const [firstName, ...rest] = name.trim().split(" ");
-      const lastName = rest.join(" ");
-      
+      const [first_name, ...rest] = name.trim().split(" ");
+      const last_name = rest.join(" ");
+      console.log('First name:', first_name);
+      console.log('Last name:', last_name);
       const response = await fetch(`${API_BASE_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName,
-          lastName,
+          first_name,
+          last_name,
           email,
           password,
         }),
