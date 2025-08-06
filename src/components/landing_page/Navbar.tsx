@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 import { useUser } from '@/context/UserContext';
 import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
+import { User, FolderOpen, Settings, LogOut } from 'lucide-react';
 import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
 
 const Navbar: React.FC = () => {
@@ -39,16 +42,36 @@ const Navbar: React.FC = () => {
 
         {/* Authentication block - Responsive */}
         {isAuthenticated ? (
-          <div className="flex items-center gap-4">
-            <Button 
-              onClick={logout}
-              variant="outline"
-              size="sm"
-              className="text-black"
-            >
-              Logout
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2 text-white hover:text-pink-400">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-pink-500 text-white">
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <span className="hidden md:inline text-sm font-medium">Profile</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem>
+                <FolderOpen className="h-4 w-4 mr-2" />
+                My Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <div className="w-[180px] md:w-[220px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
             <button 

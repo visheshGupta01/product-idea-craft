@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { useUser } from '@/context/UserContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,7 @@ const Sidebar = ({
   activeView = 'main',
   onViewChange
 }: SidebarProps) => {
+  const { user, isAuthenticated } = useUser();
   const [darkMode, setDarkMode] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -243,11 +245,11 @@ const Sidebar = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
-                    <User className="h-3 w-3" />
-                  </AvatarFallback>
-                </Avatar>
+                 <Avatar className="h-6 w-6">
+                   <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
+                     <User className="h-3 w-3" />
+                   </AvatarFallback>
+                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="right" className="w-56">
@@ -450,14 +452,16 @@ const Sidebar = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
-              </div>
+               <Avatar className="h-8 w-8">
+                 <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
+                   {isAuthenticated ? 'U' : <User className="h-4 w-4" />}
+                 </AvatarFallback>
+               </Avatar>
+               <div className="flex-1 min-w-0">
+                 <p className="text-sm font-medium text-sidebar-foreground truncate">
+                   {isAuthenticated ? 'User' : 'Guest'}
+                 </p>
+               </div>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
