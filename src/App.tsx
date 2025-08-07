@@ -14,6 +14,7 @@ import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { AuthTestPanel } from "./components/auth/AuthTestPanel";
+import VerifyPage from "./pages/VerifyPage";
 
 
 const queryClient = new QueryClient();
@@ -46,7 +47,7 @@ const AppContent = () => {
           </ProtectedRoute>
         } />
         <Route path="/testing/*" element={<AuthTestPanel />} />
-        {/* Catch-all route for 404 Not Found */}
+        <Route path="/verify" element={<VerifyPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       
