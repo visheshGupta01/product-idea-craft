@@ -11,6 +11,7 @@ import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
+import { EmailVerification } from "./pages/EmailVerification";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { AuthTestPanel } from "./components/auth/AuthTestPanel";
@@ -35,6 +36,7 @@ const AppContent = () => {
     <>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/verify-email" element={<EmailVerification />} />
         <Route path="/c/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />

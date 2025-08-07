@@ -247,7 +247,9 @@ const Sidebar = ({
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                  <Avatar className="h-6 w-6">
                    <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
-                     <User className="h-3 w-3" />
+                     {user?.firstName && user?.lastName 
+                       ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+                       : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                    </AvatarFallback>
                  </Avatar>
               </Button>
@@ -452,16 +454,22 @@ const Sidebar = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50">
-               <Avatar className="h-8 w-8">
-                 <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
-                   {isAuthenticated ? 'U' : <User className="h-4 w-4" />}
-                 </AvatarFallback>
-               </Avatar>
-               <div className="flex-1 min-w-0">
-                 <p className="text-sm font-medium text-sidebar-foreground truncate">
-                   {isAuthenticated ? 'User' : 'Guest'}
-                 </p>
-               </div>
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
+                    {user?.firstName && user?.lastName 
+                      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+                      : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || (isAuthenticated ? 'U' : <User className="h-4 w-4" />)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-sidebar-foreground truncate">
+                    {isAuthenticated 
+                      ? (user?.firstName && user?.lastName 
+                          ? `${user.firstName} ${user.lastName}` 
+                          : user?.firstName || 'User')
+                      : 'Guest'}
+                  </p>
+                </div>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
