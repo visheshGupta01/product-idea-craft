@@ -11,7 +11,7 @@ import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
-import { EmailVerification } from "./pages/EmailVerification";
+import { EmailVerificationModal } from "./components/auth/EmailVerificationModal";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { AuthTestPanel } from "./components/auth/AuthTestPanel";
@@ -21,14 +21,19 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [verificationToken, setVerificationToken] = useState('');
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const resetToken = searchParams.get('token');
+    const token = searchParams.get('token');
     const action = searchParams.get('action');
     
-    if (resetToken && action === 'reset-password') {
+    if (token && action === 'reset-password') {
       setShowResetPassword(true);
+    } else if (token && action === 'verify-email') {
+      setVerificationToken(token);
+      setShowEmailVerification(true);
     }
   }, [searchParams]);
 
@@ -36,7 +41,6 @@ const AppContent = () => {
     <>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/verify-email" element={<EmailVerification />} />
         <Route path="/c/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />
@@ -59,6 +63,15 @@ const AppContent = () => {
           setShowResetPassword(false);
           window.history.replaceState({}, '', '/');
         }}
+      />
+      
+      <EmailVerificationModal
+        isOpen={showEmailVerification}
+        onClose={() => {
+          setShowEmailVerification(false);
+          window.history.replaceState({}, '', '/');
+        }}
+        token={verificationToken}
       />
     </>
   );
