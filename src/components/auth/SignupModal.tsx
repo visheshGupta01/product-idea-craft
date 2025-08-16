@@ -46,6 +46,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
 
     try {
       const result = await signup(name, email, password);
+      console.log('Signup result:', result);
       if (result.success) {
         // Show verification modal instead of closing immediately
         setShowVerificationModal(true);

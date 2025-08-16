@@ -66,6 +66,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = async (name: string, email: string, password: string) => {
     const result = await authService.signup(name, email, password);
+    console.log('Signup result:', result); 
     return { success: result.success, message: result.message };
   };
 

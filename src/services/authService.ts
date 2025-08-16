@@ -21,7 +21,7 @@ export interface LoginResponse {
 }
 
 export interface SignupResponse {
-  Success: boolean;
+  success: boolean;
   message: string;
 }
 
@@ -39,7 +39,7 @@ export interface ForgotPasswordResponse {
 }
 
 export interface VerificationResponse {
-  Success: boolean;
+  success: boolean;
   message: string;
 }
 
@@ -128,7 +128,7 @@ export class AuthService {
       console.log('Signup response:', data);
 
       return {
-        success: data.Success,
+        success: data.success,
         message: data.message
       };
     } catch (error) {
@@ -147,9 +147,9 @@ export class AuthService {
       });
 
       const data: VerificationResponse = await response.json();
-      
+      console.log('Email verification response:', data);
       return {
-        success: data.Success,
+        success: data.success,
         message: data.message
       };
     } catch (error) {

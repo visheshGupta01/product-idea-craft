@@ -30,6 +30,7 @@ export const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
     
     try {
       const result = await verifyEmail(token);
+      console.log(result);
       if (result.success) {
         setVerificationState('success');
         setMessage('Your email has been successfully verified! You can now log in to your account.');

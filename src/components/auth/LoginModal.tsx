@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
-import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -40,11 +39,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     try {
       const result = await login(email, password);
       if (result.success) {
-        toast({
-          title: "Login successful!",
-          description: `Welcome back! Redirecting to ${result.role === 'admin' ? 'admin dashboard' : 'dashboard'}...`,
-        });
-        
+       
         onClose();
         setEmail("");
         setPassword("");
@@ -54,7 +49,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           if (result.role === 'admin') {
             navigate('/admin');
           } else {
-            navigate('/dashboard');
+            navigate('/');
           }
         }, 1000);
       } else {
