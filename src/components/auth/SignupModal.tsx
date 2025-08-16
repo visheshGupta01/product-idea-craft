@@ -78,26 +78,21 @@ export const SignupModal: React.FC<SignupModalProps> = ({
   return (
     <>
       <Dialog open={isOpen && !showVerificationModal} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-[480px] p-8 text-center">
+        <DialogContent className="sm:max-w-[400px] p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
           {/* Logo */}
-          <div className="flex justify-center mb-6">
-            <img src={imagineboLogo} alt="Imagine.bo" className="h-12 w-12" />
+          <div className="flex justify-center mb-4">
+            <img src={imagineboLogo} alt="Imagine.bo" className="h-10 w-10" />
           </div>
 
           {/* Title */}
-          <div className="mb-2">
-            <h1 className="text-3xl font-bold text-foreground">Welcome to Imagine.bo</h1>
-            <p className="text-muted-foreground mt-2">
-              Create your account and discover world-class design talent.
-            </p>
-          </div>
+          <h1 className="text-2xl font-bold text-white mb-4">Create your account</h1>
 
-          {/* Google Sign In Button */}
-          <Button
-            variant="outline"
-            className="w-full h-12 mb-4 bg-background border-border hover:bg-muted"
-            disabled={isLoading}
-          >
+        {/* Google Sign In Button */}
+        <Button
+          variant="outline"
+          className="w-full h-10 mb-3 bg-[#1A1A1A] border-[#2A2A2A] text-white hover:bg-[#2A2A2A]"
+          disabled={isLoading}
+        >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -107,12 +102,12 @@ export const SignupModal: React.FC<SignupModalProps> = ({
             Continue with Google
           </Button>
 
-          {/* Divider */}
-          <div className="flex items-center my-6">
-            <div className="flex-1 border-t border-border"></div>
-            <span className="px-4 text-muted-foreground text-sm">or</span>
-            <div className="flex-1 border-t border-border"></div>
-          </div>
+        {/* Divider */}
+        <div className="flex items-center my-4">
+          <div className="flex-1 border-t border-[#2A2A2A]"></div>
+          <span className="px-4 text-gray-400 text-sm">or</span>
+          <div className="flex-1 border-t border-[#2A2A2A]"></div>
+        </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Input */}
@@ -124,7 +119,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
               onChange={(e) => setName(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-background border-border"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {/* Email Input */}
@@ -136,7 +131,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-background border-border"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {/* Password Input */}
@@ -148,7 +143,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-background border-border"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {/* Confirm Password Input */}
@@ -160,7 +155,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-background border-border"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {error && (
@@ -171,29 +166,29 @@ export const SignupModal: React.FC<SignupModalProps> = ({
             <Button 
               type="submit" 
               disabled={isLoading || !name.trim() || !email.trim() || !password.trim() || password !== confirmPassword}
-              className="w-full h-12 bg-foreground text-background hover:bg-foreground/90"
+              className="w-full h-10 bg-white text-black hover:bg-gray-200"
             >
               {isLoading ? <LoadingSpinner size="sm" text="Creating account..." /> : "Continue"}
             </Button>
           </form>
 
           {/* Terms and Privacy */}
-          <p className="text-xs text-muted-foreground mt-6">
+          <p className="text-xs text-gray-400 mt-4">
             By continuing you agree to our{" "}
-            <a href="#" className="underline hover:text-foreground">Terms</a>{" "}
+            <a href="#" className="underline hover:text-white">Terms</a>{" "}
             and{" "}
-            <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
+            <a href="#" className="underline hover:text-white">Privacy Policy</a>.
           </p>
 
           {/* Switch to Login */}
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-sm text-gray-400 mt-3">
             Already have an account?{" "}
             <button
               onClick={onSwitchToLogin}
               disabled={isLoading}
-              className="underline hover:text-foreground"
+              className="underline hover:text-white"
             >
-              Sign in
+              Log In
             </button>
           </p>
         </DialogContent>

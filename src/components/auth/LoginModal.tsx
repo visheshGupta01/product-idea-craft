@@ -71,19 +71,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[480px] p-8 text-center">
+      <DialogContent className="sm:max-w-[400px] p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <img src={imagineboLogo} alt="Imagine.bo" className="h-12 w-12" />
+        <div className="flex justify-center mb-4">
+          <img src={imagineboLogo} alt="Imagine.bo" className="h-10 w-10" />
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back</h1>
+        <h1 className="text-2xl font-bold text-white mb-4">Welcome back</h1>
 
         {/* Google Sign In Button */}
         <Button
           variant="outline"
-          className="w-full h-12 mb-4 bg-background border-border hover:bg-muted"
+          className="w-full h-10 mb-3 bg-[#1A1A1A] border-[#2A2A2A] text-white hover:bg-[#2A2A2A]"
           disabled={isLoading}
         >
           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -96,10 +96,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         </Button>
 
         {/* Divider */}
-        <div className="flex items-center my-6">
-          <div className="flex-1 border-t border-border"></div>
-          <span className="px-4 text-muted-foreground text-sm">or</span>
-          <div className="flex-1 border-t border-border"></div>
+        <div className="flex items-center my-4">
+          <div className="flex-1 border-t border-[#2A2A2A]"></div>
+          <span className="px-4 text-gray-400 text-sm">or</span>
+          <div className="flex-1 border-t border-[#2A2A2A]"></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,7 +112,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
             required
-            className="h-12 bg-background border-border"
+            className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
           />
 
           {/* Password Input */}
@@ -125,7 +125,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-background border-border pr-10"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 pr-10"
             />
             <Button
               type="button"
@@ -151,7 +151,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           <Button 
             type="submit" 
             disabled={isLoading || !email.trim() || !password.trim()}
-            className="w-full h-12 bg-foreground text-background hover:bg-foreground/90"
+            className="w-full h-10 bg-white text-black hover:bg-gray-200"
           >
             {isLoading ? <LoadingSpinner size="sm" text="Logging in..." /> : "Continue"}
           </Button>
@@ -162,27 +162,27 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             variant="ghost"
             onClick={() => setShowForgotPassword(true)}
             disabled={isLoading}
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="text-sm text-gray-400 hover:text-white"
           >
             Forgot your password?
           </Button>
         </form>
 
         {/* Terms and Privacy */}
-        <p className="text-xs text-muted-foreground mt-6">
+        <p className="text-xs text-gray-400 mt-4">
           By continuing you agree to our{" "}
-          <a href="#" className="underline hover:text-foreground">Terms</a>{" "}
+          <a href="#" className="underline hover:text-white">Terms</a>{" "}
           and{" "}
-          <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
+          <a href="#" className="underline hover:text-white">Privacy Policy</a>.
         </p>
 
         {/* Switch to Signup */}
-        <p className="text-sm text-muted-foreground mt-4">
-          Already have an account?{" "}
+        <p className="text-sm text-gray-400 mt-3">
+          Don't have an account?{" "}
           <button
             onClick={onSwitchToSignup}
             disabled={isLoading}
-            className="underline hover:text-foreground"
+            className="underline hover:text-white"
           >
             Sign Up
           </button>
