@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import React from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface FAQ {
   question: string;
@@ -47,12 +47,6 @@ const faqData: FAQ[] = [
 ];
 
 const FAQSection: React.FC = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0); // Open first by default
-
-  const toggleOpen = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
   return (
     <section className="bg-[#0f1116] text-black font-['Poppins'] py-5 px-4 flex justify-center">
       <div className="bg-gradient-to-b from-[#dbe5ed] to-[#fcddec] rounded-2xl max-w-4xl w-full p-6 md:p-10">
@@ -65,26 +59,18 @@ const FAQSection: React.FC = () => {
         </p>
 
         {/* Accordion - Responsive */}
-        {faqData.map((faq, index) => (
-          <div key={index} className="border-b border-gray-300 py-3 md:py-4">
-            <button
-              className="flex font-poppins justify-between items-start w-full text-base sm:text-lg md:text-xl text-left"
-              onClick={() => toggleOpen(index)}
-            >
-              <span className="font-semibold pr-4 flex-1">{faq.question}</span>
-              {openIndex === index ? (
-                <Minus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 mt-1" />
-              ) : (
-                <Plus className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 mt-1" />
-              )}
-            </button>
-            {openIndex === index && (
-              <p className="text-sm sm:text-base md:text-lg mt-2 font-poppins text-gray-700">
+        <Accordion type="single" collapsible defaultValue="item-0" className="w-full">
+          {faqData.map((faq, index) => (
+            <AccordionItem key={index} value={`item-${index}`} className="border-b border-gray-300">
+              <AccordionTrigger className="flex font-poppins justify-between items-start w-full text-base sm:text-lg md:text-xl text-left py-3 md:py-4 font-semibold hover:no-underline">
+                {faq.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-sm sm:text-base md:text-lg font-poppins text-gray-700 pb-3 md:pb-4">
                 {faq.answer}
-              </p>
-            )}
-          </div>
-        ))}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </section>
   );
