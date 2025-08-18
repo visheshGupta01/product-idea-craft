@@ -93,7 +93,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
         {!isWelcomeMessage && (
           <div
-            className={`absolute -bottom-2 ${isUser ? "right-2" : "left-2"} flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity`}
+            className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ${
+              isUser ? "justify-end" : "justify-start"
+            }`}
           >
             <Button
               variant="ghost"
