@@ -53,30 +53,31 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.type === "user";
 
   return (
-    <div
-      className={`flex items-end space-x-3 mb-6 ${
-        isUser ? "flex-row-reverse space-x-reverse" : ""
-      }`}
-    >
-      <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarFallback
-          className={
-            isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"
-          }
-        >
-          {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-        </AvatarFallback>
-      </Avatar>
-
+    <div className="mb-6 group">
+      {/* Row 1: Avatar + Bubble */}
       <div
-        className={`relative group flex flex-col space-y-2 max-w-[75%] min-w-0 ${
-          isUser ? "items-end" : "items-start"
+        className={`flex items-end ${
+          isUser ? "flex-row-reverse space-x-reverse" : ""
         }`}
       >
+        <Avatar className="w-8 h-8 flex-shrink-0">
+          <AvatarFallback
+            className={
+              isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"
+            }
+          >
+            {isUser ? (
+              <User className="w-4 h-4" />
+            ) : (
+              <Bot className="w-4 h-4" />
+            )}
+          </AvatarFallback>
+        </Avatar>
+
         <div
-          className={`px-4 py-3 rounded-2xl shadow-sm overflow-hidden break-words ${
+          className={`ml-3 px-4 py-3 rounded-2xl shadow-sm overflow-hidden break-words max-w-[75%] min-w-0 ${
             isUser
-              ? "bg-blue-300  text-black rounded-br-sm"
+              ? "bg-blue-300 text-black rounded-br-sm mr-2"
               : "bg-[#D9D9D9] text-black rounded-bl-sm"
           }`}
         >
@@ -90,34 +91,35 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             </div>
           )}
         </div>
+      </div>
 
-        {!isWelcomeMessage && (
-          <div
-            className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ${
-              isUser ? "justify-end" : "justify-start"
-            }`}
+      {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
+      {!isWelcomeMessage && (
+        <div
+          className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ml-11 ${
+            isUser ? "justify-end mr-11 ml-0" : "justify-start"
+          }`}
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
+            onClick={() => copyToClipboard(message.content)}
           >
+            <Copy className="h-3 w-3" />
+          </Button>
+          {!isUser && (
             <Button
               variant="ghost"
               size="sm"
               className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
-              onClick={() => copyToClipboard(message.content)}
+              onClick={() => downloadAsText(message.content, message.id)}
             >
-              <Copy className="h-3 w-3" />
+              <Download className="h-3 w-3" />
             </Button>
-            {!isUser && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
-                onClick={() => downloadAsText(message.content, message.id)}
-              >
-                <Download className="h-3 w-3" />
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
