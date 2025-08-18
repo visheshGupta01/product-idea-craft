@@ -54,11 +54,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div
-      className={`flex items-end space-x-3 mb-6 ${
+      className={`flex items-start space-x-3 mb-6 ${
         isUser ? "flex-row-reverse space-x-reverse" : ""
       }`}
     >
-      <Avatar className="w-8 h-8 flex-shrink-0">
+      <Avatar className="w-8 h-8 flex-shrink-0 mt-3">
         <AvatarFallback
           className={
             isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"
