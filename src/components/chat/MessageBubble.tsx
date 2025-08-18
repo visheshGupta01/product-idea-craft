@@ -54,11 +54,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div
-      className={`flex items-start space-x-3 mb-6 ${
+      className={`flex items-end space-x-3 mb-6 ${
         isUser ? "flex-row-reverse space-x-reverse" : ""
       }`}
     >
-      <Avatar className="w-8 h-8 flex-shrink-0 mt-3">
+      <Avatar className="w-8 h-8 flex-shrink-0">
         <AvatarFallback
           className={
             isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"
@@ -69,7 +69,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       </Avatar>
 
       <div
-        className={`flex flex-col space-y-2 max-w-[75%] min-w-0 ${
+        className={`relative group flex flex-col space-y-2 max-w-[75%] min-w-0 ${
           isUser ? "items-end" : "items-start"
         }`}
       >
@@ -93,9 +93,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
         {!isWelcomeMessage && (
           <div
-            className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity ${
-              isUser ? "justify-end" : "justify-start"
-            }`}
+            className={`absolute -bottom-2 ${isUser ? "right-2" : "left-2"} flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity`}
           >
             <Button
               variant="ghost"
