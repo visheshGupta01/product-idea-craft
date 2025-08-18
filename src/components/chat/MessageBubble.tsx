@@ -54,7 +54,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div
-      className={`flex items-start space-x-3 mb-6 ${
+      className={`flex items-end space-x-3 mb-6 ${
         isUser ? "flex-row-reverse space-x-reverse" : ""
       }`}
     >
