@@ -77,21 +77,21 @@ const renderLegend = () => {
 
 const UserGrowthChart: React.FC = () => {
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm">
+    <div className="bg-card p-6 rounded-2xl shadow-sm text-card-foreground">
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-foreground">
             Active User Growth
           </h2>
           <div className="bg-green-50 text-green-700 font-semibold text-sm px-3 py-1 border border-green-200 rounded-full flex items-center gap-1">
             23% <span className="text-green-600">▲</span>
           </div>
         </div>
-        <div className="flex gap-4 text-sm font-medium">
+        <div className="flex gap-4 text-sm font-medium text-muted-foreground">
           <span className="text-pink-500 font-semibold">WEEK</span>
-          <span className="text-gray-500">MONTH</span>
-          <span className="text-gray-500">YEAR</span>
+          <span className="text-muted-foreground">MONTH</span>
+          <span className="text-muted-foreground">YEAR</span>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ const UserGrowthChart: React.FC = () => {
           <div
             key={index}
             className={`w-16 h-14 text-xs flex flex-col items-center justify-center rounded-xl ${
-              index === 1 ? "bg-pink-400 text-white" : "bg-gray-100 text-gray-700"
+              index === 1 ? "bg-pink-400 text-white" : "bg-muted text-muted-foreground"
             }`}
           >
             <div className="font-medium text-sm">
@@ -174,25 +174,25 @@ const UserGrowthChart: React.FC = () => {
           {/* Top Row - Conversion Rate and Average Time */}
           <div className="grid grid-cols-2 gap-4">
             {/* Conversion Rate Card */}
-            <div className="bg-gray-50 p-4 rounded-xl">
-              <p className="text-gray-600 text-xs font-medium mb-2">Conversion Rate</p>
-              <p className="text-2xl font-bold text-gray-900">59%</p>
+            <div className="bg-muted p-4 rounded-xl">
+              <p className="text-muted-foreground text-xs font-medium mb-2">Conversion Rate</p>
+              <p className="text-2xl font-bold text-foreground">59%</p>
               <div className="text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 mt-2">
                 <span className="text-green-600">▲</span>
               </div>
             </div>
 
             {/* Average Time Spent Card */}
-            <div className="bg-gray-50 p-4 rounded-xl">
-              <p className="text-gray-600 text-xs font-medium mb-2">Average Time Spent</p>
-              <p className="text-2xl font-bold text-gray-900">3hr 42m</p>
+            <div className="bg-muted p-4 rounded-xl">
+              <p className="text-muted-foreground text-xs font-medium mb-2">Average Time Spent</p>
+              <p className="text-2xl font-bold text-foreground">3hr 42m</p>
             </div>
           </div>
 
           {/* Revenue Chart Card */}
-          <div className="bg-gray-50 p-4 rounded-xl">
+          <div className="bg-muted p-4 rounded-xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-gray-900 font-semibold text-sm">Revenue</h3>
+              <h3 className="text-foreground font-semibold text-sm">Revenue</h3>
               <div className="text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                 4% <span className="text-green-600">▲</span>
               </div>
@@ -217,8 +217,8 @@ const UserGrowthChart: React.FC = () => {
                 }} 
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-sm font-bold text-gray-900">$90.2K</div>
-                <div className="text-xs text-gray-500">Total</div>
+                <div className="text-sm font-bold text-foreground">$90.2K</div>
+                <div className="text-xs text-muted-foreground">Total</div>
               </div>
             </div>
 

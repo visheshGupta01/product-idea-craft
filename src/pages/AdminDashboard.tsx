@@ -76,7 +76,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="flex bg-gray-50 min-h-screen">
+    <div className="flex bg-background min-h-screen text-foreground">
       <AdminSidebar />
       <div className="flex-1 ml-16 p-6 space-y-6">
         {/* Revenue Section */}

@@ -5,15 +5,10 @@ import { Menu, LayoutGrid, Users, Settings, User } from "lucide-react";
 export default function AdminSidebar() {
   return (
     <div
-      className="fixed flex flex-col items-center justify-between py-6"
+      className="fixed flex flex-col items-center justify-between py-6 left-0 top-1/2 transform -translate-y-1/2 bg-black rounded-r-[25px]"
       style={{
         width: "50px",
         height: "550px",
-        top: "56px",
-        left: "0px",
-        backgroundColor: "#000000",
-        borderTopRightRadius: "25px",
-        borderBottomRightRadius: "25px",
       }}
     >
       {/* Top Section */}
