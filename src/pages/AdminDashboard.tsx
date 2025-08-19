@@ -76,27 +76,29 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="flex bg-gradient-to-b from-[#e8f0ff] to-[#fceeff] min-h-screen">
+    <div className="flex bg-gray-50 min-h-screen">
       <AdminSidebar />
-      <div className="flex-1 p-4 space-y-6">
-        <AdminTopbar />
+      <div className="flex-1 ml-16 p-6 space-y-6">
+        {/* Revenue Section */}
         <RevenueCard />
 
-        {/* Growth & Metrics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 pl-20">
-          <UserGrowthChart />
-          <MetricsCards />
+        {/* Growth Chart and Metrics Side by Side */}
+        <div className="flex gap-6">
+          <div className="flex-1">
+            <UserGrowthChart />
+          </div>
+          <div className="w-80">
+            <MetricsCards />
+          </div>
         </div>
 
-        {/* Analytics & Drop Rate */}
-        <div className="pl-20 mt-8 flex gap-6">
-          <AnalyticsSection />
-          <DropRateCard />
-        </div>
-
-        {/* Revenue Donut Chart */}
-        <div className="pl-20 mt-8">
-          <RevenueDonut />
+        {/* More Analytics Section */}
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">More Analytics</h2>
+          <div className="flex gap-6">
+            <AnalyticsSection />
+            <DropRateCard />
+          </div>
         </div>
       </div>
     </div>

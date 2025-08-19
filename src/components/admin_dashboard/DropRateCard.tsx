@@ -4,42 +4,34 @@ import { ChevronDown } from "lucide-react";
 
 const DropRateCard: React.FC = () => {
   return (
-    <div
-      className="bg-[#F5F5F5] rounded-xl shadow-sm p-6 mt-20"
-      style={{ width: "330px", height: "327px" }}
-    >
+    <div className="bg-white rounded-2xl shadow-sm p-6 w-80">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="font-bold text-black text-base font-supply leading-6 mb-4 ml-2 mt-4 text-[20px]">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="font-semibold text-gray-900 text-lg">
           Dropping Rate
         </h2>
-
-        <div className="flex items-center gap-1 px-3 py-1 rounded-full border border-black bg-white mr-4 font-semibold text-black">
+        <div className="flex items-center gap-1 px-3 py-1 rounded-full border border-red-200 bg-red-50 font-semibold text-red-600">
           <span>8%</span>
-          <ChevronDown size={16} className="text-red-500" fill="red" />
+          <ChevronDown size={16} className="text-red-500" />
         </div>
       </div>
 
       {/* Steps */}
-      <div className="mt-6 space-y-3 text-base text-black font-medium">
+      <div className="space-y-3 text-sm text-gray-700">
         <div>
-          <span className="font-normal mr-2">6%</span> Left at “Choose Template”
-          step
+          <span className="font-semibold mr-2">6%</span> Left at "Choose Template" step
         </div>
         <div>
-          <span className="font-normal mr-2">5%</span> Users dropped at pricing
-          page
+          <span className="font-semibold mr-2">5%</span> Users dropped at pricing page
         </div>
         <div>
-          <span className="font-normal mr-2">3%</span> After hitting "Preview
-          Website"
+          <span className="font-semibold mr-2">3%</span> After hitting "Preview Website"
         </div>
         <div>
-          <span className="font-normal mr-2">1%</span> Before publishing
+          <span className="font-semibold mr-2">1%</span> Before publishing
         </div>
         <div>
-          <span className="font-normal mr-2">0.2%</span> At “Connect Domain”
-          step
+          <span className="font-semibold mr-2">0.2%</span> At "Connect Domain" step
         </div>
       </div>
     </div>

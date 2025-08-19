@@ -68,29 +68,26 @@ const renderLegend = () => {
 
 const UserGrowthChart: React.FC = () => {
   return (
-    <div
-      className="bg-[#F5F5F5] p-6 rounded-xl shadow-md"
-      style={{ width: "730px", height: "420px" }}
-    >
+    <div className="bg-white p-6 rounded-2xl shadow-sm">
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold font-supply ml-4">
+          <h2 className="text-lg font-semibold text-gray-900">
             Active User Growth
           </h2>
-          <div className="bg-white text-black font-semibold text-sm px-3 py-1 border border-black rounded-full ml-4">
-            23% ▲
+          <div className="bg-green-50 text-green-700 font-semibold text-sm px-3 py-1 border border-green-200 rounded-full flex items-center gap-1">
+            23% <span className="text-green-600">▲</span>
           </div>
         </div>
-        <div className="flex gap-4 text-sm font-medium font-roboto mt-4">
-          <span className="text-pink-600">WEEK</span>
-          <span className="text-[#1A1A16]">MONTH</span>
-          <span className="text-[#1A1A16]">YEAR</span>
+        <div className="flex gap-4 text-sm font-medium">
+          <span className="text-pink-500 font-semibold">WEEK</span>
+          <span className="text-gray-500">MONTH</span>
+          <span className="text-gray-500">YEAR</span>
         </div>
       </div>
 
       {/* Week Selector */}
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-3 mb-6">
         {[
           { month: "Mar", week: "Week 1" },
           { month: "Mar", week: "Week 2" },
@@ -99,14 +96,14 @@ const UserGrowthChart: React.FC = () => {
         ].map((item, index) => (
           <div
             key={index}
-            className={`w-[65px] h-[59px] text-xs flex flex-col items-center justify-center rounded-[12px] ${
-              index === 1 ? "bg-[#FF94DA] text-white" : "bg-[#D8CEE8]"
+            className={`w-16 h-14 text-xs flex flex-col items-center justify-center rounded-xl ${
+              index === 1 ? "bg-pink-400 text-white" : "bg-gray-100 text-gray-700"
             }`}
           >
-            <div className="font-medium font-roboto text-[14px]">
+            <div className="font-medium text-sm">
               {item.month}
             </div>
-            <div className="font-medium text-[#29333D] font-roboto text-[12px] mt-1">
+            <div className="font-medium text-xs mt-1">
               {item.week}
             </div>
           </div>

@@ -35,62 +35,65 @@ const RevenueCard: React.FC = () => {
   }, []);
 
   return (
-    <div className="rounded-xl p-6 w-full max-w-[900px] font-poppins text-[#232323] ml-14 flex justify-between items-start">
-      {/* Left Section */}
-      <div>
-        <p className="text-[42px] font-semibold font-poppins leading-none">
-          Your total revenue
-        </p>
-        <h1 className="text-[52px] font-regular font-supply mt-0 tracking-wide text-[#000000]">
-          $90,239.00
-        </h1>
-      </div>
-
-      {/* Right Section */}
-      <div className="relative">
-        <button
-          onClick={() => setShowPicker((v) => !v)}
-          className="px-3 py-2 rounded-md border border-gray-300 text-sm shadow bg-white flex items-center gap-2"
-        >
-          {`${format(range[0].startDate, "MMM dd")} – ${format(
-            range[0].endDate,
-            "MMM dd, yyyy"
-          )}`}
-          <span>▾</span>
-        </button>
-
-        {showPicker && (
-          <div
-            ref={pickerRef}
-            className="absolute left-1 -top-[0] mt-2 z-[888] bg-white rounded-2xl shadow-2xl border border-gray-200 p-2"
-            style={{
-              width: "500px", // reduced overall width
-              transform: "scale(0.85)", // shrink height + width proportionally
-              transformOrigin: "top right", // keep aligned to button
-            }}
-          >
-            <DateRange
-              editableDateInputs
-              onChange={(item: RangeKeyDict) =>
-                setRange([item.selection as DateRangeState])
-              }
-              moveRangeOnFirstSelection={false}
-              ranges={range}
-              months={2}
-              direction="horizontal"
-              showMonthAndYearPickers={false}
-              rangeColors={["#3B82F6"]}
-            />
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowPicker(false)}
-                className="mt-2 bg-black text-white px-4 py-2 rounded-md"
-              >
-                Apply
-              </button>
-            </div>
+    <div className="bg-white p-8 rounded-2xl shadow-sm">
+      {/* Header */}
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <h2 className="text-lg font-medium text-gray-600 mb-1">
+            Your total revenue
+          </h2>
+          <div className="text-5xl font-bold text-gray-900">
+            $90,239.00
           </div>
-        )}
+        </div>
+        
+        {/* Date Range Picker Button */}
+        <div className="relative">
+          <button
+            onClick={() => setShowPicker((v) => !v)}
+            className="px-3 py-2 rounded-md border border-gray-300 text-sm shadow bg-gray-50 flex items-center gap-2"
+          >
+            {`${format(range[0].startDate, "MMM dd")} – ${format(
+              range[0].endDate,
+              "MMM dd, yyyy"
+            )}`}
+            <span>▾</span>
+          </button>
+          
+          {/* Date Range Picker */}
+          {showPicker && (
+            <div
+              ref={pickerRef}
+              className="absolute left-1 -top-[0] mt-2 z-[888] bg-white rounded-2xl shadow-2xl border border-gray-200 p-2"
+              style={{
+                width: "500px",
+                transform: "scale(0.85)",
+                transformOrigin: "top right",
+              }}
+            >
+              <DateRange
+                editableDateInputs
+                onChange={(item: RangeKeyDict) =>
+                  setRange([item.selection as DateRangeState])
+                }
+                moveRangeOnFirstSelection={false}
+                ranges={range}
+                months={2}
+                direction="horizontal"
+                showMonthAndYearPickers={false}
+                rangeColors={["#3B82F6"]}
+              />
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowPicker(false)}
+                  className="mt-2 bg-black text-white px-4 py-2 rounded-md"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
