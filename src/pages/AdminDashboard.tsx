@@ -76,7 +76,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="flex bg-background min-h-screen text-foreground">
+    <div className="flex bg-gray-50 min-h-screen">
       <AdminSidebar />
       <div className="flex-1 ml-16 p-6 space-y-6">
         {/* Revenue Section */}
@@ -89,8 +89,12 @@ const AdminDashboard: React.FC = () => {
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">More Analytics</h2>
           <div className="flex gap-6">
-            <AnalyticsSection />
-            <DropRateCard />
+            <div className="w-80">
+              <AnalyticsSection />
+            </div>
+            <div className="w-80">
+              <DropRateCard />
+            </div>
           </div>
         </div>
       </div>
