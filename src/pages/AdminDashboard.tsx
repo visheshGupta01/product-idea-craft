@@ -23,6 +23,7 @@ import MetricsCards from '@/components/admin_dashboard/MetrixCard';
 import AnalyticsSection from '@/components/admin_dashboard/MapAnalytics';
 import DropRateCard from '@/components/admin_dashboard/DropRateCard';
 import AdminTopbar from '@/components/admin_dashboard/AdminTopbar';
+import RevenueDonut from '@/components/admin_dashboard/RevenueDonut';
 
 const AdminDashboard: React.FC = () => {
   const { logout, userRole } = useUser();
@@ -91,6 +92,11 @@ const AdminDashboard: React.FC = () => {
         <div className="pl-20 mt-8 flex gap-6">
           <AnalyticsSection />
           <DropRateCard />
+        </div>
+
+        {/* Revenue Donut Chart */}
+        <div className="pl-20 mt-8">
+          <RevenueDonut />
         </div>
       </div>
     </div>

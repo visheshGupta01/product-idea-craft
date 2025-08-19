@@ -1,7 +1,6 @@
 // src/components/UserGrowthChart.tsx
 import React from "react";
 import {
-  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -27,7 +26,7 @@ const data: DataPoint[] = [
   { date: "10 Mar", paid: 2800, active: 3400 },
   { date: "11 Mar", paid: 1500, active: 2800 },
   { date: "12 Mar", paid: 2600, active: 3000 },
-  { date: "13 Mar", paid: 1900, active: 30000 }, // check if this spike is intentional
+  { date: "13 Mar", paid: 1900, active: 3200 },
   { date: "14 Mar", paid: 2400, active: 3100 },
   { date: "15 Mar", paid: 3000, active: 3700 },
 ];
@@ -37,7 +36,7 @@ const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
   payload,
   label,
 }) => {
-  console.log("Tooltip payload:", payload);
+  
   if (active && payload && payload.length) {
     return (
       <div className="bg-white shadow-md p-2 rounded text-xs">
@@ -143,12 +142,12 @@ const UserGrowthChart: React.FC = () => {
             fill="url(#colorPaid)"
             name="Paid Users"
           />
-          <Line
+          <Area
             type="monotone"
             dataKey="active"
             stroke="#009dff"
             strokeDasharray="5 5"
-            dot={false}
+            fill="transparent"
             name="Active Users"
           />
 
