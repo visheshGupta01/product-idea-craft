@@ -14,6 +14,15 @@ import {
   ValueType,
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend as ChartLegend,
+} from "chart.js";
+
+ChartJS.register(ArcElement, ChartTooltip, ChartLegend);
 
 interface DataPoint {
   date: string;
@@ -110,51 +119,129 @@ const UserGrowthChart: React.FC = () => {
         ))}
       </div>
 
-      {/* Chart */}
-      <ResponsiveContainer width="100%" height={240}>
-        <AreaChart
-          data={data}
-          margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
-        >
-          <defs>
-            <linearGradient id="colorPaid" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ff80d3" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#ffc3ea" stopOpacity={0} />
-            </linearGradient>
-          </defs>
+      {/* Main Content - Chart and Metrics */}
+      <div className="flex gap-6">
+        {/* Chart Section */}
+        <div className="flex-1">
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart
+              data={data}
+              margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
+            >
+              <defs>
+                <linearGradient id="colorPaid" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ff80d3" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#ffc3ea" stopOpacity={0} />
+                </linearGradient>
+              </defs>
 
-          <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-          <YAxis
-            tick={{ fontSize: 12 }}
-            axisLine={false}
-            tickFormatter={(value) => `${value / 1000}k`}
-          />
-          <Tooltip content={<CustomTooltip />} />
+              <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickFormatter={(value) => `${value / 1000}k`}
+              />
+              <Tooltip content={<CustomTooltip />} />
 
-          <Area
-            type="monotone"
-            dataKey="paid"
-            stroke="#ff80d3"
-            fillOpacity={1}
-            fill="url(#colorPaid)"
-            name="Paid Users"
-          />
-          <Area
-            type="monotone"
-            dataKey="active"
-            stroke="#009dff"
-            strokeDasharray="5 5"
-            fill="transparent"
-            name="Active Users"
-          />
+              <Area
+                type="monotone"
+                dataKey="paid"
+                stroke="#ff80d3"
+                fillOpacity={1}
+                fill="url(#colorPaid)"
+                name="Paid Users"
+              />
+              <Area
+                type="monotone"
+                dataKey="active"
+                stroke="#009dff"
+                strokeDasharray="5 5"
+                fill="transparent"
+                name="Active Users"
+              />
 
-          <Legend
-            content={renderLegend}
-            verticalAlign="bottom"
-            align="center"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+              <Legend
+                content={renderLegend}
+                verticalAlign="bottom"
+                align="center"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Metrics Cards Section */}
+        <div className="w-80 space-y-4">
+          {/* Top Row - Conversion Rate and Average Time */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Conversion Rate Card */}
+            <div className="bg-gray-50 p-4 rounded-xl">
+              <p className="text-gray-600 text-xs font-medium mb-2">Conversion Rate</p>
+              <p className="text-2xl font-bold text-gray-900">59%</p>
+              <div className="text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 mt-2">
+                <span className="text-green-600">▲</span>
+              </div>
+            </div>
+
+            {/* Average Time Spent Card */}
+            <div className="bg-gray-50 p-4 rounded-xl">
+              <p className="text-gray-600 text-xs font-medium mb-2">Average Time Spent</p>
+              <p className="text-2xl font-bold text-gray-900">3hr 42m</p>
+            </div>
+          </div>
+
+          {/* Revenue Chart Card */}
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-gray-900 font-semibold text-sm">Revenue</h3>
+              <div className="text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                4% <span className="text-green-600">▲</span>
+              </div>
+            </div>
+            
+            <div className="relative h-24 mb-4">
+              <Doughnut 
+                data={{
+                  labels: ["Pro", "Team", "Individual", "Free", "Other"],
+                  datasets: [{
+                    label: "Revenue",
+                    data: [20, 18, 19, 17, 21],
+                    backgroundColor: ["#EC4899", "#3B82F6", "#34D399", "#FBBF24", "#A78BFA"],
+                    borderWidth: 0,
+                    borderRadius: 10,
+                  }],
+                }} 
+                options={{
+                  cutout: "70%",
+                  plugins: { legend: { display: false } },
+                  maintainAspectRatio: false,
+                }} 
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="text-sm font-bold text-gray-900">$90.2K</div>
+                <div className="text-xs text-gray-500">Total</div>
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+                  <span>Pro</span>
+                </div>
+                <span className="font-medium">$17M</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>Team</span>
+                </div>
+                <span className="font-medium">$4M</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -82,15 +82,8 @@ const AdminDashboard: React.FC = () => {
         {/* Revenue Section */}
         <RevenueCard />
 
-        {/* Growth Chart and Metrics Side by Side */}
-        <div className="flex gap-6">
-          <div className="flex-1">
-            <UserGrowthChart />
-          </div>
-          <div className="w-80">
-            <MetricsCards />
-          </div>
-        </div>
+        {/* User Growth Chart with Embedded Metrics */}
+        <UserGrowthChart />
 
         {/* More Analytics Section */}
         <div>
