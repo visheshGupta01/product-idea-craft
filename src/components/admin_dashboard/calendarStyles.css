@@ -1,0 +1,13 @@
+/* Reduce font size and cell spacing for react-date-range */
+.rdrCalendarWrapper {
+  font-size: 12px !important;
+}
+
+.rdrMonth {
+  width: auto !important;
+}
+
+.rdrDay {
+  height: 28px !important;
+  width: 28px !important;
+}
