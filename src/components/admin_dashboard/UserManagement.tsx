@@ -113,7 +113,7 @@ export default function UserManagement() {
   const totalPages = Math.ceil(totalUsers / pageSize);
 
   return (
-    <div className="flex-1 p-8 bg-gray-50 min-h-screen">
+    <div className="flex-1 ml-16 p-8 bg-gray-50 min-h-screen">
       <div className="bg-white rounded-lg shadow-sm">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
