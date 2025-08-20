@@ -119,7 +119,7 @@ const UserGrowthChart: React.FC = () => {
           </div>
 
           {/* Chart */}
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={180}>
             <AreaChart
               data={data}
               margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
