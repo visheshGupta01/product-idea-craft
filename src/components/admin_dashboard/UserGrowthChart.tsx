@@ -170,8 +170,8 @@ const UserGrowthChart: React.FC = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Right side - Metrics Cards aligned with chart area */}
-        <div className="w-96 space-y-4 mt-20"> {/* mt-20 to align with chart after week selector */}
+        {/* Right side - Metrics Cards aligned with header filter */}
+        <div className="w-96 space-y-4"> {/* Aligned with WEEK/MONTH/YEAR filter */}
           {/* Top Row - Conversion Rate and Average Time */}
           <div className="grid grid-cols-2 gap-4">
             {/* Conversion Rate Card */}
