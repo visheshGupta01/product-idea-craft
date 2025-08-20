@@ -10,7 +10,7 @@ import AdminSidebar from '@/components/admin_dashboard/AdminSidebar';
 import RevenueCard from '@/components/admin_dashboard/RevenueCard';
 import UserGrowthChart from '@/components/admin_dashboard/UserGrowthChart';
 import MetricsCards from '@/components/admin_dashboard/MetrixCard';
-import AnalyticsSection from '@/components/admin_dashboard/MapAnalytics';
+import MapAnalytics from '@/components/admin_dashboard/MapAnalytics';
 import DropRateCard from '@/components/admin_dashboard/DropRateCard';
 
 
@@ -67,7 +67,7 @@ const AdminDashboard: React.FC = () => {
           </h2>
           <div className="flex gap-6">
             <div className="w-80">
-              <AnalyticsSection />
+              <MapAnalytics />
             </div>
             <div className="w-80">
               <DropRateCard />
