@@ -48,14 +48,14 @@ const AdminDashboard: React.FC = () => {
         <RevenueCard />
 
         {/* Main Dashboard Layout - User Growth Chart and Metrics */}
-        <div className="flex gap-6 h-fit">
-          {/* Left Side - User Growth Chart */}
-          <div className="flex-1 max-w-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* User Growth Chart (takes 2/3) */}
+          <div className="lg:col-span-2">
             <UserGrowthChart />
           </div>
-          
-          {/* Right Side - Metrics Cards */}
-          <div className="w-80 flex-shrink-0">
+
+          {/* Metrics Cards (takes 1/3) */}
+          <div className="lg:col-span-1">
             <MetricsCards />
           </div>
         </div>

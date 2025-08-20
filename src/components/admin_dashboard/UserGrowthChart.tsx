@@ -14,15 +14,6 @@ import {
   ValueType,
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
-import { Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip as ChartTooltip,
-  Legend as ChartLegend,
-} from "chart.js";
-
-ChartJS.register(ArcElement, ChartTooltip, ChartLegend);
 
 interface DataPoint {
   date: string;
@@ -45,13 +36,17 @@ const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
   payload,
   label,
 }) => {
-  
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white shadow-md p-2 rounded text-xs">
-        <p>{label}</p>
-        <p style={{ color: "#ff80d3" }}>Paid Users: {payload[0].value}</p>
-        <p style={{ color: "#009dff" }}>Active Users: {payload[1].value}</p>
+      <div className="bg-white shadow-md px-3 py-2 rounded text-xs border">
+        <p className="font-medium text-gray-700">{label}</p>
+        <p style={{ color: "#ff4db8" }}>
+          Paid Users: <span className="font-semibold">{payload[0].value}</span>
+        </p>
+        <p style={{ color: "#009dff" }}>
+          Active Users:{" "}
+          <span className="font-semibold">{payload[1].value}</span>
+        </p>
       </div>
     );
   }
@@ -63,8 +58,8 @@ const renderLegend = () => {
     <div className="flex justify-center items-center gap-6 mt-2 text-xs">
       {/* Paid Users */}
       <div className="flex items-center gap-1 mr-8">
-        <div className="w-5 h-5 bg-[#ff80d3] border-black border"></div>
-        <span className="text-black font-sm font-medium">Paid Users</span>
+        <div className="w-5 h-5 bg-[#ff4db8] border border-black"></div>
+        <span className="text-black font-medium">Paid Users</span>
       </div>
       {/* Active Users */}
       <div className="flex items-center gap-1">
@@ -78,92 +73,97 @@ const renderLegend = () => {
 const UserGrowthChart: React.FC = () => {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
-      {/* Layout with Week Selector and Metrics Cards aligned */}
-      <div className="flex gap-6">
-        {/* Left side - Header, Week Selector and Chart */}
-        <div className="flex-1">
-          {/* Header - contained within left card */}
-          <div className="flex justify-between items-start mb-6">
-            <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold font-supply text-gray-900">
-                Active User Growth
-              </h2>
-              <div className="bg-green-50  text-sm px-3 py-1 border text-black border-black  rounded-full flex items-center gap-1">
-                23% <span className="text-green-600">▲</span>
-              </div>
-            </div>
-            <div className="flex gap-4 text-sm font-medium">
-              <span className="text-pink-500 font-semibold">WEEK</span>
-              <span className="text-gray-500">MONTH</span>
-              <span className="text-gray-500">YEAR</span>
+      <div className="flex-1">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Active User Growth
+            </h2>
+            <div className="bg-green-50 text-sm px-3 py-1 border text-black border-black rounded-full flex items-center gap-1">
+              23% <span className="text-green-600">▲</span>
             </div>
           </div>
-          {/* Week Selector */}
-          <div className="flex gap-1 mb-6">
-            {[
-              { month: "Mar", week: "Week 1" },
-              { month: "Mar", week: "Week 2" },
-              { month: "Mar", week: "Week 3" },
-              { month: "Mar", week: "Week 4" },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
-                  index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                }`}
-              >
-                <div className="font-medium text-sm">{item.month}</div>
-                <div className="font-medium text-xs mt-1">{item.week}</div>
-              </div>
-            ))}
+          <div className="flex gap-4 text-sm font-medium">
+            <span className="text-pink-500 font-semibold">WEEK</span>
+            <span className="text-[#1A1A16] font-semibold">MONTH</span>
+            <span className="text-[#1A1A16] font-semibold">YEAR</span>
           </div>
-
-          {/* Chart */}
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart
-              data={data}
-              margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
-            >
-              <defs>
-                <linearGradient id="colorPaid" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ff80d3" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#ffc3ea" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-
-              <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-              <YAxis
-                tick={{ fontSize: 12 }}
-                axisLine={false}
-                tickFormatter={(value) => `${value / 1000}k`}
-              />
-              <Tooltip content={<CustomTooltip />} />
-
-              <Area
-                type="monotone"
-                dataKey="paid"
-                stroke="#ff80d3"
-                fillOpacity={1}
-                fill="url(#colorPaid)"
-                name="Paid Users"
-              />
-              <Area
-                type="monotone"
-                dataKey="active"
-                stroke="#009dff"
-                strokeDasharray="5 5"
-                fill="transparent"
-                name="Active Users"
-              />
-
-              <Legend
-                content={renderLegend}
-                verticalAlign="bottom"
-                align="center"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
         </div>
+
+        {/* Week Selector */}
+        <div className="flex gap-1 mb-6">
+          {[
+            { month: "Mar", week: "Week 1" },
+            { month: "Mar", week: "Week 2" },
+            { month: "Mar", week: "Week 3" },
+            { month: "Mar", week: "Week 4" },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+              }`}
+            >
+              <div className="font-medium text-sm">{item.month}</div>
+              <div className="font-medium text-xs mt-1">{item.week}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Chart */}
+        <ResponsiveContainer width="100%" height={220}>
+          <AreaChart
+            data={data}
+            margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
+          >
+            <defs>
+              <linearGradient id="colorPaid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ff4db8" stopOpacity={0.9} />
+                <stop offset="100%" stopColor="#ffc3ea" stopOpacity={0.2} />
+              </linearGradient>
+            </defs>
+
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 12, fill: "#1E1E1E" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: "#1E1E1E" }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(value) => `${value / 1000}k`}
+            />
+            <Tooltip content={<CustomTooltip />} />
+
+            <Area
+              type="monotone"
+              dataKey="paid"
+              stroke="#ff4db8"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorPaid)"
+              name="Paid Users"
+            />
+            <Area
+              type="monotone"
+              dataKey="active"
+              stroke="#009dff"
+              strokeDasharray="6 6"
+              strokeWidth={3}
+              fill="transparent"
+              name="Active Users"
+            />
+
+            <Legend
+              content={renderLegend}
+              verticalAlign="bottom"
+              align="center"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
