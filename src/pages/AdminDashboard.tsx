@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { 
   AlertTriangle
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 import AdminSidebar from '@/components/admin_dashboard/AdminSidebar';
 import RevenueCard from '@/components/admin_dashboard/RevenueCard';
 import UserGrowthChart from '@/components/admin_dashboard/UserGrowthChart';
@@ -71,13 +70,9 @@ const AdminDashboard: React.FC = () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 More Analytics
               </h2>
-              <div className="flex gap-6">
-                <div className="w-80">
-                  <MapAnalytics />
-                </div>
-                <div className="w-80">
-                  <DropRateCard />
-                </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <MapAnalytics />
+                <DropRateCard />
               </div>
             </div>
           </div>
