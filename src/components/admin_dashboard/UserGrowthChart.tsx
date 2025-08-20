@@ -78,27 +78,26 @@ const renderLegend = () => {
 const UserGrowthChart: React.FC = () => {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Active User Growth
-          </h2>
-          <div className="bg-green-50 text-green-700 font-semibold text-sm px-3 py-1 border border-green-200 rounded-full flex items-center gap-1">
-            23% <span className="text-green-600">▲</span>
-          </div>
-        </div>
-        <div className="flex gap-4 text-sm font-medium">
-          <span className="text-pink-500 font-semibold">WEEK</span>
-          <span className="text-gray-500">MONTH</span>
-          <span className="text-gray-500">YEAR</span>
-        </div>
-      </div>
-
       {/* Layout with Week Selector and Metrics Cards aligned */}
       <div className="flex gap-6">
-        {/* Left side - Week Selector and Chart */}
+        {/* Left side - Header, Week Selector and Chart */}
         <div className="flex-1">
+          {/* Header - contained within left card */}
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Active User Growth
+              </h2>
+              <div className="bg-green-50 text-green-700 font-semibold text-sm px-3 py-1 border border-green-200 rounded-full flex items-center gap-1">
+                23% <span className="text-green-600">▲</span>
+              </div>
+            </div>
+            <div className="flex gap-4 text-sm font-medium">
+              <span className="text-pink-500 font-semibold">WEEK</span>
+              <span className="text-gray-500">MONTH</span>
+              <span className="text-gray-500">YEAR</span>
+            </div>
+          </div>
           {/* Week Selector */}
           <div className="flex gap-3 mb-6">
             {[
