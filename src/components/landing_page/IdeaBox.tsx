@@ -1,6 +1,5 @@
 
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -8,6 +7,7 @@ import { UI_CONFIG } from "@/utils/constants";
 import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
+import { FileUploader } from "@/components/ui/file-uploader";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
@@ -18,6 +18,10 @@ const IdeaBox: React.FC = () => {
 
   const handleVoiceTranscript = (transcript: string) => {
     setIdea(prev => prev ? prev + " " + transcript : transcript);
+  };
+
+  const handleFileTextExtracted = (extractedText: string) => {
+    setIdea(prev => prev ? prev + "\n\n" + extractedText : extractedText);
   };
 
   const handleSubmit = async () => {
@@ -109,12 +113,10 @@ const IdeaBox: React.FC = () => {
                 onTranscript={handleVoiceTranscript}
                 disabled={isProcessingIdea}
               />
-              <button
-                className="p-2 w-[50px] h-[50px] flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
+              <FileUploader 
+                onTextExtracted={handleFileTextExtracted}
                 disabled={isProcessingIdea}
-              >
-                <Plus className="w-[20px] h-[20px] text-gray-700" />
-              </button>
+              />
             </div>
           </div>
 
