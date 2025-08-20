@@ -65,13 +65,9 @@ const AdminDashboard: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             More Analytics
           </h2>
-          <div className="flex gap-6">
-            <div className="w-80">
-              <MapAnalytics />
-            </div>
-            <div className="w-80">
-              <DropRateCard />
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <MapAnalytics />
+            <DropRateCard />
           </div>
         </div>
       </div>

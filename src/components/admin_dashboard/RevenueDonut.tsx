@@ -12,23 +12,19 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const RevenueDonut: React.FC = () => {
-  const data: ChartData<"doughnut"> = {
-    labels: ["Pro", "Team", "Individual", "Free"],
-    datasets: [
-      {
-        label: "Revenue Distribution",
-        data: [45, 25, 20, 10],
-        backgroundColor: [
-          "#EC4899",
-          "#3B82F6", 
-          "#34D399",
-          "#FBBF24",
-        ],
-        borderWidth: 0,
-        borderRadius: 8,
-      },
-    ],
-  };
+const data: ChartData<"doughnut"> = {
+  labels: ["Pro", "Team", "Individual", "Free"],
+  datasets: [
+    {
+      label: "Revenue Distribution",
+      data: [45, 25, 20, 10],
+      backgroundColor: ["#EC4899", "#3B82F6", "#34D399", "#FBBF24"],
+      borderWidth: 0,
+      borderRadius: 50, // rounded ends
+      spacing: 4, // gap between segments
+    },
+  ],
+};
 
   const options: ChartOptions<"doughnut"> = {
     cutout: "70%",

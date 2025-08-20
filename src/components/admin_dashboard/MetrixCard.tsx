@@ -66,7 +66,7 @@ const MetricsCards: React.FC = () => {
       <div className="bg-white p-6 rounded-2xl shadow-sm col-span-2">
         {/* Header */}
         <div className="flex items-center mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Revenue</h3>
+          <h3 className="text-lg font-semibold text-gray-900 font-supply">Revenue</h3>
           <div className="bg-gray-100 px-3 ml-3 py-1 rounded-full text-sm flex items-center border border-black gap-1">
             <span className="text-black font-poppins">4%</span>
             <span className="text-green-500">▲</span>
@@ -74,13 +74,13 @@ const MetricsCards: React.FC = () => {
         </div>
 
         {/* Donut + Legend */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-5">
           {/* Donut */}
           <div className="relative w-36 h-36">
             <Doughnut data={data} options={options} />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-lg font-bold text-gray-900">$90.2K</div>
-              <div className="text-xs text-gray-500">Total Amount</div>
+              <div className="text-lg font-semibold text-gray-900 font-supply">$90.2K</div>
+              <div className="text-xs text-gray-500 font-poppins">Total Amount</div>
             </div>
           </div>
 
@@ -89,7 +89,7 @@ const MetricsCards: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-pink-500 rounded-full"></div>
-                <span className="text-black text-sm">Pro</span>
+                <span className="text-black text-sm font-poppins">Pro</span>
               </div>
               <span className="text-black text-xs">..........</span>
 
@@ -99,7 +99,7 @@ const MetricsCards: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-black text-sm">Team</span>
+                <span className="text-black text-sm font-poppins">Team</span>
               </div>
               <span className="text-black text-xs">.........</span>
 
@@ -109,7 +109,7 @@ const MetricsCards: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                <span className="text-black text-sm">Individual</span>
+                <span className="text-black text-sm font-poppins">Individual</span>
               </div>
               <span className="text-black text-xs">...</span>
 

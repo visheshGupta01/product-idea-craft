@@ -55,7 +55,7 @@ const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
 
 const renderLegend = () => {
   return (
-    <div className="flex justify-center items-center gap-6 mt-2 text-xs">
+    <div className="flex justify-center items-center gap-6 mt-2 text-xs font-poppins">
       {/* Paid Users */}
       <div className="flex items-center gap-1 mr-8">
         <div className="w-5 h-5 bg-[#ff4db8] border border-black"></div>
@@ -77,10 +77,10 @@ const UserGrowthChart: React.FC = () => {
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 font-supply">
               Active User Growth
             </h2>
-            <div className="bg-green-50 text-sm px-3 py-1 border text-black border-black rounded-full flex items-center gap-1">
+            <div className="bg-green-50 text-sm px-3 font-poppins py-1 border text-black border-black rounded-full flex items-center gap-1">
               23% <span className="text-green-600">▲</span>
             </div>
           </div>
@@ -112,10 +112,10 @@ const UserGrowthChart: React.FC = () => {
         </div>
 
         {/* Chart */}
-        <ResponsiveContainer width="100%" height={220}>
+        <ResponsiveContainer width="100%" height={200}>
           <AreaChart
             data={data}
-            margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
+            margin={{ top: 10, left: -20, bottom: 5 }}
           >
             <defs>
               <linearGradient id="colorPaid" x1="0" y1="0" x2="0" y2="1">
