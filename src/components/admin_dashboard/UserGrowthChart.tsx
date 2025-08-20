@@ -95,34 +95,35 @@ const UserGrowthChart: React.FC = () => {
         </div>
       </div>
 
-      {/* Week Selector */}
-      <div className="flex gap-3 mb-6">
-        {[
-          { month: "Mar", week: "Week 1" },
-          { month: "Mar", week: "Week 2" },
-          { month: "Mar", week: "Week 3" },
-          { month: "Mar", week: "Week 4" },
-        ].map((item, index) => (
-          <div
-            key={index}
-            className={`w-16 h-14 text-xs flex flex-col items-center justify-center rounded-xl ${
-              index === 1 ? "bg-pink-400 text-white" : "bg-gray-100 text-gray-700"
-            }`}
-          >
-            <div className="font-medium text-sm">
-              {item.month}
-            </div>
-            <div className="font-medium text-xs mt-1">
-              {item.week}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Main Content - Chart and Metrics */}
+      {/* Layout with Week Selector and Metrics Cards aligned */}
       <div className="flex gap-6">
-        {/* Chart Section */}
+        {/* Left side - Week Selector and Chart */}
         <div className="flex-1">
+          {/* Week Selector */}
+          <div className="flex gap-3 mb-6">
+            {[
+              { month: "Mar", week: "Week 1" },
+              { month: "Mar", week: "Week 2" },
+              { month: "Mar", week: "Week 3" },
+              { month: "Mar", week: "Week 4" },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className={`w-16 h-14 text-xs flex flex-col items-center justify-center rounded-xl ${
+                  index === 1 ? "bg-pink-400 text-white" : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                <div className="font-medium text-sm">
+                  {item.month}
+                </div>
+                <div className="font-medium text-xs mt-1">
+                  {item.week}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Chart */}
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart
               data={data}
@@ -169,8 +170,8 @@ const UserGrowthChart: React.FC = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Metrics Cards Section - Enlarged */}
-        <div className="w-96 space-y-4">
+        {/* Right side - Metrics Cards aligned with chart area */}
+        <div className="w-96 space-y-4 mt-20"> {/* mt-20 to align with chart after week selector */}
           {/* Top Row - Conversion Rate and Average Time */}
           <div className="grid grid-cols-2 gap-4">
             {/* Conversion Rate Card */}
