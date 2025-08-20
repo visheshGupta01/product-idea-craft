@@ -63,13 +63,13 @@ const renderLegend = () => {
     <div className="flex justify-center items-center gap-6 mt-2 text-xs">
       {/* Paid Users */}
       <div className="flex items-center gap-1 mr-8">
-        <div className="w-3 h-3 bg-[#ff80d3] rounded-sm"></div>
-        <span>Paid Users</span>
+        <div className="w-5 h-5 bg-[#ff80d3] border-black border"></div>
+        <span className="text-black font-sm font-medium">Paid Users</span>
       </div>
       {/* Active Users */}
       <div className="flex items-center gap-1">
-        <div className="w-3 h-3 border-2 border-[#009dff]"></div>
-        <span>Active Users</span>
+        <div className="w-5 h-5 border-2 border-[#009dff]"></div>
+        <span className="text-black font-medium">Active Users</span>
       </div>
     </div>
   );
@@ -85,10 +85,10 @@ const UserGrowthChart: React.FC = () => {
           {/* Header - contained within left card */}
           <div className="flex justify-between items-start mb-6">
             <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold font-supply text-gray-900">
                 Active User Growth
               </h2>
-              <div className="bg-green-50 text-green-700 font-semibold text-sm px-3 py-1 border border-green-200 rounded-full flex items-center gap-1">
+              <div className="bg-green-50  text-sm px-3 py-1 border text-black border-black  rounded-full flex items-center gap-1">
                 23% <span className="text-green-600">▲</span>
               </div>
             </div>
@@ -99,7 +99,7 @@ const UserGrowthChart: React.FC = () => {
             </div>
           </div>
           {/* Week Selector */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex gap-1 mb-6">
             {[
               { month: "Mar", week: "Week 1" },
               { month: "Mar", week: "Week 2" },
@@ -108,8 +108,8 @@ const UserGrowthChart: React.FC = () => {
             ].map((item, index) => (
               <div
                 key={index}
-                className={`w-16 h-14 text-xs flex flex-col items-center justify-center rounded-xl ${
-                  index === 1 ? "bg-pink-400 text-white" : "bg-gray-100 text-gray-700"
+                className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                  index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
                 }`}
               >
                 <div className="font-medium text-sm">

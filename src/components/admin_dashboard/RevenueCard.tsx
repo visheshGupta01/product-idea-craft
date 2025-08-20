@@ -35,23 +35,21 @@ const RevenueCard: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm">
+    <div className="pt-8 pb-3  rounded-2xl">
       {/* Header */}
       <div className="flex justify-between items-start mb-2">
         <div>
-          <h2 className="text-lg font-medium text-gray-600 mb-1">
+          <h2 className="text-4xl font-semibold font-poppins text-[#232323] mb-1">
             Your total revenue
           </h2>
-          <div className="text-5xl font-bold text-gray-900">
-            $90,239.00
-          </div>
+          <div className="text-5xl font-supply text-gray-900">$90,239.00</div>
         </div>
-        
+
         {/* Date Range Picker Button */}
         <div className="relative">
           <button
             onClick={() => setShowPicker((v) => !v)}
-            className="px-3 py-2 rounded-md border border-gray-300 text-sm shadow bg-gray-50 flex items-center gap-2"
+            className="px-3 py-2 rounded-md border border-black font-poppins uppercase text-black shadow-xl text-sm bg-gray-50 flex items-center gap-2"
           >
             {`${format(range[0].startDate, "MMM dd")} – ${format(
               range[0].endDate,
@@ -59,7 +57,7 @@ const RevenueCard: React.FC = () => {
             )}`}
             <span>▾</span>
           </button>
-          
+
           {/* Date Range Picker */}
           {showPicker && (
             <div
@@ -86,7 +84,7 @@ const RevenueCard: React.FC = () => {
               <div className="flex justify-end">
                 <button
                   onClick={() => setShowPicker(false)}
-                  className="mt-2 bg-black text-white px-4 py-2 rounded-md"
+                  className="mt-2 text-black font-black px-4 py-2 rounded-md"
                 >
                   Apply
                 </button>
