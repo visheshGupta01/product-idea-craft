@@ -81,22 +81,22 @@ const UserGrowthChart: React.FC = () => {
       {/* Layout with Week Selector and Metrics Cards aligned */}
       <div className="flex gap-6">
         {/* Left side - Header, Week Selector and Chart */}
-        <div className="flex-1 max-w-2xl">
+        <div className="flex-1">
           {/* Header - contained within left card */}
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-lg font-semibold font-supply text-gray-900">
-              Active User Growth
-            </h2>
-            <div className="bg-green-50  text-sm px-3 py-1 border text-black border-black  rounded-full flex items-center gap-1">
-              23% <span className="text-green-600">▲</span>
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold font-supply text-gray-900">
+                Active User Growth
+              </h2>
+              <div className="bg-green-50  text-sm px-3 py-1 border text-black border-black  rounded-full flex items-center gap-1">
+                23% <span className="text-green-600">▲</span>
+              </div>
             </div>
-          </div>
-
-          {/* Vertical Week/Month/Year filters */}
-          <div className="flex flex-col gap-1 mb-4 w-fit">
-            <span className="text-pink-500 font-semibold text-sm">WEEK</span>
-            <span className="text-gray-500 text-sm">MONTH</span>
-            <span className="text-gray-500 text-sm">YEAR</span>
+            <div className="flex gap-4 text-sm font-medium">
+              <span className="text-pink-500 font-semibold">WEEK</span>
+              <span className="text-gray-500">MONTH</span>
+              <span className="text-gray-500">YEAR</span>
+            </div>
           </div>
           {/* Week Selector */}
           <div className="flex gap-1 mb-6">
@@ -112,12 +112,8 @@ const UserGrowthChart: React.FC = () => {
                   index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
                 }`}
               >
-                <div className="font-medium text-sm">
-                  {item.month}
-                </div>
-                <div className="font-medium text-xs mt-1">
-                  {item.week}
-                </div>
+                <div className="font-medium text-sm">{item.month}</div>
+                <div className="font-medium text-xs mt-1">{item.week}</div>
               </div>
             ))}
           </div>

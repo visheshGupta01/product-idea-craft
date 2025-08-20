@@ -84,34 +84,34 @@ const MetricsCards: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-pink-500 rounded-full"></div>
-                <span className="text-gray-700">Pro</span>
+                <span className="text-gray-700 text-sm">Pro</span>
                 <span className="text-gray-300 text-xs">............</span>
               </div>
-              <span className="font-semibold text-gray-900">$17M</span>
+              <span className="font-semibold text-gray-900 text-sm">$17M</span>
             </div>
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-gray-700">Team</span>
+                <span className="text-gray-700 text-sm">Team</span>
                 <span className="text-gray-300 text-xs">............</span>
               </div>
-              <span className="font-semibold text-gray-900">$4M</span>
+              <span className="font-semibold text-gray-900 text-sm">$4M</span>
             </div>
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                <span className="text-gray-700">Individual</span>
+                <span className="text-gray-700 text-sm">Individual</span>
                 <span className="text-gray-300 text-xs">......</span>
               </div>
-              <span className="font-semibold text-gray-900">$3.7M</span>
+              <span className="font-semibold text-gray-900 text-sm">$3.7M</span>
             </div>
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                <span className="text-gray-700">Free</span>
+                <span className="text-gray-700 text-sm">Free</span>
                 <span className="text-gray-300 text-xs">.............</span>
               </div>
-              <span className="font-semibold text-gray-500">$0M</span>
+              <span className="font-semibold text-gray-500 text-sm">$0M</span>
             </div>
           </div>
         </div>
