@@ -12,10 +12,12 @@ import UserGrowthChart from '@/components/admin_dashboard/UserGrowthChart';
 import MetricsCards from '@/components/admin_dashboard/MetrixCard';
 import MapAnalytics from '@/components/admin_dashboard/MapAnalytics';
 import DropRateCard from '@/components/admin_dashboard/DropRateCard';
+import UserManagement from '@/components/admin_dashboard/UserManagement';
 
 
 const AdminDashboard: React.FC = () => {
   const { logout, userRole } = useUser();
+  const [activeView, setActiveView] = useState('dashboard');
 
   if (userRole !== 'admin') {
     return (
@@ -40,41 +42,53 @@ const AdminDashboard: React.FC = () => {
     );
   }
 
+  const renderContent = () => {
+    switch (activeView) {
+      case 'users':
+        return <UserManagement />;
+      case 'dashboard':
+      default:
+        return (
+          <div className="flex-1 ml-16 p-6 space-y-6">
+            {/* Revenue Section */}
+            <RevenueCard />
+
+            {/* Main Dashboard Layout - User Growth Chart and Metrics */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* User Growth Chart (takes 2/3) */}
+              <div className="lg:col-span-2">
+                <UserGrowthChart />
+              </div>
+
+              {/* Metrics Cards (takes 1/3) */}
+              <div className="lg:col-span-1">
+                <MetricsCards />
+              </div>
+            </div>
+
+            {/* More Analytics Section */}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                More Analytics
+              </h2>
+              <div className="flex gap-6">
+                <div className="w-80">
+                  <MapAnalytics />
+                </div>
+                <div className="w-80">
+                  <DropRateCard />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="flex bg-gradient-to-b from-[#D5E1E7] to-[#FFEEF9] min-h-screen">
-      <AdminSidebar />
-      <div className="flex-1 ml-16 p-6 space-y-6">
-        {/* Revenue Section */}
-        <RevenueCard />
-
-        {/* Main Dashboard Layout - User Growth Chart and Metrics */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* User Growth Chart (takes 2/3) */}
-          <div className="lg:col-span-2">
-            <UserGrowthChart />
-          </div>
-
-          {/* Metrics Cards (takes 1/3) */}
-          <div className="lg:col-span-1">
-            <MetricsCards />
-          </div>
-        </div>
-
-        {/* More Analytics Section */}
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            More Analytics
-          </h2>
-          <div className="flex gap-6">
-            <div className="w-80">
-              <MapAnalytics />
-            </div>
-            <div className="w-80">
-              <DropRateCard />
-            </div>
-          </div>
-        </div>
-      </div>
+      <AdminSidebar activeView={activeView} onViewChange={setActiveView} />
+      {renderContent()}
     </div>
   );
 };
