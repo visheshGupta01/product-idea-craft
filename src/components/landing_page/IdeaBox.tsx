@@ -1,12 +1,13 @@
 
 import React, { useState } from "react";
-import { Mic, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { UI_CONFIG } from "@/utils/constants";
 import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
+import { VoiceRecorder } from "@/components/ui/voice-recorder";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
@@ -14,6 +15,10 @@ const IdeaBox: React.FC = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { sendIdeaWithAuth, setUserIdea, isProcessingIdea, isAuthenticated } = useUser();
   const navigate = useNavigate();
+
+  const handleVoiceTranscript = (transcript: string) => {
+    setIdea(prev => prev ? prev + " " + transcript : transcript);
+  };
 
   const handleSubmit = async () => {
     if (!idea.trim() || isProcessingIdea) return;
@@ -100,12 +105,10 @@ const IdeaBox: React.FC = () => {
             />
             {/* Floating buttons in top right */}
             <div className="absolute top-3 right-3 flex gap-2">
-              <button
-                className="p-2 w-[50px] h-[50px] flex items-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition justify-center disabled:opacity-50"
+              <VoiceRecorder 
+                onTranscript={handleVoiceTranscript}
                 disabled={isProcessingIdea}
-              >
-                <Mic className="w-[20px] h-[20px] text-gray-700" />
-              </button>
+              />
               <button
                 className="p-2 w-[50px] h-[50px] flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
                 disabled={isProcessingIdea}
