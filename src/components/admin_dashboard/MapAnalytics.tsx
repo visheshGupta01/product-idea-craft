@@ -57,6 +57,14 @@ const MapAnalytics: React.FC = () => {
           <circle cx="520" cy="110" r="4" fill="#3b82f6" opacity="0.6" />
         </svg>
       </div>
+
+      {/* Legend */}
+      <div className="absolute bottom-6 right-6 border border-gray-300 rounded-lg p-3 text-sm font-medium text-gray-700 bg-white shadow-sm">
+        <div>50% Washington</div>
+        <div>30% Georgia</div>
+        <div>12% Iowa</div>
+        <div>8% Kansas</div>
+      </div>
     </div>
   );
 };
