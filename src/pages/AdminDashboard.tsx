@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   AlertTriangle
 } from 'lucide-react';
+import { fetchDashboardData, DashboardData } from '@/services/adminService';
+import { toast } from 'sonner';
 import AdminSidebar from '@/components/admin_dashboard/AdminSidebar';
 import RevenueCard from '@/components/admin_dashboard/RevenueCard';
 import UserGrowthChart from '@/components/admin_dashboard/UserGrowthChart';
@@ -17,6 +19,26 @@ import UserManagement from '@/components/admin_dashboard/UserManagement';
 const AdminDashboard: React.FC = () => {
   const { logout, userRole } = useUser();
   const [activeView, setActiveView] = useState('dashboard');
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        const data = await fetchDashboardData();
+        setDashboardData(data);
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (userRole === 'admin') {
+      loadDashboardData();
+    }
+  }, [userRole]);
 
   if (userRole !== 'admin') {
     return (
@@ -49,32 +71,51 @@ const AdminDashboard: React.FC = () => {
       default:
         return (
           <div className="flex-1 ml-16 p-6 space-y-6">
-            {/* Revenue Section */}
-            <RevenueCard />
-
-            {/* Main Dashboard Layout - User Growth Chart and Metrics */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* User Growth Chart (takes 2/3) */}
-              <div className="lg:col-span-2">
-                <UserGrowthChart />
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
               </div>
+            ) : dashboardData ? (
+              <>
+                {/* Revenue Section */}
+                <RevenueCard data={dashboardData.revenueData} />
 
-              {/* Metrics Cards (takes 1/3) */}
-              <div className="lg:col-span-1">
-                <MetricsCards />
-              </div>
-            </div>
+                {/* Main Dashboard Layout - User Growth Chart and Metrics */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* User Growth Chart (takes 2/3) */}
+                  <div className="lg:col-span-2">
+                    <UserGrowthChart data={dashboardData.yearlyStats} />
+                  </div>
 
-            {/* More Analytics Section */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                More Analytics
-              </h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <MapAnalytics />
-                <DropRateCard />
+                  {/* Metrics Cards (takes 1/3) */}
+                  <div className="lg:col-span-1">
+                    <MetricsCards 
+                      conversionRate={dashboardData.conversionRate}
+                      userGrowthRate={dashboardData.userGrowthRate}
+                      revenueData={dashboardData.revenueData}
+                    />
+                  </div>
+                </div>
+
+                {/* More Analytics Section */}
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    More Analytics
+                  </h2>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <MapAnalytics 
+                      countryPercentages={dashboardData.countryPercentages}
+                      countryGeoData={dashboardData.countryGeoData}
+                    />
+                    <DropRateCard droppingRate={dashboardData.droppingRate} />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-red-600">
+                Failed to load dashboard data
               </div>
-            </div>
+            )}
           </div>
         );
     }

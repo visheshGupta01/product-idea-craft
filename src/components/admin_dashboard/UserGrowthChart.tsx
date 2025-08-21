@@ -1,12 +1,11 @@
-// src/components/UserGrowthChart.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
   AreaChart,
   Area,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
   Legend,
   TooltipProps,
 } from "recharts";
@@ -14,6 +13,30 @@ import {
   ValueType,
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
+
+interface UserGrowthChartProps {
+  data?: Array<{
+    year: number;
+    months: Array<{
+      month: string;
+      totalVerified: number;
+      totalVerifiedPro: number;
+      days: Array<{
+        date: string;
+        totalVerified: number;
+        totalVerifiedPro: number;
+      }>;
+      weeks: Array<{
+        weekNumber: number;
+        days: Array<{
+          date: string;
+          totalVerified: number;
+          totalVerifiedPro: number;
+        }>;
+      }>;
+    }>;
+  }>;
+}
 
 interface DataPoint {
   date: string;
@@ -70,7 +93,44 @@ const renderLegend = () => {
   );
 };
 
-const UserGrowthChart: React.FC = () => {
+const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
+  const [selectedYear, setSelectedYear] = useState<number>(2021);
+  const [selectedMonth, setSelectedMonth] = useState<string>('Jan');
+
+  // Transform API data to chart format
+  const getChartData = () => {
+    if (!apiData || apiData.length === 0) {
+      // Fallback data
+      return [
+        { date: "Jan 1", paid: 20, active: 45 },
+        { date: "Jan 8", paid: 35, active: 60 },
+        { date: "Jan 15", paid: 45, active: 70 },
+        { date: "Jan 22", paid: 55, active: 85 },
+        { date: "Jan 29", paid: 70, active: 100 },
+        { date: "Feb 5", paid: 65, active: 95 },
+        { date: "Feb 12", paid: 80, active: 110 },
+        { date: "Feb 19", paid: 90, active: 125 },
+        { date: "Feb 26", paid: 85, active: 120 },
+        { date: "Mar 5", paid: 100, active: 140 },
+        { date: "Mar 12", paid: 110, active: 150 },
+        { date: "Mar 19", paid: 120, active: 165 },
+      ];
+    }
+
+    const yearData = apiData.find(y => y.year === selectedYear);
+    if (!yearData) return [];
+
+    const monthData = yearData.months.find(m => m.month === selectedMonth);
+    if (!monthData) return [];
+
+    return monthData.days.map(day => ({
+      date: new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      paid: day.totalVerifiedPro,
+      active: day.totalVerified
+    }));
+  };
+
+  const chartData = getChartData();
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
       <div className="flex-1">
@@ -114,7 +174,7 @@ const UserGrowthChart: React.FC = () => {
         {/* Chart */}
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart
-            data={data}
+            data={chartData}
             margin={{ top: 10, left: -20, bottom: 5 }}
           >
             <defs>

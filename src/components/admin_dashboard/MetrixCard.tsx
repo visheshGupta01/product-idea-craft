@@ -1,4 +1,5 @@
 import React from "react";
+import { TrendingUp, Clock, BarChart3 } from "lucide-react";
 import { Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,13 +12,37 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const MetricsCards: React.FC = () => {
+interface MetricsCardsProps {
+  conversionRate?: number;
+  userGrowthRate?: number;
+  revenueData?: {
+    totalRevenue: number;
+    proRevenue: number;
+    teamRevenue: number;
+  };
+}
+
+const MetricsCards: React.FC<MetricsCardsProps> = ({ 
+  conversionRate = 25.0,
+  userGrowthRate = 12.5,
+  revenueData 
+}) => {
+  const totalRevenue = revenueData?.totalRevenue || 90200;
+  const proRevenue = revenueData?.proRevenue || 45000;
+  const teamRevenue = revenueData?.teamRevenue || 25000;
+  const individualRevenue = totalRevenue - proRevenue - teamRevenue;
+  const freeRevenue = 0;
   const data: ChartData<"doughnut"> = {
     labels: ["Pro", "Team", "Individual", "Free"],
     datasets: [
       {
         label: "Revenue",
-        data: [45, 25, 20, 10],
+        data: [
+          (proRevenue / totalRevenue) * 100,
+          (teamRevenue / totalRevenue) * 100,
+          (individualRevenue / totalRevenue) * 100,
+          (freeRevenue / totalRevenue) * 100
+        ],
         backgroundColor: [
           "#EC4899", // Pink - Pro
           "#3B82F6", // Blue - Team
@@ -46,7 +71,7 @@ const MetricsCards: React.FC = () => {
         {/* Conversion Rate */}
         <div className="bg-white p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center">
           <div className="flex items-center gap-1">
-            <p className="text-4xl font-bold text-gray-900 font-supply">59%</p>
+            <p className="text-4xl font-bold text-gray-900 font-supply">{conversionRate}%</p>
             <span className="text-green-500 text-3xl font-supply">^</span>
           </div>
           <p className="text-gray-500 text-sm mt-2">Conversion Rate</p>
@@ -79,7 +104,7 @@ const MetricsCards: React.FC = () => {
           <div className="relative w-36 h-36">
             <Doughnut data={data} options={options} />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-lg font-semibold text-gray-900 font-supply">$90.2K</div>
+              <div className="text-lg font-semibold text-gray-900 font-supply">${(totalRevenue / 1000).toFixed(1)}K</div>
               <div className="text-xs text-gray-500 font-poppins">Total Amount</div>
             </div>
           </div>
@@ -93,7 +118,7 @@ const MetricsCards: React.FC = () => {
               </div>
               <span className="text-black text-xs">..........</span>
 
-              <span className="font-semibold text-black text-sm">$17M</span>
+              <span className="font-semibold text-black text-sm">${(proRevenue / 1000000).toFixed(1)}M</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -103,7 +128,7 @@ const MetricsCards: React.FC = () => {
               </div>
               <span className="text-black text-xs">.........</span>
 
-              <span className="font-semibold text-black text-sm">$4M</span>
+              <span className="font-semibold text-black text-sm">${(teamRevenue / 1000000).toFixed(1)}M</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -113,7 +138,7 @@ const MetricsCards: React.FC = () => {
               </div>
               <span className="text-black text-xs">...</span>
 
-              <span className="font-semibold text-black text-sm">$3.7M</span>
+              <span className="font-semibold text-black text-sm">${(individualRevenue / 1000000).toFixed(1)}M</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -123,7 +148,7 @@ const MetricsCards: React.FC = () => {
               </div>
               <span className="text-black text-xs">.........</span>
 
-              <span className="font-semibold text-black text-sm">$0M</span>
+              <span className="font-semibold text-black text-sm">${(freeRevenue / 1000000).toFixed(1)}M</span>
             </div>
           </div>
         </div>

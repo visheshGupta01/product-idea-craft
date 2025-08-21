@@ -2,7 +2,11 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
 
-const DropRateCard: React.FC = () => {
+interface DropRateCardProps {
+  droppingRate?: number;
+}
+
+const DropRateCard: React.FC<DropRateCardProps> = ({ droppingRate = 8.0 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 w-80">
       {/* Header */}
@@ -11,7 +15,7 @@ const DropRateCard: React.FC = () => {
           Dropping Rate
         </h2>
         <div className="flex items-center gap-1 px-3 py-1 rounded-full border border-black text-red-600">
-          <span className="font-poppins text-black">8%</span>
+          <span className="font-poppins text-black">{droppingRate}%</span>
           <ChevronDown size={16} className="text-red-500" />
         </div>
       </div>

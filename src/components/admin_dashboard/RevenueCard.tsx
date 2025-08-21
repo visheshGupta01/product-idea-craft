@@ -1,4 +1,3 @@
-// src/components/RevenueCard.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { DateRange, RangeKeyDict } from "react-date-range";
 import { format } from "date-fns";
@@ -12,7 +11,16 @@ interface DateRangeState {
   key: string;
 }
 
-const RevenueCard: React.FC = () => {
+interface RevenueCardProps {
+  data?: {
+    totalRevenue: number;
+    proRevenue: number;
+    teamRevenue: number;
+  };
+}
+
+const RevenueCard: React.FC<RevenueCardProps> = ({ data }) => {
+  const totalRevenue = data?.totalRevenue || 90239;
   const [showPicker, setShowPicker] = useState(false);
   const [range, setRange] = useState<DateRangeState[]>([
     {
@@ -42,7 +50,7 @@ const RevenueCard: React.FC = () => {
           <h2 className="text-4xl font-semibold font-poppins text-[#232323] mb-1">
             Your total revenue
           </h2>
-          <div className="text-5xl font-supply text-gray-900">$90,239.00</div>
+          <div className="text-5xl font-supply text-gray-900">${totalRevenue.toLocaleString()}.00</div>
         </div>
 
         {/* Date Range Picker Button */}

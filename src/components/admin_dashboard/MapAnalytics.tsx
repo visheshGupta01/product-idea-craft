@@ -1,6 +1,24 @@
 import React from "react";
 
-const MapAnalytics: React.FC = () => {
+interface MapAnalyticsProps {
+  countryPercentages?: Array<{
+    country: string;
+    userCount: number;
+    percentage: number;
+  }>;
+  countryGeoData?: Array<{
+    country: string;
+    latitude: number;
+    longitude: number;
+  }>;
+}
+
+const MapAnalytics: React.FC<MapAnalyticsProps> = ({ 
+  countryPercentages = [
+    { country: "India", userCount: 200, percentage: 50 },
+    { country: "USA", userCount: 200, percentage: 50 }
+  ]
+}) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 relative flex-1">
       {/* Header */}
@@ -74,10 +92,9 @@ const MapAnalytics: React.FC = () => {
 
         {/* Legend */}
         <div className="ml-6 border font-poppins border-gray-300 rounded-lg p-4 text-sm text-gray-800 bg-white shadow-sm">
-          <div>50% Washington</div>
-          <div>30% Georgia</div>
-          <div>12% Iowa</div>
-          <div>8% Kansas</div>
+          {countryPercentages.slice(0, 4).map((country, index) => (
+            <div key={country.country}>{country.percentage}% {country.country}</div>
+          ))}
         </div>
       </div>
     </div>
