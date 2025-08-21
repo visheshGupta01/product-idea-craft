@@ -78,34 +78,19 @@ export const SignupModal: React.FC<SignupModalProps> = ({
   return (
     <>
       <Dialog open={isOpen && !showVerificationModal} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-[480px] p-8 text-center bg-white border-0 rounded-3xl shadow-2xl">
+        <DialogContent className="sm:max-w-[400px] p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
           {/* Logo */}
-          <div className="flex justify-center mb-6">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 8L36 24L12 40V8Z" fill="url(#gradient1)" />
-              <circle cx="40" cy="8" r="3" fill="#4285F4" />
-              <circle cx="42" cy="12" r="2" fill="#EA4335" />
-              <circle cx="44" cy="16" r="1.5" fill="#FBBC05" />
-              <circle cx="38" cy="6" r="2" fill="#34A853" />
-              <circle cx="36" cy="10" r="1" fill="#4285F4" />
-              <defs>
-                <linearGradient id="gradient1" x1="12" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#EA4335" />
-                  <stop offset="0.5" stopColor="#E91E63" />
-                  <stop offset="1" stopColor="#4285F4" />
-                </linearGradient>
-              </defs>
-            </svg>
+          <div className="flex justify-center mb-4">
+            <img src={imagineboLogo} alt="Imagine.bo" className="h-10 w-10" />
           </div>
 
-          {/* Title and Subtitle */}
-          <h1 className="text-3xl font-bold text-black mb-2">Welcome to Imagine.bo</h1>
-          <p className="text-gray-600 mb-8">Sign up to continue using tools for analysis, development, and growth.</p>
+          {/* Title */}
+          <h1 className="text-2xl font-bold text-white mb-4">Create your account</h1>
 
         {/* Google Sign In Button */}
         <Button
           variant="outline"
-          className="w-full h-12 mb-6 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 rounded-full"
+          className="w-full h-10 mb-3 bg-[#1A1A1A] border-[#2A2A2A] text-white hover:bg-[#2A2A2A]"
           disabled={isLoading}
         >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -118,10 +103,10 @@ export const SignupModal: React.FC<SignupModalProps> = ({
           </Button>
 
         {/* Divider */}
-        <div className="flex items-center my-6">
-          <div className="flex-1 border-t border-gray-300"></div>
-          <span className="px-4 text-gray-500 text-sm">or</span>
-          <div className="flex-1 border-t border-gray-300"></div>
+        <div className="flex items-center my-4">
+          <div className="flex-1 border-t border-[#2A2A2A]"></div>
+          <span className="px-4 text-gray-400 text-sm">or</span>
+          <div className="flex-1 border-t border-[#2A2A2A]"></div>
         </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -129,81 +114,81 @@ export const SignupModal: React.FC<SignupModalProps> = ({
             <Input
               id="name"
               type="text"
-              placeholder="Enter User Name"
+              placeholder="Enter your full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-white border-gray-300 text-black placeholder:text-gray-500 rounded-full px-4"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {/* Email Input */}
             <Input
               id="email"
               type="email"
-              placeholder="Enter Email Address"
+              placeholder="Enter email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-white border-gray-300 text-black placeholder:text-gray-500 rounded-full px-4"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {/* Password Input */}
             <Input
               id="password"
               type="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-white border-gray-300 text-black placeholder:text-gray-500 rounded-full px-4"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {/* Confirm Password Input */}
             <Input
               id="confirmPassword"
               type="password"
-              placeholder="Confirm Password"
+              placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={isLoading}
               required
-              className="h-12 bg-white border-gray-300 text-black placeholder:text-gray-500 rounded-full px-4"
+              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
             />
 
             {error && (
-              <div className="text-red-600 text-sm">{error}</div>
+              <div className="text-destructive text-sm">{error}</div>
             )}
 
-            {/* Sign Up Button */}
+            {/* Continue Button */}
             <Button 
               type="submit" 
               disabled={isLoading || !name.trim() || !email.trim() || !password.trim() || password !== confirmPassword}
-              className="w-full h-12 bg-black text-white hover:bg-gray-800 rounded-full mt-6"
+              className="w-full h-10 bg-white text-black hover:bg-gray-200"
             >
-              {isLoading ? <LoadingSpinner size="sm" text="Creating account..." /> : "Sign Up"}
+              {isLoading ? <LoadingSpinner size="sm" text="Creating account..." /> : "Continue"}
             </Button>
           </form>
 
           {/* Terms and Privacy */}
-          <p className="text-xs text-gray-500 mt-6">
+          <p className="text-xs text-gray-400 mt-4">
             By continuing you agree to our{" "}
-            <a href="#" className="text-blue-600 underline hover:text-blue-700">Terms</a>{" "}
+            <a href="#" className="underline hover:text-white">Terms</a>{" "}
             and{" "}
-            <a href="#" className="text-blue-600 underline hover:text-blue-700">Privacy Policy</a>.
+            <a href="#" className="underline hover:text-white">Privacy Policy</a>.
           </p>
 
           {/* Switch to Login */}
-          <p className="text-sm text-gray-600 mt-4">
+          <p className="text-sm text-gray-400 mt-3">
             Already have an account?{" "}
             <button
               onClick={onSwitchToLogin}
               disabled={isLoading}
-              className="text-blue-600 underline hover:text-blue-700"
+              className="underline hover:text-white"
             >
-              Sign In
+              Log In
             </button>
           </p>
         </DialogContent>
