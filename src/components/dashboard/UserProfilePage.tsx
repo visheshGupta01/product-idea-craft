@@ -16,6 +16,7 @@ import {
   Upload,
 } from 'lucide-react';
 import GitHubIntegration from './GitHubIntegration';
+import VercelIntegration from './VercelIntegration';
 
 interface UserProfilePageProps {
   onLogout?: () => void;
@@ -143,9 +144,10 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <Tabs defaultValue="general" className="w-full">
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-6">
                   <TabsTrigger value="general">General</TabsTrigger>
                   <TabsTrigger value="github">GitHub</TabsTrigger>
+                  <TabsTrigger value="vercel">Vercel</TabsTrigger>
                   <TabsTrigger value="security">Security</TabsTrigger>
                   <TabsTrigger value="notifications">Notifications</TabsTrigger>
                   <TabsTrigger value="billing">Billing</TabsTrigger>
@@ -234,6 +236,10 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
 
                 <TabsContent value="github" className="space-y-6">
                   <GitHubIntegration />
+                </TabsContent>
+
+                <TabsContent value="vercel" className="space-y-6">
+                  <VercelIntegration />
                 </TabsContent>
 
                 <TabsContent value="security" className="space-y-6">
