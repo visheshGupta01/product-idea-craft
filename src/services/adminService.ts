@@ -50,3 +50,27 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
   
   return response.json();
 };
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  created_at: string;
+  last_login_at: string;
+  no_of_projects: number;
+}
+
+export interface UsersData {
+  total_verified_users: number;
+  users: User[];
+}
+
+export const fetchUsersData = async (): Promise<UsersData> => {
+  const response = await fetch('http://localhost:8080/admin/users');
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch users data');
+  }
+  
+  return response.json();
+};

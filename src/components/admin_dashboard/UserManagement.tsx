@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Search, Mic, ArrowUpDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, Mic, ArrowUpDown, Download, UserPlus, MoreVertical, Edit3, Trash2, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -11,6 +12,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -26,91 +33,77 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  plan: "Pro" | "Team" | "Free";
-  signUpDate: string;
-  lastLogin: string;
-  projects: number;
-}
-
-const mockUsers: User[] = [
-  {
-    id: "1",
-    name: "Divya Kansal",
-    email: "divyakansal99@gmail.com",
-    plan: "Pro",
-    signUpDate: "21/07/2025",
-    lastLogin: "31/07/2025",
-    projects: 2,
-  },
-  {
-    id: "2",
-    name: "Divya Kansal",
-    email: "divyakansal99@gmail.com",
-    plan: "Pro",
-    signUpDate: "21/07/2025",
-    lastLogin: "31/07/2025",
-    projects: 2,
-  },
-  {
-    id: "3",
-    name: "Divya Kansal",
-    email: "divyakansal99@gmail.com",
-    plan: "Pro",
-    signUpDate: "21/07/2025",
-    lastLogin: "31/07/2025",
-    projects: 2,
-  },
-  {
-    id: "4",
-    name: "Divya Kansal",
-    email: "divyakansal99@gmail.com",
-    plan: "Pro",
-    signUpDate: "21/07/2025",
-    lastLogin: "31/07/2025",
-    projects: 2,
-  },
-  {
-    id: "5",
-    name: "Divya Kansal",
-    email: "divyakansal99@gmail.com",
-    plan: "Pro",
-    signUpDate: "21/07/2025",
-    lastLogin: "31/07/2025",
-    projects: 2,
-  },
-  {
-    id: "6",
-    name: "Divya Kansal",
-    email: "divyakansal99@gmail.com",
-    plan: "Pro",
-    signUpDate: "21/07/2025",
-    lastLogin: "31/07/2025",
-    projects: 2,
-  },
-  {
-    id: "7",
-    name: "Divya Kansal",
-    email: "divyakansal99@gmail.com",
-    plan: "Pro",
-    signUpDate: "21/07/2025",
-    lastLogin: "31/07/2025",
-    projects: 2,
-  },
-];
+import { fetchUsersData, UsersData, User } from '@/services/adminService';
+import { toast } from 'sonner';
 
 export default function UserManagement() {
-  const [activeFilter, setActiveFilter] = useState<string>("Pro");
+  const [activeFilter, setActiveFilter] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  
-  const totalUsers = 30239;
-  const totalPages = Math.ceil(totalUsers / pageSize);
+  const [usersData, setUsersData] = useState<UsersData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    const loadUsersData = async () => {
+      try {
+        const data = await fetchUsersData();
+        setUsersData(data);
+        setFilteredUsers(data.users);
+      } catch (error) {
+        console.error('Failed to load users data:', error);
+        toast.error('Failed to load users data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUsersData();
+  }, []);
+
+  useEffect(() => {
+    if (usersData) {
+      let filtered = usersData.users;
+      
+      // Search filter
+      if (searchQuery) {
+        filtered = filtered.filter(user =>
+          user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+      
+      setFilteredUsers(filtered);
+    }
+  }, [searchQuery, usersData, activeFilter]);
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
+  const totalUsers = usersData?.total_verified_users || 0;
+  const totalPages = Math.ceil(filteredUsers.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + pageSize);
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 ml-10 p-8 min-h-screen">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 ml-10 p-8 min-h-screen">
@@ -120,8 +113,18 @@ export default function UserManagement() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-semibold font-poppins text-gray-900">
-                Users <span className="font-normal font-supply">30,239</span>
+                Users <span className="font-normal font-supply">{totalUsers.toLocaleString()}</span>
               </h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export
+              </Button>
+              <Button className="gap-2">
+                <UserPlus className="h-4 w-4" />
+                Add User
+              </Button>
             </div>
           </div>
 
@@ -131,32 +134,12 @@ export default function UserManagement() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#999999] h-4 w-4" />
                 <Input
-                  placeholder="Search"
+                  placeholder="Search users..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 pr-10 border-0 rounded-3xl w-72 bg-[#78788029] placeholder:text-[#999999] text-[#232323] focus:ring-0 focus:border-gray-300"
                 />
                 <Mic className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#999999] h-4 w-4" />
-              </div>
-
-              <div className="flex gap-2">
-                {["Pro", "Team", "Free"].map((filter) => (
-                  <Badge
-                    key={filter}
-                    variant={activeFilter === filter ? "default" : "secondary"}
-                    className={`cursor-pointer px-4 py-2 font-medium ${
-                      activeFilter === filter
-                        ? "bg-white text-[#313131] border border-black font-poppins"
-                        : "bg-gray-200 text-[#999999] hover:bg-gray-300"
-                    }`}
-                    onClick={() => setActiveFilter(filter)}
-                  >
-                    {filter}
-                    {activeFilter === filter && (
-                      <span className="ml-2 cursor-pointer">×</span>
-                    )}
-                  </Badge>
-                ))}
               </div>
             </div>
 
@@ -198,12 +181,9 @@ export default function UserManagement() {
                     Email ID
                   </div>
                 </TableHead>
-                <TableHead className="text-left text-[16px] font-medium text-gray-900">
-                  Plan
-                </TableHead>
                 <TableHead className="text-left font-medium text-gray-900">
                   <div className="flex text-[16px] items-center gap-2">
-                    Sign Up Date
+                    Joined Date
                     <ArrowUpDown className="h-4 w-4 text-gray-900" />
                   </div>
                 </TableHead>
@@ -219,54 +199,81 @@ export default function UserManagement() {
                     <ArrowUpDown className="h-4 w-4 text-gray-900" />
                   </div>
                 </TableHead>
-                <TableHead className="text-left text-[16px] font-medium text-gray-900">
-                  Cancel Subscription
+                <TableHead className="text-right text-[16px] font-medium text-gray-900">
+                  Actions
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockUsers.map((user) => (
-                <TableRow
-                  key={user.id}
-                  className="border-b border-gray-100 hover:bg-gray-50"
-                >
-                  <TableCell>
-                    <div>
-                      <div className="font-medium text-[18px] text-gray-900">
-                        {user.name}
-                      </div>
-                      <div className="text-sm text-gray-900 ">{user.email}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-gray-900">{user.plan}</TableCell>
-                  <TableCell className="text-gray-900">
-                    {user.signUpDate}
-                  </TableCell>
-                  <TableCell className="text-gray-900">
-                    {user.lastLogin}
-                  </TableCell>
-                  <TableCell className="text-gray-900">
-                    {user.projects}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="link"
-                      className="text-blue-600 hover:text-blue-800 p-0 h-auto"
-                    >
-                      Cancel
-                    </Button>
+              {paginatedUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                    {searchQuery ? 'No users found matching your search.' : 'No users found.'}
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                paginatedUsers.map((user) => (
+                  <TableRow
+                    key={user.id}
+                    className="border-b border-gray-100 hover:bg-gray-50"
+                  >
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium text-[18px] text-gray-900">
+                            {user.name}
+                          </div>
+                          <div className="text-sm text-gray-900">{user.email}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-gray-900">
+                      {formatDate(user.created_at)}
+                    </TableCell>
+                    <TableCell className="text-gray-900">
+                      {formatDate(user.last_login_at)}
+                    </TableCell>
+                    <TableCell className="text-gray-900">
+                      <Badge variant="outline">
+                        {user.no_of_projects} projects
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem className="gap-2">
+                            <Eye className="h-4 w-4" />
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2">
+                            <Edit3 className="h-4 w-4" />
+                            Edit User
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2 text-red-600">
+                            <Trash2 className="h-4 w-4" />
+                            Delete User
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
 
         {/* Pagination */}
-
         <div className="flex items-center justify-between p-6 border-t border-gray-200">
           <div className="flex items-center gap-4">
-            {/* left side: showing + select */}
             <span className="text-sm text-black font-poppins">Showing</span>
             <Select
               value={pageSize.toString()}
@@ -283,14 +290,13 @@ export default function UserManagement() {
               </SelectContent>
             </Select>
             <span className="text-xs whitespace-nowrap font-poppins font-medium text-black">
-              Out of total {totalUsers.toLocaleString()}
+              Out of {filteredUsers.length} filtered ({totalUsers.toLocaleString()} total)
             </span>
           </div>
 
           <div className="ml-auto">
             <Pagination>
               <PaginationContent className="text-black flex gap-2">
-                {/* prev / page select / next */}
                 <PaginationItem>
                   <PaginationPrevious
                     href="#"
@@ -298,7 +304,7 @@ export default function UserManagement() {
                       e.preventDefault();
                       if (currentPage > 1) setCurrentPage(currentPage - 1);
                     }}
-                    className={currentPage === 1 ? "pointer-events-none" : ""}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
 
