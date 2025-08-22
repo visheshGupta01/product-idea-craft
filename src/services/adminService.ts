@@ -42,13 +42,22 @@ export interface DashboardData {
 }
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
-  const response = await fetch('http://localhost:8080/admin/dashboard');
-  
+  const token = localStorage.getItem("auth_token"); // or sessionStorage / context
+  console.log(token)
+  const response = await fetch("http://localhost:8000/admin/dashboard", {
+    headers: {
+      "Authorization": `Bearer ${token}`, // adjust if backend uses custom header
+      "Content-Type": "application/json"
+    },
+    // credentials: "include", // if using cookies
+  });
+console.log(response)
   if (!response.ok) {
-    throw new Error('Failed to fetch dashboard data');
+    throw new Error(`Failed to fetch dashboard data: ${response.status}`);
   }
-  
-  return response.json();
+const data = await response.json();
+  console.log(data)
+  return data
 };
 
 export interface User {
@@ -66,11 +75,20 @@ export interface UsersData {
 }
 
 export const fetchUsersData = async (): Promise<UsersData> => {
-  const response = await fetch('http://localhost:8080/admin/users');
-  
+const token = localStorage.getItem("auth_token"); // or sessionStorage / context
+  console.log(token)
+  const response = await fetch("http://localhost:8000/admin/users", {
+    headers: {
+      "Authorization": `Bearer ${token}`, // adjust if backend uses custom header
+      "Content-Type": "application/json"
+    },
+    // credentials: "include", // if using cookies
+  });  
+
   if (!response.ok) {
     throw new Error('Failed to fetch users data');
   }
-  
-  return response.json();
+const data = await response.json();
+console.log(data);
+return data;
 };

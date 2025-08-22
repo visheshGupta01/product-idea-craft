@@ -127,7 +127,7 @@ import React, { useState } from "react";
                 <h4 className="text-lg font-semibold mb-2">{plan.name}</h4>
 
                 <div className="w-full py-3 border-t border-b font-poppins border-[#2C2C2C] mb-4">
-                  <div className="text-4xl font-bold">
+                  <div className="text-4xl font-bold mt-2">
                     <sup className="align-super text-xl">$</sup>
                     {plan.price}
                     <span className="text-base font-medium text-gray-700">

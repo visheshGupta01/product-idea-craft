@@ -110,24 +110,6 @@ export default function UserManagement() {
       <div className="bg-white rounded-lg shadow-sm">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-semibold font-poppins text-gray-900">
-                Users <span className="font-normal font-supply">{totalUsers.toLocaleString()}</span>
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-              <Button className="gap-2">
-                <UserPlus className="h-4 w-4" />
-                Add User
-              </Button>
-            </div>
-          </div>
-
           <div className="flex items-center justify-between">
             {/* Search and Filters */}
             <div className="flex items-center gap-4">
@@ -183,7 +165,7 @@ export default function UserManagement() {
                 </TableHead>
                 <TableHead className="text-left font-medium text-gray-900">
                   <div className="flex text-[16px] items-center gap-2">
-                    Joined Date
+                    Signup Date
                     <ArrowUpDown className="h-4 w-4 text-gray-900" />
                   </div>
                 </TableHead>
@@ -236,12 +218,12 @@ export default function UserManagement() {
                     <TableCell className="text-gray-900">
                       {formatDate(user.last_login_at)}
                     </TableCell>
-                    <TableCell className="text-gray-900">
-                      <Badge variant="outline">
+                    <TableCell >
+                      <Badge variant="outline" className="text-[14px] font-normal text-gray-900 px-3 py-1">
                         {user.no_of_projects} projects
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right text-black">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">

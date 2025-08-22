@@ -19,29 +19,31 @@ export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarP
       {/* Top Section */}
       <div className="flex flex-col items-center space-y-6">
         {/* Replace logo placeholder with image */}
-        <img
-          src={myIcon}
-          alt="Logo"
-          style={{
-            width: "30px",
-            height: "30px",
-            borderRadius: "8px",
-            objectFit: "contain",
-          }}
-        />
+        <a href="/">
+          <img
+            src={myIcon}
+            alt="Logo"
+            style={{
+              width: "30px",
+              height: "30px",
+              borderRadius: "8px",
+              objectFit: "contain",
+            }}
+          />
+        </a>
 
         {/* Faded menu icon */}
         <SidebarIcon icon={<Menu />} faded />
 
-        <SidebarIcon 
-          icon={<LayoutGrid />} 
-          active={activeView === 'dashboard'}
-          onClick={() => onViewChange('dashboard')}
+        <SidebarIcon
+          icon={<LayoutGrid />}
+          active={activeView === "dashboard"}
+          onClick={() => onViewChange("dashboard")}
         />
-        <SidebarIcon 
-          icon={<Users />} 
-          active={activeView === 'users'}
-          onClick={() => onViewChange('users')}
+        <SidebarIcon
+          icon={<Users />}
+          active={activeView === "users"}
+          onClick={() => onViewChange("users")}
         />
         <SidebarIcon icon={<Settings />} />
       </div>
