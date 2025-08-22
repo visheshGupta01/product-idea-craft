@@ -1,43 +1,43 @@
 export interface DashboardData {
   success: boolean;
-  yearlyStats: Array<{
+  yearly_stats: Array<{
     year: number;
     months: Array<{
       month: string;
-      totalVerified: number;
-      totalVerifiedPro: number;
+      total_verified: number;
+      total_verified_pro: number;
       days: Array<{
         date: string;
-        totalVerified: number;
-        totalVerifiedPro: number;
+        total_verified: number;
+        total_verified_pro: number;
       }>;
       weeks: Array<{
-        weekNumber: number;
+        week_number: number;
         days: Array<{
           date: string;
-          totalVerified: number;
-          totalVerifiedPro: number;
+          total_verified: number;
+          total_verified_pro: number;
         }>;
       }>;
     }>;
   }>;
-  countryPercentages: Array<{
+  country_percentages: Array<{
     country: string;
-    userCount: number;
+    user_count: number;
     percentage: number;
   }>;
-  countryGeoData: Array<{
+  country_geo_data: Array<{
     country: string;
-    latitude: number;
-    longitude: number;
+    lat: number;
+    lon: number;
   }>;
-  conversionRate: number;
-  userGrowthRate: number;
-  droppingRate: number;
-  revenueData: {
-    totalRevenue: number;
-    proRevenue: number;
-    teamRevenue: number;
+  conversion_rate_percent: number;
+  user_growth_rate_percent: number;
+  dropping_rate_percent: number;
+  revenue_data: {
+    total_revenue: number;
+    pro_revenue: number;
+    team_revenue: number;
   };
 }
 

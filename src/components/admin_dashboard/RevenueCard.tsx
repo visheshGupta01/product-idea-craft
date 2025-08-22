@@ -13,14 +13,14 @@ interface DateRangeState {
 
 interface RevenueCardProps {
   data?: {
-    totalRevenue: number;
-    proRevenue: number;
-    teamRevenue: number;
+    total_revenue: number;
+    pro_revenue: number;
+    team_revenue: number;
   };
 }
 
 const RevenueCard: React.FC<RevenueCardProps> = ({ data }) => {
-  const totalRevenue = data?.totalRevenue || 90239;
+  const totalRevenue = data?.total_revenue || 90239;
   const [showPicker, setShowPicker] = useState(false);
   const [range, setRange] = useState<DateRangeState[]>([
     {
