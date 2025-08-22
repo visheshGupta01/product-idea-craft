@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Send, Loader2 } from "lucide-react";
 
 interface ChatInputProps {
@@ -13,21 +14,37 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   isLoading,
 }) => {
   const [newMessage, setNewMessage] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+    }
+  };
+
+  const handleSubmit = async () => {
     if (!newMessage.trim() || isLoading) return;
 
     const messageToSend = newMessage;
     setNewMessage(""); // Clear input immediately
     console.log("Sending message:", messageToSend);
     await onSendMessage(messageToSend);
+    // After sending, reset height to initial (e.g., 1 row)
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit(e);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      if (e.shiftKey) {
+        // Allow newline, do nothing else
+        // The default behavior of Enter with Shift will insert a newline
+      } else {
+        e.preventDefault(); // Prevent default (newline) for plain Enter
+        handleSubmit(); // Call handleSubmit without the event object
+      }
     }
   };
 
@@ -35,13 +52,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     <div className="pb-6 bg-[#1E1E1E]">
       <div className="w-full">
         <div className="relative">
-          <Input
+          <Textarea
+            ref={textareaRef}
             placeholder="Message..."
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="w-full bg-[#1A1F21] border-gray-600 text-white placeholder:text-gray-300 rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-            disabled={false}
+            onChange={(e) => {
+              setNewMessage(e.target.value);
+              adjustTextareaHeight();
+            }}
+            onKeyDown={handleKeyDown}
+            className="w-full bg-[#1A1F21] border-gray-600 text-white placeholder:text-gray-300 rounded-full py-3 px-4 pr-12 resize-none min-h-0 overflow-hidden"
+            rows={1}
           />
           <Button
             onClick={handleSubmit}

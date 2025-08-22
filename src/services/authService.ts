@@ -6,7 +6,7 @@ export interface AuthResponse {
   success: boolean;
   user?: User;
   token?: string;
-  refreshToken?: string;
+  // refreshToken?: string;
   role?: 'admin' | 'user';
   session_id?: string;
   message?: string;
@@ -16,7 +16,7 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   token: string;
-  refreshToken: string;
+  // refreshToken: string;
   role: 'admin' | 'user';
 }
 
@@ -50,13 +50,13 @@ export interface ResetPasswordResponse {
 
 export class AuthService {
   private token: string | null = null;
-  private refreshToken: string | null = null;
+  // private refreshToken: string | null = null;
   private userrole: 'admin' | 'user' | null = null;
 
   constructor() {
     // Load tokens from localStorage on initialization
-    this.token = localStorage.getItem('auth_token');
-    this.refreshToken = localStorage.getItem('refresh_token');
+    this.token = sessionStorage.getItem('auth_token');
+    // this.refreshToken = localStorage.getItem('refresh_token');
     this.userrole = localStorage.getItem('user_role') as 'admin' | 'user' | null;
     console.log('AuthService initialized with token:', this.token);
   }
@@ -76,17 +76,17 @@ export class AuthService {
       
       if (data.success && data.token) {
         this.token = data.token;
-        this.refreshToken = data.refreshToken;
+        // this.refreshToken = data.refreshToken;
         this.userrole = data.role;
         
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('refresh_token', data.refreshToken);
+        sessionStorage.setItem('auth_token', data.token);
+        // localStorage.setItem('refresh_token', data.refreshToken);
         localStorage.setItem('user_role', data.role);
         
         return {
           success: true,
           token: data.token,
-          refreshToken: data.refreshToken,
+          // refreshToken: data.refreshToken,
           role: data.role,
           message: data.message
         };
@@ -111,6 +111,19 @@ export class AuthService {
       const last_name = rest.join(" ");
       console.log('First name:', first_name);
       console.log('Last name:', last_name);
+
+      let locationData = {};
+      try {
+        const ipApiResponse = await fetch('http://ip-api.com/json/?fields=country,city,lat,lon');
+        if (ipApiResponse.ok) {
+          locationData = await ipApiResponse.json();
+        } else {
+          console.warn('Failed to fetch IP location data:', ipApiResponse.statusText);
+        }
+      } catch (ipApiError) {
+        console.error('Error fetching IP location data:', ipApiError);
+      }
+
       const response = await fetch(`${API_BASE_URL}/signup`, {
         method: 'POST',
         headers: {
@@ -121,6 +134,7 @@ export class AuthService {
           last_name,
           email,
           password,
+          ...locationData, // Spread the location data into the body
         }),
       });
 
@@ -222,36 +236,36 @@ export class AuthService {
   }
 
   async refreshAccessToken(): Promise<AuthResponse> {
-    if (!this.refreshToken) {
-      return { success: false, message: 'No refresh token available' };
-    }
+    // No need to check this.refreshToken as it will be in HTTP-only cookie
+    // if (!this.refreshToken) {
+    //   return { success: false, message: 'No refresh token available' };
+    // }
 
     try {
       const response = await fetch(`${API_BASE_URL}/refresh-token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Browser will automatically send HTTP-only refresh token cookie
         },
-        body: JSON.stringify({ 
-          refreshToken: this.refreshToken 
-        }),
+        // body: JSON.stringify({ refreshToken: this.refreshToken }), // Removed
       });
 
       const data: RefreshResponse = await response.json();
       
       if (data.Success && data.token) {
         this.token = data.token;
-        this.refreshToken = data.refreshToken;
+        // this.refreshToken = data.refreshToken;
         this.userrole = data.role;
         
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('refresh_token', data.refreshToken);
+        sessionStorage.setItem('auth_token', data.token);
+        // localStorage.setItem('refresh_token', data.refreshToken);
         localStorage.setItem('user_role', data.role);
         
         return {
           success: true,
           token: data.token,
-          refreshToken: data.refreshToken,
+          // refreshToken: data.refreshToken,
           role: data.role,
           message: data.message
         };
@@ -273,7 +287,7 @@ export class AuthService {
   async createSessionWithIdea(idea: string): Promise<{ session_id: string; success: boolean; message?: string }> {
     if (!this.token) {
       return { success: false, session_id: '', message: 'Not authenticated' };
-    }
+    n}
 
     try {
       const response = await fetch(`${API_BASE_URL}/create/session`, {
@@ -305,10 +319,10 @@ export class AuthService {
 
   logout() {
     this.token = null;
-    this.refreshToken = null;
+    // this.refreshToken = null;
     this.userrole = null;
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('auth_token');
+    // localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_role');
     sessionStorage.removeItem('session_id');
     sessionStorage.removeItem('user_idea');
@@ -318,9 +332,9 @@ export class AuthService {
     return this.token;
   }
 
-  getrefreshToken(): string | null {
-    return this.refreshToken;
-  }
+  // getrefreshToken(): string | null {
+  //   return this.refreshToken;
+  // }
 
   getUserRole(): 'admin' | 'user' | null {
     return this.userrole;

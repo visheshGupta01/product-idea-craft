@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -14,45 +14,19 @@ import {
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-interface UserGrowthChartProps {
-  data?: Array<{
-    year: number;
-    months: Array<{
-      month: string;
-      totalVerified: number;
-      totalVerifiedPro: number;
-      days: Array<{
-        date: string;
-        totalVerified: number;
-        totalVerifiedPro: number;
-      }>;
-      weeks: Array<{
-        weekNumber: number;
-        days: Array<{
-          date: string;
-          totalVerified: number;
-          totalVerifiedPro: number;
-        }>;
-      }>;
-    }>;
+// Matches the YearlyStats part of your Go struct
+interface YearlyStat {
+  year: number;
+  months: Array<{
+    month: string;
+    total_verified: number;
+    total_verified_pro: number;
   }>;
 }
 
-interface DataPoint {
-  date: string;
-  paid: number;
-  active: number;
+interface UserGrowthChartProps {
+  data?: YearlyStat[];
 }
-
-const data: DataPoint[] = [
-  { date: "09 Mar", paid: 2000, active: 3000 },
-  { date: "10 Mar", paid: 2800, active: 3400 },
-  { date: "11 Mar", paid: 1500, active: 2800 },
-  { date: "12 Mar", paid: 2600, active: 3000 },
-  { date: "13 Mar", paid: 1900, active: 3200 },
-  { date: "14 Mar", paid: 2400, active: 3100 },
-  { date: "15 Mar", paid: 3000, active: 3700 },
-];
 
 const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
   active,
@@ -79,12 +53,10 @@ const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
 const renderLegend = () => {
   return (
     <div className="flex justify-center items-center gap-6 mt-2 text-xs font-poppins">
-      {/* Paid Users */}
       <div className="flex items-center gap-1 mr-8">
         <div className="w-5 h-5 bg-[#ff4db8] border border-black"></div>
         <span className="text-black font-medium">Paid Users</span>
       </div>
-      {/* Active Users */}
       <div className="flex items-center gap-1">
         <div className="w-5 h-5 border-2 border-[#009dff]"></div>
         <span className="text-black font-medium">Active Users</span>
@@ -94,43 +66,29 @@ const renderLegend = () => {
 };
 
 const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
-  const [selectedYear, setSelectedYear] = useState<number>(2021);
-  const [selectedMonth, setSelectedMonth] = useState<string>('Jan');
+  // Default to the latest year from the data, or the current year.
+  const latestYear = apiData && apiData.length > 0 ? apiData[apiData.length - 1].year : new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState<number>(latestYear);
 
-  // Transform API data to chart format
-  const getChartData = () => {
-    if (!apiData || apiData.length === 0) {
-      // Fallback data
-      return [
-        { date: "Jan 1", paid: 20, active: 45 },
-        { date: "Jan 8", paid: 35, active: 60 },
-        { date: "Jan 15", paid: 45, active: 70 },
-        { date: "Jan 22", paid: 55, active: 85 },
-        { date: "Jan 29", paid: 70, active: 100 },
-        { date: "Feb 5", paid: 65, active: 95 },
-        { date: "Feb 12", paid: 80, active: 110 },
-        { date: "Feb 19", paid: 90, active: 125 },
-        { date: "Feb 26", paid: 85, active: 120 },
-        { date: "Mar 5", paid: 100, active: 140 },
-        { date: "Mar 12", paid: 110, active: 150 },
-        { date: "Mar 19", paid: 120, active: 165 },
-      ];
+  const chartData = useMemo(() => {
+    if (!apiData) {
+      return [];
     }
 
     const yearData = apiData.find(y => y.year === selectedYear);
-    if (!yearData) return [];
+    if (!yearData) {
+      return [];
+    }
 
-    const monthData = yearData.months.find(m => m.month === selectedMonth);
-    if (!monthData) return [];
-
-    return monthData.days.map(day => ({
-      date: new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      paid: day.totalVerifiedPro,
-      active: day.totalVerified
+    return yearData.months.map(m => ({
+      date: m.month,
+      paid: m.total_verified_pro,
+      active: m.total_verified,
     }));
-  };
+  }, [apiData, selectedYear]);
 
-  const chartData = getChartData();
+  const availableYears = apiData ? apiData.map(y => y.year) : [];
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
       <div className="flex-1">
@@ -145,30 +103,16 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
             </div>
           </div>
           <div className="flex gap-4 text-sm font-medium">
-            <span className="text-pink-500 font-semibold">WEEK</span>
-            <span className="text-[#1A1A16] font-semibold">MONTH</span>
-            <span className="text-[#1A1A16] font-semibold">YEAR</span>
+            {availableYears.map(year => (
+              <span 
+                key={year}
+                className={`cursor-pointer ${selectedYear === year ? 'text-pink-500 font-semibold' : 'text-[#1A1A16]'}`}
+                onClick={() => setSelectedYear(year)}
+              >
+                {year}
+              </span>
+            ))}
           </div>
-        </div>
-
-        {/* Week Selector */}
-        <div className="flex gap-1 mb-6">
-          {[
-            { month: "Mar", week: "Week 1" },
-            { month: "Mar", week: "Week 2" },
-            { month: "Mar", week: "Week 3" },
-            { month: "Mar", week: "Week 4" },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
-                index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-              }`}
-            >
-              <div className="font-medium text-sm">{item.month}</div>
-              <div className="font-medium text-xs mt-1">{item.week}</div>
-            </div>
-          ))}
         </div>
 
         {/* Chart */}
@@ -228,5 +172,6 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
     </div>
   );
 };
+  
 
 export default UserGrowthChart;

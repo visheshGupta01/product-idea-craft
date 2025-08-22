@@ -1,3 +1,5 @@
+import { authService } from './authService';
+
 export interface DashboardData {
   success: boolean;
   yearlyStats: Array<{
@@ -42,12 +44,24 @@ export interface DashboardData {
 }
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
-  const response = await fetch('http://localhost:8080/admin/dashboard');
-  
+  const token = authService.getToken();
+  if (!token) {
+    throw new Error('Authentication token not found. Please log in.');
+  }
+
+  const response = await fetch('http://localhost:8080/admin/dashboard', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Unauthorized access. Please log in as an admin.');
+    }
     throw new Error('Failed to fetch dashboard data');
   }
-  
+
   return response.json();
 };
 
@@ -66,11 +80,23 @@ export interface UsersData {
 }
 
 export const fetchUsersData = async (): Promise<UsersData> => {
-  const response = await fetch('http://localhost:8080/admin/users');
-  
+  const token = authService.getToken();
+  if (!token) {
+    throw new Error('Authentication token not found. Please log in.');
+  }
+
+  const response = await fetch('http://localhost:8080/admin/users', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Unauthorized access. Please log in as an admin.');
+    }
     throw new Error('Failed to fetch users data');
   }
-  
+
   return response.json();
 };

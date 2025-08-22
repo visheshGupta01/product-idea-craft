@@ -75,48 +75,47 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
         return <MyProjectsPage />;
       case 'user-profile':
         return <UserProfilePage onLogout={handleLogout} />;
-      default:
-        // Show fullscreen chat if we have initial MCP response but frontend isn't created
-        // OR if we don't have initial response (fallback to original behavior)
-        if (!isFrontendCreated || initialResponse) {
+      default: // 'main' view
+        // If frontend is created (URL received), always show split view with preview
+        if (isFrontendCreated) {
           return (
-            <div className="h-full">
-              <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
-            </div>
+            <ResizablePanelGroup
+              direction="horizontal"
+              className="flex-1 min-w-0"
+            >
+              {/* AI Chat Panel */}
+              <ResizablePanel
+                defaultSize={sidebarCollapsed ? 40 : 35}
+                minSize={25}
+                maxSize={75}
+                className="hidden lg:block"
+              >
+                <div className="h-full border-r border-border">
+                  <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
+                </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle className="hidden lg:flex" />
+
+              {/* Preview/Code Panel */}
+              <ResizablePanel
+                defaultSize={sidebarCollapsed ? 60 : 65}
+                minSize={0}
+                collapsible={true}
+              >
+                <div className="h-full bg-background">
+                  <PreviewCodePanel previewUrl={previewUrl} />
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
           );
         }
         
-        // Show normal layout after frontend creation and initial response is processed
+        // Otherwise, show fullscreen chat (either initial response or no frontend yet)
         return (
-          <ResizablePanelGroup
-            direction="horizontal"
-            className="flex-1 min-w-0"
-          >
-            {/* AI Chat Panel */}
-            <ResizablePanel
-              defaultSize={sidebarCollapsed ? 40 : 35}
-              minSize={25}
-              maxSize={75}
-              className="hidden lg:block"
-            >
-              <div className="h-full border-r border-border">
-                <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
-              </div>
-            </ResizablePanel>
-
-            <ResizableHandle withHandle className="hidden lg:flex" />
-
-            {/* Preview/Code Panel */}
-            <ResizablePanel
-              defaultSize={sidebarCollapsed ? 60 : 65}
-              minSize={0}
-              collapsible={true}
-            >
-              <div className="h-full bg-background">
-                <PreviewCodePanel previewUrl={previewUrl} />
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
+          <div className="h-full">
+            <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
+          </div>
         );
     }
   };

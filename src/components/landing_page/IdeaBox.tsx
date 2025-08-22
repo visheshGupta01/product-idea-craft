@@ -124,7 +124,7 @@ const IdeaBox: React.FC = () => {
           <button
             onClick={handleSubmit}
             disabled={!idea.trim() || isProcessingIdea}
-            className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
+            className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
           >
             {isProcessingIdea ? (
               <LoadingSpinner size="sm" text="Processing your idea" />
