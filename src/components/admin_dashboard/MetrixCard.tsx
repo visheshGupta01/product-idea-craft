@@ -24,9 +24,9 @@ interface MetricsCardsProps {
 
 const MetricsCards: React.FC<MetricsCardsProps> = ({ 
   conversionRate = 25.0,
-  userGrowthRate = 12.5,
   revenueData 
 }) => {
+  console.log('MetricsCards props:', { conversionRate, revenueData });
   const totalRevenue = revenueData?.total_revenue || 90200;
   const proRevenue = revenueData?.pro_revenue || 45000;
   const teamRevenue = revenueData?.team_revenue || 25000;
@@ -129,26 +129,6 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
               <span className="text-black text-xs">.........</span>
 
               <span className="font-semibold text-black text-sm">${(teamRevenue / 1000000).toFixed(1)}M</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                <span className="text-black text-sm font-poppins">Individual</span>
-              </div>
-              <span className="text-black text-xs">...</span>
-
-              <span className="font-semibold text-black text-sm">${(individualRevenue / 1000000).toFixed(1)}M</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                <span className="text-black text-sm">Free</span>
-              </div>
-              <span className="text-black text-xs">.........</span>
-
-              <span className="font-semibold text-black text-sm">${(freeRevenue / 1000000).toFixed(1)}M</span>
             </div>
           </div>
         </div>

@@ -95,12 +95,23 @@ const renderLegend = () => {
 
 const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
   // Initialize with actual data from API if available
-  const currentYear = apiData && apiData.length > 0 ? apiData[0].year : 2025;
-  const currentMonth = apiData && apiData.length > 0 && apiData[0].months.length > 0 ? apiData[0].months[0].month : 'Aug';
-  
+  let currentYear = 2025;
+  let currentMonth = "Aug";
+
+  if (apiData && apiData.length > 0) {
+    const lastYearData = apiData[apiData.length - 1]; // last element (2025)
+    currentYear = lastYearData.year;
+
+    if (lastYearData.months && lastYearData.months.length > 0) {
+      const lastMonthData = lastYearData.months[lastYearData.months.length - 1];
+      currentMonth = lastMonthData.month;
+    }
+  }
+
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
-
+  console.log("UserGrowthChart props:", { apiData });
+  console.log("Selected Year and Month:", { selectedYear, selectedMonth });
   // Transform API data to chart format
   const getChartData = () => {
     if (!apiData || apiData.length === 0) {
@@ -121,16 +132,19 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
       ];
     }
 
-    const yearData = apiData.find(y => y.year === selectedYear);
+    const yearData = apiData.find((y) => y.year === selectedYear);
     if (!yearData) return [];
 
-    const monthData = yearData.months.find(m => m.month === selectedMonth);
+    const monthData = yearData.months.find((m) => m.month === selectedMonth);
     if (!monthData) return [];
 
-    return monthData.days.map(day => ({
-      date: new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    return monthData.days.map((day) => ({
+      date: new Date(day.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
       paid: day.total_verified_pro,
-      active: day.total_verified
+      active: day.total_verified,
     }));
   };
 
@@ -157,34 +171,44 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
 
         {/* Week Selector */}
         <div className="flex gap-1 mb-6">
-          {apiData && apiData.length > 0 && apiData.find(y => y.year === selectedYear)?.months.find(m => m.month === selectedMonth)?.weeks ? 
-            apiData.find(y => y.year === selectedYear)?.months.find(m => m.month === selectedMonth)?.weeks.slice(0, 4).map((week, index) => (
-              <div
-                key={index}
-                className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
-                  index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                }`}
-              >
-                <div className="font-medium text-sm">{selectedMonth}</div>
-                <div className="font-medium text-xs mt-1">Week {week.week_number}</div>
-              </div>
-            )) :
-            [
-              { month: selectedMonth, week: "Week 1" },
-              { month: selectedMonth, week: "Week 2" },
-              { month: selectedMonth, week: "Week 3" },
-              { month: selectedMonth, week: "Week 4" },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
-                  index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                }`}
-              >
-                <div className="font-medium text-sm">{item.month}</div>
-                <div className="font-medium text-xs mt-1">{item.week}</div>
-              </div>
-            ))}
+          {apiData &&
+          apiData.length > 0 &&
+          apiData
+            .find((y) => y.year === selectedYear)
+            ?.months.find((m) => m.month === selectedMonth)?.weeks
+            ? apiData
+                .find((y) => y.year === selectedYear)
+                ?.months.find((m) => m.month === selectedMonth)
+                ?.weeks.slice(0, 4)
+                .map((week, index) => (
+                  <div
+                    key={index}
+                    className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                      index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+                    }`}
+                  >
+                    <div className="font-medium text-sm">{selectedMonth}</div>
+                    <div className="font-medium text-xs mt-1">
+                      Week {week.week_number}
+                    </div>
+                  </div>
+                ))
+            : [
+                { month: selectedMonth, week: "Week 1" },
+                { month: selectedMonth, week: "Week 2" },
+                { month: selectedMonth, week: "Week 3" },
+                { month: selectedMonth, week: "Week 4" },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                    index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+                  }`}
+                >
+                  <div className="font-medium text-sm">{item.month}</div>
+                  <div className="font-medium text-xs mt-1">{item.week}</div>
+                </div>
+              ))}
         </div>
 
         {/* Chart */}

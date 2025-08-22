@@ -26,6 +26,7 @@ const AdminDashboard: React.FC = () => {
     const loadDashboardData = async () => {
       try {
         const data = await fetchDashboardData();
+        console.log('Dashboard data:', data);
         setDashboardData(data);
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
@@ -91,7 +92,6 @@ const AdminDashboard: React.FC = () => {
                   <div className="lg:col-span-1">
                     <MetricsCards 
                       conversionRate={dashboardData.conversion_rate_percent}
-                      userGrowthRate={dashboardData.user_growth_rate_percent}
                       revenueData={dashboardData.revenue_data}
                     />
                   </div>
