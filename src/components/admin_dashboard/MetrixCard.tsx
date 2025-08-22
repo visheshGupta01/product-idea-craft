@@ -16,9 +16,9 @@ interface MetricsCardsProps {
   conversionRate?: number;
   userGrowthRate?: number;
   revenueData?: {
-    totalRevenue: number;
-    proRevenue: number;
-    teamRevenue: number;
+    total_revenue: number;
+    pro_revenue: number;
+    team_revenue: number;
   };
 }
 
@@ -27,9 +27,9 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
   userGrowthRate = 12.5,
   revenueData 
 }) => {
-  const totalRevenue = revenueData?.totalRevenue || 90200;
-  const proRevenue = revenueData?.proRevenue || 45000;
-  const teamRevenue = revenueData?.teamRevenue || 25000;
+  const totalRevenue = revenueData?.total_revenue || 90200;
+  const proRevenue = revenueData?.pro_revenue || 45000;
+  const teamRevenue = revenueData?.team_revenue || 25000;
   const individualRevenue = totalRevenue - proRevenue - teamRevenue;
   const freeRevenue = 0;
   const data: ChartData<"doughnut"> = {

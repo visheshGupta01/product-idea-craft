@@ -19,19 +19,19 @@ interface UserGrowthChartProps {
     year: number;
     months: Array<{
       month: string;
-      totalVerified: number;
-      totalVerifiedPro: number;
+      total_verified: number;
+      total_verified_pro: number;
       days: Array<{
         date: string;
-        totalVerified: number;
-        totalVerifiedPro: number;
+        total_verified: number;
+        total_verified_pro: number;
       }>;
       weeks: Array<{
-        weekNumber: number;
+        week_number: number;
         days: Array<{
           date: string;
-          totalVerified: number;
-          totalVerifiedPro: number;
+          total_verified: number;
+          total_verified_pro: number;
         }>;
       }>;
     }>;
@@ -94,8 +94,12 @@ const renderLegend = () => {
 };
 
 const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
-  const [selectedYear, setSelectedYear] = useState<number>(2021);
-  const [selectedMonth, setSelectedMonth] = useState<string>('Jan');
+  // Initialize with actual data from API if available
+  const currentYear = apiData && apiData.length > 0 ? apiData[0].year : 2025;
+  const currentMonth = apiData && apiData.length > 0 && apiData[0].months.length > 0 ? apiData[0].months[0].month : 'Aug';
+  
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
 
   // Transform API data to chart format
   const getChartData = () => {
@@ -125,8 +129,8 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
 
     return monthData.days.map(day => ({
       date: new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      paid: day.totalVerifiedPro,
-      active: day.totalVerified
+      paid: day.total_verified_pro,
+      active: day.total_verified
     }));
   };
 
@@ -153,22 +157,34 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData }) => {
 
         {/* Week Selector */}
         <div className="flex gap-1 mb-6">
-          {[
-            { month: "Mar", week: "Week 1" },
-            { month: "Mar", week: "Week 2" },
-            { month: "Mar", week: "Week 3" },
-            { month: "Mar", week: "Week 4" },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
-                index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-              }`}
-            >
-              <div className="font-medium text-sm">{item.month}</div>
-              <div className="font-medium text-xs mt-1">{item.week}</div>
-            </div>
-          ))}
+          {apiData && apiData.length > 0 && apiData.find(y => y.year === selectedYear)?.months.find(m => m.month === selectedMonth)?.weeks ? 
+            apiData.find(y => y.year === selectedYear)?.months.find(m => m.month === selectedMonth)?.weeks.slice(0, 4).map((week, index) => (
+              <div
+                key={index}
+                className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                  index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+                }`}
+              >
+                <div className="font-medium text-sm">{selectedMonth}</div>
+                <div className="font-medium text-xs mt-1">Week {week.week_number}</div>
+              </div>
+            )) :
+            [
+              { month: selectedMonth, week: "Week 1" },
+              { month: selectedMonth, week: "Week 2" },
+              { month: selectedMonth, week: "Week 3" },
+              { month: selectedMonth, week: "Week 4" },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                  index === 1 ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+                }`}
+              >
+                <div className="font-medium text-sm">{item.month}</div>
+                <div className="font-medium text-xs mt-1">{item.week}</div>
+              </div>
+            ))}
         </div>
 
         {/* Chart */}

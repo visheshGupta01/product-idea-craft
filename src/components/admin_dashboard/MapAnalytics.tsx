@@ -3,20 +3,20 @@ import React from "react";
 interface MapAnalyticsProps {
   countryPercentages?: Array<{
     country: string;
-    userCount: number;
+    user_count: number;
     percentage: number;
   }>;
   countryGeoData?: Array<{
     country: string;
-    latitude: number;
-    longitude: number;
+    lat: number;
+    lon: number;
   }>;
 }
 
 const MapAnalytics: React.FC<MapAnalyticsProps> = ({ 
   countryPercentages = [
-    { country: "India", userCount: 200, percentage: 50 },
-    { country: "USA", userCount: 200, percentage: 50 }
+    { country: "India", user_count: 200, percentage: 50 },
+    { country: "USA", user_count: 200, percentage: 50 }
   ]
 }) => {
   return (

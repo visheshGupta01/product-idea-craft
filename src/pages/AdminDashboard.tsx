@@ -78,21 +78,21 @@ const AdminDashboard: React.FC = () => {
             ) : dashboardData ? (
               <>
                 {/* Revenue Section */}
-                <RevenueCard data={dashboardData.revenueData} />
+                <RevenueCard data={dashboardData.revenue_data} />
 
                 {/* Main Dashboard Layout - User Growth Chart and Metrics */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* User Growth Chart (takes 2/3) */}
                   <div className="lg:col-span-2">
-                    <UserGrowthChart data={dashboardData.yearlyStats} />
+                    <UserGrowthChart data={dashboardData.yearly_stats} />
                   </div>
 
                   {/* Metrics Cards (takes 1/3) */}
                   <div className="lg:col-span-1">
                     <MetricsCards 
-                      conversionRate={dashboardData.conversionRate}
-                      userGrowthRate={dashboardData.userGrowthRate}
-                      revenueData={dashboardData.revenueData}
+                      conversionRate={dashboardData.conversion_rate_percent}
+                      userGrowthRate={dashboardData.user_growth_rate_percent}
+                      revenueData={dashboardData.revenue_data}
                     />
                   </div>
                 </div>
@@ -104,10 +104,10 @@ const AdminDashboard: React.FC = () => {
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <MapAnalytics 
-                      countryPercentages={dashboardData.countryPercentages}
-                      countryGeoData={dashboardData.countryGeoData}
+                      countryPercentages={dashboardData.country_percentages}
+                      countryGeoData={dashboardData.country_geo_data}
                     />
-                    <DropRateCard droppingRate={dashboardData.droppingRate} />
+                    <DropRateCard droppingRate={dashboardData.dropping_rate_percent} />
                   </div>
                 </div>
               </>
