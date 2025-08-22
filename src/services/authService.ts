@@ -1,6 +1,5 @@
 import { User } from "@/types";
-
-const API_BASE_URL = "http://localhost:8000";
+import apiClient from "@/lib/apiClient";
 
 export interface AuthResponse {
   success: boolean;
@@ -66,15 +65,8 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data: LoginResponse = await response.json();
+      const response = await apiClient.post('/login', { email, password });
+      const data: LoginResponse = response.data;
       console.log("Login response:", data);
 
       if (data.success && data.token) {
@@ -133,21 +125,15 @@ export class AuthService {
       };
 
       // 3. Send signup + location to backend
-      const response = await fetch(`${API_BASE_URL}/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          first_name,
-          last_name,
-          email,
-          password,
-          locationData
-        }),
+      const response = await apiClient.post('/signup', {
+        first_name,
+        last_name,
+        email,
+        password,
+        locationData
       });
 
-      const data: SignupResponse = await response.json();
+      const data: SignupResponse = response.data;
       console.log("Signup response:", data);
 
       return {
@@ -165,11 +151,8 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/verify?token=${token}`, {
-        method: "GET",
-      });
-
-      const data: VerificationResponse = await response.json();
+      const response = await apiClient.get(`/verify?token=${token}`);
+      const data: VerificationResponse = response.data;
       console.log("Email verification response:", data);
       return {
         success: data.success,
@@ -186,15 +169,8 @@ export class AuthService {
 
   async forgotPassword(email: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/forget/password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data: ForgotPasswordResponse = await response.json();
+      const response = await apiClient.post('/forget/password', { email });
+      const data: ForgotPasswordResponse = response.data;
 
       return {
         success: data.success,
@@ -222,19 +198,13 @@ export class AuthService {
       confirm_password,
     });
     try {
-      const response = await fetch(`${API_BASE_URL}/reset?token=${token}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token,
-          password,
-          confirm_password,
-        }),
+      const response = await apiClient.post(`/reset?token=${token}`, {
+        token,
+        password,
+        confirm_password,
       });
 
-      const data: ResetPasswordResponse = await response.json();
+      const data: ResetPasswordResponse = response.data;
       console.log("Reset password response:", data);
       return {
         success: data.Success,
@@ -255,17 +225,11 @@ export class AuthService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/refresh-token`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refreshToken: this.refreshToken,
-        }),
+      const response = await apiClient.post('/refresh-token', {
+        refreshToken: this.refreshToken,
       });
 
-      const data: RefreshResponse = await response.json();
+      const data: RefreshResponse = response.data;
 
       if (data.Success && data.token) {
         this.token = data.token;
@@ -306,16 +270,8 @@ export class AuthService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/create/session`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
-        body: JSON.stringify({ idea }),
-      });
-
-      const data = await response.json();
+      const response = await apiClient.post('/create/session', { idea });
+      const data = response.data;
       console.log("Create session response:", data);
 
       if (data.success && data.session_id) {

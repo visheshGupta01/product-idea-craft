@@ -1,0 +1,89 @@
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+
+const API_BASE_URL = "http://localhost:8000";
+
+// Create axios instance
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor to attach access token
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle expired tokens
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Check if the error is 401 (Unauthorized) and we haven't already tried to refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refresh_token');
+        
+        if (!refreshToken) {
+          // No refresh token available, redirect to login
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = '/';
+          return Promise.reject(error);
+        }
+
+        // Try to refresh the token
+        const refreshResponse = await axios.post(`${API_BASE_URL}/refresh-token`, {
+          refreshToken: refreshToken,
+        });
+
+        const data = refreshResponse.data;
+
+        if (data.Success && data.token) {
+          // Update tokens in localStorage
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('refresh_token', data.refreshToken);
+          localStorage.setItem('user_role', data.role);
+
+          // Update the authorization header for the original request
+          originalRequest.headers.Authorization = `Bearer ${data.token}`;
+
+          // Retry the original request with the new token
+          return apiClient(originalRequest);
+        } else {
+          // Refresh failed, redirect to login
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = '/';
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
+        // Refresh request failed, redirect to login
+        console.error('Token refresh failed:', refreshError);
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '/';
+        return Promise.reject(error);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default apiClient;
