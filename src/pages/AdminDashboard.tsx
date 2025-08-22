@@ -84,7 +84,10 @@ const AdminDashboard: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* User Growth Chart (takes 2/3) */}
                   <div className="lg:col-span-2">
-                    <UserGrowthChart data={dashboardData.yearly_stats} />
+                    <UserGrowthChart 
+                      data={dashboardData.yearly_stats} 
+                      userGrowthRate={dashboardData.user_growth_rate_percent}
+                    />
                   </div>
 
                   {/* Metrics Cards (takes 1/3) */}
