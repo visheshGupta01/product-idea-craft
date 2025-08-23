@@ -1,6 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Message } from "@/types";
-import { StreamingWebSocketClient, StreamingCallbacks } from "@/services/streamingWebSocket";
+import {
+  StreamingWebSocketClient,
+  StreamingCallbacks,
+} from "@/services/streamingWebSocket";
 import { useChatPersistence } from "./useChatPersistence";
 
 export interface StreamingChatState {
@@ -21,8 +24,17 @@ export interface StreamingChatActions {
   onFrontendGenerated?: (url: string) => void;
 }
 
-export const useStreamingChat = (sessionId: string, onFrontendGenerated?: (url: string) => void): StreamingChatState & StreamingChatActions => {
-  const { messages, addMessage: persistAddMessage, updateMessage: persistUpdateMessage, clearMessages: persistClearMessages, setMessages } = useChatPersistence(sessionId);
+export const useStreamingChat = (
+  sessionId: string,
+  onFrontendGenerated?: (url: string) => void
+): StreamingChatState & StreamingChatActions => {
+  const {
+    messages,
+    addMessage: persistAddMessage,
+    updateMessage: persistUpdateMessage,
+    clearMessages: persistClearMessages,
+    setMessages,
+  } = useChatPersistence(sessionId);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,13 +55,19 @@ export const useStreamingChat = (sessionId: string, onFrontendGenerated?: (url: 
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  const addMessage = useCallback((message: Omit<Message, "id">): Message => {
-    return persistAddMessage(message);
-  }, [persistAddMessage]);
+  const addMessage = useCallback(
+    (message: Omit<Message, "id">): Message => {
+      return persistAddMessage(message);
+    },
+    [persistAddMessage]
+  );
 
-  const updateMessage = useCallback((messageId: string, content: string) => {
-    persistUpdateMessage(messageId, content);
-  }, [persistUpdateMessage]);
+  const updateMessage = useCallback(
+    (messageId: string, content: string) => {
+      persistUpdateMessage(messageId, content);
+    },
+    [persistUpdateMessage]
+  );
 
   const clearMessages = useCallback(() => {
     persistClearMessages();
@@ -78,95 +96,111 @@ export const useStreamingChat = (sessionId: string, onFrontendGenerated?: (url: 
     }
   }, []);
 
-  const sendMessage = useCallback(async (content: string): Promise<void> => {
-    if (!content.trim() || !wsClientRef.current) return;
+  const sendMessage = useCallback(
+    async (content: string): Promise<void> => {
+      if (!content.trim() || !wsClientRef.current) return;
 
-    // Add user message
-    const userMessage = addMessage({
-      type: "user",
-      content: content.trim(),
-      timestamp: new Date(),
-    });
-
-    // Set streaming state
-    setIsStreaming(true);
-
-    try {
-      // Ensure connection
-      const isConnected = await connect();
-      if (!isConnected) {
-        throw new Error("Failed to establish WebSocket connection");
-      }
-
-      // Create AI message placeholder
-      const aiMessage = addMessage({
-        type: "ai",
-        content: "",
+      // Add user message
+      const userMessage = addMessage({
+        type: "user",
+        content: content.trim(),
         timestamp: new Date(),
       });
 
-      let streamingContent = "";
+      // Set streaming state
+      setIsStreaming(true);
 
-      const callbacks: StreamingCallbacks = {
-        onContent: (text: string) => {
-          streamingContent += text;
-          updateMessage(aiMessage.id, streamingContent);
-          
-          // Check for frontend_code_generator tool output with ngrok URL
-          if (text.includes('[Tool Output for frontend_code_generator]:') && text.includes('ngrok')) {
-            const urlMatch = text.match(/https?:\/\/[^\s"]+\.ngrok[^\s"']*/);
-            if (urlMatch && onFrontendGenerated) {
-              const ngrokUrl = urlMatch[0];
-              console.log("🚀 Frontend generated with URL:", ngrokUrl);
-              onFrontendGenerated(ngrokUrl);
-            }
-          }
-        },
-        onToolStart: () => {
-          setIsProcessingTools(true);
-          console.log("🔧 Tool processing started");
-        },
-        onToolEnd: () => {
-          setIsProcessingTools(false);
-          console.log("✅ Tool processing ended");
-        },
-        onComplete: (fullContent: string) => {
-          // Use the accumulated streaming content if it's longer than fullContent
-          const finalContent = streamingContent.length > fullContent.length ? streamingContent : fullContent;
-          updateMessage(aiMessage.id, finalContent);
-          setIsStreaming(false);
-          setIsProcessingTools(false);
-          console.log("🎉 Streaming completed with content length:", finalContent.length);
-        },
-        onError: (error: Error) => {
-          console.error("❌ Streaming error:", error);
-          
-          updateMessage(aiMessage.id, 
-            `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error.message}`
-          );
-          
-          setIsStreaming(false);
-          setIsProcessingTools(false);
+      try {
+        // Ensure connection
+        const isConnected = await connect();
+        if (!isConnected) {
+          throw new Error("Failed to establish WebSocket connection");
         }
-      };
 
-      await wsClientRef.current.sendStreamingMessage(content, callbacks);
+        // Create AI message placeholder
+        const aiMessage = addMessage({
+          type: "ai",
+          content: "",
+          timestamp: new Date(),
+        });
 
-    } catch (error) {
-      console.error("Error in sendMessage:", error);
-      
-      // Add error message
-      addMessage({
-        type: "ai",
-        content: `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date(),
-      });
+        let streamingContent = "";
 
-      // Clear loading states
-      setIsStreaming(false);
-      setIsProcessingTools(false);
-    }
-  }, [addMessage, updateMessage, connect]);
+        const callbacks: StreamingCallbacks = {
+          onContent: (text: string) => {
+            streamingContent += text;
+            updateMessage(aiMessage.id, streamingContent);
+
+            // Check for frontend_code_generator tool output with ngrok URL
+            if (
+              text.includes("[Tool Output for frontend_code_generator]:") &&
+              text.includes("localhost:8000")
+            ) {
+              const urlMatch = text.match(
+                /https?:\/\/[^\s"]+\.localhost:8000\/?/
+              );
+              if (urlMatch && onFrontendGenerated) {
+                const localUrl = urlMatch[0];
+                console.log("🚀 Frontend generated with URL:", localUrl);
+                onFrontendGenerated(localUrl);
+              }
+            }
+          },
+          onToolStart: () => {
+            setIsProcessingTools(true);
+            console.log("🔧 Tool processing started");
+          },
+          onToolEnd: () => {
+            setIsProcessingTools(false);
+            console.log("✅ Tool processing ended");
+          },
+          onComplete: (fullContent: string) => {
+            // Use the accumulated streaming content if it's longer than fullContent
+            const finalContent =
+              streamingContent.length > fullContent.length
+                ? streamingContent
+                : fullContent;
+            updateMessage(aiMessage.id, finalContent);
+            setIsStreaming(false);
+            setIsProcessingTools(false);
+            console.log(
+              "🎉 Streaming completed with content length:",
+              finalContent.length
+            );
+          },
+          onError: (error: Error) => {
+            console.error("❌ Streaming error:", error);
+
+            updateMessage(
+              aiMessage.id,
+              `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error.message}`
+            );
+
+            setIsStreaming(false);
+            setIsProcessingTools(false);
+          },
+        };
+
+        await wsClientRef.current.sendStreamingMessage(content, callbacks);
+      } catch (error) {
+        console.error("Error in sendMessage:", error);
+
+        // Add error message
+        addMessage({
+          type: "ai",
+          content: `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          timestamp: new Date(),
+        });
+
+        // Clear loading states
+        setIsStreaming(false);
+        setIsProcessingTools(false);
+      }
+    },
+    [addMessage, updateMessage, connect]
+  );
 
   return {
     messages,

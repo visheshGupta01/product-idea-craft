@@ -62,10 +62,12 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       const formData = new FormData();
       formData.append('video', audioBlob, 'recording.wav');
 
-      const response = await fetch('http://localhost:8080/audio', {
+      const response = await fetch('http://localhost:8000/audio', {
         method: 'POST',
         body: formData,
       });
+      console.log('Response:', response);
+    console.log('Response status:', response.status);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -80,7 +82,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       }
     } catch (error) {
       console.error('Failed to process audio:', error);
-      alert('Failed to transcribe audio. Please make sure the backend server is running on localhost:8080');
+      alert('Failed to transcribe audio. Please make sure the backend server is running on localhost:8000');
     } finally {
       setIsProcessing(false);
     }

@@ -28,11 +28,11 @@ const VercelIntegration = () => {
 
   useEffect(() => {
     // Check if GitHub repository exists
-    const savedRepo = localStorage.getItem('github_repository');
+    const savedRepo = sessionStorage.getItem('github_repository');
     setHasGitHubRepo(!!savedRepo);
 
     // Check if deployment info exists
-    const savedDeployment = localStorage.getItem('vercel_deployment');
+    const savedDeployment = sessionStorage.getItem('vercel_deployment');
     if (savedDeployment) {
       try {
         const deploymentInfo = JSON.parse(savedDeployment);
@@ -45,9 +45,10 @@ const VercelIntegration = () => {
     // Check for Vercel callback
     const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get('success');
+    const action = urlParams.get('action');
     const deployUrl = urlParams.get('url');
     
-    if (success === 'true' && deployUrl) {
+    if (action === 'vercel-deploy' && success === 'true' && deployUrl) {
       handleDeploymentSuccess(deployUrl);
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -63,7 +64,7 @@ const VercelIntegration = () => {
 
     setDeployment(deploymentInfo);
     setIsDeploying(false);
-    localStorage.setItem('vercel_deployment', JSON.stringify(deploymentInfo));
+    sessionStorage.setItem('vercel_deployment', JSON.stringify(deploymentInfo));
     toast.success('Successfully deployed to Vercel!');
   };
 
@@ -81,7 +82,7 @@ const VercelIntegration = () => {
     setIsDeploying(true);
     try {
       // Redirect to Vercel OAuth with deployment flow
-      const vercelUrl = `http://localhost:8080/vercel/auth/?sessionid=${sessionId}`;
+      const vercelUrl = `http://localhost:8000/vercel/auth/?sessionid=${sessionId}`;
       window.location.href = vercelUrl;
     } catch (error) {
       console.error('Error deploying to Vercel:', error);

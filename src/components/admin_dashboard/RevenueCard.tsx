@@ -55,7 +55,7 @@ const RevenueCard: React.FC<RevenueCardProps> = ({ data }) => {
 
         {/* Date Range Picker Button */}
         <div className="relative">
-          <button
+          {/* <button
             onClick={() => setShowPicker((v) => !v)}
             className="px-3 py-2 rounded-md border border-black font-poppins uppercase text-black shadow-xl text-sm bg-gray-50 flex items-center gap-2"
           >
@@ -64,7 +64,7 @@ const RevenueCard: React.FC<RevenueCardProps> = ({ data }) => {
               "MMM dd, yyyy"
             )}`}
             <span>▾</span>
-          </button>
+          </button> */}
 
           {/* Date Range Picker */}
           {showPicker && (

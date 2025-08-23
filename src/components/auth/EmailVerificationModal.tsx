@@ -87,7 +87,7 @@ export const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
                 <XCircle className="h-16 w-16 text-red-500" />
               )}
             </div>
-            <DialogTitle className="text-2xl">
+            <DialogTitle className="text-2xl text-center">
               {verificationState === 'idle' && 'Verify Your Email'}
               {verificationState === 'loading' && 'Verifying Email...'}
             {verificationState === 'success' && 'Email Successfully Verified!'}

@@ -27,8 +27,8 @@ const GitHubIntegration = () => {
   const { sessionId } = useUser();
 
   useEffect(() => {
-    // Check if we have GitHub repository info in localStorage
-    const savedRepo = localStorage.getItem('github_repository');
+    // Check if we have GitHub repository info in sessionStorage
+    const savedRepo = sessionStorage.getItem('github_repository');
     if (savedRepo) {
       try {
         const repo = JSON.parse(savedRepo);
@@ -40,11 +40,15 @@ const GitHubIntegration = () => {
     }
 
     // Check for OAuth callback
+    console.log('Checking URL for OAuth parameters...');
     const urlParams = new URLSearchParams(window.location.search);
+    console.log('URL Params:', urlParams.toString());
+    const action = urlParams.get('action');
     const status = urlParams.get('status');
     const cloneUrl = urlParams.get('clone_url');
     
-    if (status === 'success' && cloneUrl) {
+    if (action === 'github-oauth' && status === 'success' && cloneUrl) {
+      console.log('OAuth success! Clone URL:', cloneUrl);
       handleOAuthSuccess(cloneUrl);
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -65,7 +69,7 @@ const GitHubIntegration = () => {
 
     setRepository(repo);
     setIsConnected(true);
-    localStorage.setItem('github_repository', JSON.stringify(repo));
+    sessionStorage.setItem('github_repository', JSON.stringify(repo));
     toast.success('Successfully connected to GitHub!');
   };
 
@@ -90,7 +94,7 @@ const GitHubIntegration = () => {
   const handleDisconnect = () => {
     setIsConnected(false);
     setRepository(null);
-    localStorage.removeItem('github_repository');
+    sessionStorage.removeItem('github_repository');
     toast.success('Disconnected from GitHub');
   };
 

@@ -203,21 +203,27 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData, userGr
             </div>
           </div>
           <div className="flex gap-4 text-sm font-medium">
-            <button 
-              onClick={() => setSelectedPeriod('week')}
-              className={`font-semibold ${selectedPeriod === 'week' ? 'text-pink-500' : 'text-[#1A1A16]'}`}
+            <button
+              onClick={() => setSelectedPeriod("week")}
+              className={`font-semibold ${
+                selectedPeriod === "week" ? "text-pink-500" : "text-[#1A1A16]"
+              }`}
             >
               WEEK
             </button>
-            <button 
-              onClick={() => setSelectedPeriod('month')}
-              className={`font-semibold ${selectedPeriod === 'month' ? 'text-pink-500' : 'text-[#1A1A16]'}`}
+            <button
+              onClick={() => setSelectedPeriod("month")}
+              className={`font-semibold ${
+                selectedPeriod === "month" ? "text-pink-500" : "text-[#1A1A16]"
+              }`}
             >
               MONTH
             </button>
-            <button 
-              onClick={() => setSelectedPeriod('year')}
-              className={`font-semibold ${selectedPeriod === 'year' ? 'text-pink-500' : 'text-[#1A1A16]'}`}
+            <button
+              onClick={() => setSelectedPeriod("year")}
+              className={`font-semibold ${
+                selectedPeriod === "year" ? "text-pink-500" : "text-[#1A1A16]"
+              }`}
             >
               YEAR
             </button>
@@ -225,89 +231,129 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData, userGr
         </div>
 
         {/* Period Selector */}
-        {selectedPeriod === 'week' && (
+        {selectedPeriod === "week" && (
           <div className="flex gap-1 mb-6">
-            {apiData && apiData.length > 0 && apiData.find(y => y.year === selectedYear)?.months.find(m => m.month === selectedMonth)?.weeks ? 
-              apiData.find(y => y.year === selectedYear)?.months.find(m => m.month === selectedMonth)?.weeks.slice(0, 4).map((week) => (
-                <button
-                  key={week.week_number}
-                  onClick={() => setSelectedWeek(week.week_number)}
-                  className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
-                    selectedWeek === week.week_number ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                  }`}
-                >
-                  <div className="font-medium text-sm">{selectedMonth}</div>
-                  <div className="font-medium text-xs mt-1">Week {week.week_number}</div>
-                </button>
-              )) :
-              [1, 2, 3, 4].map((weekNum) => (
-                <button
-                  key={weekNum}
-                  onClick={() => setSelectedWeek(weekNum)}
-                  className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
-                    selectedWeek === weekNum ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                  }`}
-                >
-                  <div className="font-medium text-sm">{selectedMonth}</div>
-                  <div className="font-medium text-xs mt-1">Week {weekNum}</div>
-                </button>
-              ))}
+            {apiData &&
+            apiData.length > 0 &&
+            apiData
+              .find((y) => y.year === selectedYear)
+              ?.months.find((m) => m.month === selectedMonth)?.weeks
+              ? apiData
+                  .find((y) => y.year === selectedYear)
+                  ?.months.find((m) => m.month === selectedMonth)
+                  ?.weeks.slice(0, 4)
+                  .map((week) => (
+                    <button
+                      key={week.week_number}
+                      onClick={() => setSelectedWeek(week.week_number)}
+                      className={`w-20 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                        selectedWeek === week.week_number
+                          ? "bg-[#ff94da]"
+                          : "bg-[#d8cee8]"
+                      }`}
+                    >
+                      <div className="font-medium text-sm">
+                        Week {week.week_number}
+                      </div>
+                      <div className="font-medium text-xs mt-1">
+                        {selectedMonth}
+                      </div>
+                    </button>
+                  ))
+              : [1, 2, 3, 4].map((weekNum) => (
+                  <button
+                    key={weekNum}
+                    onClick={() => setSelectedWeek(weekNum)}
+                    className={`w-16 h-14 text-xs flex flex-col items-center justify-center text-black rounded-xl ${
+                      selectedWeek === weekNum ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+                    }`}
+                  >
+                    <div className="font-medium text-sm">{selectedMonth}</div>
+                    <div className="font-medium text-xs mt-1">
+                      Week {weekNum}
+                    </div>
+                  </button>
+                ))}
           </div>
         )}
 
-        {selectedPeriod === 'month' && (
+        {selectedPeriod === "month" && (
           <div className="flex gap-1 mb-6 flex-wrap">
-            {apiData && apiData.length > 0 && apiData.find(y => y.year === selectedYear)?.months ? 
-              apiData.find(y => y.year === selectedYear)?.months.map((month) => (
-                <button
-                  key={month.month}
-                  onClick={() => setSelectedMonth(month.month)}
-                  className={`px-3 py-2 text-xs text-black rounded-xl ${
-                    selectedMonth === month.month ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                  }`}
-                >
-                  {month.month}
-                </button>
-              )) :
-              ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month) => (
-                <button
-                  key={month}
-                  onClick={() => setSelectedMonth(month)}
-                  className={`px-3 py-2 text-xs text-black rounded-xl ${
-                    selectedMonth === month ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                  }`}
-                >
-                  {month}
-                </button>
-              ))}
+            {apiData &&
+            apiData.length > 0 &&
+            apiData.find((y) => y.year === selectedYear)?.months
+              ? apiData
+                  .find((y) => y.year === selectedYear)
+                  ?.months.map((month) => (
+                    <button
+                      key={month.month}
+                      onClick={() => setSelectedMonth(month.month)}
+                      className={`px-3 py-2 text-xs text-black rounded-xl ${
+                        selectedMonth === month.month
+                          ? "bg-[#ff94da]"
+                          : "bg-[#d8cee8]"
+                      }`}
+                    >
+                      <div className="font-medium text-sm">{month.month}</div>
+                      <div className="font-medium text-xs mt-1">
+                        {selectedYear}
+                      </div>
+                    </button>
+                  ))
+              : [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ].map((month) => (
+                  <button
+                    key={month}
+                    onClick={() => setSelectedMonth(month)}
+                    className={`px-3 py-2 text-xs text-black rounded-xl ${
+                      selectedMonth === month ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+                    }`}
+                  >
+                    {month}
+                  </button>
+                ))}
           </div>
         )}
 
-        {selectedPeriod === 'year' && (
+        {selectedPeriod === "year" && (
           <div className="flex gap-1 mb-6">
-            {apiData && apiData.length > 0 ? 
-              apiData.map((yearData) => (
-                <button
-                  key={yearData.year}
-                  onClick={() => setSelectedYear(yearData.year)}
-                  className={`px-4 py-2 text-xs text-black rounded-xl ${
-                    selectedYear === yearData.year ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                  }`}
-                >
-                  {yearData.year}
-                </button>
-              )) :
-              [2023, 2024, 2025].map((year) => (
-                <button
-                  key={year}
-                  onClick={() => setSelectedYear(year)}
-                  className={`px-4 py-2 text-xs text-black rounded-xl ${
-                    selectedYear === year ? "bg-[#ff94da]" : "bg-[#d8cee8]"
-                  }`}
-                >
-                  {year}
-                </button>
-              ))}
+            {apiData && apiData.length > 0
+              ? apiData.map((yearData) => (
+                  <button
+                    key={yearData.year}
+                    onClick={() => setSelectedYear(yearData.year)}
+                    className={`px-4 py-2 text-xs text-black rounded-xl ${
+                      selectedYear === yearData.year
+                        ? "bg-[#ff94da]"
+                        : "bg-[#d8cee8]"
+                    }`}
+                  >
+                      <div className="font-medium text-sm">{yearData.year}</div>
+                  </button>
+                ))
+              : [2023, 2024, 2025].map((year) => (
+                  <button
+                    key={year}
+                    onClick={() => setSelectedYear(year)}
+                    className={`px-4 py-2 text-xs text-black rounded-xl ${
+                      selectedYear === year ? "bg-[#ff94da]" : "bg-[#d8cee8]"
+                    }`}
+                  >
+                    {year}
+                  </button>
+                ))}
           </div>
         )}
 
@@ -334,7 +380,9 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData, userGr
               tick={{ fontSize: 12, fill: "#1E1E1E" }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(value) => value >= 1000 ? `${value / 1000}k` : value.toString()}
+              tickFormatter={(value) =>
+                value >= 1000 ? `${value / 1000}k` : value.toString()
+              }
             />
             <Tooltip content={<CustomTooltip />} />
 

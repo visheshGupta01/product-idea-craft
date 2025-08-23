@@ -110,6 +110,16 @@ export default function UserManagement() {
       <div className="bg-white rounded-lg shadow-sm">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-semibold font-poppins text-gray-900">
+                Users{" "}
+                <span className="font-bold font-supply">
+                  {totalUsers.toLocaleString()}
+                </span>
+              </h1>
+            </div>
+          </div>
           <div className="flex items-center justify-between">
             {/* Search and Filters */}
             <div className="flex items-center gap-4">
@@ -189,8 +199,13 @@ export default function UserManagement() {
             <TableBody>
               {paginatedUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                    {searchQuery ? 'No users found matching your search.' : 'No users found.'}
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-gray-500 py-8"
+                  >
+                    {searchQuery
+                      ? "No users found matching your search."
+                      : "No users found."}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -202,13 +217,17 @@ export default function UserManagement() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                          <AvatarFallback>
+                            {getInitials(user.name)}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className="font-medium text-[18px] text-gray-900">
                             {user.name}
                           </div>
-                          <div className="text-sm text-gray-900">{user.email}</div>
+                          <div className="text-sm text-gray-900">
+                            {user.email}
+                          </div>
                         </div>
                       </div>
                     </TableCell>
@@ -218,8 +237,11 @@ export default function UserManagement() {
                     <TableCell className="text-gray-900">
                       {formatDate(user.last_login_at)}
                     </TableCell>
-                    <TableCell >
-                      <Badge variant="outline" className="text-[14px] font-normal text-gray-900 px-3 py-1">
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className="text-[14px] font-normal text-gray-900 px-3 py-1"
+                      >
                         {user.no_of_projects} projects
                       </Badge>
                     </TableCell>
@@ -272,7 +294,8 @@ export default function UserManagement() {
               </SelectContent>
             </Select>
             <span className="text-xs whitespace-nowrap font-poppins font-medium text-black">
-              Out of {filteredUsers.length} filtered ({totalUsers.toLocaleString()} total)
+              Out of {filteredUsers.length} filtered (
+              {totalUsers.toLocaleString()} total)
             </span>
           </div>
 
@@ -286,7 +309,9 @@ export default function UserManagement() {
                       e.preventDefault();
                       if (currentPage > 1) setCurrentPage(currentPage - 1);
                     }}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    className={
+                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    }
                   />
                 </PaginationItem>
 

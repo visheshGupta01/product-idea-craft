@@ -88,7 +88,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
           <h1 className="text-2xl font-bold text-white mb-4">Create your account</h1>
 
         {/* Google Sign In Button */}
-        <Button
+        {/* <Button
           variant="outline"
           className="w-full h-10 mb-3 bg-[#1A1A1A] border-[#2A2A2A] text-white hover:bg-[#2A2A2A]"
           disabled={isLoading}
@@ -101,13 +101,13 @@ export const SignupModal: React.FC<SignupModalProps> = ({
             </svg>
             Continue with Google
           </Button>
-
+ */}
         {/* Divider */}
-        <div className="flex items-center my-4">
+        {/* <div className="flex items-center my-4">
           <div className="flex-1 border-t border-[#2A2A2A]"></div>
           <span className="px-4 text-gray-400 text-sm">or</span>
           <div className="flex-1 border-t border-[#2A2A2A]"></div>
-        </div>
+        </div> */}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Input */}

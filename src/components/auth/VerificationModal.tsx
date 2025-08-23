@@ -24,7 +24,7 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
               <CheckCircle className="h-6 w-6 text-green-500 absolute -top-1 -right-1 bg-background rounded-full" />
             </div>
           </div>
-          <DialogTitle className="text-2xl">Check Your Email</DialogTitle>
+          <DialogTitle className="text-2xl text-center">Check Your Email</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">

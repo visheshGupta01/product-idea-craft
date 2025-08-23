@@ -35,12 +35,14 @@ apiClient.interceptors.response.use(
     // Check if the error is 401 (Unauthorized) and we haven't already tried to refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
+console.log("Token expired, attempting to refresh...");
       try {
         const refreshToken = localStorage.getItem('refresh_token');
-        
+        console.log("Refresh Token: " + refreshToken);
         if (!refreshToken) {
           // No refresh token available, redirect to login
+          console.error('No refresh token available');
+          console.log("No refresh token available, redirecting to login.");
           localStorage.clear();
           sessionStorage.clear();
           window.location.href = '/';
@@ -49,13 +51,16 @@ apiClient.interceptors.response.use(
 
         // Try to refresh the token
         const refreshResponse = await axios.post(`${API_BASE_URL}/refresh-token`, {
-          refreshToken: refreshToken,
+          refresh_token: refreshToken,
         });
 
         const data = refreshResponse.data;
+        console.log(data);
 
-        if (data.Success && data.token) {
+        if (data.success && data.token) {
           // Update tokens in localStorage
+          console.log("Token refreshed successfully");
+          console.log("Token refreshed successfully");
           localStorage.setItem('auth_token', data.token);
           localStorage.setItem('refresh_token', data.refreshToken);
           localStorage.setItem('user_role', data.role);

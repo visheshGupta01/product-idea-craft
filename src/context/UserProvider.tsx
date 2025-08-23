@@ -96,9 +96,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const sendIdeaWithAuth = async (idea: string) => {
     if (!isAuthenticated) {
+      console.log("User is not authenticated.");
       return { success: false, message: "Please login first" };
     }
-
+console.log("Sending idea:", idea);
     setIsProcessingIdea(true);
     
     try {

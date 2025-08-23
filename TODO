@@ -5,9 +5,14 @@
 5. Sitemap render
 6. Code Preview
 7. File Upload and Voice Integration
-8. GitHub And Vercel Integration 
+8. GitHub And Vercel Integration
 9. Frontend preview fix
 10. Add location while signup ---> DONE
-11. Send refresh token
+11. Send refresh token ---> DONE
 12. Update user profile and user projects page
 13. Add cancel subscription button
+14. Ask about separation of flow of project creation and oauth in github and vercel
+15. Also ask if repo from same name exists
+16. Tell to update plan with plan_id in db
+17. Tell him to fix default user signup plan setting
+18. Change getUserID in backend

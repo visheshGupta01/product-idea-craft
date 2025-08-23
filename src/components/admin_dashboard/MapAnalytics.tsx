@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import * as L from "leaflet";
+import "leaflet.heat";
 
 interface MapAnalyticsProps {
   countryPercentages?: Array<{
@@ -10,14 +14,92 @@ interface MapAnalyticsProps {
     country: string;
     lat: number;
     lon: number;
+    percentage?: number;
   }>;
 }
 
-const MapAnalytics: React.FC<MapAnalyticsProps> = ({ 
+const HeatmapLayer: React.FC<{ points: any[] }> = ({ points }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map || !points.length) return;
+
+    const heatData = points.map((p) => [
+      p.lat,
+      p.lon,
+      (p.percentage ?? 50) / 100,
+    ]);
+
+    const heatLayer = (L as any)
+      .heatLayer(heatData, {
+        radius: 20,
+        blur: 15,
+        maxZoom: 5,
+      })
+      .addTo(map);
+
+    const updateRadius = () => {
+      const zoom = map.getZoom();
+      heatLayer.setOptions({
+        radius: Math.max(10, zoom * 2),
+      });
+    };
+
+    map.on("zoomend", updateRadius);
+    updateRadius();
+
+    return () => {
+      map.removeLayer(heatLayer);
+      map.off("zoomend", updateRadius);
+    };
+  }, [map, points]);
+
+  return null;
+};
+
+const HeatmapLegend: React.FC = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+
+    const legend = L.control({ position: "bottomright" });
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create("div", "info legend");
+      div.innerHTML = `
+        <div style="padding:8px; background:white; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.2);">
+          <h4 style="margin:0 0 5px; font-size:14px;">Intensity</h4>
+          <div style="width:120px; height:12px; background:linear-gradient(to right, blue, lime, yellow, red); margin-bottom:4px;"></div>
+          <div style="display:flex; justify-content:space-between; font-size:12px;">
+            <span>Low</span><span>High</span>
+          </div>
+        </div>
+      `;
+      return div;
+    };
+
+    legend.addTo(map);
+
+    return () => {
+      legend.remove();
+    };
+  }, [map]);
+
+  return null;
+};
+
+const MapAnalytics: React.FC<MapAnalyticsProps> = ({
   countryPercentages = [
     { country: "India", user_count: 200, percentage: 50 },
-    { country: "USA", user_count: 200, percentage: 50 }
-  ]
+    { country: "USA", user_count: 200, percentage: 50 },
+  ],
+  countryGeoData = [
+    { country: "India", lat: 20.5937, lon: 78.9629, percentage: 90 },
+    { country: "USA", lat: 37.0902, lon: -95.7129, percentage: 70 },
+    { country: "Brazil", lat: -14.235, lon: -51.9253, percentage: 40 },
+    { country: "Germany", lat: 51.1657, lon: 10.4515, percentage: 60 },
+  ],
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 relative flex-1">
@@ -26,8 +108,7 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
         <h3 className="font-semibold text-gray-900 text-lg font-supply">
           Users by Countries
         </h3>
-        {/* Expand Icon */}
-        <div className="flex items-center justify-center w-8 h-8 bg-gray-50 rounded-full cursor-pointer hover:bg-gray-100 shadow-sm">
+        {/* <div className="flex items-center justify-center w-8 h-8 bg-gray-50 rounded-full cursor-pointer hover:bg-gray-100 shadow-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -39,61 +120,32 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
             <path d="M10 3h3.5a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-1 0V4.707l-5.146 5.147a.5.5 0 0 1-.708-.708L12.293 4H10a.5.5 0 0 1 0-1z" />
             <path d="M13 13H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h6a.5.5 0 0 1 0 1H3v9h10V7a.5.5 0 0 1 1 0v5a1 1 0 0 1-1 1z" />
           </svg>
-        </div>
+        </div> */}
       </div>
 
       {/* Map + Legend side by side */}
       <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
-        {/* US Map with Heat Spots */}
+        {/* Heatmap Map */}
         <div className="flex-1 flex justify-center items-center h-56">
-          <svg viewBox="0 0 600 300" className="w-full h-full">
-            {/* Alaska */}
-            <path
-              d="M60 40 L100 35 L120 45 L115 70 L90 80 L65 70 Z"
-              fill="#d1d5db"
-              stroke="#9ca3af"
-              strokeWidth="1"
+          <MapContainer
+            center={[20, 0]}
+            zoom={2}
+            style={{ height: "100%", width: "100%", borderRadius: "12px" }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution="&copy; OpenStreetMap contributors"
             />
-            {/* Mainland USA */}
-            <path
-              d="M180 100 L400 100 L420 120 L410 160 L370 180 L300 190 L230 170 L190 140 Z"
-              fill="#d1d5db"
-              stroke="#9ca3af"
-              strokeWidth="1"
-            />
-
-            {/* Heat Spots */}
-            <defs>
-              <radialGradient id="heat-red">
-                <stop offset="0%" stopColor="red" stopOpacity="1" />
-                <stop offset="100%" stopColor="red" stopOpacity="0" />
-              </radialGradient>
-              <radialGradient id="heat-green">
-                <stop offset="0%" stopColor="lime" stopOpacity="1" />
-                <stop offset="100%" stopColor="lime" stopOpacity="0" />
-              </radialGradient>
-              <radialGradient id="heat-blue">
-                <stop offset="0%" stopColor="blue" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="blue" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-
-            <circle cx="280" cy="160" r="30" fill="url(#heat-red)" />
-            <circle cx="240" cy="180" r="25" fill="url(#heat-green)" />
-            <circle cx="350" cy="140" r="20" fill="url(#heat-green)" />
-            <circle cx="200" cy="120" r="18" fill="url(#heat-blue)" />
-            <circle cx="400" cy="150" r="18" fill="url(#heat-blue)" />
-
-            {/* Alaska Activity */}
-            <circle cx="90" cy="55" r="22" fill="url(#heat-green)" />
-            <circle cx="75" cy="65" r="18" fill="url(#heat-blue)" />
-          </svg>
+            <HeatmapLayer points={countryGeoData} />
+          </MapContainer>
         </div>
 
-        {/* Legend */}
+        {/* Legend (raw list of countries + percentages) */}
         <div className="ml-6 border font-poppins border-gray-300 rounded-lg p-4 text-sm text-gray-800 bg-white shadow-sm">
-          {countryPercentages.slice(0, 4).map((country, index) => (
-            <div key={country.country}>{country.percentage}% {country.country}</div>
+          {countryPercentages.slice(0, 4).map((country) => (
+            <div key={country.country}>
+              {country.percentage}% {country.country}
+            </div>
           ))}
         </div>
       </div>

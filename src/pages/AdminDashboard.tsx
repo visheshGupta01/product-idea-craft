@@ -85,15 +85,15 @@ const AdminDashboard: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* User Growth Chart (takes 2/3) */}
                   <div className="lg:col-span-2">
-                    <UserGrowthChart 
-                      data={dashboardData.yearly_stats} 
+                    <UserGrowthChart
+                      data={dashboardData.yearly_stats}
                       userGrowthRate={dashboardData.user_growth_rate_percent}
                     />
                   </div>
 
                   {/* Metrics Cards (takes 1/3) */}
                   <div className="lg:col-span-1">
-                    <MetricsCards 
+                    <MetricsCards
                       conversionRate={dashboardData.conversion_rate_percent}
                       revenueData={dashboardData.revenue_data}
                     />
@@ -106,11 +106,12 @@ const AdminDashboard: React.FC = () => {
                     More Analytics
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <MapAnalytics 
-                      countryPercentages={dashboardData.country_percentages}
-                      countryGeoData={dashboardData.country_geo_data}
+                    <MapAnalytics
+                      // countryPercentages={dashboardData.country_percentages}
                     />
-                    <DropRateCard droppingRate={dashboardData.dropping_rate_percent} />
+                    {/* <DropRateCard
+                      droppingRate={dashboardData.dropping_rate_percent}
+                    /> */}
                   </div>
                 </div>
               </>

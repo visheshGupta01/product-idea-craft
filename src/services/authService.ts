@@ -56,7 +56,7 @@ export class AuthService {
     // Load tokens from localStorage on initialization
     this.token = localStorage.getItem("auth_token");
     this.refreshToken = localStorage.getItem("refresh_token");
-    this.userrole = localStorage.getItem("user_role") as
+    this.userrole = localStorage.getItem("role") as
       | "admin"
       | "user"
       | null;
@@ -65,9 +65,10 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post('/login', { email, password });
+      const response = await apiClient.post("/login", { email, password });
       const data: LoginResponse = response.data;
       console.log("Login response:", data);
+      console.log("Logined at", new Date().toISOString());
 
       if (data.success && data.token) {
         this.token = data.token;
@@ -116,21 +117,16 @@ export class AuthService {
       const ipData = await ipRes.json();
       console.log("IP Data:", ipData);
 
-      // 2. Pick only required fields
-      const locationData = {
-        country: ipData.country,
-        city: ipData.city,
-        lat: ipData.lat,
-        lon: ipData.lon,
-      };
-
       // 3. Send signup + location to backend
-      const response = await apiClient.post('/signup', {
+      const response = await apiClient.post("/signup", {
         first_name,
         last_name,
         email,
         password,
-        locationData
+        country: ipData.country,
+        city: ipData.city,
+        lat: ipData.lat,
+        lon: ipData.lon,
       });
 
       const data: SignupResponse = response.data;
@@ -169,7 +165,7 @@ export class AuthService {
 
   async forgotPassword(email: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post('/forget/password', { email });
+      const response = await apiClient.post("/forget/password", { email });
       const data: ForgotPasswordResponse = response.data;
 
       return {
@@ -225,7 +221,7 @@ export class AuthService {
     }
 
     try {
-      const response = await apiClient.post('/refresh-token', {
+      const response = await apiClient.post("/refresh-token", {
         refreshToken: this.refreshToken,
       });
 
@@ -270,7 +266,8 @@ export class AuthService {
     }
 
     try {
-      const response = await apiClient.post('/create/session', { idea });
+      console.log("Creating session with idea:", idea);
+      const response = await apiClient.post("/create/session", { idea });
       const data = response.data;
       console.log("Create session response:", data);
 
@@ -301,11 +298,11 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return this.token;
+    return this.token || localStorage.getItem("auth_token");
   }
 
-  getrefreshToken(): string | null {
-    return this.refreshToken;
+  getRefreshToken(): string | null {
+    return this.refreshToken || localStorage.getItem("refresh_token");
   }
 
   getUserRole(): "admin" | "user" | null {
