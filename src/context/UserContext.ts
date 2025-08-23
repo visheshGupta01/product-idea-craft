@@ -1,9 +1,11 @@
 
 import React, { createContext, useContext } from "react";
 import { User, InitialResponse } from "@/types";
+import { ProfileData } from "@/services/profileService";
 
 interface UserContextType {
   user: User | null;
+  profile: ProfileData | null;
   userIdea: string | null;
   initialResponse: InitialResponse | null;
   isProcessingIdea: boolean;
@@ -21,11 +23,14 @@ interface UserContextType {
   setUserIdea: (idea: string) => void;
   sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string }>;
   clearInitialResponse: () => void;
+  fetchProfile: () => Promise<void>;
+  updateProfile: (data: Partial<ProfileData>) => Promise<{ success: boolean; message?: string }>;
 }
 
 // Create context with default
 export const UserContext = createContext<UserContextType>({
   user: null,
+  profile: null,
   userIdea: null,
   initialResponse: null,
   isProcessingIdea: false,
@@ -43,6 +48,8 @@ export const UserContext = createContext<UserContextType>({
   setUserIdea: () => {},
   sendIdeaWithAuth: async () => ({ success: false }),
   clearInitialResponse: () => {},
+  fetchProfile: async () => {},
+  updateProfile: async () => ({ success: false }),
 });
 
 // Hook

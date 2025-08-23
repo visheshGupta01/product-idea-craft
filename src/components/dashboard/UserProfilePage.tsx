@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -17,23 +17,41 @@ import {
 } from 'lucide-react';
 import GitHubIntegration from './GitHubIntegration';
 import VercelIntegration from './VercelIntegration';
+import { useUser } from '@/context/UserContext';
+import { toast } from 'sonner';
 
 interface UserProfilePageProps {
   onLogout?: () => void;
 }
 
 const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
+  const { profile, fetchProfile, updateProfile } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    location: 'San Francisco, CA',
-    bio: 'Full-stack developer with 5+ years of experience building web applications. Passionate about clean code and user experience.',
-    website: 'https://johndoe.dev',
-    github: 'johndoe',
-    joinDate: 'March 2023'
+    first_name: '',
+    last_name: '',
+    email: '',
+    country: '',
+    city: '',
+    frontend_stack: '',
+    backend_stack: '',
+    database_stack: ''
   });
+
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        email: profile.email || '',
+        country: profile.country || '',
+        city: profile.city || '',
+        frontend_stack: profile.frontend_stack || '',
+        backend_stack: profile.backend_stack || '',
+        database_stack: profile.database_stack || ''
+      });
+    }
+  }, [profile]);
 
   const [notifications, setNotifications] = useState({
     email: true,
@@ -42,10 +60,18 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
     updates: true
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically save to backend
-    console.log('Saving profile data:', profileData);
+  const handleSave = async () => {
+    try {
+      const result = await updateProfile(profileData);
+      if (result.success) {
+        setIsEditing(false);
+        toast.success('Profile updated successfully');
+      } else {
+        toast.error(result.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      toast.error('Failed to update profile');
+    }
   };
 
   const handleCancel = () => {
@@ -53,10 +79,10 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
     // Reset to original data if needed
   };
   const stats = [
-    { label: 'Projects', value: '12', color: 'text-blue-600' },
-    { label: 'Completed', value: '8', color: 'text-green-600' },
-    { label: 'In Progress', value: '3', color: 'text-yellow-600' },
-    { label: 'Collaborators', value: '24', color: 'text-purple-600' }
+    { label: 'Tasks Assigned', value: profile?.total_assigned_tasks?.toString() || '0', color: 'text-blue-600' },
+    { label: 'Bugs Solved', value: profile?.total_solved_bugs?.toString() || '0', color: 'text-green-600' },
+    { label: 'Balance', value: `$${profile?.balances?.toFixed(2) || '0.00'}`, color: 'text-yellow-600' },
+    { label: 'Plan', value: profile?.is_plan_active ? 'Active' : 'Inactive', color: profile?.is_plan_active ? 'text-green-600' : 'text-gray-600' }
   ];
 
   return (
@@ -115,10 +141,12 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                     </div>
                     
                     <div className="text-center space-y-2">
-                      <h3 className="text-xl font-semibold">{profileData.name}</h3>
-                      <p className="text-muted-foreground">{profileData.email}</p>
-                      <Badge variant="secondary" className="mt-2">
-                        Pro Plan
+                      <h3 className="text-xl font-semibold">
+                        {profile?.first_name} {profile?.last_name}
+                      </h3>
+                      <p className="text-muted-foreground">{profile?.email}</p>
+                      <Badge variant={profile?.is_plan_active ? "default" : "secondary"} className="mt-2">
+                        {profile?.is_plan_active ? `${profile.price?.name || 'Active'} Plan` : 'Free Plan'}
                       </Badge>
                     </div>
                   </div>
@@ -161,12 +189,21 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="name">Full Name</Label>
+                          <Label htmlFor="first_name">First Name</Label>
                           <Input
-                            id="name"
-                            value={profileData.name}
+                            id="first_name"
+                            value={profileData.first_name}
                             disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                            onChange={(e) => setProfileData({...profileData, first_name: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="last_name">Last Name</Label>
+                          <Input
+                            id="last_name"
+                            value={profileData.last_name}
+                            disabled={!isEditing}
+                            onChange={(e) => setProfileData({...profileData, last_name: e.target.value})}
                           />
                         </div>
                         <div className="space-y-2">
@@ -175,58 +212,59 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                             id="email"
                             type="email"
                             value={profileData.email}
-                            disabled={!isEditing}
+                            disabled={true}
                             onChange={(e) => setProfileData({...profileData, email: e.target.value})}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="phone">Phone</Label>
+                          <Label htmlFor="country">Country</Label>
                           <Input
-                            id="phone"
-                            value={profileData.phone}
+                            id="country"
+                            value={profileData.country}
                             disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                            onChange={(e) => setProfileData({...profileData, country: e.target.value})}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="location">Location</Label>
+                          <Label htmlFor="city">City</Label>
                           <Input
-                            id="location"
-                            value={profileData.location}
+                            id="city"
+                            value={profileData.city}
                             disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, location: e.target.value})}
+                            onChange={(e) => setProfileData({...profileData, city: e.target.value})}
                           />
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="bio">Bio</Label>
-                        <textarea
-                          id="bio"
-                          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          value={profileData.bio}
-                          disabled={!isEditing}
-                          onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="website">Website</Label>
+                          <Label htmlFor="frontend_stack">Frontend Stack</Label>
                           <Input
-                            id="website"
-                            value={profileData.website}
+                            id="frontend_stack"
+                            value={profileData.frontend_stack}
                             disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, website: e.target.value})}
+                            placeholder="e.g., React, Vue, Angular"
+                            onChange={(e) => setProfileData({...profileData, frontend_stack: e.target.value})}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="github">GitHub Username</Label>
+                          <Label htmlFor="backend_stack">Backend Stack</Label>
                           <Input
-                            id="github"
-                            value={profileData.github}
+                            id="backend_stack"
+                            value={profileData.backend_stack}
                             disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, github: e.target.value})}
+                            placeholder="e.g., Node.js, Python, Java"
+                            onChange={(e) => setProfileData({...profileData, backend_stack: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="database_stack">Database Stack</Label>
+                          <Input
+                            id="database_stack"
+                            value={profileData.database_stack}
+                            disabled={!isEditing}
+                            placeholder="e.g., MongoDB, PostgreSQL, MySQL"
+                            onChange={(e) => setProfileData({...profileData, database_stack: e.target.value})}
                           />
                         </div>
                       </div>
@@ -357,14 +395,22 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 border rounded-lg">
+                         <div className="flex items-center justify-between p-4 border rounded-lg">
                           <div>
-                            <h4 className="font-medium">Pro Plan</h4>
+                            <h4 className="font-medium">
+                              {profile?.price?.name || 'Free Plan'}
+                            </h4>
                             <p className="text-sm text-muted-foreground">
-                              $29/month • Next billing date: Jan 15, 2024
+                              {profile?.price?.price ? `$${profile.price.price}/month` : 'Free'} • 
+                              {profile?.plan_expires_at 
+                                ? ` Expires: ${new Date(profile.plan_expires_at).toLocaleDateString()}`
+                                : ' No expiration'
+                              }
                             </p>
                           </div>
-                          <Badge>Active</Badge>
+                          <Badge variant={profile?.is_plan_active ? "default" : "secondary"}>
+                            {profile?.is_plan_active ? 'Active' : 'Inactive'}
+                          </Badge>
                         </div>
                         
                         <div className="flex space-x-2">

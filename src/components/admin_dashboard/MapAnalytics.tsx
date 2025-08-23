@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 import "leaflet.heat";
@@ -123,21 +124,13 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
         </div> */}
       </div>
 
-      {/* Map + Legend side by side */}
+{/* Map + Legend side by side */}
       <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
-        {/* Heatmap Map */}
+        {/* Heatmap Map - Temporarily disabled due to build issues */}
         <div className="flex-1 flex justify-center items-center h-56">
-          <MapContainer
-            center={[20, 0]}
-            zoom={2}
-            style={{ height: "100%", width: "100%", borderRadius: "12px" }}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution="&copy; OpenStreetMap contributors"
-            />
-            <HeatmapLayer points={countryGeoData} />
-          </MapContainer>
+          <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+            <p className="text-gray-500">Map temporarily unavailable</p>
+          </div>
         </div>
 
         {/* Legend (raw list of countries + percentages) */}

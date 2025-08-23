@@ -3,9 +3,11 @@ import { ReactNode, useState, useEffect } from "react";
 import { UserContext } from "./UserContext";
 import { User, InitialResponse } from "@/types";
 import { authService } from "@/services/authService";
+import { ProfileData, fetchProfile, updateProfile } from "@/services/profileService";
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [userIdea, setUserIdea] = useState<string | null>(null);
   const [initialResponse, setInitialResponse] = useState<InitialResponse | null>(null);
   const [isProcessingIdea, setIsProcessingIdea] = useState(false);
@@ -32,6 +34,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           if (storedUserIdea) {
             setUserIdea(storedUserIdea);
           }
+          // Fetch profile data
+          await fetchUserProfile();
         }
       } catch (error) {
         console.error('Error during auth check:', error);
@@ -136,9 +140,33 @@ console.log("Sending idea:", idea);
     setInitialResponse(null);
   };
 
+  const fetchUserProfile = async () => {
+    try {
+      const profileData = await fetchProfile();
+      setProfile(profileData);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  const updateUserProfile = async (data: Partial<ProfileData>) => {
+    try {
+      const result = await updateProfile(data);
+      if (result.success) {
+        // Refresh profile data
+        await fetchUserProfile();
+      }
+      return result;
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      return { success: false, message: 'Failed to update profile' };
+    }
+  };
+
   return (
     <UserContext.Provider value={{ 
       user, 
+      profile,
       userIdea, 
       initialResponse,
       isProcessingIdea,
@@ -155,7 +183,9 @@ console.log("Sending idea:", idea);
       refreshToken,
       setUserIdea,
       sendIdeaWithAuth,
-      clearInitialResponse
+      clearInitialResponse,
+      fetchProfile: fetchUserProfile,
+      updateProfile: updateUserProfile
     }}>
       {children}
     </UserContext.Provider>
