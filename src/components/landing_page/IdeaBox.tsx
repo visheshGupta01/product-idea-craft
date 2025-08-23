@@ -7,10 +7,11 @@ import { UI_CONFIG } from "@/utils/constants";
 import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
-import { FileUploader } from "@/components/ui/file-uploader";
+import { FileUploader, UploadedFile } from "@/components/ui/file-uploader";
 
 const IdeaBox: React.FC = () => {
   const [idea, setIdea] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { sendIdeaWithAuth, setUserIdea, isProcessingIdea, isAuthenticated } = useUser();
@@ -20,8 +21,12 @@ const IdeaBox: React.FC = () => {
     setIdea(prev => prev ? prev + " " + transcript : transcript);
   };
 
-  const handleFileTextExtracted = (extractedText: string) => {
-    setIdea(prev => prev ? prev + "\n\n" + extractedText : extractedText);
+  const handleFileUploaded = (file: UploadedFile) => {
+    setUploadedFiles(prev => [...prev, file]);
+  };
+
+  const handleRemoveFile = (fileName: string) => {
+    setUploadedFiles(prev => prev.filter(file => file.name !== fileName));
   };
 
   const handleSubmit = async () => {
@@ -32,7 +37,16 @@ const IdeaBox: React.FC = () => {
       return;
     }
 
-    const result = await sendIdeaWithAuth(idea.trim());
+    // Combine idea with uploaded file content
+    let combinedIdea = idea.trim();
+    if (uploadedFiles.length > 0) {
+      const fileContents = uploadedFiles.map(file => 
+        `\n\n--- Content from ${file.name} ---\n${file.extractedText}`
+      ).join('\n');
+      combinedIdea += fileContents;
+    }
+
+    const result = await sendIdeaWithAuth(combinedIdea);
     
     if (result.success && result.session_id) {
       navigate(`/c/${result.session_id}`);
@@ -114,7 +128,9 @@ const IdeaBox: React.FC = () => {
                 disabled={isProcessingIdea}
               />
               <FileUploader 
-                onTextExtracted={handleFileTextExtracted}
+                onFileUploaded={handleFileUploaded}
+                uploadedFiles={uploadedFiles}
+                onRemoveFile={handleRemoveFile}
                 disabled={isProcessingIdea}
               />
             </div>
