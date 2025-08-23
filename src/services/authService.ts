@@ -56,7 +56,7 @@ export class AuthService {
     // Load tokens from localStorage on initialization
     this.token = localStorage.getItem("auth_token");
     this.refreshToken = localStorage.getItem("refresh_token");
-    this.userrole = localStorage.getItem("role") as
+    this.userrole = localStorage.getItem("user_role") as
       | "admin"
       | "user"
       | null;
