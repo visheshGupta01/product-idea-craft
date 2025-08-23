@@ -11,7 +11,7 @@ import AdminSidebar from '@/components/admin_dashboard/AdminSidebar';
 import RevenueCard from '@/components/admin_dashboard/RevenueCard';
 import UserGrowthChart from '@/components/admin_dashboard/UserGrowthChart';
 import MetricsCards from '@/components/admin_dashboard/MetrixCard';
-// import MapAnalytics from '@/components/admin_dashboard/MapAnalytics';
+import MapAnalytics from '@/components/admin_dashboard/MapAnalytics';
 import DropRateCard from '@/components/admin_dashboard/DropRateCard';
 import UserManagement from '@/components/admin_dashboard/UserManagement';
 
@@ -106,11 +106,9 @@ const AdminDashboard: React.FC = () => {
                     More Analytics
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* <MapAnalytics /> */}
-                    <div className="bg-white rounded-2xl shadow-sm p-6">
-                      <h3 className="font-semibold text-gray-900 text-lg">Map Analytics</h3>
-                      <p className="text-gray-600 mt-2">Coming soon...</p>
-                    </div>
+                    <MapAnalytics
+                      // countryPercentages={dashboardData.country_percentages}
+                    />
                     {/* <DropRateCard
                       droppingRate={dashboardData.dropping_rate_percent}
                     /> */}
