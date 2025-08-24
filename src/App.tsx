@@ -7,6 +7,8 @@ import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import MyProjects from "./pages/MyProjects";
+import Profile from "./pages/Profile";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -44,6 +46,16 @@ const AppContent = () => {
         <Route path="/c/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/projects" element={
+          <ProtectedRoute>
+            <MyProjects />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         } />
         <Route path="/admin" element={

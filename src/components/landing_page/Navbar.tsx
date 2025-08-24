@@ -54,11 +54,11 @@ const Navbar: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = '/projects'}>
                 <FolderOpen className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>

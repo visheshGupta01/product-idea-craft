@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
@@ -17,71 +19,67 @@ import {
   Calendar,
   Users,
   Code,
-  Globe
+  Globe,
+  ExternalLink
 } from 'lucide-react';
+import { fetchProjects, ProjectFromAPI } from '@/services/projectService';
 
 interface Project {
-  id: string;
-  name: string;
-  description: string;
+  session_id: string;
+  title: string;
+  project_url: string;
+  deploy_url: string;
+  created_at: string;
   status: 'active' | 'completed' | 'paused' | 'draft';
-  progress: number;
-  lastModified: string;
-  technology: string[];
-  collaborators: number;
-  thumbnail: string;
 }
 
 const MyProjectsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const projects: Project[] = [
-    {
-      id: '1',
-      name: 'E-commerce Platform',
-      description: 'Modern e-commerce solution with React and Node.js',
-      status: 'active',
-      progress: 75,
-      lastModified: '2 hours ago',
-      technology: ['React', 'Node.js', 'MongoDB'],
-      collaborators: 3,
-      thumbnail: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=200&fit=crop'
-    },
-    {
-      id: '2',
-      name: 'Task Management App',
-      description: 'Collaborative task management tool for teams',
-      status: 'completed',
-      progress: 100,
-      lastModified: '1 day ago',
-      technology: ['Vue.js', 'Express', 'PostgreSQL'],
-      collaborators: 2,
-      thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=200&fit=crop'
-    },
-    {
-      id: '3',
-      name: 'Portfolio Website',
-      description: 'Personal portfolio with blog functionality',
-      status: 'draft',
-      progress: 30,
-      lastModified: '3 days ago',
-      technology: ['Next.js', 'Tailwind'],
-      collaborators: 1,
-      thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop'
-    },
-    {
-      id: '4',
-      name: 'Analytics Dashboard',
-      description: 'Real-time analytics and reporting dashboard',
-      status: 'paused',
-      progress: 60,
-      lastModified: '1 week ago',
-      technology: ['React', 'D3.js', 'Firebase'],
-      collaborators: 4,
-      thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=200&fit=crop'
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const apiProjects = await fetchProjects();
+      const formattedProjects: Project[] = apiProjects.map(project => ({
+        ...project,
+        status: project.title ? 'active' : 'draft' as 'active' | 'completed' | 'paused' | 'draft'
+      }));
+      setProjects(formattedProjects);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load projects",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleProjectClick = (sessionId: string) => {
+    navigate(`/c/${sessionId}`);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return 'Today';
+    if (diffDays === 2) return 'Yesterday';
+    if (diffDays <= 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -112,8 +110,8 @@ const MyProjectsPage = () => {
   };
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchableText = `${project.title || 'Untitled Project'} ${project.session_id}`.toLowerCase();
+    const matchesSearch = searchableText.includes(searchTerm.toLowerCase());
     const matchesFilter = activeFilter === 'all' || project.status === activeFilter;
     return matchesSearch && matchesFilter;
   });
@@ -157,80 +155,96 @@ const MyProjectsPage = () => {
           </div>
 
           {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <Card key={project.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
-                <div className="relative">
-                  <div className="aspect-video w-full bg-muted rounded-t-lg overflow-hidden">
-                    <img 
-                      src={project.thumbnail} 
-                      alt={project.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1 flex-1 min-w-0">
-                      <CardTitle className="text-lg truncate">{project.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {project.description}
-                      </p>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="aspect-video w-full bg-muted rounded-t-lg" />
+                  <CardHeader>
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="h-3 bg-muted rounded" />
+                    <div className="h-2 bg-muted rounded" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project) => (
+                <Card 
+                  key={project.session_id} 
+                  className="hover:shadow-lg transition-shadow cursor-pointer group"
+                  onClick={() => handleProjectClick(project.session_id)}
+                >
+                  <div className="relative">
+                    <div className="aspect-video w-full bg-gradient-to-br from-primary/20 to-secondary/20 rounded-t-lg overflow-hidden flex items-center justify-center">
+                      <Code className="h-12 w-12 text-muted-foreground" />
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute top-2 right-2 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
                   </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(project.status)}
-                      {getStatusBadge(project.status)}
+                  
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <CardTitle className="text-lg truncate">
+                          {project.title || 'Untitled Project'}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground truncate">
+                          Session: {project.session_id.slice(0, 8)}...
+                        </p>
+                      </div>
                     </div>
-                    <span className="text-sm font-medium">{project.progress}%</span>
-                  </div>
+                  </CardHeader>
 
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${project.progress}%` }}
-                    />
-                  </div>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(project.status)}
+                        {getStatusBadge(project.status)}
+                      </div>
+                      {project.project_url && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(project.project_url, '_blank');
+                          }}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
 
-                  <div className="flex flex-wrap gap-1">
-                    {project.technology.slice(0, 3).map((tech) => (
-                      <Badge key={tech} variant="secondary" className="text-xs">
-                        {tech}
-                      </Badge>
-                    ))}
-                    {project.technology.length > 3 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{project.technology.length - 3}
-                      </Badge>
+                    {project.deploy_url && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Globe className="h-3 w-3" />
+                        <span className="truncate">Deployed</span>
+                      </div>
                     )}
-                  </div>
 
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="h-3 w-3" />
-                      <span>{project.lastModified}</span>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDate(project.created_at)}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <Users className="h-3 w-3" />
-                      <span>{project.collaborators}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           {filteredProjects.length === 0 && (
             <div className="text-center py-12">
