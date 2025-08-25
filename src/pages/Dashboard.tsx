@@ -32,7 +32,8 @@ const Dashboard = () => {
             title: "Access Denied",
             description: "You don't have access to this project session.",
           });
-          navigate('/projects');
+          // Add delay to allow toast to show before navigation
+          setTimeout(() => navigate('/projects'), 1000);
           return;
         }
 
