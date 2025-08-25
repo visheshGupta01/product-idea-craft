@@ -72,7 +72,14 @@ export const fetchUsersData = async (): Promise<UsersData> => {
   try {
     const response = await apiClient.get('/admin/users');
     console.log(response.data);
-    return response.data;
+    if (response.data.success) {
+      return {
+        total_verified_users: response.data.total_verified_users,
+        users: response.data.users
+      };
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch users data');
+    }
   } catch (error) {
     console.error('Error fetching users data:', error);
     throw error;
