@@ -49,17 +49,18 @@ export const useChatPersistence = (sessionId: string | null) => {
             return;
           } catch (error) {
             console.error('Error loading chat session from storage:', error);
+            sessionStorage.removeItem(`chat_session_${sessionId}`);
           }
         }
 
-        // If not in sessionStorage, load from API
+        // If not in sessionStorage, load from API with proper access validation
         try {
           const projectDetails = await fetchProjectDetails(sessionId);
           if (projectDetails.success && projectDetails.response) {
             const apiMessages = projectDetails.response.map(convertApiMessageToMessage);
             setMessages(apiMessages);
             
-            // Save to sessionStorage for future use
+            // Only save to sessionStorage if we successfully loaded from API
             const session: ChatSession = {
               sessionId,
               messages: apiMessages,
@@ -67,11 +68,16 @@ export const useChatPersistence = (sessionId: string | null) => {
             };
             sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
           } else {
+            // If API returns unsuccessful, clear any stored session
+            sessionStorage.removeItem(`chat_session_${sessionId}`);
             setMessages([]);
           }
         } catch (apiError) {
-          console.error('Error loading messages from API:', apiError);
+          console.error('Error loading messages from API - unauthorized access:', apiError);
+          // Clear any potentially unauthorized session data
+          sessionStorage.removeItem(`chat_session_${sessionId}`);
           setMessages([]);
+          throw apiError; // Re-throw to be handled by calling component
         }
       } catch (error) {
         console.error('Error in loadMessages:', error);

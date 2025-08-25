@@ -1,80 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import MainDashboard from "../components/MainDashboard";
 import { useUser } from "@/context/UserContext";
-import { fetchProjects, fetchProjectDetails } from "@/services/projectService";
-import { useToast } from "@/hooks/use-toast";
+import { fetchProjectDetails } from "@/services/projectService";
+import { SessionValidator } from "@/components/auth/SessionValidator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Dashboard = () => {
   const { sessionid } = useParams<{ sessionid: string }>();
-  const navigate = useNavigate();
   const { userIdea, setSessionId } = useUser();
-  const { toast } = useToast();
-  const [isValidating, setIsValidating] = useState(true);
   const [projectTitle, setProjectTitle] = useState<string>("");
   const [isAccessValidated, setIsAccessValidated] = useState(false);
 
-  useEffect(() => {
-    const validateAndLoadSession = async () => {
-      if (!sessionid) {
-        setIsValidating(false);
-        return;
-      }
-
+  const handleValidationComplete = async (isValid: boolean) => {
+    if (isValid && sessionid) {
+      setIsAccessValidated(true);
       try {
-        // First, check if user owns this session
-        const userProjects = await fetchProjects();
-        const ownsSession = userProjects.some(project => project.session_id === sessionid);
-        
-        if (!ownsSession) {
-          toast({
-            variant: "destructive",
-            title: "Access Denied",
-            description: "You don't have access to this project session.",
-          });
-          // Add delay to allow toast to show before navigation
-          setTimeout(() => navigate('/projects'), 1000);
-          return;
-        }
-
         // Load session details and set as active session
         const projectDetails = await fetchProjectDetails(sessionid);
         setSessionId(sessionid);
         setProjectTitle(projectDetails.title || `Project ${sessionid.slice(0, 8)}`);
-        setIsAccessValidated(true);
       } catch (error) {
-        console.error('Error validating session:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load project session.",
-        });
-        navigate('/projects');
-      } finally {
-        setIsValidating(false);
+        console.error('Error loading project details:', error);
+        setProjectTitle(`Project ${sessionid.slice(0, 8)}`);
       }
-    };
+    }
+  };
 
-    validateAndLoadSession();
-  }, [sessionid, setSessionId, navigate, toast]);
-
-  if (isValidating) {
+  // If no sessionid, render directly without validation
+  if (!sessionid) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner className="mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading project session...</p>
-        </div>
-      </div>
+      <MainDashboard 
+        userIdea={userIdea || "My App"}
+        sessionId={undefined}
+      />
     );
   }
-  
+
   return (
-    <MainDashboard 
-      userIdea={projectTitle || userIdea || "My App"}
-      sessionId={isAccessValidated ? sessionid : undefined}
-    />
+    <SessionValidator sessionId={sessionid} onValidationComplete={handleValidationComplete}>
+      <MainDashboard 
+        userIdea={projectTitle || userIdea || "My App"}
+        sessionId={isAccessValidated ? sessionid : undefined}
+      />
+    </SessionValidator>
   );
 };
 

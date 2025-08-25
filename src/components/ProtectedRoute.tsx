@@ -29,6 +29,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
 
   // Check if user is authenticated
   if (!isAuthenticated) {
+    // Clear any unauthorized session data before redirecting
+    sessionStorage.clear();
     return <Navigate to="/" replace />;
   }
 

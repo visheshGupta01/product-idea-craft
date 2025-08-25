@@ -65,15 +65,25 @@ export class AuthService {
   private token: string | null = null;
   private refreshToken: string | null = null;
   private userrole: "admin" | "user" | null = null;
+  private user: any = null;
 
   constructor() {
-    // Load tokens from localStorage on initialization
+    // Load tokens and user data from localStorage on initialization
     this.token = localStorage.getItem("auth_token");
     this.refreshToken = localStorage.getItem("refresh_token");
-    this.userrole = localStorage.getItem("role") as
-      | "admin"
-      | "user"
-      | null;
+    this.userrole = localStorage.getItem("user_role") as "admin" | "user" | null;
+    
+    // Load user data
+    const storedUser = localStorage.getItem("user_data");
+    if (storedUser) {
+      try {
+        this.user = JSON.parse(storedUser);
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+        localStorage.removeItem("user_data");
+      }
+    }
+    
     console.log("AuthService initialized with token:", this.token);
   }
 
@@ -88,10 +98,13 @@ export class AuthService {
         this.token = data.token;
         this.refreshToken = data.refreshToken;
         this.userrole = data.role as "admin" | "user";
+        this.user = data.user;
 
+        // Save to localStorage
         localStorage.setItem("auth_token", data.token);
         localStorage.setItem("refresh_token", data.refreshToken);
         localStorage.setItem("user_role", data.role);
+        localStorage.setItem("user_data", JSON.stringify(data.user));
 
         return {
           success: true,
@@ -305,11 +318,25 @@ export class AuthService {
     this.token = null;
     this.refreshToken = null;
     this.userrole = null;
+    this.user = null;
+    
+    // Clear all auth data from localStorage
     localStorage.removeItem("auth_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user_role");
+    localStorage.removeItem("user_data");
+    
+    // Clear session data
     sessionStorage.removeItem("session_id");
     sessionStorage.removeItem("user_idea");
+    
+    // Clear all chat sessions
+    const keys = Object.keys(sessionStorage);
+    keys.forEach(key => {
+      if (key.startsWith('chat_session_')) {
+        sessionStorage.removeItem(key);
+      }
+    });
   }
 
   getToken(): string | null {
@@ -321,7 +348,27 @@ export class AuthService {
   }
 
   getUserRole(): "admin" | "user" | null {
-    return this.userrole;
+    return this.userrole || localStorage.getItem("user_role") as "admin" | "user" | null;
+  }
+
+  getUser(): any {
+    if (this.user) return this.user;
+    
+    const storedUser = localStorage.getItem("user_data");
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  setUser(userData: any): void {
+    this.user = userData;
+    localStorage.setItem("user_data", JSON.stringify(userData));
   }
 
   getSessionId(): string | null {
@@ -337,15 +384,17 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.token;
+    return !!(this.token || localStorage.getItem("auth_token"));
   }
 
   isAdmin(): boolean {
-    return this.userrole === "admin";
+    const role = this.getUserRole();
+    return role === "admin";
   }
 
   isUser(): boolean {
-    return this.userrole === "user";
+    const role = this.getUserRole();
+    return role === "user";
   }
 }
 

@@ -22,20 +22,46 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       try {
         const token = authService.getToken();
         const role = authService.getUserRole();
+        const userData = authService.getUser();
         const storedSessionId = authService.getSessionId();
         const storedUserIdea = authService.getUserIdea();
         
         if (token && role) {
           setIsAuthenticated(true);
           setUserRole(role);
+          
+          // Set user data from localStorage if available
+          if (userData) {
+            const mappedUser: User = {
+              firstName: userData.first_name,
+              lastName: userData.last_name,
+              email: userData.email,
+              avatar: '',
+              verified: true,
+              userType: userData.user_type
+            };
+            setUser(mappedUser);
+            
+            // Create profile data from user data
+            setProfile({
+              id: userData.id,
+              first_name: userData.first_name,
+              last_name: userData.last_name,
+              email: userData.email,
+              user_type: userData.user_type,
+              created_at: userData.created_at
+            });
+          } else {
+            // Fallback: fetch profile data if not in localStorage
+            await fetchUserProfile();
+          }
+          
           if (storedSessionId) {
             setSessionId(storedSessionId);
           }
           if (storedUserIdea) {
             setUserIdea(storedUserIdea);
           }
-          // Fetch profile data
-          await fetchUserProfile();
         }
       } catch (error) {
         console.error('Error during auth check:', error);
@@ -48,9 +74,30 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const result = await authService.login(email, password);
-    if (result.success) {
+    if (result.success && result.user) {
       setIsAuthenticated(true);
       setUserRole(result.role || null);
+      
+      // Map API user data to our User type
+      const userData: User = {
+        firstName: result.user.first_name,
+        lastName: result.user.last_name,
+        email: result.user.email,
+        avatar: '', // Default avatar
+        verified: true, // If they can login, they're verified
+        userType: result.user.user_type
+      };
+      setUser(userData);
+      
+      // Set profile data from login response
+      setProfile({
+        id: result.user.id,
+        first_name: result.user.first_name,
+        last_name: result.user.last_name,
+        email: result.user.email,
+        user_type: result.user.user_type,
+        created_at: result.user.created_at
+      });
     }
     return { success: result.success, message: result.message, role: result.role };
   };
@@ -58,6 +105,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     authService.logout();
     setUser(null);
+    setProfile(null);
     setIsAuthenticated(false);
     setUserRole(null);
     setSessionId(null);

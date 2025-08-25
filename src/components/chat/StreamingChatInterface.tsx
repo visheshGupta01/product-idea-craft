@@ -46,7 +46,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
 
   // Add welcome message only for new sessions (with delay to allow message restoration)
   useEffect(() => {
-    if (activeSessionId && !isInitialized) {
+    if (activeSessionId && !isInitialized && !isLoadingMessages) {
       // Clear any existing timeout
       if (initTimeoutRef.current) {
         clearTimeout(initTimeoutRef.current);
@@ -62,7 +62,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
           });
         }
         setIsInitialized(true);
-      }, 100); // Small delay to allow message restoration
+      }, 200); // Increased delay to ensure message restoration is complete
     }
     
     return () => {
@@ -70,18 +70,25 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
         clearTimeout(initTimeoutRef.current);
       }
     };
-  }, [activeSessionId, messages.length, addMessage, isInitialized]);
+  }, [activeSessionId, messages.length, addMessage, isInitialized, isLoadingMessages]);
 
   // Handle initial response from user context and send message
   useEffect(() => {
-    if (initialResponse && activeSessionId) {
-      // Send the message to get AI response
+    if (initialResponse && activeSessionId && !isLoadingMessages && isInitialized) {
+      // Add the user message first
+      addMessage({
+        type: "user",
+        content: initialResponse.userMessage,
+        timestamp: new Date(),
+      });
+      
+      // Then send to get AI response
       sendMessage(initialResponse.userMessage);
 
       // Clear from context
       clearInitialResponse();
     }
-  }, [initialResponse, activeSessionId, addMessage, sendMessage, clearInitialResponse]);
+  }, [initialResponse, activeSessionId, isLoadingMessages, isInitialized, addMessage, sendMessage, clearInitialResponse]);
 
   // Auto-scroll on new messages
   useEffect(() => {
