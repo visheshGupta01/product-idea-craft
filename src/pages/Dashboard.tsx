@@ -13,6 +13,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [isValidating, setIsValidating] = useState(true);
   const [projectTitle, setProjectTitle] = useState<string>("");
+  const [isAccessValidated, setIsAccessValidated] = useState(false);
 
   useEffect(() => {
     const validateAndLoadSession = async () => {
@@ -41,7 +42,7 @@ const Dashboard = () => {
         const projectDetails = await fetchProjectDetails(sessionid);
         setSessionId(sessionid);
         setProjectTitle(projectDetails.title || `Project ${sessionid.slice(0, 8)}`);
-        
+        setIsAccessValidated(true);
       } catch (error) {
         console.error('Error validating session:', error);
         toast({
@@ -72,7 +73,7 @@ const Dashboard = () => {
   return (
     <MainDashboard 
       userIdea={projectTitle || userIdea || "My App"}
-      sessionId={sessionid}
+      sessionId={isAccessValidated ? sessionid : undefined}
     />
   );
 };
