@@ -27,6 +27,14 @@ export const useChatPersistence = (sessionId: string | null) => {
         return;
       }
 
+      // Clear all previous chat sessions - only keep current one
+      const keys = Object.keys(sessionStorage);
+      keys.forEach(key => {
+        if (key.startsWith('chat_session_') && key !== `chat_session_${sessionId}`) {
+          sessionStorage.removeItem(key);
+        }
+      });
+
       setIsLoadingMessages(true);
 
       try {
