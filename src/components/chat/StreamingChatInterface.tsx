@@ -10,12 +10,15 @@ import { useUser } from "@/context/UserContext";
 interface StreamingChatInterfaceProps {
   userIdea?: string;
   onFrontendGenerated?: (url: string) => void;
+  urlSessionId?: string;
 }
 
-export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea, onFrontendGenerated }) => {
-  const { sessionId, initialResponse, clearInitialResponse } = useUser();
+export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea, onFrontendGenerated, urlSessionId }) => {
+  const { sessionId: contextSessionId, initialResponse, clearInitialResponse } = useUser();
+  const activeSessionId = urlSessionId || contextSessionId;
   const {
     messages,
+    isLoadingMessages,
     isStreaming,
     isProcessingTools,
     messagesEndRef,
@@ -23,14 +26,14 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     addMessage,
     scrollToBottom,
     connect
-  } = useStreamingChat(sessionId || "", onFrontendGenerated);
+  } = useStreamingChat(activeSessionId || "", onFrontendGenerated);
 
   const [isInitialized, setIsInitialized] = useState(false);
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize connection when sessionId is available
   useEffect(() => {
-    if (sessionId) {
+    if (activeSessionId) {
       connect().then(success => {
         if (success) {
           console.log("✅ WebSocket connected successfully");
@@ -39,11 +42,11 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
         }
       });
     }
-  }, [sessionId, connect]);
+  }, [activeSessionId, connect]);
 
   // Add welcome message only for new sessions (with delay to allow message restoration)
   useEffect(() => {
-    if (sessionId && !isInitialized) {
+    if (activeSessionId && !isInitialized) {
       // Clear any existing timeout
       if (initTimeoutRef.current) {
         clearTimeout(initTimeoutRef.current);
@@ -67,18 +70,18 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
         clearTimeout(initTimeoutRef.current);
       }
     };
-  }, [sessionId, messages.length, addMessage, isInitialized]);
+  }, [activeSessionId, messages.length, addMessage, isInitialized]);
 
   // Handle initial response from user context and send message
   useEffect(() => {
-    if (initialResponse && sessionId) {
+    if (initialResponse && activeSessionId) {
       // Send the message to get AI response
       sendMessage(initialResponse.userMessage);
 
       // Clear from context
       clearInitialResponse();
     }
-  }, [initialResponse, sessionId, addMessage, sendMessage, clearInitialResponse]);
+  }, [initialResponse, activeSessionId, addMessage, sendMessage, clearInitialResponse]);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -93,49 +96,60 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
 
   return (
     <div className="flex flex-col h-full bg-[#1E1E1E]">
-      <ScrollArea className="flex-1 p-6">
-        <div className="space-y-6 max-w-5xl mx-auto">
-          {messages.map((message, index) => (
-            <div key={message.id} className="group">
-              <MessageBubble
-                message={message}
-                isWelcomeMessage={index === 0 && message.type === "ai"}
-              />
-            </div>
-          ))}
-
-          {/* Streaming indicator */}
-          {showLoadingIndicator && (
-            <div className="flex items-start space-x-3">
-              <Avatar className="w-8 h-8 flex-shrink-0">
-                <AvatarFallback className="bg-purple-500 text-white">
-                  <Bot className="w-4 h-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="bg-[#D9D9D9] rounded-2xl rounded-bl-sm px-4 py-3">
-                <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-black" />
-                  {showToolsIndicator ? (
-                    <span className="text-sm text-black">Running Tools...</span>
-                  ) : (
-                    <span className="text-sm text-black">
-                      AI is thinking
-                    </span>
-                  )}
+      {isLoadingMessages ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-white mx-auto mb-4" />
+            <p className="text-white/70">Loading chat history...</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <ScrollArea className="flex-1 p-6">
+            <div className="space-y-6 max-w-5xl mx-auto">
+              {messages.map((message, index) => (
+                <div key={message.id} className="group">
+                  <MessageBubble
+                    message={message}
+                    isWelcomeMessage={index === 0 && message.type === "ai"}
+                  />
                 </div>
-              </div>
+              ))}
+
+              {/* Streaming indicator */}
+              {showLoadingIndicator && (
+                <div className="flex items-start space-x-3">
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    <AvatarFallback className="bg-purple-500 text-white">
+                      <Bot className="w-4 h-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="bg-[#D9D9D9] rounded-2xl rounded-bl-sm px-4 py-3">
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-black" />
+                      {showToolsIndicator ? (
+                        <span className="text-sm text-black">Running Tools...</span>
+                      ) : (
+                        <span className="text-sm text-black">
+                          AI is thinking
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
             </div>
-          )}
+          </ScrollArea>
 
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
-
-      <div className="bg-[#1E1E1E]">
-        <div className="max-w-4xl mx-auto">
-          <ChatInput onSendMessage={sendMessage} isLoading={isStreaming} />
-        </div>
-      </div>
+          <div className="bg-[#1E1E1E]">
+            <div className="max-w-4xl mx-auto">
+              <ChatInput onSendMessage={sendMessage} isLoading={isStreaming} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

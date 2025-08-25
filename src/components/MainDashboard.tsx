@@ -13,11 +13,12 @@ import { useUser } from '@/context/UserContext';
 
 interface MainDashboardProps {
   userIdea: string;
+  sessionId?: string;
 }
 
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
 
-const MainDashboard = ({ userIdea }: MainDashboardProps) => {
+const MainDashboard = ({ userIdea, sessionId }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>('main');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentProject] = useState({
@@ -81,7 +82,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
         if (!isFrontendCreated || initialResponse) {
           return (
             <div className="h-full">
-              <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
+              <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />
             </div>
           );
         }
@@ -100,7 +101,7 @@ const MainDashboard = ({ userIdea }: MainDashboardProps) => {
               className="hidden lg:block"
             >
               <div className="h-full border-r border-border">
-                <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} />
+                <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />
               </div>
             </ResizablePanel>
 

@@ -21,6 +21,7 @@ interface UserContextType {
   resetPassword: (token: string, newPassword: string, confirm_password: string) => Promise<{ success: boolean; message?: string }>;
   refreshToken: () => Promise<{ success: boolean; message?: string }>;
   setUserIdea: (idea: string) => void;
+  setSessionId: (sessionId: string) => void;
   sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string }>;
   clearInitialResponse: () => void;
   fetchProfile: () => Promise<void>;
@@ -46,6 +47,7 @@ export const UserContext = createContext<UserContextType>({
   resetPassword: async () => ({ success: false }),
   refreshToken: async () => ({ success: false }),
   setUserIdea: () => {},
+  setSessionId: () => {},
   sendIdeaWithAuth: async () => ({ success: false }),
   clearInitialResponse: () => {},
   fetchProfile: async () => {},

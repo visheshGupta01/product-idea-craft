@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Message } from '@/types';
+import { fetchProjectDetails, ChatMessage } from '@/services/projectService';
 
 export interface ChatSession {
   sessionId: string;
@@ -7,28 +8,72 @@ export interface ChatSession {
   lastUpdated: number;
 }
 
+const convertApiMessageToMessage = (apiMessage: ChatMessage): Message => ({
+  id: `api_${apiMessage.id}`,
+  type: apiMessage.role === 'user' ? 'user' : 'ai',
+  content: apiMessage.msg,
+  timestamp: new Date(apiMessage.created_at),
+});
+
 export const useChatPersistence = (sessionId: string | null) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
-  // Load messages from localStorage on mount or when sessionId changes
+  // Load messages from localStorage or API on mount or when sessionId changes
   useEffect(() => {
-    if (!sessionId) {
-      setMessages([]);
-      return;
-    }
-
-    const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
-    if (savedSession) {
-      try {
-        const session: ChatSession = JSON.parse(savedSession);
-        setMessages(session.messages || []);
-      } catch (error) {
-        console.error('Error loading chat session:', error);
+    const loadMessages = async () => {
+      if (!sessionId) {
         setMessages([]);
+        return;
       }
-    } else {
-      setMessages([]);
-    }
+
+      setIsLoadingMessages(true);
+
+      try {
+        // First try to load from sessionStorage
+        const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+        
+        if (savedSession) {
+          try {
+            const session: ChatSession = JSON.parse(savedSession);
+            setMessages(session.messages || []);
+            setIsLoadingMessages(false);
+            return;
+          } catch (error) {
+            console.error('Error loading chat session from storage:', error);
+          }
+        }
+
+        // If not in sessionStorage, load from API
+        try {
+          const projectDetails = await fetchProjectDetails(sessionId);
+          if (projectDetails.success && projectDetails.response) {
+            const apiMessages = projectDetails.response.map(convertApiMessageToMessage);
+            setMessages(apiMessages);
+            
+            // Save to sessionStorage for future use
+            const session: ChatSession = {
+              sessionId,
+              messages: apiMessages,
+              lastUpdated: Date.now(),
+            };
+            sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
+          } else {
+            setMessages([]);
+          }
+        } catch (apiError) {
+          console.error('Error loading messages from API:', apiError);
+          setMessages([]);
+        }
+      } catch (error) {
+        console.error('Error in loadMessages:', error);
+        setMessages([]);
+      } finally {
+        setIsLoadingMessages(false);
+      }
+    };
+
+    loadMessages();
   }, [sessionId]);
 
   // Save messages to sessionStorage whenever they change
@@ -80,6 +125,7 @@ export const useChatPersistence = (sessionId: string | null) => {
 
   return {
     messages,
+    isLoadingMessages,
     addMessage,
     updateMessage,
     clearMessages,

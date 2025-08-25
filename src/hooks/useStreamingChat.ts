@@ -8,6 +8,7 @@ import { useChatPersistence } from "./useChatPersistence";
 
 export interface StreamingChatState {
   messages: Message[];
+  isLoadingMessages: boolean;
   isStreaming: boolean;
   isProcessingTools: boolean;
   messagesEndRef: React.RefObject<HTMLDivElement>;
@@ -30,6 +31,7 @@ export const useStreamingChat = (
 ): StreamingChatState & StreamingChatActions => {
   const {
     messages,
+    isLoadingMessages,
     addMessage: persistAddMessage,
     updateMessage: persistUpdateMessage,
     clearMessages: persistClearMessages,
@@ -204,6 +206,7 @@ export const useStreamingChat = (
 
   return {
     messages,
+    isLoadingMessages,
     isStreaming,
     isProcessingTools,
     messagesEndRef,

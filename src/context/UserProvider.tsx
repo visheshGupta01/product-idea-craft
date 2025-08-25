@@ -182,6 +182,7 @@ console.log("Sending idea:", idea);
       resetPassword,
       refreshToken,
       setUserIdea,
+      setSessionId,
       sendIdeaWithAuth,
       clearInitialResponse,
       fetchProfile: fetchUserProfile,
