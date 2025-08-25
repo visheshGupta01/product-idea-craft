@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import { authService } from "@/services/authService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
   const { userIdea, isProcessingIdea, initialResponse, isAuthenticated, sessionId, userRole, isLoading } = useUser();
+  const location = useLocation();
 
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -58,13 +59,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
     );
   }
 
-  // For regular dashboard routes, check if user has session or idea (including persisted state)
+  // For regular dashboard routes, allow direct session routes even without active chat
   if (!requireAdmin) {
-    const hasActiveChat = userIdea || isProcessingIdea || initialResponse || sessionId;
-    const hasPersistedChat = authService.getUserIdea() || authService.getSessionId();
-    
-    if (!hasActiveChat && !hasPersistedChat) {
-      return <Navigate to="/" replace />;
+    const isSessionPath = location.pathname.startsWith('/c/');
+    if (!isSessionPath) {
+      const hasActiveChat = userIdea || isProcessingIdea || initialResponse || sessionId;
+      const hasPersistedChat = authService.getUserIdea() || authService.getSessionId();
+      
+      if (!hasActiveChat && !hasPersistedChat) {
+        return <Navigate to="/" replace />;
+      }
     }
   }
 
