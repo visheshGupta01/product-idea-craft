@@ -47,7 +47,11 @@ export interface ProjectDetails {
 export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
   try {
     const response = await apiClient.get('/projects');
-    return response.data;
+    if (response.data.success) {
+      return response.data.projects;
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch projects');
+    }
   } catch (error) {
     console.error('Error fetching projects:', error);
     throw error;

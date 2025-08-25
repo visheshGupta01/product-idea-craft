@@ -51,9 +51,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (result.success) {
       setIsAuthenticated(true);
       setUserRole(result.role || null);
-      if (result.session_id) {
-        setSessionId(result.session_id);
-      }
     }
     return { success: result.success, message: result.message, role: result.role };
   };

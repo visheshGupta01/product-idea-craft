@@ -3,12 +3,18 @@ import apiClient from "@/lib/apiClient";
 
 export interface AuthResponse {
   success: boolean;
-  user?: User;
+  message?: string;
   token?: string;
   refreshToken?: string;
   role?: 'admin' | 'user';
-  session_id?: string;
-  message?: string;
+  user?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    user_type: string;
+    created_at: string;
+  };
 }
 
 export interface LoginResponse {
@@ -16,7 +22,15 @@ export interface LoginResponse {
   message: string;
   token: string;
   refreshToken: string;
-  role: 'admin' | 'user';
+  role: string;
+  user: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    user_type: string;
+    created_at: string;
+  };
 }
 
 export interface SignupResponse {
@@ -25,11 +39,11 @@ export interface SignupResponse {
 }
 
 export interface RefreshResponse {
-  Success: boolean;
+  success: boolean;
   message: string;
   token: string;
   refreshToken: string;
-  role: 'admin' | 'user';
+  role: string;
 }
 
 export interface ForgotPasswordResponse {
@@ -43,7 +57,7 @@ export interface VerificationResponse {
 }
 
 export interface ResetPasswordResponse {
-  Success: boolean;
+  success: boolean;
   message: string;
 }
 
@@ -73,7 +87,7 @@ export class AuthService {
       if (data.success && data.token) {
         this.token = data.token;
         this.refreshToken = data.refreshToken;
-        this.userrole = data.role;
+        this.userrole = data.role as "admin" | "user";
 
         localStorage.setItem("auth_token", data.token);
         localStorage.setItem("refresh_token", data.refreshToken);
@@ -83,8 +97,9 @@ export class AuthService {
           success: true,
           token: data.token,
           refreshToken: data.refreshToken,
-          role: data.role,
+          role: data.role as "admin" | "user",
           message: data.message,
+          user: data.user,
         };
       }
 
@@ -203,7 +218,7 @@ export class AuthService {
       const data: ResetPasswordResponse = response.data;
       console.log("Reset password response:", data);
       return {
-        success: data.Success,
+        success: data.success,
         message: data.message,
       };
     } catch (error) {
@@ -227,10 +242,10 @@ export class AuthService {
 
       const data: RefreshResponse = response.data;
 
-      if (data.Success && data.token) {
+      if (data.success && data.token) {
         this.token = data.token;
         this.refreshToken = data.refreshToken;
-        this.userrole = data.role;
+        this.userrole = data.role as "admin" | "user";
 
         localStorage.setItem("auth_token", data.token);
         localStorage.setItem("refresh_token", data.refreshToken);
@@ -240,7 +255,7 @@ export class AuthService {
           success: true,
           token: data.token,
           refreshToken: data.refreshToken,
-          role: data.role,
+          role: data.role as "admin" | "user",
           message: data.message,
         };
       }

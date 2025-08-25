@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { 
-  CreditCard,
   Edit,
   Save,
   X,
@@ -30,12 +29,7 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
   const [profileData, setProfileData] = useState({
     first_name: '',
     last_name: '',
-    email: '',
-    country: '',
-    city: '',
-    frontend_stack: '',
-    backend_stack: '',
-    database_stack: ''
+    email: ''
   });
 
   useEffect(() => {
@@ -43,12 +37,7 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
       setProfileData({
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
-        email: profile.email || '',
-        country: profile.country || '',
-        city: profile.city || '',
-        frontend_stack: profile.frontend_stack || '',
-        backend_stack: profile.backend_stack || '',
-        database_stack: profile.database_stack || ''
+        email: profile.email || ''
       });
     }
   }, [profile]);
@@ -78,12 +67,6 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
     setIsEditing(false);
     // Reset to original data if needed
   };
-  const stats = [
-    { label: 'Tasks Assigned', value: profile?.total_assigned_tasks?.toString() || '0', color: 'text-blue-600' },
-    { label: 'Bugs Solved', value: profile?.total_solved_bugs?.toString() || '0', color: 'text-green-600' },
-    { label: 'Balance', value: `$${profile?.balances?.toFixed(2) || '0.00'}`, color: 'text-yellow-600' },
-    { label: 'Plan', value: profile?.is_plan_active ? 'Active' : 'Inactive', color: profile?.is_plan_active ? 'text-green-600' : 'text-gray-600' }
-  ];
 
   return (
     <div className="h-full bg-background">
@@ -127,7 +110,9 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                     <div className="relative">
                       <Avatar className="h-24 w-24">
                         <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face" />
-                        <AvatarFallback className="text-xl">JD</AvatarFallback>
+                        <AvatarFallback className="text-xl">
+                          {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+                        </AvatarFallback>
                       </Avatar>
                       {isEditing && (
                         <Button
@@ -145,26 +130,30 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                         {profile?.first_name} {profile?.last_name}
                       </h3>
                       <p className="text-muted-foreground">{profile?.email}</p>
-                      <Badge variant={profile?.is_plan_active ? "default" : "secondary"} className="mt-2">
-                        {profile?.is_plan_active ? `${profile.price?.name || 'Active'} Plan` : 'Free Plan'}
+                      <Badge variant="default" className="mt-2">
+                        {profile?.user_type || 'User'}
                       </Badge>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Stats */}
+              {/* Account Details */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Statistics</CardTitle>
+                  <CardTitle className="text-lg">Account Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {stats.map((stat) => (
-                    <div key={stat.label} className="flex items-center justify-between">
-                      <span className="text-muted-foreground">{stat.label}</span>
-                      <span className={`font-semibold ${stat.color}`}>{stat.value}</span>
-                    </div>
-                  ))}
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">User Type</span>
+                    <span className="font-semibold capitalize">{profile?.user_type || 'user'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Account Created</span>
+                    <span className="font-semibold">
+                      {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
+                    </span>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -172,13 +161,11 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <Tabs defaultValue="general" className="w-full">
-                <TabsList className="grid w-full grid-cols-6">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="general">General</TabsTrigger>
                   <TabsTrigger value="github">GitHub</TabsTrigger>
                   <TabsTrigger value="vercel">Vercel</TabsTrigger>
                   <TabsTrigger value="security">Security</TabsTrigger>
-                  <TabsTrigger value="notifications">Notifications</TabsTrigger>
-                  <TabsTrigger value="billing">Billing</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="general" className="space-y-6">
@@ -206,7 +193,7 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                             onChange={(e) => setProfileData({...profileData, last_name: e.target.value})}
                           />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 md:col-span-2">
                           <Label htmlFor="email">Email</Label>
                           <Input
                             id="email"
@@ -214,57 +201,6 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                             value={profileData.email}
                             disabled={true}
                             onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="country">Country</Label>
-                          <Input
-                            id="country"
-                            value={profileData.country}
-                            disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, country: e.target.value})}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="city">City</Label>
-                          <Input
-                            id="city"
-                            value={profileData.city}
-                            disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, city: e.target.value})}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="frontend_stack">Frontend Stack</Label>
-                          <Input
-                            id="frontend_stack"
-                            value={profileData.frontend_stack}
-                            disabled={!isEditing}
-                            placeholder="e.g., React, Vue, Angular"
-                            onChange={(e) => setProfileData({...profileData, frontend_stack: e.target.value})}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="backend_stack">Backend Stack</Label>
-                          <Input
-                            id="backend_stack"
-                            value={profileData.backend_stack}
-                            disabled={!isEditing}
-                            placeholder="e.g., Node.js, Python, Java"
-                            onChange={(e) => setProfileData({...profileData, backend_stack: e.target.value})}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="database_stack">Database Stack</Label>
-                          <Input
-                            id="database_stack"
-                            value={profileData.database_stack}
-                            disabled={!isEditing}
-                            placeholder="e.g., MongoDB, PostgreSQL, MySQL"
-                            onChange={(e) => setProfileData({...profileData, database_stack: e.target.value})}
                           />
                         </div>
                       </div>
@@ -311,124 +247,6 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                         <div>
                           <h4 className="font-medium mb-2">Sessions</h4>
                           <Button variant="outline">View Active Sessions</Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="notifications" className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Notification Preferences</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium">Email Notifications</h4>
-                            <p className="text-sm text-muted-foreground">
-                              Receive notifications via email
-                            </p>
-                          </div>
-                          <Switch 
-                            checked={notifications.email}
-                            onCheckedChange={(checked) => 
-                              setNotifications({...notifications, email: checked})
-                            }
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium">Push Notifications</h4>
-                            <p className="text-sm text-muted-foreground">
-                              Receive push notifications in browser
-                            </p>
-                          </div>
-                          <Switch 
-                            checked={notifications.push}
-                            onCheckedChange={(checked) => 
-                              setNotifications({...notifications, push: checked})
-                            }
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium">Marketing Communications</h4>
-                            <p className="text-sm text-muted-foreground">
-                              Receive updates about new features and tips
-                            </p>
-                          </div>
-                          <Switch 
-                            checked={notifications.marketing}
-                            onCheckedChange={(checked) => 
-                              setNotifications({...notifications, marketing: checked})
-                            }
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium">Product Updates</h4>
-                            <p className="text-sm text-muted-foreground">
-                              Get notified about important product changes
-                            </p>
-                          </div>
-                          <Switch 
-                            checked={notifications.updates}
-                            onCheckedChange={(checked) => 
-                              setNotifications({...notifications, updates: checked})
-                            }
-                          />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="billing" className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Billing Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-4">
-                         <div className="flex items-center justify-between p-4 border rounded-lg">
-                          <div>
-                            <h4 className="font-medium">
-                              {profile?.price?.name || 'Free Plan'}
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              {profile?.price?.price ? `$${profile.price.price}/month` : 'Free'} • 
-                              {profile?.plan_expires_at 
-                                ? ` Expires: ${new Date(profile.plan_expires_at).toLocaleDateString()}`
-                                : ' No expiration'
-                              }
-                            </p>
-                          </div>
-                          <Badge variant={profile?.is_plan_active ? "default" : "secondary"}>
-                            {profile?.is_plan_active ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex space-x-2">
-                          <Button variant="outline">Change Plan</Button>
-                          <Button variant="outline">View Invoices</Button>
-                        </div>
-                        
-                        <Separator />
-                        
-                        <div>
-                          <h4 className="font-medium mb-2">Payment Method</h4>
-                          <div className="flex items-center space-x-3 p-3 border rounded-lg">
-                            <CreditCard className="h-5 w-5 text-muted-foreground" />
-                            <div>
-                              <p className="font-medium">•••• •••• •••• 4242</p>
-                              <p className="text-sm text-muted-foreground">Expires 12/25</p>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </CardContent>
