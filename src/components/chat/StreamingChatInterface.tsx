@@ -46,7 +46,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
 
   // Add welcome message only for new sessions (with delay to allow message restoration)
   useEffect(() => {
-    if (activeSessionId && !isInitialized && !isLoadingMessages) {
+    if (activeSessionId && !isInitialized && !isLoadingMessages && !initialResponse) {
       // Clear any existing timeout
       if (initTimeoutRef.current) {
         clearTimeout(initTimeoutRef.current);
@@ -62,7 +62,10 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
           });
         }
         setIsInitialized(true);
-      }, 200); // Increased delay to ensure message restoration is complete
+      }, 200);
+    } else if (activeSessionId && !isLoadingMessages && initialResponse) {
+      // If there's an initial response, don't add welcome message, just mark as initialized
+      setIsInitialized(true);
     }
     
     return () => {
@@ -70,7 +73,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
         clearTimeout(initTimeoutRef.current);
       }
     };
-  }, [activeSessionId, messages.length, addMessage, isInitialized, isLoadingMessages]);
+  }, [activeSessionId, messages.length, addMessage, isInitialized, isLoadingMessages, initialResponse]);
 
   // Handle initial response from user context and send message
   useEffect(() => {

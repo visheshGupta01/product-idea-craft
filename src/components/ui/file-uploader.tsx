@@ -49,7 +49,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       if (result.success) {
         const uploadedFile: UploadedFile = {
           name: file.name,
-          extractedText: result.message,
+          extractedText: result.text,
           size: file.size,
         };
         onFileUploaded(uploadedFile);
