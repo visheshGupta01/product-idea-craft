@@ -235,7 +235,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         elements.push(
           <p
             key={currentIndex++}
-            className="mb-4 leading-relaxed text-black"
+            className="leading-relaxed text-black"
           >
             {processInlineFormatting(line)}
           </p>

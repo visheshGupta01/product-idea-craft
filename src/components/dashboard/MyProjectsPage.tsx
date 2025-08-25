@@ -49,6 +49,8 @@ const MyProjectsPage = () => {
     try {
       setLoading(true);
       const apiProjects = await fetchProjects();
+      
+      console.log('Fetched projects:', apiProjects);
       const formattedProjects: Project[] = apiProjects.map(project => ({
         ...project,
         status: project.title ? 'active' : 'draft' as 'active' | 'completed' | 'paused' | 'draft'
@@ -123,13 +125,19 @@ const MyProjectsPage = () => {
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">My Projects</h1>
-              <p className="text-muted-foreground">Manage and track your development projects</p>
+              <h1 className="text-3xl font-bold text-foreground">
+                My Projects
+              </h1>
+              <p className="text-muted-foreground">
+                Manage and track your development projects
+              </p>
             </div>
-            <Button className="w-fit">
-              <Plus className="h-4 w-4 mr-2" />
-              New Project
-            </Button>
+            <a href="/">
+              <Button className="w-fit">
+                <Plus className="h-4 w-4 mr-2" />
+                New Project
+              </Button>
+            </a>
           </div>
 
           {/* Search and Filters */}
@@ -143,7 +151,11 @@ const MyProjectsPage = () => {
                 className="pl-10"
               />
             </div>
-            <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-fit">
+            <Tabs
+              value={activeFilter}
+              onValueChange={setActiveFilter}
+              className="w-fit"
+            >
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="active">Active</TabsTrigger>
@@ -174,8 +186,8 @@ const MyProjectsPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProjects.map((project) => (
-                <Card 
-                  key={project.session_id} 
+                <Card
+                  key={project.session_id}
                   className="hover:shadow-lg transition-shadow cursor-pointer group"
                   onClick={() => handleProjectClick(project.session_id)}
                 >
@@ -192,12 +204,12 @@ const MyProjectsPage = () => {
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </div>
-                  
+
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
                       <div className="space-y-1 flex-1 min-w-0">
                         <CardTitle className="text-lg truncate">
-                          {project.title || 'Untitled Project'}
+                          {project.title || "Untitled Project"}
                         </CardTitle>
                         <p className="text-sm text-muted-foreground truncate">
                           Session: {project.session_id.slice(0, 8)}...
@@ -213,13 +225,13 @@ const MyProjectsPage = () => {
                         {getStatusBadge(project.status)}
                       </div>
                       {project.project_url && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           className="h-8 w-8 p-0"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(project.project_url, '_blank');
+                            window.open(project.project_url, "_blank");
                           }}
                         >
                           <ExternalLink className="h-4 w-4" />
@@ -249,9 +261,13 @@ const MyProjectsPage = () => {
           {filteredProjects.length === 0 && (
             <div className="text-center py-12">
               <Code className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No projects found</h3>
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                No projects found
+              </h3>
               <p className="text-muted-foreground mb-4">
-                {searchTerm ? 'Try adjusting your search terms' : 'Create your first project to get started'}
+                {searchTerm
+                  ? "Try adjusting your search terms"
+                  : "Create your first project to get started"}
               </p>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />

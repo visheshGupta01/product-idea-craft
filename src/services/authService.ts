@@ -267,7 +267,7 @@ export class AuthService {
 
     try {
       console.log("Creating session with idea:", idea);
-      const response = await apiClient.post("/create/session", { idea });
+      const response = await apiClient.post("/create/session", { "message":idea });
       const data = response.data;
       console.log("Create session response:", data);
 
