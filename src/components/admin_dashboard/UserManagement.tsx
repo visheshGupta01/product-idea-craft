@@ -33,7 +33,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { fetchUsersData, UsersData, User } from '@/services/adminService';
+import { fetchUsersData, UsersData, User, cancelUserSubscription } from '@/services/adminService';
 import { toast } from 'sonner';
 
 export default function UserManagement() {
@@ -44,6 +44,7 @@ export default function UserManagement() {
   const [usersData, setUsersData] = useState<UsersData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [cancellingUser, setCancellingUser] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUsersData = async () => {
@@ -88,6 +89,28 @@ export default function UserManagement() {
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
+  const handleCancelSubscription = async (userId: string, userName: string) => {
+    try {
+      setCancellingUser(userId);
+      const response = await cancelUserSubscription(userId);
+      
+      if (response.success) {
+        toast.success(`Subscription cancelled successfully for ${userName}`);
+        // Refresh the users data
+        const updatedData = await fetchUsersData();
+        setUsersData(updatedData);
+        setFilteredUsers(updatedData.users);
+      } else {
+        toast.error(response.message || 'Failed to cancel subscription');
+      }
+    } catch (error) {
+      console.error('Error canceling subscription:', error);
+      toast.error('Failed to cancel subscription');
+    } finally {
+      setCancellingUser(null);
+    }
   };
 
   const totalUsers = usersData?.total_verified_users || 0;
@@ -249,12 +272,10 @@ export default function UserManagement() {
                       <Button
                         variant="link"
                         className="text-red-500"
-                        onClick={() => {
-                          // TODO: add cancel subscription logic here
-                          toast.info(`Cancel subscription for ${user.name}`);
-                        }}
+                        disabled={cancellingUser === user.id}
+                        onClick={() => handleCancelSubscription(user.id, user.name)}
                       >
-                        Cancel Subscription
+                        {cancellingUser === user.id ? 'Cancelling...' : 'Cancel Subscription'}
                       </Button>
                     </TableCell>
                   </TableRow>
