@@ -9,6 +9,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import MyProjects from "./pages/MyProjects";
 import Profile from "./pages/Profile";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailed from "./pages/PaymentFailed";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -58,6 +60,8 @@ const AppContent = () => {
             <Profile />
           </ProtectedRoute>
         } />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/admin" element={
           <ProtectedRoute requireAdmin>
             <AdminDashboard />

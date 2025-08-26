@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-  import { motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useUser } from "@/context/UserContext";
+import { createStripeSession } from "@/services/paymentService";
+import { toast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
   interface Plan {
     name: string;
@@ -77,7 +81,54 @@ import React, { useState } from "react";
 
   const PricingSection: React.FC = () => {
     const [billing, setBilling] = useState<"Monthly" | "Yearly">("Monthly");
+    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+    const { user, isAuthenticated } = useUser();
     const plans = billing === "Monthly" ? monthlyPlans : yearlyPlans;
+
+    const handlePlanSelection = async (plan: Plan) => {
+      if (!isAuthenticated || !user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to purchase a plan.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (plan.name === "Free") {
+        toast({
+          title: "Free Plan",
+          description: "You're already on the free plan!",
+        });
+        return;
+      }
+
+      setLoadingPlan(plan.name);
+      
+      try {
+        const paymentData = {
+          userUUID: user.id!,
+          price: plan.price.toString(),
+          planName: plan.name,
+        };
+
+        const response = await createStripeSession(paymentData);
+        
+        if (response.sessionURL?.sessionURL) {
+          // Open Stripe checkout in a new tab
+          window.open(response.sessionURL.sessionURL, '_blank');
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        toast({
+          title: "Payment Error",
+          description: "Failed to create payment session. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoadingPlan(null);
+      }
+    };
 
   return (
     <section className="bg-[#0f1116] text-white py-12 md:py-20 px-4 sm:px-6 font-['Poppins'] text-center">
@@ -160,8 +211,19 @@ import React, { useState } from "react";
                 </ul>
               </div>
 
-              <button className="bg-[#fb02a5] hover:bg-[#d62a86] text-white px-6 py-2 rounded-md text-sm font-supply font-semibold mt-auto">
-                {plan.button}
+              <button 
+                onClick={() => handlePlanSelection(plan)}
+                disabled={loadingPlan === plan.name}
+                className="bg-[#fb02a5] hover:bg-[#d62a86] disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 rounded-md text-sm font-supply font-semibold mt-auto flex items-center justify-center"
+              >
+                {loadingPlan === plan.name ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  plan.button
+                )}
               </button>
             </div>
           ))}

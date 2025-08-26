@@ -13,6 +13,12 @@ interface UserContextType {
   sessionId: string | null;
   userRole: 'admin' | 'user' | null;
   isLoading: boolean;
+  userPlan: {
+    planId: number;
+    planName: string;
+    isActive: boolean;
+    expiresAt: string | null;
+  } | null;
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: 'admin' | 'user' }>;
   logout: () => void;
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
@@ -39,6 +45,7 @@ export const UserContext = createContext<UserContextType>({
   sessionId: null,
   userRole: null,
   isLoading: true,
+  userPlan: null,
   login: async () => ({ success: false }),
   logout: () => {},
   signup: async () => ({ success: false }),

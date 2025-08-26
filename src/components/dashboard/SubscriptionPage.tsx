@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,13 +19,15 @@ import {
 } from 'lucide-react';
 
 const SubscriptionPage = () => {
+  const { userPlan } = useUser();
+  // Get current plan from user context
   const currentPlan = {
-    name: 'Pro Plan',
-    price: '$29',
-    billing: 'monthly',
-    status: 'active',
-    nextBilling: '2024-07-17',
-    daysLeft: 12
+    name: userPlan?.planName || "Free",
+    price: userPlan?.planId === 2 ? "$19" : userPlan?.planId === 3 ? "$49" : "$0",
+    billing: "monthly",
+    status: userPlan?.isActive ? "active" : "inactive",
+    nextBilling: userPlan?.expiresAt ? new Date(userPlan.expiresAt).toLocaleDateString() : "N/A",
+    daysLeft: userPlan?.expiresAt ? Math.ceil((new Date(userPlan.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
   };
 
   const usage = {

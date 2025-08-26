@@ -15,6 +15,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userPlan, setUserPlan] = useState<{
+    planId: number;
+    planName: string;
+    isActive: boolean;
+    expiresAt: string | null;
+  } | null>(null);
 
   // Check authentication and restore chat state on mount
   useEffect(() => {
@@ -33,6 +39,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           // Set user data from localStorage if available
           if (userData) {
             const mappedUser: User = {
+              id: userData.id,
               firstName: userData.first_name,
               lastName: userData.last_name,
               email: userData.email,
@@ -51,6 +58,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               user_type: userData.user_type,
               created_at: userData.created_at
             });
+
+            // Update user plan information if available
+            if ((userData as any).plan_id) {
+              const planNames = { 1: 'Free', 2: 'Pro', 3: 'Team' };
+              setUserPlan({
+                planId: (userData as any).plan_id || 1,
+                planName: planNames[(userData as any).plan_id as keyof typeof planNames] || 'Free',
+                isActive: (userData as any).is_plan_active || false,
+                expiresAt: (userData as any).plan_expires_at || null,
+              });
+            }
           } else {
             // Fallback: fetch profile data if not in localStorage
             await fetchUserProfile();
@@ -80,6 +98,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       
       // Map API user data to our User type
       const userData: User = {
+        id: result.user.id,
         firstName: result.user.first_name,
         lastName: result.user.last_name,
         email: result.user.email,
@@ -98,6 +117,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         user_type: result.user.user_type,
         created_at: result.user.created_at
       });
+
+      // Update user plan information if available
+      if ((result.user as any).plan_id) {
+        const planNames = { 1: 'Free', 2: 'Pro', 3: 'Team' };
+        setUserPlan({
+          planId: (result.user as any).plan_id || 1,
+          planName: planNames[(result.user as any).plan_id as keyof typeof planNames] || 'Free',
+          isActive: (result.user as any).is_plan_active || false,
+          expiresAt: (result.user as any).plan_expires_at || null,
+        });
+      }
     }
     return { success: result.success, message: result.message, role: result.role };
   };
@@ -111,6 +141,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setSessionId(null);
     setUserIdea(null);
     setInitialResponse(null);
+    setUserPlan(null);
   };
 
   const signup = async (name: string, email: string, password: string) => {
@@ -189,6 +220,17 @@ console.log("Sending idea:", idea);
     try {
       const profileData = await fetchProfile();
       setProfile(profileData);
+      
+      // Update user plan information if available in profile
+      if (profileData && 'plan_id' in profileData) {
+        const planNames = { 1: 'Free', 2: 'Pro', 3: 'Team' };
+        setUserPlan({
+          planId: (profileData as any).plan_id || 1,
+          planName: planNames[(profileData as any).plan_id as keyof typeof planNames] || 'Free',
+          isActive: (profileData as any).is_plan_active || false,
+          expiresAt: (profileData as any).plan_expires_at || null,
+        });
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -219,6 +261,7 @@ console.log("Sending idea:", idea);
       sessionId,
       userRole,
       isLoading,
+      userPlan,
       login, 
       logout, 
       signup,
