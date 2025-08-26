@@ -114,10 +114,9 @@ import { Loader2 } from "lucide-react";
 
         const response = await createStripeSession(paymentData);
         
-        if (response.sessionURL?.sessionURL) {
-          // Open Stripe checkout in a new tab
-          window.open(response.sessionURL.sessionURL, '_blank');
-        }
+if (response.session_url?.session_url) {
+  window.open(response.session_url.session_url, "_blank");
+}
       } catch (error) {
         console.error('Payment error:', error);
         toast({
