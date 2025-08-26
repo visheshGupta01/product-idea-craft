@@ -246,27 +246,16 @@ export default function UserManagement() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right text-black">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem className="gap-2">
-                            <Eye className="h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="gap-2">
-                            <Edit3 className="h-4 w-4" />
-                            Edit User
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="gap-2 text-red-600">
-                            <Trash2 className="h-4 w-4" />
-                            Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button
+                        variant="link"
+                        className="text-red-500"
+                        onClick={() => {
+                          // TODO: add cancel subscription logic here
+                          toast.info(`Cancel subscription for ${user.name}`);
+                        }}
+                      >
+                        Cancel Subscription
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
