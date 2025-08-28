@@ -85,3 +85,13 @@ export const fetchUsersData = async (): Promise<UsersData> => {
     throw error;
   }
 };
+
+export const cancelUserSubscription = async (userId: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await apiClient.post('/cancel-plan', { id: userId });
+    return response.data;
+  } catch (error) {
+    console.error('Error canceling subscription:', error);
+    throw error;
+  }
+};
