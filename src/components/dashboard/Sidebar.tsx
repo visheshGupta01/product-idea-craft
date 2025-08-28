@@ -1,29 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/context/UserContext';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';  
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Menu, User, Moon, Sun, Database, Github, Settings, CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Bot, Users, CreditCard, Lightbulb, Home, FileText, Link, Cat, BarChart3, Puzzle, Layers, Monitor } from 'lucide-react';
-interface Task {
-  id: number;
-  title: string;
-  status: 'completed' | 'in-progress' | 'pending';
-  description: string;
-  assignedTo: 'ai' | 'sde';
-  icon?: any;
-  subtasks?: {
-    id: number;
-    title: string;
-    completed: boolean;
-    assignedTo?: 'ai' | 'sde';
-  }[];
-}
+import { Menu, User, Moon, Sun, Database, Github, Settings, Users, CreditCard, Lightbulb, Home, Link } from 'lucide-react';
+import SitemapSection from './SitemapSection';
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
 interface SidebarProps {
   collapsed: boolean;
@@ -46,78 +30,22 @@ const Sidebar = ({
 }: SidebarProps) => {
   const { user, isAuthenticated } = useUser();
   const [darkMode, setDarkMode] = useState(false);
-  const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([{
-    id: 1,
-    title: 'Idea Submitted',
-    status: 'completed',
-    description: 'Initial concept captured',
-    assignedTo: 'ai',
-    icon: Lightbulb,
-    subtasks: [{
-      id: 1,
-      title: 'Document requirements',
-      completed: true,
-      assignedTo: 'ai'
-    }, {
-      id: 2,
-      title: 'Initial review',
-      completed: true,
-      assignedTo: 'ai'
-    }]
-  }, {
-    id: 2,
-    title: 'Competitive analysis',
-    status: 'in-progress',
-    description: 'Researching market competitors',
-    assignedTo: 'ai',
-    icon: BarChart3,
-    subtasks: [{
-      id: 3,
-      title: 'Market research',
-      completed: true,
-      assignedTo: 'ai'
-    }, {
-      id: 4,
-      title: 'Competitor analysis',
-      completed: false,
-      assignedTo: 'ai'
-    }, {
-      id: 5,
-      title: 'SWOT analysis',
-      completed: false,
-      assignedTo: 'ai'
-    }]
-  }, {
-    id: 3,
-    title: 'Gap Analysis',
-    status: 'pending',
-    description: 'Validate core problem exists',
-    assignedTo: 'ai',
-    icon: Puzzle
-  }, {
-    id: 4,
-    title: 'Research Solutions',
-    status: 'pending',
-    description: 'Find optimal solution approach',
-    assignedTo: 'sde',
-    icon: Layers
-  }, {
-    id: 5,
-    title: 'UI/UX Mockups',
-    status: 'pending',
-    description: 'Design user interface',
-    assignedTo: 'sde',
-    icon: Monitor
-  }]);
-  const completedTasks = tasks.filter(task => task.status === 'completed').length;
-  const progress = completedTasks / tasks.length * 100;
+  const [isGitHubConnected, setIsGitHubConnected] = useState(false);
+  const [isVercelConnected, setIsVercelConnected] = useState(false);
 
-  // Check for existing dark mode preference
+  // Check for existing dark mode preference and connection states
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
     setDarkMode(isDark);
+    
+    // Check GitHub connection
+    const githubRepo = sessionStorage.getItem('github_repository');
+    setIsGitHubConnected(!!githubRepo);
+    
+    // Check Vercel connection
+    const vercelDeployment = sessionStorage.getItem('vercel_deployment');
+    setIsVercelConnected(!!vercelDeployment);
   }, []);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
@@ -128,54 +56,28 @@ const Sidebar = ({
       document.documentElement.classList.remove('dark');
     }
   };
-  const assignToDev = (taskId: number) => {
-    setTasks(tasks.map(task => task.id === taskId ? {
-      ...task,
-      assignedTo: 'sde' as const
-    } : task));
-  };
 
-  const assignSubtaskToDev = (taskId: number, subtaskId: number) => {
-    setTasks(tasks.map(task => task.id === taskId ? {
-      ...task,
-      subtasks: task.subtasks?.map(subtask => subtask.id === subtaskId ? {
-        ...subtask,
-        assignedTo: 'sde' as const
-      } : subtask)
-    } : task));
-  };
-
-  const toggleTaskExpanded = (taskId: number) => {
-    setExpandedTasks(prev => prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]);
-  };
-  const toggleSubtask = (taskId: number, subtaskId: number) => {
-    setTasks(tasks.map(task => task.id === taskId ? {
-      ...task,
-      subtasks: task.subtasks?.map(subtask => subtask.id === subtaskId ? {
-        ...subtask,
-        completed: !subtask.completed
-      } : subtask)
-    } : task));
-  };
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle2 className="h-3 w-3 text-green-500" />;
-      case 'in-progress':
-        return <Clock className="h-3 w-3 text-blue-500" />;
-      default:
-        return <Circle className="h-3 w-3 text-gray-400" />;
+  const handleGitHubConnect = () => {
+    if (isGitHubConnected) {
+      // Already connected, show disconnect option or management
+      sessionStorage.removeItem('github_repository');
+      setIsGitHubConnected(false);
+    } else {
+      // Navigate to GitHub OAuth
+      const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=repo,user`;
+      window.location.href = githubAuthUrl;
     }
   };
-  const getStatusBadge = (status: string) => {
-    if (collapsed) return null;
-    switch (status) {
-      case 'completed':
-        return <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 px-1 py-0">✓</Badge>;
-      case 'in-progress':
-        return <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 px-1 py-0">•</Badge>;
-      default:
-        return <Badge variant="outline" className="text-xs px-1 py-0">○</Badge>;
+
+  const handleVercelConnect = () => {
+    if (isVercelConnected) {
+      // Already connected, show disconnect option or management
+      sessionStorage.removeItem('vercel_deployment');
+      setIsVercelConnected(false);
+    } else {
+      // Navigate to Vercel OAuth  
+      const vercelAuthUrl = `https://vercel.com/oauth/authorize?client_id=YOUR_VERCEL_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=read,write`;
+      window.location.href = vercelAuthUrl;
     }
   };
   if (collapsed) {
@@ -207,36 +109,11 @@ const Sidebar = ({
           </div>
         )}
 
-        {/* Navigation icons - only show task icons on main dashboard */}
-        <div className="flex-1 flex flex-col items-center py-4 space-y-4 bg-sidebar-background">
-          {/* Task Icons with Status Indicators - only show on main dashboard */}
+        {/* Navigation icons - only show sitemap on main dashboard */}
+        <div className="flex-1 flex flex-col bg-sidebar-background">
+          {/* Sitemap Section - only show on main dashboard */}
           {activeView === 'main' && (
-            <div className="space-y-2">
-              {tasks.slice(0, 5).map(task => {
-                const TaskIcon = task.icon;
-                return (
-                  <TooltipProvider key={task.id}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="relative">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            {TaskIcon && <TaskIcon className={`h-4 w-4 ${
-                              task.status === 'completed' ? 'text-green-500' : 
-                              task.status === 'in-progress' ? 'text-blue-500' : 
-                              'text-gray-400'
-                            }`} />}
-                          </Button>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        <p>{task.title}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{task.status.replace('-', ' ')}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                );
-              })}
-            </div>
+            <SitemapSection collapsed={true} />
           )}
         </div>
 
@@ -300,28 +177,20 @@ const Sidebar = ({
                   Connect Supabase
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant={isGitHubConnected ? "default" : "outline"}
                   className="w-full justify-start"
-                  onClick={() => {
-                    // Navigate to GitHub OAuth
-                    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=repo,user`;
-                    window.location.href = githubAuthUrl;
-                  }}
+                  onClick={handleGitHubConnect}
                 >
                   <Github className="h-4 w-4 mr-2" />
-                  Connect GitHub
+                  {isGitHubConnected ? 'Manage GitHub' : 'Connect GitHub'}
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant={isVercelConnected ? "default" : "outline"}
                   className="w-full justify-start"
-                  onClick={() => {
-                    // Navigate to Vercel OAuth  
-                    const vercelAuthUrl = `https://vercel.com/oauth/authorize?client_id=YOUR_VERCEL_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=read,write`;
-                    window.location.href = vercelAuthUrl;
-                  }}
+                  onClick={handleVercelConnect}
                 >
                   <Link className="h-4 w-4 mr-2" />
-                  Connect Vercel
+                  {isVercelConnected ? 'Manage Vercel' : 'Connect Vercel'}
                 </Button>
               </div>
             </DialogContent>
@@ -348,130 +217,14 @@ const Sidebar = ({
               <Menu className="h-4 w-4" />
             </Button>
           </div>
-        
-        {/* Compact Progress Overview - only show on main dashboard */}
-        {activeView === 'main' && (
-          <div className="space-y-2 bg-sidebar-accent/20 rounded-lg p-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Progress value={progress} className="h-1.5" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{Math.round(progress)}% complete</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        )}
       </div>
       )}
 
-      {/* Scrollable Tasks Section - only show on main dashboard */}
+      {/* Sitemap Section - only show on main dashboard */}
       {activeView === 'main' && (
         <div className="flex-1 min-h-0 bg-sidebar-background">
-        <ScrollArea className="h-full">
-          <div className="p-2 space-y-1">
-            {tasks.map(task => {
-              const isExpanded = expandedTasks.includes(task.id);
-              const completedSubtasks = task.subtasks?.filter(st => st.completed).length || 0;
-              const totalSubtasks = task.subtasks?.length || 0;
-              
-              return (
-                <div key={task.id} className="border border-sidebar-border rounded-md p-2 bg-sidebar-accent/10 hover:bg-sidebar-accent/20 transition-colors px-[9px] my-[6px]">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 flex-1 min-w-0">
-                      {task.icon && <task.icon className={`h-3 w-3 ${
-                        task.status === 'completed' ? 'text-green-500' : 
-                        task.status === 'in-progress' ? 'text-blue-500' : 
-                        'text-gray-400'
-                      }`} />}
-                      <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
-                        {task.title}
-                      </h4>
-                    </div>
-                    <div className="flex-shrink-0 ml-2 flex items-center space-x-1">
-                      {getStatusBadge(task.status)}
-                      {task.subtasks && task.subtasks.length > 0 && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => toggleTaskExpanded(task.id)} 
-                          className="h-5 w-5 p-0"
-                        >
-                          {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {isExpanded && (
-                    <>
-                      <p className="text-xs text-muted-foreground break-words leading-tight mt-1">
-                        {task.description}
-                      </p>
-
-                      <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center space-x-2">
-                          {task.assignedTo === 'ai' ? <Bot className="h-3 w-3 text-purple-500" /> : <User className="h-3 w-3 text-orange-500" />}
-                          <span className="text-xs text-muted-foreground">
-                            {task.assignedTo === 'ai' ? 'AI' : 'SDE'}
-                          </span>
-                        </div>
-                        
-                        {task.subtasks && task.subtasks.length > 0 && (
-                          <div className="text-xs text-muted-foreground">
-                            {completedSubtasks}/{totalSubtasks}
-                          </div>
-                        )}
-                      </div>
-
-                      {task.subtasks && (
-                        <div className="mt-2 space-y-2 pl-4 border-l-2 border-sidebar-border">
-                          {task.subtasks.map(subtask => (
-                            <div key={subtask.id} className="space-y-1">
-                              <div className="flex items-center space-x-2">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => toggleSubtask(task.id, subtask.id)} 
-                                  className="h-4 w-4 p-0"
-                                >
-                                  {subtask.completed ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3 text-gray-400" />}
-                                </Button>
-                                <div className="flex-1 min-w-0">
-                                  <span className={`text-xs break-words leading-tight ${subtask.completed ? 'line-through text-muted-foreground' : 'text-sidebar-foreground'}`}>
-                                    {subtask.title}
-                                  </span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  {subtask.assignedTo === 'ai' ? <Bot className="h-2 w-2 text-purple-500" /> : <User className="h-2 w-2 text-orange-500" />}
-                                  {!subtask.completed && (!subtask.assignedTo || subtask.assignedTo === 'ai') && (
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm" 
-                                      onClick={() => assignSubtaskToDev(task.id, subtask.id)} 
-                                      className="text-xs h-4 px-1 py-0 ml-1"
-                                    >
-                                      → Dev
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
-      </div>
+          <SitemapSection collapsed={false} />
+        </div>
       )}
 
       {/* Bottom Section - Always Visible */}
@@ -546,28 +299,20 @@ const Sidebar = ({
               Connect Supabase
             </Button>
             <Button 
-              variant="outline" 
+              variant={isGitHubConnected ? "default" : "outline"}
               className="w-full justify-start"
-              onClick={() => {
-                // Navigate to GitHub OAuth
-                const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=repo,user`;
-                window.location.href = githubAuthUrl;
-              }}
+              onClick={handleGitHubConnect}
             >
               <Github className="h-4 w-4 mr-2" />
-              Connect GitHub
+              {isGitHubConnected ? 'Manage GitHub' : 'Connect GitHub'}
             </Button>
             <Button 
-              variant="outline" 
+              variant={isVercelConnected ? "default" : "outline"}
               className="w-full justify-start"
-              onClick={() => {
-                // Navigate to Vercel OAuth  
-                const vercelAuthUrl = `https://vercel.com/oauth/authorize?client_id=YOUR_VERCEL_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=read,write`;
-                window.location.href = vercelAuthUrl;
-              }}
+              onClick={handleVercelConnect}
             >
               <Link className="h-4 w-4 mr-2" />
-              Connect Vercel
+              {isVercelConnected ? 'Manage Vercel' : 'Connect Vercel'}
             </Button>
           </div>
         </DialogContent>
