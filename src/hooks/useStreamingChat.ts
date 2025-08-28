@@ -102,22 +102,22 @@ export const useStreamingChat = (
     async (content: string): Promise<void> => {
       if (!content.trim() || !wsClientRef.current) return;
 
-      // Add user message
-      const userMessage = addMessage({
-        type: "user",
-        content: content.trim(),
-        timestamp: new Date(),
-      });
-
       // Set streaming state
       setIsStreaming(true);
 
       try {
-        // Ensure connection
+        // Add user message after ensuring connection
         const isConnected = await connect();
         if (!isConnected) {
           throw new Error("Failed to establish WebSocket connection");
         }
+        
+        // Add user message to chat history
+        const userMessage = addMessage({
+          type: "user",
+          content: content.trim(),
+          timestamp: new Date(),
+        });
 
         // Create AI message placeholder
         const aiMessage = addMessage({

@@ -379,10 +379,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     );
 
     // Handle links
-    text = text.replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" class="underline" style="color: #2998E9;" target="_blank" rel="noopener noreferrer">$1</a>'
-    );
+text = text.replace(
+  /\[([^\]]+)\]\(([^)]+)\)/g,
+  '<a href="$2" class="underline" style="color: #2998E9;" target="_blank" rel="noopener noreferrer">$1</a>'
+);
+
 
     // Handle strikethrough
     text = text.replace(

@@ -60,7 +60,6 @@ console.log("Token expired, attempting to refresh...");
         if (data.success && data.token) {
           // Update tokens in localStorage
           console.log("Token refreshed successfully");
-          console.log("Token refreshed successfully");
           localStorage.setItem('auth_token', data.token);
           localStorage.setItem('refresh_token', data.refreshToken);
           localStorage.setItem('user_role', data.role);
