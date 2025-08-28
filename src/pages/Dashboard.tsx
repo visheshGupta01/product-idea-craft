@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import MainDashboard from "../components/MainDashboard";
 import { useUser } from "@/context/UserContext";
 import { fetchProjectDetails } from "@/services/projectService";
@@ -8,9 +8,14 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Dashboard = () => {
   const { sessionid } = useParams<{ sessionid: string }>();
+  const location = useLocation();
   const { userIdea, setSessionId } = useUser();
   const [projectTitle, setProjectTitle] = useState<string>("");
   const [isAccessValidated, setIsAccessValidated] = useState(false);
+  
+  // Get deploy URL and preview flag from navigation state
+  const deployUrl = location.state?.deployUrl;
+  const shouldOpenPreview = location.state?.shouldOpenPreview;
 
   const handleValidationComplete = async (isValid: boolean) => {
     if (isValid && sessionid) {
@@ -33,6 +38,8 @@ const Dashboard = () => {
       <MainDashboard 
         userIdea={userIdea || "My App"}
         sessionId={undefined}
+        deployUrl={deployUrl}
+        shouldOpenPreview={shouldOpenPreview}
       />
     );
   }
@@ -42,6 +49,8 @@ const Dashboard = () => {
       <MainDashboard 
         userIdea={projectTitle || userIdea || "My App"}
         sessionId={isAccessValidated ? sessionid : undefined}
+        deployUrl={deployUrl}
+        shouldOpenPreview={shouldOpenPreview}
       />
     </SessionValidator>
   );

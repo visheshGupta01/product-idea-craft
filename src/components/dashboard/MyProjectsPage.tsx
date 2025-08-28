@@ -67,8 +67,14 @@ const MyProjectsPage = () => {
     }
   };
 
-  const handleProjectClick = (sessionId: string) => {
-    navigate(`/c/${sessionId}`);
+  const handleProjectClick = (project: Project) => {
+    // Navigate with state to pass deploy_url for automatic preview opening
+    navigate(`/c/${project.session_id}`, { 
+      state: { 
+        deployUrl: project.deploy_url,
+        shouldOpenPreview: !!project.deploy_url 
+      } 
+    });
   };
 
   const formatDate = (dateString: string) => {
@@ -189,7 +195,7 @@ const MyProjectsPage = () => {
                 <Card
                   key={project.session_id}
                   className="hover:shadow-lg transition-shadow cursor-pointer group"
-                  onClick={() => handleProjectClick(project.session_id)}
+                  onClick={() => handleProjectClick(project)}
                 >
                   <div className="relative">
                     <div className="aspect-video w-full bg-gradient-to-br from-primary/20 to-secondary/20 rounded-t-lg overflow-hidden flex items-center justify-center">

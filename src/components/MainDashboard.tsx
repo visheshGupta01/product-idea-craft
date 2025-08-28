@@ -14,11 +14,13 @@ import { useUser } from '@/context/UserContext';
 interface MainDashboardProps {
   userIdea: string;
   sessionId?: string;
+  deployUrl?: string;
+  shouldOpenPreview?: boolean;
 }
 
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
 
-const MainDashboard = ({ userIdea, sessionId }: MainDashboardProps) => {
+const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>('main');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentProject] = useState({
@@ -31,8 +33,8 @@ const MainDashboard = ({ userIdea, sessionId }: MainDashboardProps) => {
   const { initialResponse } = useUser();
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
-  const [isFrontendCreated, setIsFrontendCreated] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [isFrontendCreated, setIsFrontendCreated] = useState(shouldOpenPreview || false);
+  const [previewUrl, setPreviewUrl] = useState<string>(deployUrl || '');
 
   // Auto-collapse sidebar on non-main screens
   useEffect(() => {
@@ -79,7 +81,8 @@ const MainDashboard = ({ userIdea, sessionId }: MainDashboardProps) => {
       default:
         // Show fullscreen chat if we have initial MCP response but frontend isn't created
         // OR if we don't have initial response (fallback to original behavior)
-        if (!isFrontendCreated || initialResponse) {
+        // But skip if we should open preview (deployed project)
+        if ((!isFrontendCreated || initialResponse) && !shouldOpenPreview) {
           return (
             <div className="h-full">
               <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />

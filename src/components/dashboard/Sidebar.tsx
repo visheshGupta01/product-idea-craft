@@ -288,13 +288,40 @@ const Sidebar = ({
                 <DialogTitle>Settings & Integrations</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => {
+                    // Connect to Supabase integration
+                    console.log('Connect Supabase clicked');
+                  }}
+                >
                   <Database className="h-4 w-4 mr-2" />
                   Connect Supabase
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => {
+                    // Navigate to GitHub OAuth
+                    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=repo,user`;
+                    window.location.href = githubAuthUrl;
+                  }}
+                >
                   <Github className="h-4 w-4 mr-2" />
                   Connect GitHub
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => {
+                    // Navigate to Vercel OAuth  
+                    const vercelAuthUrl = `https://vercel.com/oauth/authorize?client_id=YOUR_VERCEL_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=read,write`;
+                    window.location.href = vercelAuthUrl;
+                  }}
+                >
+                  <Link className="h-4 w-4 mr-2" />
+                  Connect Vercel
                 </Button>
               </div>
             </DialogContent>
@@ -507,13 +534,40 @@ const Sidebar = ({
             <DialogTitle>Settings & Integrations</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => {
+                // Connect to Supabase integration
+                console.log('Connect Supabase clicked');
+              }}
+            >
               <Database className="h-4 w-4 mr-2" />
               Connect Supabase
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => {
+                // Navigate to GitHub OAuth
+                const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=repo,user`;
+                window.location.href = githubAuthUrl;
+              }}
+            >
               <Github className="h-4 w-4 mr-2" />
               Connect GitHub
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => {
+                // Navigate to Vercel OAuth  
+                const vercelAuthUrl = `https://vercel.com/oauth/authorize?client_id=YOUR_VERCEL_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=read,write`;
+                window.location.href = vercelAuthUrl;
+              }}
+            >
+              <Link className="h-4 w-4 mr-2" />
+              Connect Vercel
             </Button>
           </div>
         </DialogContent>
