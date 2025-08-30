@@ -159,7 +159,7 @@ export default function UserManagement() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <Button
                 variant="outline"
                 className="bg-white text-[#333333] border-[#909090] shadow-xl"
@@ -178,7 +178,7 @@ export default function UserManagement() {
               >
                 Issues Raised
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
 

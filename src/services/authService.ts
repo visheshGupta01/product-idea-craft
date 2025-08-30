@@ -144,6 +144,16 @@ export class AuthService {
       const ipRes = await fetch("http://ip-api.com/json/");
       const ipData = await ipRes.json();
       console.log("IP Data:", ipData);
+      console.log({
+        first_name,
+        last_name,
+        email,
+        password,
+        country: ipData.country,
+        city: ipData.city,
+        lat: ipData.lat,
+        lon: ipData.lon,
+      })
 
       // 3. Send signup + location to backend
       const response = await apiClient.post("/signup", {

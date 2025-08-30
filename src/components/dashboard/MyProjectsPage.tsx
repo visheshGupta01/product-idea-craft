@@ -71,7 +71,7 @@ const MyProjectsPage = () => {
     // Navigate with state to pass deploy_url for automatic preview opening
     navigate(`/c/${project.session_id}`, { 
       state: { 
-        deployUrl: project.deploy_url,
+        deployUrl: project.project_url,
         shouldOpenPreview: !!project.deploy_url 
       } 
     });

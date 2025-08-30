@@ -56,6 +56,7 @@ export const useChatPersistence = (sessionId: string | null) => {
         // If not in sessionStorage, load from API with proper access validation
         try {
           const projectDetails = await fetchProjectDetails(sessionId);
+          console.log('Loaded messages from API for session:', sessionId);
           if (projectDetails.success && projectDetails.response) {
             const apiMessages = projectDetails.response.map(convertApiMessageToMessage);
             setMessages(apiMessages);

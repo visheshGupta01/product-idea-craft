@@ -58,38 +58,6 @@ const HeatmapLayer: React.FC<{ points: any[] }> = ({ points }) => {
   return null;
 };
 
-const HeatmapLegend: React.FC = () => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!map) return;
-
-    const legend = L.control({ position: "bottomright" });
-
-    legend.onAdd = function () {
-      const div = L.DomUtil.create("div", "info legend");
-      div.innerHTML = `
-        <div style="padding:8px; background:white; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.2);">
-          <h4 style="margin:0 0 5px; font-size:14px;">Intensity</h4>
-          <div style="width:120px; height:12px; background:linear-gradient(to right, blue, lime, yellow, red); margin-bottom:4px;"></div>
-          <div style="display:flex; justify-content:space-between; font-size:12px;">
-            <span>Low</span><span>High</span>
-          </div>
-        </div>
-      `;
-      return div;
-    };
-
-    legend.addTo(map);
-
-    return () => {
-      legend.remove();
-    };
-  }, [map]);
-
-  return null;
-};
-
 const MapAnalytics: React.FC<MapAnalyticsProps> = ({
   countryPercentages = [
     { country: "India", user_count: 200, percentage: 50 },
@@ -124,12 +92,22 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
         </div> */}
       </div>
 
-{/* Map + Legend side by side */}
+      {/* Map + Legend side by side */}
       <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
         {/* Heatmap Map - Temporarily disabled due to build issues */}
         <div className="flex-1 flex justify-center items-center h-56">
           <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500">Map temporarily unavailable</p>
+            <MapContainer
+              center={[20, 0]}
+              zoom={2}
+              style={{ height: "100%", width: "100%", borderRadius: "12px" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution="&copy; OpenStreetMap contributors"
+              />
+              <HeatmapLayer points={countryGeoData} />
+            </MapContainer>
           </div>
         </div>
 
