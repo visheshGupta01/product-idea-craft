@@ -8,7 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Menu, User, Moon, Sun, Database, Github, Settings, Users, CreditCard, Lightbulb, Home, Link } from 'lucide-react';
 import SitemapSection from './SitemapSection';
+import { ProjectDetails } from '@/services/projectService';
+
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
+
 interface SidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
@@ -20,13 +23,15 @@ interface SidebarProps {
   };
   activeView?: ActiveView;
   onViewChange?: (view: ActiveView) => void;
+  projectDetails?: ProjectDetails;
 }
 const Sidebar = ({
   collapsed,
   onToggleCollapse,
   currentProject,
   activeView = 'main',
-  onViewChange
+  onViewChange,
+  projectDetails
 }: SidebarProps) => {
   const { user, isAuthenticated } = useUser();
   const [darkMode, setDarkMode] = useState(false);
@@ -113,7 +118,7 @@ const Sidebar = ({
         <div className="flex-1 flex flex-col bg-sidebar-background">
           {/* Sitemap Section - only show on main dashboard */}
           {activeView === 'main' && (
-            <SitemapSection collapsed={true} />
+            <SitemapSection collapsed={true} sitemapData={projectDetails?.sitemap} />
           )}
         </div>
 
@@ -223,7 +228,7 @@ const Sidebar = ({
       {/* Sitemap Section - only show on main dashboard */}
       {activeView === 'main' && (
         <div className="flex-1 min-h-0 bg-sidebar-background">
-          <SitemapSection collapsed={false} />
+          <SitemapSection collapsed={false} sitemapData={projectDetails?.sitemap} />
         </div>
       )}
 

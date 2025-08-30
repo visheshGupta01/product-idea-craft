@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -17,90 +17,93 @@ import {
   ChevronRight,
   CheckCircle2,
   RotateCcw,
-  Circle
+  Circle,
+  Globe,
+  Database,
+  Code
 } from 'lucide-react';
 
 interface SitemapItem {
-  id: number;
+  id: string;
   title: string;
   status: 'completed' | 'in-progress' | 'pending';
   icon: any;
   hasSubItems?: boolean;
   isExpanded?: boolean;
+  description?: string;
+}
+
+interface SitemapData {
+  project_name?: string;
+  project_type?: string;
+  domain?: string;
+  description?: string;
+  tech_stack?: {
+    frontend?: string;
+    backend?: string;
+    database?: string;
+  };
+  pages?: Array<{
+    name: string;
+    description: string;
+    frontend_path?: string;
+    backend_api_path?: string;
+    components?: string[];
+  }>;
+  database_models?: any[];
+  backend_api_routes?: any[];
 }
 
 interface SitemapSectionProps {
   collapsed: boolean;
+  sitemapData?: SitemapData;
 }
 
-const SitemapSection = ({ collapsed }: SitemapSectionProps) => {
-  const [sitemapItems, setSitemapItems] = useState<SitemapItem[]>([
-    {
-      id: 1,
-      title: 'Home',
-      status: 'completed',
-      icon: Home,
-      hasSubItems: true,
-      isExpanded: true
-    },
-    {
-      id: 2,
-      title: 'Hero Section',
-      status: 'completed',
-      icon: Grid3X3
-    },
-    {
-      id: 3,
-      title: 'Shop Section',
-      status: 'completed',
-      icon: ShoppingBag
-    },
-    {
-      id: 4,
-      title: 'Feature Grid',
-      status: 'in-progress',
-      icon: Grid3X3
-    },
-    {
-      id: 5,
-      title: 'Testimonies',
-      status: 'pending',
-      icon: MessageSquare
-    },
-    {
-      id: 6,
-      title: 'About',
-      status: 'pending',
-      icon: User,
-      hasSubItems: true
-    },
-    {
-      id: 7,
-      title: 'Services',
-      status: 'pending',
-      icon: Briefcase,
-      hasSubItems: true
-    },
-    {
-      id: 8,
-      title: 'Blogs',
-      status: 'pending',
-      icon: FileText,
-      hasSubItems: true
-    },
-    {
-      id: 9,
-      title: 'Contacts',
-      status: 'pending',
-      icon: Phone,
-      hasSubItems: true
+const SitemapSection = ({ collapsed, sitemapData }: SitemapSectionProps) => {
+  const [sitemapItems, setSitemapItems] = useState<SitemapItem[]>([]);
+
+  // Transform sitemap data into component format
+  useEffect(() => {
+    if (!sitemapData || !sitemapData.pages) {
+      setSitemapItems([]);
+      return;
     }
-  ]);
+
+    const getPageIcon = (pageName: string) => {
+      const name = pageName.toLowerCase();
+      if (name.includes('home') || name.includes('landing')) return Home;
+      if (name.includes('about')) return User;
+      if (name.includes('contact')) return Phone;
+      if (name.includes('service')) return Briefcase;
+      if (name.includes('blog') || name.includes('news')) return FileText;
+      if (name.includes('shop') || name.includes('product')) return ShoppingBag;
+      if (name.includes('portfolio') || name.includes('work')) return Grid3X3;
+      if (name.includes('testimonial') || name.includes('review')) return MessageSquare;
+      return Globe;
+    };
+
+    const transformedItems: SitemapItem[] = sitemapData.pages.map((page, index) => ({
+      id: `page-${index}`,
+      title: page.name,
+      status: 'pending' as const, // Default status since API doesn't provide this
+      icon: getPageIcon(page.name),
+      hasSubItems: page.components && page.components.length > 0,
+      isExpanded: false,
+      description: page.description
+    }));
+
+    setSitemapItems(transformedItems);
+  }, [sitemapData]);
+
+  // If no sitemap data, don't render anything
+  if (!sitemapData || !sitemapData.pages || sitemapData.pages.length === 0) {
+    return null;
+  }
 
   const completedItems = sitemapItems.filter(item => item.status === 'completed').length;
-  const progress = completedItems / sitemapItems.length * 100;
+  const progress = sitemapItems.length > 0 ? (completedItems / sitemapItems.length * 100) : 0;
 
-  const toggleExpanded = (id: number) => {
+  const toggleExpanded = (id: string) => {
     setSitemapItems(items => 
       items.map(item => 
         item.id === id ? { ...item, isExpanded: !item.isExpanded } : item
@@ -158,6 +161,9 @@ const SitemapSection = ({ collapsed }: SitemapSectionProps) => {
                 <TooltipContent side="right">
                   <p>{item.title}</p>
                   <p className="text-xs text-muted-foreground capitalize">{item.status.replace('-', ' ')}</p>
+                  {item.description && (
+                    <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
+                  )}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -169,6 +175,18 @@ const SitemapSection = ({ collapsed }: SitemapSectionProps) => {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Project Info */}
+      {sitemapData.project_name && (
+        <div className="p-3 border-b border-sidebar-border">
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold text-sidebar-foreground">{sitemapData.project_name}</h3>
+            {sitemapData.project_type && (
+              <p className="text-xs text-muted-foreground">{sitemapData.project_type}</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Progress Overview */}
       <div className="p-3 border-b border-sidebar-border">
         <div className="space-y-2 bg-sidebar-accent/20 rounded-lg p-2">
@@ -180,7 +198,7 @@ const SitemapSection = ({ collapsed }: SitemapSectionProps) => {
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{Math.round(progress)}% complete</p>
+                <p>{Math.round(progress)}% complete ({completedItems}/{sitemapItems.length})</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -218,9 +236,16 @@ const SitemapSection = ({ collapsed }: SitemapSectionProps) => {
                           'text-gray-400'
                         }`} />
                       </div>
-                      <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
-                        {item.title}
-                      </h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium text-sidebar-foreground break-words leading-tight">
+                          {item.title}
+                        </h4>
+                        {item.description && (
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div className="flex-shrink-0 ml-2 flex items-center space-x-1">
                       {getStatusIcon(item.status)}

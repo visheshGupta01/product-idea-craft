@@ -10,6 +10,7 @@ import UserProfilePage from './dashboard/UserProfilePage';
 import Navbar from './ui/navbar';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useUser } from '@/context/UserContext';
+import { fetchProjectDetails, ProjectDetails } from '@/services/projectService';
 
 interface MainDashboardProps {
   userIdea: string;
@@ -29,12 +30,33 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
     description: userIdea,
     status: 'in-progress'
   });
+  const [projectDetails, setProjectDetails] = useState<ProjectDetails | undefined>();
 
   const { initialResponse } = useUser();
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(shouldOpenPreview || false);
   const [previewUrl, setPreviewUrl] = useState<string>(deployUrl || '');
+
+  // Fetch project details when sessionId changes
+  useEffect(() => {
+    const loadProjectDetails = async () => {
+      if (sessionId) {
+        try {
+          console.log('📝 Fetching project details for sessionId:', sessionId);
+          const details = await fetchProjectDetails(sessionId);
+          console.log('📝 Project details fetched:', details);
+          setProjectDetails(details);
+        } catch (error) {
+          console.error('📝 Failed to fetch project details:', error);
+        }
+      } else {
+        setProjectDetails(undefined);
+      }
+    };
+
+    loadProjectDetails();
+  }, [sessionId]);
 
   // Auto-collapse sidebar on non-main screens
   useEffect(() => {
@@ -171,6 +193,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
             currentProject={currentProject}
             activeView={activeView}
             onViewChange={setActiveView}
+            projectDetails={projectDetails}
           />
         </div>
 
