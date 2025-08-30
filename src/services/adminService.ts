@@ -95,3 +95,65 @@ export const cancelUserSubscription = async (userId: string): Promise<{ success:
     throw error;
   }
 };
+
+// GitHub Integration
+export const connectGitHub = async (): Promise<{ success: boolean; url?: string; message?: string }> => {
+  try {
+    const response = await apiClient.post('/integrations/github/connect');
+    return response.data;
+  } catch (error) {
+    console.error('Error connecting GitHub:', error);
+    throw error;
+  }
+};
+
+export const getGitHubStatus = async (): Promise<{ connected: boolean; repository?: any }> => {
+  try {
+    const response = await apiClient.get('/integrations/github/status');
+    return response.data;
+  } catch (error) {
+    console.error('Error getting GitHub status:', error);
+    return { connected: false };
+  }
+};
+
+export const disconnectGitHub = async (): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const response = await apiClient.post('/integrations/github/disconnect');
+    return response.data;
+  } catch (error) {
+    console.error('Error disconnecting GitHub:', error);
+    throw error;
+  }
+};
+
+// Vercel Integration
+export const connectVercel = async (): Promise<{ success: boolean; url?: string; message?: string }> => {
+  try {
+    const response = await apiClient.post('/integrations/vercel/connect');
+    return response.data;
+  } catch (error) {
+    console.error('Error connecting Vercel:', error);
+    throw error;
+  }
+};
+
+export const getVercelStatus = async (): Promise<{ connected: boolean; deployment?: any }> => {
+  try {
+    const response = await apiClient.get('/integrations/vercel/status');
+    return response.data;
+  } catch (error) {
+    console.error('Error getting Vercel status:', error);
+    return { connected: false };
+  }
+};
+
+export const deployToVercel = async (): Promise<{ success: boolean; url?: string; message?: string }> => {
+  try {
+    const response = await apiClient.post('/integrations/vercel/deploy');
+    return response.data;
+  } catch (error) {
+    console.error('Error deploying to Vercel:', error);
+    throw error;
+  }
+};

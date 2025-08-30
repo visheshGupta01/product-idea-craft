@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -19,6 +19,7 @@ import { EmailVerificationModal } from "./components/auth/EmailVerificationModal
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { AuthTestPanel } from "./components/auth/AuthTestPanel";
+import Navbar from "./components/landing_page/Navbar";
 
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const AppContent = () => {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [verificationToken, setVerificationToken] = useState('');
   const [searchParams] = useSearchParams();
+  const location = useLocation();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -41,8 +43,12 @@ const AppContent = () => {
     }
   }, [searchParams]);
 
+  // Show navbar only on specific routes
+  const showNavbar = location.pathname === '/projects' || location.pathname === '/profile';
+
   return (
     <>
+      {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/c/:sessionid" element={

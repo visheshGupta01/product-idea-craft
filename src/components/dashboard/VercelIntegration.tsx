@@ -13,6 +13,7 @@ import {
   Github
 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
+import { connectVercel, getVercelStatus, deployToVercel, getGitHubStatus } from '@/services/adminService';
 
 interface DeploymentInfo {
   url: string;
@@ -24,53 +25,31 @@ const VercelIntegration = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployment, setDeployment] = useState<DeploymentInfo | null>(null);
   const [hasGitHubRepo, setHasGitHubRepo] = useState(false);
-  const { sessionId } = useUser();
+  const { user } = useUser();
 
   useEffect(() => {
-    // Check if GitHub repository exists
-    const savedRepo = sessionStorage.getItem('github_repository');
-    setHasGitHubRepo(!!savedRepo);
-
-    // Check if deployment info exists
-    const savedDeployment = sessionStorage.getItem('vercel_deployment');
-    if (savedDeployment) {
-      try {
-        const deploymentInfo = JSON.parse(savedDeployment);
-        setDeployment(deploymentInfo);
-      } catch (error) {
-        console.error('Error parsing saved deployment:', error);
-      }
-    }
-
-    // Check for Vercel callback
-    const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get('success');
-    const action = urlParams.get('action');
-    const deployUrl = urlParams.get('url');
-    
-    if (action === 'vercel-deploy' && success === 'true' && deployUrl) {
-      handleDeploymentSuccess(deployUrl);
-      // Clean up URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
+    checkIntegrationStatus();
   }, []);
 
-  const handleDeploymentSuccess = (deployUrl: string) => {
-    const deploymentInfo: DeploymentInfo = {
-      url: deployUrl,
-      deployedAt: new Date().toISOString(),
-      status: 'deployed'
-    };
+  const checkIntegrationStatus = async () => {
+    try {
+      // Check GitHub status
+      const gitHubStatus = await getGitHubStatus();
+      setHasGitHubRepo(gitHubStatus.connected);
 
-    setDeployment(deploymentInfo);
-    setIsDeploying(false);
-    sessionStorage.setItem('vercel_deployment', JSON.stringify(deploymentInfo));
-    toast.success('Successfully deployed to Vercel!');
+      // Check Vercel status
+      const vercelStatus = await getVercelStatus();
+      if (vercelStatus.connected && vercelStatus.deployment) {
+        setDeployment(vercelStatus.deployment);
+      }
+    } catch (error) {
+      console.error('Error checking integration status:', error);
+    }
   };
 
   const handleDeployToVercel = async () => {
-    if (!sessionId) {
-      toast.error('Please ensure you have an active session');
+    if (!user) {
+      toast.error('Please ensure you are logged in');
       return;
     }
 
@@ -81,12 +60,28 @@ const VercelIntegration = () => {
 
     setIsDeploying(true);
     try {
-      // Redirect to Vercel OAuth with deployment flow
-      const vercelUrl = `http://localhost:8000/vercel/auth/?sessionid=${sessionId}`;
-      window.location.href = vercelUrl;
+      const response = await deployToVercel();
+      if (response.success) {
+        if (response.url) {
+          // Direct deployment success with URL
+          const deploymentInfo: DeploymentInfo = {
+            url: response.url,
+            deployedAt: new Date().toISOString(),
+            status: 'deployed'
+          };
+          setDeployment(deploymentInfo);
+          toast.success('Successfully deployed to Vercel!');
+        } else {
+          // OAuth flow initiated
+          window.location.href = response.url || '';
+        }
+      } else {
+        throw new Error(response.message || 'Failed to deploy');
+      }
     } catch (error) {
       console.error('Error deploying to Vercel:', error);
       toast.error('Failed to deploy to Vercel');
+    } finally {
       setIsDeploying(false);
     }
   };

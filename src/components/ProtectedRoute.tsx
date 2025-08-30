@@ -64,7 +64,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
   // For regular dashboard routes, allow direct session routes even without active chat
   if (!requireAdmin) {
     const isSessionPath = location.pathname.startsWith('/c/');
-    if (!isSessionPath) {
+    const isProjectsOrProfilePath = location.pathname === '/projects' || location.pathname === '/profile';
+    
+    // Allow projects and profile pages without chat session requirement
+    if (!isSessionPath && !isProjectsOrProfilePath) {
       const hasActiveChat = userIdea || isProcessingIdea || initialResponse || sessionId;
       const hasPersistedChat = authService.getUserIdea() || authService.getSessionId();
       
