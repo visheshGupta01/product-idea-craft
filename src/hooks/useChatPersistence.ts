@@ -23,9 +23,12 @@ export const useChatPersistence = (sessionId: string | null) => {
   useEffect(() => {
     const loadMessages = async () => {
       if (!sessionId) {
+        console.log('📝 No sessionId provided, clearing messages');
         setMessages([]);
         return;
       }
+
+      console.log('📝 Loading messages for sessionId:', sessionId);
 
       // Clear all previous chat sessions - only keep current one
       const keys = Object.keys(sessionStorage);
@@ -40,10 +43,12 @@ export const useChatPersistence = (sessionId: string | null) => {
       try {
         // First try to load from sessionStorage
         const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+        console.log('📝 Checking sessionStorage for:', `chat_session_${sessionId}`, savedSession ? 'Found' : 'Not found');
         
         if (savedSession) {
           try {
             const session: ChatSession = JSON.parse(savedSession);
+            console.log('📝 Loaded from sessionStorage:', session.messages?.length || 0, 'messages');
             setMessages(session.messages || []);
             setIsLoadingMessages(false);
             return;
@@ -55,10 +60,14 @@ export const useChatPersistence = (sessionId: string | null) => {
 
         // If not in sessionStorage, load from API with proper access validation
         try {
+          console.log('📝 Fetching from API for sessionId:', sessionId);
           const projectDetails = await fetchProjectDetails(sessionId);
+          console.log('📝 API response:', projectDetails);
+          
           console.log('Loaded messages from API for session:', sessionId);
           if (projectDetails.success && projectDetails.response) {
             const apiMessages = projectDetails.response.map(convertApiMessageToMessage);
+            console.log('📝 Loaded from API:', apiMessages.length, 'messages');
             setMessages(apiMessages);
             
             // Only save to sessionStorage if we successfully loaded from API
@@ -68,20 +77,22 @@ export const useChatPersistence = (sessionId: string | null) => {
               lastUpdated: Date.now(),
             };
             sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
+            console.log('📝 Saved to sessionStorage');
           } else {
+            console.log('📝 API returned unsuccessful or no response');
             // If API returns unsuccessful, clear any stored session
             sessionStorage.removeItem(`chat_session_${sessionId}`);
             setMessages([]);
           }
         } catch (apiError) {
-          console.error('Error loading messages from API - unauthorized access:', apiError);
+          console.error('📝 Error loading messages from API:', apiError);
           // Clear any potentially unauthorized session data
           sessionStorage.removeItem(`chat_session_${sessionId}`);
           setMessages([]);
           throw apiError; // Re-throw to be handled by calling component
         }
       } catch (error) {
-        console.error('Error in loadMessages:', error);
+        console.error('📝 Error in loadMessages:', error);
         setMessages([]);
       } finally {
         setIsLoadingMessages(false);
