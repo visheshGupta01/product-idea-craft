@@ -58,37 +58,37 @@ export default function SitemapSection({ projectDetails, collapsed }: SitemapSec
   }
 
   return (
-    <div className="px-4 py-2">
-      <Collapsible defaultOpen>
-        <CollapsibleTrigger className="flex items-center justify-between w-full text-left text-sm font-medium text-sidebar-foreground hover:text-primary transition-colors">
-          <div className="flex items-center space-x-2">
-            <Home size={16} className="text-pink-500" />
-            <span>Home</span>
-          </div>
-          <ChevronDown size={16} />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-2 mt-3 ml-2">
-          {projectDetails.sitemap.pages.map((page, index) => {
-            const Icon = getPageIcon(page.name);
-            const status = getPageStatus(index, projectDetails.sitemap.pages.length);
-            
-            return (
-              <div
-                key={index}
-                className="flex items-center justify-between p-2 hover:bg-sidebar-accent/50 rounded-md transition-colors cursor-pointer group"
-              >
-                <div className="flex items-center space-x-3">
-                  <Icon size={16} className="text-pink-500 flex-shrink-0" />
-                  <span className="text-sm text-sidebar-foreground group-hover:text-primary transition-colors">
-                    {page.name}
-                  </span>
-                </div>
-                <StatusIcon status={status} />
+    <div className="px-4 py-2 space-y-2">
+      {projectDetails.sitemap.pages.map((page, index) => {
+        const Icon = getPageIcon(page.name);
+        const status = getPageStatus(index, projectDetails.sitemap.pages.length);
+        
+        return (
+          <Collapsible key={index} defaultOpen={index === 0}>
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-left text-sm font-medium text-sidebar-foreground hover:text-primary transition-colors p-2 hover:bg-sidebar-accent/50 rounded-md">
+              <div className="flex items-center space-x-2">
+                <Icon size={16} className="text-pink-500" />
+                <span>{page.name}</span>
               </div>
-            );
-          })}
-        </CollapsibleContent>
-      </Collapsible>
+              <div className="flex items-center space-x-2">
+                <StatusIcon status={status} />
+                <ChevronDown size={14} />
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-1 mt-2 ml-6">
+              {page.components && page.components.map((component: string, compIndex: number) => (
+                <div
+                  key={compIndex}
+                  className="flex items-center space-x-2 p-1 text-xs text-muted-foreground hover:text-sidebar-foreground transition-colors"
+                >
+                  <div className="w-2 h-2 rounded-full bg-pink-400/50"></div>
+                  <span>{component}</span>
+                </div>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })}
     </div>
   );
 }
