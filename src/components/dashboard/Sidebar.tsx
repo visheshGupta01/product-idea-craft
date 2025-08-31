@@ -106,14 +106,26 @@ const Sidebar = ({
           </div>
         )}
 
-        {/* Header - only show hamburger on collapsed main dashboard */}
+        {/* Header - show expand button on collapsed main dashboard */}
         {activeView === 'main' && (
           <div className="p-2 border-b border-sidebar-border bg-sidebar-background flex justify-center">
-            <img
-              src={myIcon}
-              alt="Imaginebo"
-              className="w-8 h-8"
-            />
+            <button
+              onClick={onToggleCollapse}
+              className="p-2 hover:bg-sidebar-accent rounded-md transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="rotate-180"
+              >
+                <path d="m11 17-5-5 5-5" />
+                <path d="m18 17-5-5 5-5" />
+              </svg>
+            </button>
           </div>
         )}
 
@@ -217,15 +229,10 @@ const Sidebar = ({
         </div>
       )}
 
-      {/* Header with Logo and Project Name */}
+      {/* Header with Project Name */}
       {activeView === 'main' && (
         <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
           <div className="flex items-center space-x-3">
-            <img
-              src={myIcon}
-              alt="Imaginebo"
-              className="w-8 h-8"
-            />
             {!collapsed && (
               <span className="text-lg font-semibold text-sidebar-foreground">
                 {projectDetails?.sitemap?.project_name || currentProject.name}
