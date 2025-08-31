@@ -17,11 +17,9 @@ const Navbar: React.FC = () => {
       <div className="max-w-[1732px] mx-auto h-[60px] px-4 md:px-6 flex items-center justify-between">
         {/* Logo */}
         <div>
-          <img
-            src={Logo}
-            alt="Imagine.bo"
-            className="h-10 object-contain"
-          />
+          <a href='/'>
+            <img src={Logo} alt="Imagine.bo" className="h-10 object-contain" />
+          </a>
         </div>
 
         {/* Menu items - Hidden on mobile */}
@@ -44,21 +42,30 @@ const Navbar: React.FC = () => {
         {isAuthenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 text-white hover:text-pink-400">
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 text-white hover:text-pink-400"
+              >
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-pink-500 text-white">
                     <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden md:inline text-sm font-medium">Profile</span>
+                <span className="hidden md:inline text-sm font-medium">
+                  Profile
+                </span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => window.location.href = '/projects'}>
+              <DropdownMenuItem
+                onClick={() => (window.location.href = "/projects")}
+              >
                 <FolderOpen className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
+              <DropdownMenuItem
+                onClick={() => (window.location.href = "/profile")}
+              >
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>
@@ -74,14 +81,14 @@ const Navbar: React.FC = () => {
           </DropdownMenu>
         ) : (
           <div className="w-[180px] md:w-[220px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
-            <button 
+            <button
               onClick={() => setShowLoginModal(true)}
               className="w-1/2 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
             >
               Login
             </button>
             <div className="w-[1px] h-[70%] bg-black" />
-            <button 
+            <button
               onClick={() => setShowSignupModal(true)}
               className="w-1/2 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
             >
@@ -90,7 +97,7 @@ const Navbar: React.FC = () => {
           </div>
         )}
       </div>
-      
+
       {/* Authentication Modals */}
       <LoginModal
         isOpen={showLoginModal}

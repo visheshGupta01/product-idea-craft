@@ -93,44 +93,18 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
   const renderActiveView = () => {
     switch (activeView) {
       case 'team':
-        return (
-          <div className="h-full">
-            <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
-            <div className="pt-14 h-full bg-background">
-              <TeamPage />
-            </div>
-          </div>
-        );
+       return <TeamPage />;
       case 'subscription':
-        return (
-          <div className="h-full">
-            <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
-            <div className="pt-14 h-full bg-background">
-              <SubscriptionPage />
-            </div>
-          </div>
-        );
+        return <SubscriptionPage />;
       case 'my-projects':
-        return (
-          <div className="h-full">
-            <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
-            <div className="pt-14 h-full bg-background">
-              <MyProjectsPage />
-            </div>
-          </div>
-        );
+        return <MyProjectsPage />;
       case 'user-profile':
-        return (
-          <div className="h-full">
-            <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
-            <div className="pt-14 h-full bg-background">
-              <UserProfilePage onLogout={handleLogout} />
-            </div>
-          </div>
-        );
+        return <UserProfilePage onLogout={handleLogout} />;
       default:
-        // Always show chat when there's a sessionId or initial response, regardless of frontend state
-        if (sessionId || initialResponse || (!isFrontendCreated && !shouldOpenPreview)) {
+        // Show fullscreen chat if we have initial MCP response but frontend isn't created
+        // OR if we don't have initial response (fallback to original behavior)
+        // But skip if we should open preview (deployed project)
+        if ((!isFrontendCreated || initialResponse) && !shouldOpenPreview) {
           return (
             <div className="h-full">
               <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />
@@ -176,17 +150,21 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
   return (
     <div className="h-screen bg-background overflow-hidden">
       {/* Fixed Navbar - only show on main dashboard */}
-      {activeView === 'main' && <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />}
-      
+      <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
+
       {/* Main content with conditional top padding for navbar */}
-      <div className={`h-full ${activeView === 'main' ? 'pt-14' : ''} flex`}>
+      <div className="h-full pt-14 flex">
         {/* Sidebar */}
-        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'} flex-shrink-0`}>
-          <Sidebar 
+        <div
+          className={`transition-all duration-300 ${
+            sidebarCollapsed ? "w-16" : "w-64"
+          } flex-shrink-0`}
+        >
+          <Sidebar
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => {
               // Only allow toggle on main dashboard, keep collapsed on other screens
-              if (activeView === 'main') {
+              if (activeView === "main") {
                 setSidebarCollapsed(!sidebarCollapsed);
               }
             }}
@@ -198,9 +176,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
         </div>
 
         {/* Main Content Area - takes remaining space */}
-        <div className="flex-1 min-w-0">
-          {renderActiveView()}
-        </div>
+        <div className="flex-1 min-w-0">{renderActiveView()}</div>
       </div>
     </div>
   );

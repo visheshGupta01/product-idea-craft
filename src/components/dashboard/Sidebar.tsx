@@ -145,18 +145,18 @@ const Sidebar = ({
                 <User className="h-4 w-4 mr-2" />
                 User Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onViewChange?.('team')}>
+              {/* <DropdownMenuItem onClick={() => onViewChange?.('team')}>
                 <Users className="h-4 w-4 mr-2" />
                 Teams
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={() => onViewChange?.('subscription')}>
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscription
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+              {/* <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={toggleDarkMode}>
                 {darkMode ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
                 {darkMode ? 'Light Mode' : 'Dark Mode'}
@@ -217,7 +217,7 @@ const Sidebar = ({
       {/* Header - only show hamburger on main dashboard */}
       {activeView === 'main' && (
         <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar-background">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
               <Menu className="h-4 w-4" />
             </Button>
@@ -266,18 +266,18 @@ const Sidebar = ({
               <User className="h-4 w-4 mr-2" />
               User Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onViewChange?.('team')}>
+            {/* <DropdownMenuItem onClick={() => onViewChange?.('team')}>
               <Users className="h-4 w-4 mr-2" />
               Teams
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem onClick={() => onViewChange?.('subscription')}>
               <CreditCard className="h-4 w-4 mr-2" />
               Subscription
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+            {/* <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
               <Settings className="h-4 w-4 mr-2" />
               Settings
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem onClick={toggleDarkMode}>
               {darkMode ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
               {darkMode ? 'Light Mode' : 'Dark Mode'}

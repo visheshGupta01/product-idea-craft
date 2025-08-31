@@ -58,11 +58,13 @@ const AppContent = () => {
         } />
         <Route path="/projects" element={
           <ProtectedRoute>
+            <Navbar />
             <MyProjects />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
           <ProtectedRoute>
+            <Navbar />
             <Profile />
           </ProtectedRoute>
         } />

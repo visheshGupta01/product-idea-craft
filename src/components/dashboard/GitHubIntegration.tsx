@@ -12,7 +12,6 @@ import {
   Loader2
 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
-import { connectGitHub, getGitHubStatus, disconnectGitHub } from '@/services/adminService';
 
 interface GitHubRepo {
   name: string;
@@ -25,38 +24,68 @@ const GitHubIntegration = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [repository, setRepository] = useState<GitHubRepo | null>(null);
-  const { user } = useUser();
+    const { sessionId } = useUser();
+
+
 
   useEffect(() => {
-    checkGitHubStatus();
+    // Check if we have GitHub repository info in sessionStorage
+    const savedRepo = sessionStorage.getItem("github_repository");
+    if (savedRepo) {
+      try {
+        const repo = JSON.parse(savedRepo);
+        setRepository(repo);
+        setIsConnected(true);
+      } catch (error) {
+        console.error("Error parsing saved repository:", error);
+      }
+    }
+
+    // Check for OAuth callback
+    console.log("Checking URL for OAuth parameters...");
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log("URL Params:", urlParams.toString());
+    const action = urlParams.get("action");
+    const status = urlParams.get("status");
+    const cloneUrl = urlParams.get("clone_url");
+
+    if (action === "github-oauth" && status === "success" && cloneUrl) {
+      console.log("OAuth success! Clone URL:", cloneUrl);
+      handleOAuthSuccess(cloneUrl);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
-  const checkGitHubStatus = async () => {
-    try {
-      const status = await getGitHubStatus();
-      setIsConnected(status.connected);
-      if (status.connected && status.repository) {
-        setRepository(status.repository);
-      }
-    } catch (error) {
-      console.error('Error checking GitHub status:', error);
-    }
-  };
+ const handleOAuthSuccess = (cloneUrl: string) => {
+   // Extract repository info from clone URL
+   const repoName = cloneUrl.split("/").pop()?.replace(".git", "") || "Unknown";
+   const htmlUrl = cloneUrl.replace(".git", "");
+
+   const repo: GitHubRepo = {
+     name: repoName,
+     clone_url: cloneUrl,
+     html_url: htmlUrl,
+     created_at: new Date().toISOString(),
+   };
+
+   setRepository(repo);
+   setIsConnected(true);
+   sessionStorage.setItem("github_repository", JSON.stringify(repo));
+   toast.success("Successfully connected to GitHub!");
+ };
 
   const handleConnectGitHub = async () => {
-    if (!user) {
-      toast.error('Please ensure you are logged in');
+    if (!sessionId) {
+      toast.error("Please ensure you have an active session");
       return;
     }
 
     setIsConnecting(true);
     try {
-      const response = await connectGitHub();
-      if (response.success && response.url) {
-        window.location.href = response.url;
-      } else {
-        throw new Error(response.message || 'Failed to connect');
-      }
+      // Redirect to GitHub OAuth
+      const githubUrl = `http://localhost:8000/github/?sessionid=${sessionId}`;
+      window.location.href = githubUrl;
     } catch (error) {
       console.error('Error connecting to GitHub:', error);
       toast.error('Failed to connect to GitHub');
@@ -64,20 +93,11 @@ const GitHubIntegration = () => {
     }
   };
 
-  const handleDisconnect = async () => {
-    try {
-      const response = await disconnectGitHub();
-      if (response.success) {
-        setIsConnected(false);
-        setRepository(null);
-        toast.success('Disconnected from GitHub');
-      } else {
-        throw new Error(response.message || 'Failed to disconnect');
-      }
-    } catch (error) {
-      console.error('Error disconnecting GitHub:', error);
-      toast.error('Failed to disconnect from GitHub');
-    }
+  const handleDisconnect = () => {
+    setIsConnected(false);
+    setRepository(null);
+    sessionStorage.removeItem('github_repository');
+    toast.success('Disconnected from GitHub');
   };
 
   const formatDate = (dateString: string) => {
@@ -162,13 +182,13 @@ const GitHubIntegration = () => {
                     <ExternalLink className="h-3 w-3 mr-2" />
                     View on GitHub
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleDisconnect}
-                  >
-                    Disconnect
-                  </Button>
+                    {/* <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleDisconnect}
+                    >
+                      Disconnect
+                    </Button> */}
                 </div>
               </div>
 
@@ -188,14 +208,14 @@ const GitHubIntegration = () => {
                 </div>
               </div>
 
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+              {/* <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                 <h4 className="font-medium mb-2 text-green-800 dark:text-green-200">
                   🎉 Ready to collaborate!
                 </h4>
                 <p className="text-sm text-green-700 dark:text-green-300">
                   Your project is now synced with GitHub. Any changes made to your code will be automatically pushed to your repository.
                 </p>
-              </div>
+              </div> */}
             </div>
           )
         )}
