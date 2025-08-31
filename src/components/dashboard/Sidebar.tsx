@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Menu, User, Moon, Sun, Database, Github, Settings, Users, CreditCard, Lightbulb, Home, Link } from 'lucide-react';
 import SitemapSection from './SitemapSection';
 import { ProjectDetails } from '@/services/projectService';
+import myIcon from "../../assets/ImagineboIcon.svg";
 
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
 
@@ -105,12 +106,14 @@ const Sidebar = ({
           </div>
         )}
 
-        {/* Header - only show hamburger on main dashboard */}
+        {/* Header - only show hamburger on collapsed main dashboard */}
         {activeView === 'main' && (
           <div className="p-2 border-b border-sidebar-border bg-sidebar-background flex justify-center">
-            <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
-              <Menu className="h-4 w-4" />
-            </Button>
+            <img
+              src={myIcon}
+              alt="Imaginebo"
+              className="w-8 h-8"
+            />
           </div>
         )}
 
@@ -118,7 +121,7 @@ const Sidebar = ({
         <div className="flex-1 flex flex-col bg-sidebar-background">
           {/* Sitemap Section - only show on main dashboard */}
           {activeView === 'main' && (
-            <SitemapSection collapsed={true} sitemapData={projectDetails?.sitemap} />
+            <SitemapSection collapsed={true} projectDetails={projectDetails} />
           )}
         </div>
 
@@ -214,21 +217,46 @@ const Sidebar = ({
         </div>
       )}
 
-      {/* Header - only show hamburger on main dashboard */}
+      {/* Header with Logo and Project Name */}
       {activeView === 'main' && (
-        <div className="p-3 border-b border-sidebar-border flex-shrink-0 bg-sidebar-background">
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" size="sm" onClick={onToggleCollapse} className="h-8 w-8 p-0 hover:bg-sidebar-accent">
-              <Menu className="h-4 w-4" />
-            </Button>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
+          <div className="flex items-center space-x-3">
+            <img
+              src={myIcon}
+              alt="Imaginebo"
+              className="w-8 h-8"
+            />
+            {!collapsed && (
+              <span className="text-lg font-semibold text-sidebar-foreground">
+                {projectDetails?.sitemap?.project_name || currentProject.name}
+              </span>
+            )}
           </div>
-      </div>
+          
+          <button
+            onClick={onToggleCollapse}
+            className="p-2 hover:bg-sidebar-accent rounded-md transition-colors"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className={`transition-transform ${collapsed ? 'rotate-180' : ''}`}
+            >
+              <path d="m11 17-5-5 5-5" />
+              <path d="m18 17-5-5 5-5" />
+            </svg>
+          </button>
+        </div>
       )}
 
       {/* Sitemap Section - only show on main dashboard */}
       {activeView === 'main' && (
         <div className="flex-1 min-h-0 bg-sidebar-background">
-          <SitemapSection collapsed={false} sitemapData={projectDetails?.sitemap} />
+          <SitemapSection collapsed={false} projectDetails={projectDetails} />
         </div>
       )}
 

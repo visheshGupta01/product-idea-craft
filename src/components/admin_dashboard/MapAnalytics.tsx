@@ -96,18 +96,8 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
       <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
         {/* Heatmap Map - Temporarily disabled due to build issues */}
         <div className="flex-1 flex justify-center items-center h-56">
-          <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-            <MapContainer
-              center={[20, 0]}
-              zoom={2}
-              style={{ height: "100%", width: "100%", borderRadius: "12px" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; OpenStreetMap contributors"
-              />
-              <HeatmapLayer points={countryGeoData} />
-            </MapContainer>
+          <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+            Map Component (Leaflet)
           </div>
         </div>
 
