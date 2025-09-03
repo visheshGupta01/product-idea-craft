@@ -12,6 +12,9 @@ export interface StreamingChatState {
   isStreaming: boolean;
   isProcessingTools: boolean;
   messagesEndRef: React.RefObject<HTMLDivElement>;
+  projectUrl: string;
+  sitemap: any;
+  title: string;
 }
 
 export interface StreamingChatActions {
@@ -36,11 +39,23 @@ export const useStreamingChat = (
     updateMessage: persistUpdateMessage,
     clearMessages: persistClearMessages,
     setMessages,
+    projectUrl,
+    sitemap,
+    title,
+    setProjectUrl,
   } = useChatPersistence(sessionId);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsClientRef = useRef<StreamingWebSocketClient | null>(null);
+
+  // Trigger onFrontendGenerated if projectUrl is available on load
+  useEffect(() => {
+    if (projectUrl && onFrontendGenerated && !isLoadingMessages) {
+      console.log("🚀 Auto-opening preview with stored URL:", projectUrl);
+      onFrontendGenerated(projectUrl);
+    }
+  }, [projectUrl, onFrontendGenerated, isLoadingMessages]);
 
   // Initialize WebSocket client
   useEffect(() => {
@@ -140,6 +155,7 @@ export const useStreamingChat = (
               if (urlMatch && onFrontendGenerated) {
                 const localUrl = urlMatch[0];
                 console.log("🚀 Frontend generated with URL:", localUrl);
+                setProjectUrl(localUrl); // Store in session storage
                 onFrontendGenerated(localUrl);
               }
             }
@@ -214,5 +230,8 @@ export const useStreamingChat = (
     connect,
     disconnect,
     onFrontendGenerated,
+    projectUrl,
+    sitemap,
+    title,
   };
 };

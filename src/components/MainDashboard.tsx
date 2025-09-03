@@ -38,7 +38,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
   const [isFrontendCreated, setIsFrontendCreated] = useState(shouldOpenPreview || false);
   const [previewUrl, setPreviewUrl] = useState<string>(deployUrl || '');
 
-  // Fetch project details when sessionId changes
+  // Fetch project details when sessionId changes and check for stored project URL
   useEffect(() => {
     const loadProjectDetails = async () => {
       if (sessionId) {
@@ -47,6 +47,13 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
           const details = await fetchProjectDetails(sessionId);
           console.log('📝 Project details fetched:', details);
           setProjectDetails(details);
+          
+          // Check if project has a URL and set frontend created state
+          if (details.project_url) {
+            setPreviewUrl(details.project_url);
+            setIsFrontendCreated(true);
+            console.log('🚀 Auto-setting preview from project details:', details.project_url);
+          }
         } catch (error) {
           console.error('📝 Failed to fetch project details:', error);
         }
@@ -163,10 +170,10 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
           <Sidebar
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => {
-              // Only allow toggle on main dashboard, keep collapsed on other screens
-              if (activeView === "main") {
-                setSidebarCollapsed(!sidebarCollapsed);
-              }
+        // Only allow toggle on main dashboard, keep collapsed on other screens
+        if (activeView === "main") {
+          setSidebarCollapsed(!sidebarCollapsed);
+        }
             }}
             currentProject={currentProject}
             activeView={activeView}

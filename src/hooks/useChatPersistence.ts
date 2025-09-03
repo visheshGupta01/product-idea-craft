@@ -6,6 +6,9 @@ export interface ChatSession {
   sessionId: string;
   messages: Message[];
   lastUpdated: number;
+  projectUrl?: string;
+  sitemap?: any;
+  title?: string;
 }
 
 const convertApiMessageToMessage = (apiMessage: ChatMessage): Message => ({
@@ -18,6 +21,9 @@ const convertApiMessageToMessage = (apiMessage: ChatMessage): Message => ({
 export const useChatPersistence = (sessionId: string | null) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [projectUrl, setProjectUrl] = useState<string>('');
+  const [sitemap, setSitemap] = useState<any>(null);
+  const [title, setTitle] = useState<string>('');
 
   // Load messages from localStorage or API on mount or when sessionId changes
   useEffect(() => {
@@ -50,6 +56,9 @@ export const useChatPersistence = (sessionId: string | null) => {
             const session: ChatSession = JSON.parse(savedSession);
             console.log('📝 Loaded from sessionStorage:', session.messages?.length || 0, 'messages');
             setMessages(session.messages || []);
+            setProjectUrl(session.projectUrl || '');
+            setSitemap(session.sitemap || null);
+            setTitle(session.title || '');
             setIsLoadingMessages(false);
             return;
           } catch (error) {
@@ -69,11 +78,17 @@ export const useChatPersistence = (sessionId: string | null) => {
             const apiMessages = projectDetails.response.map(convertApiMessageToMessage);
             console.log('📝 Loaded from API:', apiMessages.length, 'messages');
             setMessages(apiMessages);
+            setProjectUrl(projectDetails.project_url || '');
+            setSitemap(projectDetails.sitemap || null);
+            setTitle(projectDetails.title || '');
             
             // Only save to sessionStorage if we successfully loaded from API
             const session: ChatSession = {
               sessionId,
               messages: apiMessages,
+              projectUrl: projectDetails.project_url || '',
+              sitemap: projectDetails.sitemap || null,
+              title: projectDetails.title || '',
               lastUpdated: Date.now(),
             };
             sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
@@ -109,11 +124,14 @@ export const useChatPersistence = (sessionId: string | null) => {
     const session: ChatSession = {
       sessionId,
       messages,
+      projectUrl,
+      sitemap,
+      title,
       lastUpdated: Date.now(),
     };
 
     sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
-  }, [sessionId, messages]);
+  }, [sessionId, messages, projectUrl, sitemap, title]);
 
   const addMessage = (message: Omit<Message, 'id'>): Message => {
     const newMessage: Message = {
@@ -157,5 +175,11 @@ export const useChatPersistence = (sessionId: string | null) => {
     clearMessages,
     clearAllSessions,
     setMessages,
+    projectUrl,
+    sitemap,
+    title,
+    setProjectUrl,
+    setSitemap,
+    setTitle,
   };
 };
