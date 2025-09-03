@@ -47,6 +47,13 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
           const details = await fetchProjectDetails(sessionId);
           console.log('📝 Project details fetched:', details);
           setProjectDetails(details);
+          
+          // Auto-open preview if project_url is available
+          if (details.project_url) {
+            setPreviewUrl(details.project_url);
+            setIsFrontendCreated(true);
+            console.log("🎯 Auto-opening preview with URL:", details.project_url);
+          }
         } catch (error) {
           console.error('📝 Failed to fetch project details:', error);
         }
@@ -56,6 +63,39 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
     };
 
     loadProjectDetails();
+  }, [sessionId]);
+
+  // Listen for sitemap updates via WebSocket
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const handleSitemapUpdate = (event: CustomEvent) => {
+      console.log('📝 Sitemap updated:', event.detail);
+      // Refetch project details to get updated sitemap
+      fetchProjectDetails(sessionId)
+        .then(details => {
+          setProjectDetails(details);
+          console.log('📝 Project details refreshed after sitemap update');
+        })
+        .catch(error => console.error('📝 Failed to refresh project details:', error));
+    };
+
+    const handleProjectUrlUpdate = (event: CustomEvent) => {
+      console.log('🎯 Project URL updated:', event.detail);
+      if (event.detail.project_url) {
+        setPreviewUrl(event.detail.project_url);
+        setIsFrontendCreated(true);
+        console.log("🎯 Auto-opening preview with updated URL:", event.detail.project_url);
+      }
+    };
+
+    window.addEventListener('sitemapUpdate', handleSitemapUpdate as EventListener);
+    window.addEventListener('projectUrlUpdate', handleProjectUrlUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('sitemapUpdate', handleSitemapUpdate as EventListener);
+      window.removeEventListener('projectUrlUpdate', handleProjectUrlUpdate as EventListener);
+    };
   }, [sessionId]);
 
   // Auto-collapse sidebar on non-main screens
