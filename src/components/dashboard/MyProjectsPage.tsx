@@ -22,7 +22,7 @@ import {
   Globe,
   ExternalLink
 } from 'lucide-react';
-import { fetchProjects, ProjectFromAPI, fetchProjectDetails } from '@/services/projectService';
+import { fetchProjects, ProjectFromAPI } from '@/services/projectService';
 
 interface Project {
   session_id: string;
@@ -67,45 +67,14 @@ const MyProjectsPage = () => {
     }
   };
 
-  const handleProjectClick = async (project: Project) => {
-    try {
-      // Fetch full project details including chat history
-      const projectDetails = await fetchProjectDetails(project.session_id);
-      
-      // Save to session storage in the format expected by useChatPersistence
-      const chatSession = {
-        sessionId: project.session_id,
-        messages: projectDetails.response.map(msg => ({
-          id: msg.id.toString(),
-          role: msg.role,
-          content: msg.msg,
-          timestamp: new Date(msg.created_at).toISOString()
-        })),
-        lastUpdated: new Date().toISOString()
-      };
-      
-      sessionStorage.setItem(`chatSession_${project.session_id}`, JSON.stringify(chatSession));
-      
-      // Also save the full project details for other components
-      sessionStorage.setItem(`projectDetails_${project.session_id}`, JSON.stringify(projectDetails));
-      
-      // Navigate to chat screen
-      navigate(`/dashboard/${project.session_id}`, {
-        state: {
-          deployUrl: project.deploy_url,
-          shouldOpenPreview: !!project.project_url
-        }
-      });
-    } catch (error) {
-      console.error('Error loading project:', error);
-      // Fallback navigation
-      navigate(`/dashboard/${project.session_id}`, {
-        state: {
-          deployUrl: project.deploy_url,
-          shouldOpenPreview: !!project.project_url
-        }
-      });
-    }
+  const handleProjectClick = (project: Project) => {
+    // Navigate with state to pass deploy_url for automatic preview opening
+    navigate(`/c/${project.session_id}`, { 
+      state: { 
+        deployUrl: project.project_url,
+        shouldOpenPreview: !!project.deploy_url 
+      } 
+    });
   };
 
   const formatDate = (dateString: string) => {

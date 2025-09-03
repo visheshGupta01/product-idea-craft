@@ -133,15 +133,6 @@ export class WebSocketService {
               onChunk(toolOutput);
               fullResponseContent += toolOutput;
             }
-          } else if (data.type === "sitemap_update") {
-            // Handle sitemap updates
-            console.log("📝 Sitemap update received:", data);
-            // Dispatch custom event for components to listen
-            window.dispatchEvent(new CustomEvent('sitemapUpdate', { detail: data }));
-          } else if (data.type === "project_url_update") {
-            // Handle project URL updates
-            console.log("🎯 Project URL update received:", data);
-            window.dispatchEvent(new CustomEvent('projectUrlUpdate', { detail: data }));
           } else if (data.type === "message_stop" || data.type === "complete") {
             // Stream is complete - prevent duplicate processing
             if (!isComplete) {
