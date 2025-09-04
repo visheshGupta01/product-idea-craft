@@ -96,14 +96,6 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
     console.log("🎯 Preview URL set:", url);
   };
 
-  const handleSitemapUpdated = (newSitemap: any) => {
-    setProjectDetails(prev => prev ? {
-      ...prev,
-      sitemap: newSitemap
-    } : prev);
-    console.log("🗺️ Sitemap updated in sidebar");
-  };
-
   const handleLogout = () => {
     // Navigate back to the idea submission screen
     window.location.href = '/';
@@ -131,12 +123,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
         if ((!isFrontendCreated || initialResponse) && !shouldOpenPreview) {
           return (
             <div className="h-full">
-              <ChatPanel 
-                userIdea={userIdea} 
-                onFrontendGenerated={handleFrontendGenerated} 
-                onSitemapUpdated={handleSitemapUpdated}
-                sessionId={sessionId} 
-              />
+              <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />
             </div>
           );
         }
@@ -155,12 +142,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
               className="hidden lg:block"
             >
               <div className="h-full border-r border-border">
-                <ChatPanel 
-                  userIdea={userIdea} 
-                  onFrontendGenerated={handleFrontendGenerated} 
-                  onSitemapUpdated={handleSitemapUpdated}
-                  sessionId={sessionId} 
-                />
+                <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />
               </div>
             </ResizablePanel>
 

@@ -10,11 +10,10 @@ import { useUser } from "@/context/UserContext";
 interface StreamingChatInterfaceProps {
   userIdea?: string;
   onFrontendGenerated?: (url: string) => void;
-  onSitemapUpdated?: (newSitemap: any) => void;
   urlSessionId?: string;
 }
 
-export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea, onFrontendGenerated, onSitemapUpdated, urlSessionId }) => {
+export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea, onFrontendGenerated, urlSessionId }) => {
   const { sessionId: contextSessionId, initialResponse, clearInitialResponse } = useUser();
   const activeSessionId = urlSessionId || contextSessionId;
   const {
@@ -27,7 +26,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     addMessage,
     scrollToBottom,
     connect
-  } = useStreamingChat(activeSessionId || "", onFrontendGenerated, onSitemapUpdated);
+  } = useStreamingChat(activeSessionId || "", onFrontendGenerated);
 
   const [isInitialized, setIsInitialized] = useState(false);
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);

@@ -30,8 +30,7 @@ export interface StreamingChatActions {
 
 export const useStreamingChat = (
   sessionId: string,
-  onFrontendGenerated?: (url: string) => void,
-  onSitemapUpdated?: (newSitemap: any) => void
+  onFrontendGenerated?: (url: string) => void
 ): StreamingChatState & StreamingChatActions => {
   const {
     messages,
@@ -44,7 +43,6 @@ export const useStreamingChat = (
     sitemap,
     title,
     setProjectUrl,
-    setSitemap,
   } = useChatPersistence(sessionId);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
@@ -58,14 +56,6 @@ export const useStreamingChat = (
       onFrontendGenerated(projectUrl);
     }
   }, [projectUrl, onFrontendGenerated, isLoadingMessages]);
-
-  // Watch for sitemap changes and notify callback
-  useEffect(() => {
-    if (sitemap && onSitemapUpdated) {
-      console.log("🗺️ Sitemap updated, notifying callback");
-      onSitemapUpdated(sitemap);
-    }
-  }, [sitemap, onSitemapUpdated]);
 
   // Initialize WebSocket client
   useEffect(() => {
@@ -169,20 +159,6 @@ export const useStreamingChat = (
                 onFrontendGenerated(localUrl);
               }
             }
-
-            // Check for sitemap data in streaming content
-            if (text.includes("__SITEMAP_DATA__")) {
-              try {
-                const sitemapMatch = text.match(/__SITEMAP_DATA__(.*?)__SITEMAP_DATA__/s);
-                if (sitemapMatch) {
-                  const sitemapData = JSON.parse(sitemapMatch[1]);
-                  console.log("🗺️ Sitemap detected in streaming content");
-                  setSitemap(sitemapData);
-                }
-              } catch (error) {
-                console.error("Error parsing sitemap from streaming content:", error);
-              }
-            }
           },
           onToolStart: () => {
             setIsProcessingTools(true);
@@ -237,7 +213,7 @@ export const useStreamingChat = (
         setIsProcessingTools(false);
       }
     },
-    [addMessage, updateMessage, connect, setProjectUrl, setSitemap]
+    [addMessage, updateMessage, connect]
   );
 
   return {
