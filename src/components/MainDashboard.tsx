@@ -48,7 +48,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
           console.log('📝 Project details fetched:', details);
           setProjectDetails(details);
           
-          // Check if project has a URL and set frontend created state
+          // Only show preview for current session if it has a project URL
           if (details.project_url) {
             setPreviewUrl(details.project_url);
             setIsFrontendCreated(true);
@@ -59,18 +59,27 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
         }
       } else {
         setProjectDetails(undefined);
+        setPreviewUrl('');
+        setIsFrontendCreated(false);
       }
     };
 
     loadProjectDetails();
   }, [sessionId]);
 
-  // Auto-collapse sidebar on non-main screens
+  // Auto-collapse sidebar on non-main screens and reset to main view when sessionId changes
   useEffect(() => {
     if (activeView !== 'main') {
       setSidebarCollapsed(true);
     }
   }, [activeView]);
+
+  // Reset to main view when sessionId changes (coming from project selection)
+  useEffect(() => {
+    if (sessionId) {
+      setActiveView('main');
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     const handleFrontendComplete = () => {
