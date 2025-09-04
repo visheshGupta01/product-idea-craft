@@ -155,7 +155,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
               collapsible={true}
             >
               <div className="h-full bg-background">
-                <PreviewCodePanel previewUrl={previewUrl} />
+                <PreviewCodePanel previewUrl={previewUrl} sessionId={sessionId} />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>

@@ -19,8 +19,7 @@ import {
   Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabaseClient";
-import { buildFileTreeFromPathsWithFullPaths } from "@/lib/transformSupabase";
+import apiClient from "@/lib/apiClient";
 
 export interface FileNode {
   name: string;
@@ -34,10 +33,57 @@ export interface FileNode {
 interface FileExplorerProps {
   onFileSelect: (file: FileNode) => void;
   selectedFile: string | null;
+  sessionId?: string;
 }
 
-const BUCKET_NAME = "test-bucket";
-const FOLDER_PREFIX = "user1/project23";
+// Build file tree from flat file list
+const buildFileTree = (files: Array<{ path: string; content: string }>): FileNode[] => {
+  const root: { [key: string]: FileNode } = {};
+  
+  files.forEach(file => {
+    const parts = file.path.split('/');
+    let current = root;
+    
+    parts.forEach((part, index) => {
+      if (!current[part]) {
+        const isFile = index === parts.length - 1;
+        current[part] = {
+          name: part,
+          type: isFile ? 'file' : 'folder',
+          path: parts.slice(0, index + 1).join('/'),
+          children: isFile ? undefined : [],
+          content: isFile ? file.content : undefined,
+          extension: isFile ? getFileExtension(part) : undefined
+        };
+      }
+      if (current[part].type === 'folder' && current[part].children) {
+        const childrenMap: { [key: string]: FileNode } = {};
+        current[part].children!.forEach(child => {
+          childrenMap[child.name] = child;
+        });
+        current = childrenMap;
+      }
+    });
+  });
+  
+  const convertToArray = (obj: { [key: string]: FileNode }): FileNode[] => {
+    return Object.values(obj).map(node => {
+      if (node.type === 'folder' && node.children) {
+        const childrenMap: { [key: string]: FileNode } = {};
+        node.children.forEach(child => {
+          childrenMap[child.name] = child;
+        });
+        return {
+          ...node,
+          children: convertToArray(childrenMap)
+        };
+      }
+      return node;
+    });
+  };
+  
+  return convertToArray(root);
+};
 
 // File extension to icon mapping
 const getFileIcon = (extension: string) => {
@@ -201,74 +247,49 @@ const [isExpanded, setIsExpanded] = useState(
 const FileExplorer: React.FC<FileExplorerProps> = ({
   onFileSelect,
   selectedFile,
+  sessionId,
 }) => {
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
+  const [files, setFiles] = useState<Array<{ path: string; content: string }>>([]);
 
   useEffect(() => {
     const fetchFiles = async () => {
-      const allFiles: { relativePath: string; fullPath: string }[] = [];
+      if (!sessionId) {
+        setFileTree([]);
+        setFiles([]);
+        return;
+      }
 
-      const walk = async (prefix: string) => {
-        const { data, error } = await supabase.storage
-          .from(BUCKET_NAME)
-          .list(prefix, { limit: 1000 });
-
-        if (error) {
-          console.error("List error:", error);
-          return;
+      try {
+        const response = await apiClient.get(`/project/code?session_id=${sessionId}`);
+        
+        if (response.data.files) {
+          const filesWithContent = response.data.files.map((file: { path: string; content: string }) => ({
+            path: file.path,
+            content: file.content
+          }));
+          
+          setFiles(filesWithContent);
+          const tree = buildFileTree(filesWithContent);
+          setFileTree(tree);
         }
-
-        for (const item of data) {
-          const fullPath = prefix ? `${prefix}/${item.name}` : item.name;
-
-          if (item.metadata) {
-            const relativePath = fullPath.replace(`${FOLDER_PREFIX}/`, "");
-            allFiles.push({ relativePath, fullPath });
-          } else {
-            await walk(fullPath); // recurse into subfolders
-          }
-        }
-      };
-
-      await walk(FOLDER_PREFIX);
-      const tree = buildFileTreeFromPathsWithFullPaths(allFiles);
-
-      // Add extension information to file nodes
-      const addExtensions = (nodes: FileNode[]): FileNode[] => {
-        return nodes.map((node) => {
-          if (node.type === "file") {
-            return {
-              ...node,
-              extension: getFileExtension(node.name),
-            };
-          } else if (node.children) {
-            return {
-              ...node,
-              children: addExtensions(node.children),
-            };
-          }
-          return node;
-        });
-      };
-
-      setFileTree(addExtensions(tree));
+      } catch (error) {
+        console.error('Error fetching project files:', error);
+        setFileTree([]);
+        setFiles([]);
+      }
     };
 
     fetchFiles();
-  }, []);
+  }, [sessionId]);
 
-  const handleFileSelect = async (node: FileNode) => {
+  const handleFileSelect = (node: FileNode) => {
     if (node.type !== "file") return;
-
-    const { data, error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .download(node.path);
-
-    if (data) {
-      const text = await data.text();
-      onFileSelect({ ...node, content: text });
-    } else {
-      console.error("Download error:", error);
+    
+    // Find the file content from our fetched files
+    const fileWithContent = files.find(f => f.path === node.path);
+    if (fileWithContent) {
+      onFileSelect({ ...node, content: fileWithContent.content });
     }
   };
 

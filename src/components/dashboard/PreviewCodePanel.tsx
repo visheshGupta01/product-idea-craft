@@ -12,9 +12,10 @@ import { Code, Expand, Monitor, Tablet, Smartphone, Save, Globe } from 'lucide-r
 
 interface PreviewCodePanelProps {
   previewUrl?: string;
+  sessionId?: string;
 }
 
-const PreviewCodePanel = ({ previewUrl }: PreviewCodePanelProps) => {
+const PreviewCodePanel = ({ previewUrl, sessionId }: PreviewCodePanelProps) => {
   const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [showCode, setShowCode] = useState(false);
@@ -162,6 +163,7 @@ const handlePublish = () => {
                     <FileExplorer
                       onFileSelect={handleFileSelect}
                       selectedFile={selectedFile?.path || null}
+                      sessionId={sessionId}
                     />
                   </div>
                 </ResizablePanel>
