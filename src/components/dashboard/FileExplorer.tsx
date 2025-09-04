@@ -38,51 +38,69 @@ interface FileExplorerProps {
 
 // Build file tree from flat file list
 const buildFileTree = (files: Array<{ path: string; content: string }>): FileNode[] => {
-  const root: { [key: string]: FileNode } = {};
+  const fileMap = new Map<string, FileNode>();
   
+  // First pass: create all file and folder nodes
   files.forEach(file => {
     const parts = file.path.split('/');
-    let current = root;
     
-    parts.forEach((part, index) => {
-      if (!current[part]) {
-        const isFile = index === parts.length - 1;
-        current[part] = {
-          name: part,
+    // Create all parent folders
+    for (let i = 0; i < parts.length; i++) {
+      const currentPath = parts.slice(0, i + 1).join('/');
+      const isFile = i === parts.length - 1;
+      
+      if (!fileMap.has(currentPath)) {
+        fileMap.set(currentPath, {
+          name: parts[i],
           type: isFile ? 'file' : 'folder',
-          path: parts.slice(0, index + 1).join('/'),
+          path: currentPath,
           children: isFile ? undefined : [],
           content: isFile ? file.content : undefined,
-          extension: isFile ? getFileExtension(part) : undefined
-        };
-      }
-      if (current[part].type === 'folder' && current[part].children) {
-        const childrenMap: { [key: string]: FileNode } = {};
-        current[part].children!.forEach(child => {
-          childrenMap[child.name] = child;
+          extension: isFile ? getFileExtension(parts[i]) : undefined
         });
-        current = childrenMap;
+      } else if (isFile && fileMap.has(currentPath)) {
+        // Update existing file node with content
+        const existingNode = fileMap.get(currentPath)!;
+        existingNode.content = file.content;
       }
-    });
+    }
   });
   
-  const convertToArray = (obj: { [key: string]: FileNode }): FileNode[] => {
-    return Object.values(obj).map(node => {
-      if (node.type === 'folder' && node.children) {
-        const childrenMap: { [key: string]: FileNode } = {};
-        node.children.forEach(child => {
-          childrenMap[child.name] = child;
-        });
-        return {
-          ...node,
-          children: convertToArray(childrenMap)
-        };
+  // Second pass: build parent-child relationships
+  const nodes = Array.from(fileMap.values());
+  const rootNodes: FileNode[] = [];
+  
+  nodes.forEach(node => {
+    if (node.path.includes('/')) {
+      // Find parent
+      const parentPath = node.path.substring(0, node.path.lastIndexOf('/'));
+      const parent = fileMap.get(parentPath);
+      if (parent && parent.children) {
+        parent.children.push(node);
       }
-      return node;
+    } else {
+      // Root level node
+      rootNodes.push(node);
+    }
+  });
+  
+  // Sort children in each folder (folders first, then files)
+  const sortChildren = (nodes: FileNode[]): FileNode[] => {
+    return nodes.sort((a, b) => {
+      if (a.type !== b.type) {
+        return a.type === 'folder' ? -1 : 1;
+      }
+      return a.name.localeCompare(b.name);
     });
   };
   
-  return convertToArray(root);
+  nodes.forEach(node => {
+    if (node.children) {
+      node.children = sortChildren(node.children);
+    }
+  });
+  
+  return sortChildren(rootNodes);
 };
 
 // File extension to icon mapping

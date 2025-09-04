@@ -64,11 +64,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, onContentChange }) => {
           theme="vs-dark"
           onChange={(value) => onContentChange?.(value || '')}
           options={{
-            readOnly: false,
             minimap: { enabled: false },
-            scrollBeyondLastLine: false,
             fontSize: 14,
-            wordWrap: "on",
+            lineNumbers: 'on',
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            theme: 'vs-dark',
+            readOnly: true,
+            contextmenu: false,
+            quickSuggestions: false,
+            parameterHints: { enabled: false },
+            suggestOnTriggerCharacters: false,
+            acceptSuggestionOnEnter: "off",
+            tabCompletion: "off",
+            wordBasedSuggestions: "off"
           }}
         />
       </div>
