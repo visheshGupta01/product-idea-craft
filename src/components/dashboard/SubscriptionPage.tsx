@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { createStripeSession } from '@/services/paymentService';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -19,7 +21,10 @@ import {
 } from 'lucide-react';
 
 const SubscriptionPage = () => {
-  const { userPlan } = useUser();
+  const { userPlan, user } = useUser();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+
   // Get current plan from user context
   const currentPlan = {
     name: userPlan?.planName || "Free",
@@ -40,53 +45,104 @@ const SubscriptionPage = () => {
   const plans = [
     {
       name: 'Free',
-      price: '$0',
+      price: '0',
+      displayPrice: '$0',
       billing: 'forever',
+      planId: 1,
       features: [
-        '3 Projects',
-        '1GB Storage',
-        '1 Team Member',
-        '10 Deployments/month',
+        'Generate up to 3 projects/month',
+        'Access to core AI prompts',
         'Community Support'
       ],
-      current: false,
+      current: (userPlan?.planId || 1) === 1,
       popular: false
     },
     {
       name: 'Pro',
-      price: '$29',
+      price: '19',
+      displayPrice: '$19',
       billing: 'per month',
+      planId: 2,
       features: [
-        '15 Projects',
-        '10GB Storage',
-        '10 Team Members',
-        '100 Deployments/month',
-        'Priority Support',
-        'Custom Domains',
-        'Advanced Analytics'
+        'Unlimited projects',
+        'Custom domains',
+        'Full prompt library access',
+        'Priority Support'
       ],
-      current: true,
+      current: (userPlan?.planId || 1) === 2,
       popular: true
     },
     {
-      name: 'Enterprise',
-      price: '$99',
+      name: 'Team',
+      price: '49',
+      displayPrice: '$49',
       billing: 'per month',
+      planId: 3,
       features: [
-        'Unlimited Projects',
-        '100GB Storage',
-        'Unlimited Team Members',
-        'Unlimited Deployments',
-        '24/7 Support',
-        'Custom Domains',
-        'Advanced Analytics',
-        'SSO Integration',
-        'Custom Integrations'
+        'Unlimited projects',
+        'Custom domains',
+        'Full prompt library access',
+        'Export code (HTML/CSS)',
+        'Team collaboration'
       ],
-      current: false,
+      current: (userPlan?.planId || 1) === 3,
       popular: false
     }
   ];
+
+  const handlePlanUpgrade = async (plan: any) => {
+    if (plan.current) return;
+
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to upgrade your plan.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (plan.name === 'Free') {
+      toast({
+        title: "Free Plan",
+        description: "You're already on the free plan.",
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const paymentData = {
+        userUUID: user.id,
+        price: plan.price,
+        planName: plan.name
+      };
+
+      const response = await createStripeSession(paymentData);
+      
+      if (response.session_url?.session_url) {
+        // Open Stripe checkout in a new tab
+        window.open(response.session_url.session_url, '_blank');
+        
+        toast({
+          title: "Redirecting to Stripe",
+          description: "You will be redirected to complete your payment.",
+        });
+      } else {
+        throw new Error('Invalid session URL received');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast({
+        title: "Payment Error",
+        description: "There was an error processing your payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getUsagePercentage = (current: number, limit: number) => {
     return (current / limit) * 100;
@@ -253,10 +309,10 @@ const SubscriptionPage = () => {
                   <div className="space-y-3">
                     <div>
                       <h3 className="font-semibold text-lg">{plan.name}</h3>
-                      <div className="flex items-baseline space-x-1">
-                        <span className="text-2xl font-bold">{plan.price}</span>
-                        <span className="text-sm text-muted-foreground">/{plan.billing}</span>
-                      </div>
+                       <div className="flex items-baseline space-x-1">
+                         <span className="text-2xl font-bold">{plan.displayPrice}</span>
+                         <span className="text-sm text-muted-foreground">/{plan.billing}</span>
+                       </div>
                     </div>
                     
                     <ul className="space-y-2">
@@ -268,14 +324,15 @@ const SubscriptionPage = () => {
                       ))}
                     </ul>
                     
-                    <Button
-                      className="w-full"
-                      variant={plan.current ? "outline" : "default"}
-                      disabled={plan.current}
-                    >
-                      {plan.current ? "Current Plan" : "Upgrade"}
-                      {!plan.current && <ArrowUpRight className="h-4 w-4 ml-2" />}
-                    </Button>
+                     <Button
+                       className="w-full"
+                       variant={plan.current ? "outline" : "default"}
+                       disabled={plan.current || loading}
+                       onClick={() => handlePlanUpgrade(plan)}
+                     >
+                       {loading ? "Processing..." : (plan.current ? "Current Plan" : "Upgrade")}
+                       {!plan.current && !loading && <ArrowUpRight className="h-4 w-4 ml-2" />}
+                     </Button>
                   </div>
                 </div>
               ))}
