@@ -29,30 +29,42 @@ const GitHubIntegration = () => {
 
 
   useEffect(() => {
-    // Check if we have GitHub URL in sessionStorage
-    const githubUrl = sessionStorage.getItem("github_url");
-    if (githubUrl) {
-      // Create repository object from URL
-      const repoName = githubUrl.split("/").pop() || "Unknown";
-      const repo: GitHubRepo = {
-        name: repoName,
-        clone_url: `${githubUrl}.git`,
-        html_url: githubUrl,
-        created_at: new Date().toISOString(),
-      };
-      setRepository(repo);
-      setIsConnected(true);
-    } else {
-      // Fallback: check for old format
-      const savedRepo = sessionStorage.getItem("github_repository");
-      if (savedRepo) {
+    // Check if we have GitHub URL in the current chat session
+    if (sessionId) {
+      const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+      if (savedSession) {
         try {
-          const repo = JSON.parse(savedRepo);
-          setRepository(repo);
-          setIsConnected(true);
+          const session = JSON.parse(savedSession);
+          const githubUrl = session.githubUrl;
+          
+          if (githubUrl) {
+            // Create repository object from URL
+            const repoName = githubUrl.split("/").pop() || "Unknown";
+            const repo: GitHubRepo = {
+              name: repoName,
+              clone_url: `${githubUrl}.git`,
+              html_url: githubUrl,
+              created_at: new Date().toISOString(),
+            };
+            setRepository(repo);
+            setIsConnected(true);
+            return;
+          }
         } catch (error) {
-          console.error("Error parsing saved repository:", error);
+          console.error("Error parsing chat session:", error);
         }
+      }
+    }
+
+    // Fallback: check for old format
+    const savedRepo = sessionStorage.getItem("github_repository");
+    if (savedRepo) {
+      try {
+        const repo = JSON.parse(savedRepo);
+        setRepository(repo);
+        setIsConnected(true);
+      } catch (error) {
+        console.error("Error parsing saved repository:", error);
       }
     }
 
@@ -70,7 +82,7 @@ const GitHubIntegration = () => {
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, []);
+  }, [sessionId]);
 
  const handleOAuthSuccess = (cloneUrl: string) => {
    // Extract repository info from clone URL
