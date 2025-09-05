@@ -9,6 +9,8 @@ export interface ChatSession {
   projectUrl?: string;
   sitemap?: any;
   title?: string;
+  githubUrl?: string;
+  vercelUrl?: string;
 }
 
 const convertApiMessageToMessage = (apiMessage: ChatMessage): Message => ({
@@ -24,6 +26,8 @@ export const useChatPersistence = (sessionId: string | null) => {
   const [projectUrl, setProjectUrl] = useState<string>('');
   const [sitemap, setSitemap] = useState<any>(null);
   const [title, setTitle] = useState<string>('');
+  const [githubUrl, setGithubUrl] = useState<string>('');
+  const [vercelUrl, setVercelUrl] = useState<string>('');
 
   // Load messages from localStorage or API on mount or when sessionId changes
   useEffect(() => {
@@ -59,6 +63,8 @@ export const useChatPersistence = (sessionId: string | null) => {
             setProjectUrl(session.projectUrl || '');
             setSitemap(session.sitemap || null);
             setTitle(session.title || '');
+            setGithubUrl(session.githubUrl || '');
+            setVercelUrl(session.vercelUrl || '');
             setIsLoadingMessages(false);
             return;
           } catch (error) {
@@ -81,6 +87,16 @@ export const useChatPersistence = (sessionId: string | null) => {
             setProjectUrl(projectDetails.project_url || '');
             setSitemap(projectDetails.sitemap || null);
             setTitle(projectDetails.title || '');
+            setGithubUrl(projectDetails.github_url || '');
+            setVercelUrl(projectDetails.vercel_url || '');
+            
+            // Store URLs in sessionStorage for sidebar access
+            if (projectDetails.github_url) {
+              sessionStorage.setItem('github_url', projectDetails.github_url);
+            }
+            if (projectDetails.vercel_url) {
+              sessionStorage.setItem('vercel_url', projectDetails.vercel_url);
+            }
             
             // Only save to sessionStorage if we successfully loaded from API
             const session: ChatSession = {
@@ -89,6 +105,8 @@ export const useChatPersistence = (sessionId: string | null) => {
               projectUrl: projectDetails.project_url || '',
               sitemap: projectDetails.sitemap || null,
               title: projectDetails.title || '',
+              githubUrl: projectDetails.github_url || '',
+              vercelUrl: projectDetails.vercel_url || '',
               lastUpdated: Date.now(),
             };
             sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
@@ -127,11 +145,13 @@ export const useChatPersistence = (sessionId: string | null) => {
       projectUrl,
       sitemap,
       title,
+      githubUrl,
+      vercelUrl,
       lastUpdated: Date.now(),
     };
 
     sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
-  }, [sessionId, messages, projectUrl, sitemap, title]);
+  }, [sessionId, messages, projectUrl, sitemap, title, githubUrl, vercelUrl]);
 
   const addMessage = (message: Omit<Message, 'id'>): Message => {
     const newMessage: Message = {
@@ -178,8 +198,12 @@ export const useChatPersistence = (sessionId: string | null) => {
     projectUrl,
     sitemap,
     title,
+    githubUrl,
+    vercelUrl,
     setProjectUrl,
     setSitemap,
     setTitle,
+    setGithubUrl,
+    setVercelUrl,
   };
 };
