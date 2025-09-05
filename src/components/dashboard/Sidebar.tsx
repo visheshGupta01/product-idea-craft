@@ -45,14 +45,12 @@ const Sidebar = ({
     const isDark = document.documentElement.classList.contains('dark');
     setDarkMode(isDark);
     
-    // Check GitHub connection
-    const githubRepo = sessionStorage.getItem('github_repository');
-    setIsGitHubConnected(!!githubRepo);
+    // Check GitHub connection from session details
+    setIsGitHubConnected(!!(projectDetails?.sitemap as any)?.github_url);
     
-    // Check Vercel connection
-    const vercelDeployment = sessionStorage.getItem('vercel_deployment');
-    setIsVercelConnected(!!vercelDeployment);
-  }, []);
+    // Check Vercel connection from session details
+    setIsVercelConnected(!!(projectDetails?.sitemap as any)?.vercel_url);
+  }, [projectDetails]);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
@@ -235,7 +233,7 @@ const Sidebar = ({
           <div className="flex items-center space-x-3">
             {!collapsed && (
               <span className="text-lg font-semibold text-sidebar-foreground">
-                {projectDetails?.sitemap?.project_name || currentProject.name}
+                {projectDetails?.title || currentProject.name}
               </span>
             )}
           </div>
