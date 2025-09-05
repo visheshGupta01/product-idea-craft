@@ -84,7 +84,7 @@ const GitHubIntegration = () => {
     setIsConnecting(true);
     try {
       // Redirect to GitHub OAuth
-      const githubUrl = `http://localhost:8000/github/?sessionid=${sessionId}`;
+      const githubUrl = `http://54.166.141.144:8000/github/?sessionid=${sessionId}`;
       window.location.href = githubUrl;
     } catch (error) {
       console.error('Error connecting to GitHub:', error);

@@ -62,10 +62,13 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       const formData = new FormData();
       formData.append('video', audioBlob, 'recording.wav');
 
-      const response = await fetch('http://localhost:8000/audio', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        "http://54.166.141.144:8000/audio",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       console.log('Response:', response);
     console.log('Response status:', response.status);
 

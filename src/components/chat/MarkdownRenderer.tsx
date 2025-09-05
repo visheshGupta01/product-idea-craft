@@ -10,10 +10,10 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     return <span>Loading...</span>;
   }
 
-  // Debug logging
-  console.log("MarkdownRenderer received content:", content.substring(0, 500));
-  console.log("Content contains tool output:", content.includes('[Tool Output'));
-  console.log("Content length:", content.length);
+  // // Debug logging
+  // console.log("MarkdownRenderer received content:", content.substring(0, 500));
+  // console.log("Content contains tool output:", content.includes('[Tool Output'));
+  // console.log("Content length:", content.length);
 
   const renderMarkdown = (text: string) => {
     const lines = text.split("\n");

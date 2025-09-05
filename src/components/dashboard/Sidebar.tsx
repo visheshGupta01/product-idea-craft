@@ -49,7 +49,7 @@ const Sidebar = ({
     setIsGitHubConnected(!!(projectDetails?.sitemap as any)?.github_url);
     
     // Check Vercel connection from session details
-    setIsVercelConnected(!!(projectDetails?.sitemap as any)?.vercel_url);
+    setIsVercelConnected(!!(projectDetails?.sitemap as any)?.project_url);
   }, [projectDetails]);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
