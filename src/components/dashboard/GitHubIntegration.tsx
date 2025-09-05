@@ -29,15 +29,30 @@ const GitHubIntegration = () => {
 
 
   useEffect(() => {
-    // Check if we have GitHub repository info in sessionStorage
-    const savedRepo = sessionStorage.getItem("github_repository");
-    if (savedRepo) {
-      try {
-        const repo = JSON.parse(savedRepo);
-        setRepository(repo);
-        setIsConnected(true);
-      } catch (error) {
-        console.error("Error parsing saved repository:", error);
+    // Check if we have GitHub URL in sessionStorage
+    const githubUrl = sessionStorage.getItem("github_url");
+    if (githubUrl) {
+      // Create repository object from URL
+      const repoName = githubUrl.split("/").pop() || "Unknown";
+      const repo: GitHubRepo = {
+        name: repoName,
+        clone_url: `${githubUrl}.git`,
+        html_url: githubUrl,
+        created_at: new Date().toISOString(),
+      };
+      setRepository(repo);
+      setIsConnected(true);
+    } else {
+      // Fallback: check for old format
+      const savedRepo = sessionStorage.getItem("github_repository");
+      if (savedRepo) {
+        try {
+          const repo = JSON.parse(savedRepo);
+          setRepository(repo);
+          setIsConnected(true);
+        } catch (error) {
+          console.error("Error parsing saved repository:", error);
+        }
       }
     }
 
@@ -71,7 +86,11 @@ const GitHubIntegration = () => {
 
    setRepository(repo);
    setIsConnected(true);
+   
+   // Store both formats for compatibility
    sessionStorage.setItem("github_repository", JSON.stringify(repo));
+   sessionStorage.setItem("github_url", htmlUrl);
+   
    toast.success("Successfully connected to GitHub!");
  };
 
