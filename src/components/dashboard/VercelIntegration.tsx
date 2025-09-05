@@ -65,16 +65,7 @@ const VercelIntegration = () => {
       setHasGitHubRepo(!!savedRepo);
     }
 
-    // Check if deployment info exists
-    const savedDeployment = sessionStorage.getItem("vercel_deployment");
-    if (savedDeployment) {
-      try {
-        const deploymentInfo = JSON.parse(savedDeployment);
-        setDeployment(deploymentInfo);
-      } catch (error) {
-        console.error("Error parsing saved deployment:", error);
-      }
-    }
+    // Deployment info is already handled above from chat session
 
     // Check for Vercel callback
     const urlParams = new URLSearchParams(window.location.search);
@@ -89,7 +80,7 @@ const VercelIntegration = () => {
     }
   }, [sessionId]);
 
-    const handleDeploymentSuccess = (deployUrl: string) => {
+  const handleDeploymentSuccess = (deployUrl: string) => {
     const deploymentInfo: DeploymentInfo = {
       url: deployUrl,
       deployedAt: new Date().toISOString(),
@@ -97,7 +88,21 @@ const VercelIntegration = () => {
     };
     setDeployment(deploymentInfo);
     setIsDeploying(false);
-    sessionStorage.setItem('vercel_deployment', JSON.stringify(deploymentInfo));
+    
+    // Store in chat session
+    if (sessionId) {
+      const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+      if (savedSession) {
+        try {
+          const session = JSON.parse(savedSession);
+          session.projectUrl = deployUrl;
+          sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
+        } catch (error) {
+          console.error("Error updating chat session:", error);
+        }
+      }
+    }
+    
     toast.success('Successfully deployed to Vercel!');
   };
 

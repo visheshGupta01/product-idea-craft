@@ -101,9 +101,19 @@ const GitHubIntegration = () => {
    setRepository(repo);
    setIsConnected(true);
    
-   // Store both formats for compatibility
-   sessionStorage.setItem("github_repository", JSON.stringify(repo));
-   sessionStorage.setItem("github_url", htmlUrl);
+   // Store in chat session
+   if (sessionId) {
+     const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+     if (savedSession) {
+       try {
+         const session = JSON.parse(savedSession);
+         session.githubUrl = htmlUrl;
+         sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
+       } catch (error) {
+         console.error("Error updating chat session:", error);
+       }
+     }
+   }
    
    toast.success("Successfully connected to GitHub!");
  };
