@@ -435,12 +435,15 @@ const processToolOutput = (text: string) => {
       const beforeSitemap = cleanedContent.substring(0, cleanedContent.indexOf('__SITEMAP_DATA__'));
       const afterSitemap = cleanedContent.substring(cleanedContent.lastIndexOf('__SITEMAP_DATA__') + '__SITEMAP_DATA__'.length);
       
+      // Check if sitemap has meaningful content
+      const hasPages = sitemapData.pages && sitemapData.pages.length > 0;
+      
       return (
         <div className="space-y-6">
           {beforeSitemap.trim() && (
             <div className="prose prose-sm max-w-none">{renderMarkdown(beforeSitemap.trim())}</div>
           )}
-          <SitemapRenderer data={sitemapData} />
+          {hasPages && <SitemapRenderer data={sitemapData} />}
           {afterSitemap.trim() && (
             <div className="prose prose-sm max-w-none">{renderMarkdown(afterSitemap.trim())}</div>
           )}

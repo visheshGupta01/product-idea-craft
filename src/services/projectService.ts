@@ -21,7 +21,6 @@ export interface ProjectDetails {
   response: ChatMessage[];
   project_url: string;
   github_url: string;
-  vercel_url: string;
   sitemap: {
     project_name: string;
     project_type: string;

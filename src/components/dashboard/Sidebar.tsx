@@ -45,13 +45,7 @@ const Sidebar = ({
     const isDark = document.documentElement.classList.contains('dark');
     setDarkMode(isDark);
     
-    // Check GitHub connection from sessionStorage
-    const githubUrl = sessionStorage.getItem('github_url');
-    setIsGitHubConnected(!!githubUrl);
-    
-    // Check Vercel connection from sessionStorage
-    const vercelUrl = sessionStorage.getItem('vercel_url');
-    setIsVercelConnected(!!vercelUrl);
+    // GitHub and Vercel connections are now handled by their respective integration components
   }, [projectDetails]);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
@@ -64,27 +58,13 @@ const Sidebar = ({
   };
 
   const handleGitHubConnect = () => {
-    if (isGitHubConnected) {
-      // Already connected, show disconnect option or management
-      sessionStorage.removeItem('github_repository');
-      setIsGitHubConnected(false);
-    } else {
-      // Navigate to GitHub OAuth
-      const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=repo,user`;
-      window.location.href = githubAuthUrl;
-    }
+    // GitHub connection is now handled by GitHubIntegration component
+    console.log("GitHub connection should be handled by the GitHub integration component");
   };
 
   const handleVercelConnect = () => {
-    if (isVercelConnected) {
-      // Already connected, show disconnect option or management
-      sessionStorage.removeItem('vercel_deployment');
-      setIsVercelConnected(false);
-    } else {
-      // Navigate to Vercel OAuth  
-      const vercelAuthUrl = `https://vercel.com/oauth/authorize?client_id=YOUR_VERCEL_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&scope=read,write`;
-      window.location.href = vercelAuthUrl;
-    }
+    // Vercel connection is now handled by VercelIntegration component
+    console.log("Vercel connection should be handled by the Vercel integration component");
   };
   if (collapsed) {
     return <div className="w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">

@@ -28,6 +28,9 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
       const beforeSitemap = cleanedContent.substring(0, sitemapMatch.index).trim();
       const afterSitemap = cleanedContent.substring(sitemapMatch.index! + sitemapMatch[0].length).trim();
 
+      // Check if sitemap has meaningful content
+      const hasPages = sitemapData.pages && sitemapData.pages.length > 0;
+      
       return (
         <div className="space-y-4">
           {beforeSitemap && (
@@ -35,7 +38,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
               <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{beforeSitemap}</ReactMarkdown>
             </div>
           )}
-          <SitemapRenderer data={sitemapData} />
+          {hasPages && <SitemapRenderer data={sitemapData} />}
           {afterSitemap && (
             <div className="prose prose-sm max-w-none dark:prose-invert">
               <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{afterSitemap}</ReactMarkdown>
