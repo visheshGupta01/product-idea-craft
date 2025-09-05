@@ -45,11 +45,13 @@ const Sidebar = ({
     const isDark = document.documentElement.classList.contains('dark');
     setDarkMode(isDark);
     
-    // Check GitHub connection from session details
-    setIsGitHubConnected(!!(projectDetails?.sitemap as any)?.github_url);
+    // Check GitHub connection from sessionStorage
+    const githubUrl = sessionStorage.getItem('github_url');
+    setIsGitHubConnected(!!githubUrl);
     
-    // Check Vercel connection from session details
-    setIsVercelConnected(!!(projectDetails?.sitemap as any)?.vercel_url);
+    // Check Vercel connection from sessionStorage
+    const vercelUrl = sessionStorage.getItem('vercel_url');
+    setIsVercelConnected(!!vercelUrl);
   }, [projectDetails]);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
