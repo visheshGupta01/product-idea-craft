@@ -36,7 +36,18 @@ const VercelIntegration = () => {
         try {
           const session = JSON.parse(savedSession);
           const githubUrl = session.githubUrl;
+          const projectUrl = session.projectUrl;
           setHasGitHubRepo(!!githubUrl);
+          
+          // Check if we have a Vercel deployment URL
+          if (projectUrl) {
+            const deploymentInfo: DeploymentInfo = {
+              url: projectUrl,
+              deployedAt: new Date().toISOString(),
+              status: 'deployed'
+            };
+            setDeployment(deploymentInfo);
+          }
         } catch (error) {
           console.error("Error parsing chat session:", error);
           // Fallback to old format

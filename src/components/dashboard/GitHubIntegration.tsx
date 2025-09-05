@@ -68,19 +68,21 @@ const GitHubIntegration = () => {
       }
     }
 
-    // Check for OAuth callback
-    console.log("Checking URL for OAuth parameters...");
-    const urlParams = new URLSearchParams(window.location.search);
-    console.log("URL Params:", urlParams.toString());
-    const action = urlParams.get("action");
-    const status = urlParams.get("status");
-    const cloneUrl = urlParams.get("clone_url");
+    // Only check for OAuth callback if we don't already have GitHub URL
+    if (!isConnected) {
+      console.log("Checking URL for OAuth parameters...");
+      const urlParams = new URLSearchParams(window.location.search);
+      console.log("URL Params:", urlParams.toString());
+      const action = urlParams.get("action");
+      const status = urlParams.get("status");
+      const cloneUrl = urlParams.get("clone_url");
 
-    if (action === "github-oauth" && status === "success" && cloneUrl) {
-      console.log("OAuth success! Clone URL:", cloneUrl);
-      handleOAuthSuccess(cloneUrl);
-      // Clean up URL
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (action === "github-oauth" && status === "success" && cloneUrl) {
+        console.log("OAuth success! Clone URL:", cloneUrl);
+        handleOAuthSuccess(cloneUrl);
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     }
   }, [sessionId]);
 
