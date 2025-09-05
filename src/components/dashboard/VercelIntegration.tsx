@@ -29,9 +29,30 @@ const VercelIntegration = () => {
 
 
   useEffect(() => {
-    // Check if GitHub repository exists
-    const savedRepo = sessionStorage.getItem("github_repository");
-    setHasGitHubRepo(!!savedRepo);
+    // Check if GitHub repository exists in chat session
+    if (sessionId) {
+      const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+      if (savedSession) {
+        try {
+          const session = JSON.parse(savedSession);
+          const githubUrl = session.githubUrl;
+          setHasGitHubRepo(!!githubUrl);
+        } catch (error) {
+          console.error("Error parsing chat session:", error);
+          // Fallback to old format
+          const savedRepo = sessionStorage.getItem("github_repository");
+          setHasGitHubRepo(!!savedRepo);
+        }
+      } else {
+        // Fallback to old format
+        const savedRepo = sessionStorage.getItem("github_repository");
+        setHasGitHubRepo(!!savedRepo);
+      }
+    } else {
+      // Fallback to old format
+      const savedRepo = sessionStorage.getItem("github_repository");
+      setHasGitHubRepo(!!savedRepo);
+    }
 
     // Check if deployment info exists
     const savedDeployment = sessionStorage.getItem("vercel_deployment");
@@ -55,7 +76,7 @@ const VercelIntegration = () => {
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, []);
+  }, [sessionId]);
 
     const handleDeploymentSuccess = (deployUrl: string) => {
     const deploymentInfo: DeploymentInfo = {
