@@ -120,7 +120,7 @@ const VercelIntegration = () => {
     setIsDeploying(true);
     try {
       // Redirect to Vercel OAuth with deployment flow
-      const vercelUrl = `http://54.166.141.144:8000/vercel/auth/?sessionid=${sessionId}`;
+      const vercelUrl = `http://98.87.215.219:8000/vercel/auth/?sessionid=${sessionId}`;
       window.location.href = vercelUrl;
     } catch (error) {
       console.error("Error deploying to Vercel:", error);

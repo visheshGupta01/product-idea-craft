@@ -130,7 +130,7 @@ if (response.session_url?.session_url) {
     };
 
   return (
-    <section className="bg-[#0f1116] text-white py-12 md:py-20 px-4 sm:px-6 font-['Poppins'] text-center">
+    <section id="pricing" className="bg-[#0f1116] text-white py-12 md:py-20 px-4 sm:px-6 font-['Poppins'] text-center">
       <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2">Lean Pricing.</h2>
       <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8">Limitless Potential.</h3>
       {/* Billing Toggle - Responsive */}

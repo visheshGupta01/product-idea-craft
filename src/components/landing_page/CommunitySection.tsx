@@ -42,7 +42,7 @@ const CommunitySection: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#1B2123] text-white py-12 md:py-20 px-4 sm:px-6 font-['Poppins']">
+    <section id="community" className="bg-[#1B2123] text-white py-12 md:py-16 px-4 sm:px-6 font-['Poppins']">
       {/* Heading - Responsive */}
       <div className="text-center pt-4 md:pt-8">
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3">
@@ -120,12 +120,12 @@ const CommunitySection: React.FC = () => {
         {projects.map((project, index) => (
           <div
             key={index}
-            className="bg-[#e4eff3] rounded-xl shadow-md w-full max-w-[400px] sm:w-[280px] md:w-[350px] lg:w-[400px] h-[350px] sm:h-[380px] md:h-[420px] flex flex-col overflow-hidden"
+            className="bg-[#e4eff3] rounded-xl shadow-md w-full max-w-[400px] sm:w-[280px] md:w-[350px] lg:w-[400px] h-[310px] sm:h-[340px] md:h-[380px] flex flex-col overflow-hidden"
           >
             <img
               src={project.bottomImage}
               alt={project.title}
-              className="w-full h-[220px] sm:h-[250px] md:h-[300px] object-cover"
+              className="w-full h-[200px] sm:h-[230px] md:h-[280px] object-cover"
             />
             <div className="p-3 md:p-4 font-supply flex flex-col justify-between flex-grow">
               <h3 className="text-lg md:text-xl font-bold text-black text-left">

@@ -34,6 +34,7 @@ const Sidebar = ({
   onViewChange,
   projectDetails
 }: SidebarProps) => {
+  console.log("Sidebar: received projectDetails", projectDetails);
   const { user, isAuthenticated } = useUser();
   const [darkMode, setDarkMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -46,6 +47,11 @@ const Sidebar = ({
     setDarkMode(isDark);
     
     // GitHub and Vercel connections are now handled by their respective integration components
+    // If projectDetails is available, you might update connection states based on it
+    if (projectDetails) {
+      // Example: setIsGitHubConnected(projectDetails.githubConnected);
+      // Example: setIsVercelConnected(projectDetails.vercelConnected);
+    }
   }, [projectDetails]);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;

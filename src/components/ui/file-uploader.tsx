@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Upload, FileText, Loader2, X, Check } from "lucide-react";
 import { toast } from "sonner";
+import axios from "axios"; // ✅ Import axios
+import apiClient from "@/lib/apiClient";
 
 export interface UploadedFile {
   name: string;
@@ -39,15 +41,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(
-        "http://http://54.166.141.144:8000/upload-pdf",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      // ✅ axios POST request
+      const response = await apiClient.post("/upload-pdf", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      const result = await response.json();
+      const result = response.data;
 
       if (result.success) {
         const uploadedFile: UploadedFile = {
@@ -98,7 +99,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         <button
           onClick={handleClick}
           disabled={disabled || isUploading}
-          className="p-2 w-[50px] h-[50px] flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 w-[40px] h-[40px] flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
           title="Upload PDF file"
         >
           {isUploading ? (
@@ -108,16 +109,21 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
           )}
         </button>
       </div>
-      
+
       {/* Uploaded Files List */}
       {uploadedFiles.length > 0 && (
         <div className="absolute top-14 right-3 bg-white border border-gray-200 rounded-md shadow-lg p-2 min-w-[200px] z-10">
           <div className="text-xs text-gray-600 mb-2">Uploaded Files:</div>
           {uploadedFiles.map((file) => (
-            <div key={file.name} className="flex items-center justify-between gap-2 text-xs p-1 hover:bg-gray-50 rounded">
+            <div
+              key={file.name}
+              className="flex items-center justify-between gap-2 text-xs p-1 hover:bg-gray-50 rounded"
+            >
               <div className="flex items-center gap-1 flex-1 min-w-0">
                 <Check className="w-3 h-3 text-green-600 flex-shrink-0" />
-                <span className="truncate" title={file.name}>{file.name}</span>
+                <span className="truncate" title={file.name}>
+                  {file.name}
+                </span>
               </div>
               <button
                 onClick={() => onRemoveFile(file.name)}

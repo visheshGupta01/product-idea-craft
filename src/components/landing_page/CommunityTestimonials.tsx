@@ -115,7 +115,10 @@ const CommunityTestimonials: React.FC = () => {
   );
 
   return (
-    <section className="mt-10 bg-gradient-to-b from-[#e4eff3] to-[#ffd9ec] text-black py-12 md:py-20 px-4 sm:px-6 font-['Poppins'] rounded-t-[24px]">
+    <section
+      id="testimonies"
+      className="mt-10 bg-gradient-to-b from-[#e4eff3] to-[#ffd9ec] text-black py-12 md:py-20 px-4 sm:px-6 font-['Poppins'] rounded-t-[24px]"
+    >
       {/* Heading - Responsive */}
       <div className="text-center mb-6 md:mb-10">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6">
@@ -146,7 +149,7 @@ const CommunityTestimonials: React.FC = () => {
               </div>
             </div>
             <button className="bg-[#ff0080] text-white font-semibold px-4 md:px-6 py-2 rounded-md text-xs md:text-sm">
-              Start Now
+              <a href="#idea-box"> Start Now</a>
             </button>
           </div>
           <p className="text-xs md:text-sm text-[#3366cc] text-center sm:text-left">

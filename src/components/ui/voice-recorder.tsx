@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Mic, Square, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Mic, Square, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import axios from "axios"; // ✅ Import axios
+import apiClient from "@/lib/apiClient";
 
 interface VoiceRecorderProps {
   onTranscript: (text: string) => void;
@@ -12,7 +14,7 @@ interface VoiceRecorderProps {
 export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   onTranscript,
   disabled = false,
-  className
+  className,
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -23,7 +25,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
-      
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -34,18 +36,20 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/wav",
+        });
         await sendAudioToBackend(audioBlob);
-        
+
         // Stop all tracks to release microphone
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       };
 
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
-      console.error('Failed to start recording:', error);
-      alert('Failed to access microphone. Please check permissions.');
+      console.error("Failed to start recording:", error);
+      alert("Failed to access microphone. Please check permissions.");
     }
   };
 
@@ -60,32 +64,27 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   const sendAudioToBackend = async (audioBlob: Blob) => {
     try {
       const formData = new FormData();
-      formData.append('video', audioBlob, 'recording.wav');
+      formData.append("video", audioBlob, "recording.wav");
 
-      const response = await fetch(
-        "http://54.166.141.144:8000/audio",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      console.log('Response:', response);
-    console.log('Response status:', response.status);
+      // ✅ axios POST request
+      const response = await apiClient.post("/audio", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const result = response.data;
 
-      const result = await response.json();
-      
       if (result.success && result.text) {
         onTranscript(result.text);
       } else {
-        throw new Error('No transcript received');
+        throw new Error("No transcript received");
       }
     } catch (error) {
-      console.error('Failed to process audio:', error);
-      alert('Failed to transcribe audio. Please make sure the backend server is running on localhost:8000');
+      console.error("Failed to process audio:", error);
+      alert(
+        "Failed to transcribe audio. Please make sure the backend server is running on localhost:8000"
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -116,20 +115,22 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       onClick={handleClick}
       disabled={disabled || isProcessing}
       className={cn(
-        "p-2 w-[50px] h-[50px] flex items-center justify-center border border-gray-300 rounded-md transition",
+        "p-2 w-[40px] h-[40px] flex items-center justify-center border border-gray-300 rounded-md transition",
         getButtonStyle(),
         className
       )}
       title={
-        isProcessing 
-          ? "Processing audio..." 
-          : isRecording 
-            ? "Stop recording" 
-            : "Start voice input"
+        isProcessing
+          ? "Processing audio..."
+          : isRecording
+          ? "Stop recording"
+          : "Start voice input"
       }
     >
       {isProcessing ? (
-        <Loader2 className={cn("w-[20px] h-[20px] animate-spin", getIconColor())} />
+        <Loader2
+          className={cn("w-[20px] h-[20px] animate-spin", getIconColor())}
+        />
       ) : isRecording ? (
         <Square className={cn("w-[20px] h-[20px]", getIconColor())} />
       ) : (

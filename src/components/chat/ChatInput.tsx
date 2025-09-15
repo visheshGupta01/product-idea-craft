@@ -1,82 +1,213 @@
-import React, { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Send, Loader2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Send, Loader2, Mic } from "lucide-react";
+import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
+import { VoiceRecorder } from "@/components/ui/voice-recorder";
+import { FileUploader, UploadedFile } from "@/components/ui/file-uploader"; // Import FileUploader
+import { cn } from "@/lib/utils"; // Assuming cn is available for conditional class names
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => Promise<void>;
+  onSendMessage: (message: string) => void;
   isLoading: boolean;
 }
+
+interface Tool {
+  name: string;
+  description: string;
+}
+
+const availableTools: Tool[] = [
+  {
+    name: "@analyse",
+    description: "Analyze the provided text or code for insights.",
+  },
+  {
+    name: "@research",
+    description: "Conduct a web search to gather information on a topic.",
+  },
+  {
+    name: "@icp",
+    description: "Identify Ideal Customer Profile based on project details.",
+  },
+  { name: "@mvp", description: "Generate a Minimum Viable Product plan." },
+  {
+    name: "@sitemap",
+    description:
+      "Create a sitemap for a given website or application structure.",
+  },
+  {
+    name: "@scope of work",
+    description: "Define the scope of work for a project.",
+  },
+  {
+    name: "@frontend code making",
+    description: "Generate frontend code snippets or components.",
+  },
+  {
+    name: "@backend code",
+    description: "Generate backend code snippets or API logic.",
+  },
+];
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
 }) => {
-  const [newMessage, setNewMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]); // State for uploaded files
+  const [showToolList, setShowToolList] = useState(false);
+  const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
+  const [toolInput, setToolInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-const adjustTextareaHeight = () => {
-  if (textareaRef.current) {
-    textareaRef.current.style.height = "auto";
-    textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
-  }
-};
+  const { sessionId } = useUser();
 
-const handleSubmit = async () => {
-  if (!newMessage.trim() || isLoading) return;
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      const newHeight = Math.min(textareaRef.current.scrollHeight, 120); // Max height 120px
+      textareaRef.current.style.height = newHeight + "px";
+    }
+  }, [message]);
 
-  const messageToSend = newMessage;
-  setNewMessage(""); // Clear input immediately
-  console.log("Sending message:", messageToSend);
-  await onSendMessage(messageToSend);
-  // After sending, reset height to initial (e.g., 1 row)
-  if (textareaRef.current) {
-    textareaRef.current.style.height = "auto";
-  }
-};
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setMessage(value);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      if (e.shiftKey) {
-        // Allow newline, do nothing else
-        // The default behavior of Enter with Shift will insert a newline
-      } else {
-        e.preventDefault(); // Prevent default (newline) for plain Enter
-        handleSubmit(); // Call handleSubmit without the event object
+    const atIndex = value.lastIndexOf("@");
+    if (
+      atIndex !== -1 &&
+      (atIndex === 0 ||
+        value[atIndex - 1] === " " ||
+        value[atIndex - 1] === "\n")
+    ) {
+      const currentToolInput = value.substring(atIndex + 1);
+      setToolInput(currentToolInput);
+      const filtered = availableTools.filter((tool) =>
+        tool.name.toLowerCase().includes(currentToolInput.toLowerCase())
+      );
+      setFilteredTools(filtered);
+      setShowToolList(true);
+    } else {
+      setShowToolList(false);
+      setToolInput("");
+    }
+  };
+
+  const handleToolSelect = (tool: Tool) => {
+    const atIndex = message.lastIndexOf("@");
+    if (atIndex !== -1) {
+      const newMessage = message.substring(0, atIndex) + tool.name + " ";
+      setMessage(newMessage);
+      setShowToolList(false);
+      setToolInput("");
+      if (textareaRef.current) {
+        textareaRef.current.focus();
       }
     }
   };
 
+  const handleFileUploaded = (file: UploadedFile) => {
+    setUploadedFiles((prev) => [...prev, file]);
+  };
+
+  const handleRemoveFile = (fileName: string) => {
+    setUploadedFiles((prev) => prev.filter((file) => file.name !== fileName));
+  };
+
+  const handleSendMessage = () => {
+    if (message.trim() || (uploadedFiles.length > 0 && !isLoading)) {
+      // Allow sending with only files
+      let combinedMessage = message.trim();
+      if (uploadedFiles.length > 0) {
+        const fileContents = uploadedFiles
+          .map(
+            (file) =>
+              `\n\n--- Content from ${file.name} ---\n${file.extractedText}`
+          )
+          .join("\n");
+        combinedMessage += fileContents;
+      }
+      onSendMessage(combinedMessage);
+      setMessage("");
+      setUploadedFiles([]); // Clear uploaded files after sending
+      setShowToolList(false);
+      setToolInput("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleTranscript = (transcript: string) => {
+    setMessage((prev) => (prev ? prev + " " : "") + transcript);
+  };
+
   return (
-    <div className="pb-6 bg-[#1E1E1E]">
-      <div className="w-full">
-        <div className="relative">
-          <Textarea
-            ref={textareaRef}
-            placeholder="Message..."
-            value={newMessage}
-            onChange={(e) => {
-              setNewMessage(e.target.value);
-              adjustTextareaHeight();
-            }}
-            onKeyDown={handleKeyDown}
-            className="w-full bg-[#1A1F21] border-gray-600 text-white placeholder:text-gray-300 rounded-full py-3 px-4 pr-12 resize-none min-h-0 overflow-hidden"
-            rows={1}
-          />
-          <Button
-            onClick={handleSubmit}
-            size="sm"
-            disabled={!newMessage.trim()}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-transparent text-white rounded-full"
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 text-white animate-spin" />
-            ) : (
-              <Send className="w-4 text-white h-4" />
-            )}
-          </Button>
+    <div className="relative w-full mb-4">
+      {" "}
+      {/* Added mb-4 for spacing from bottom */}
+      <Textarea
+        ref={textareaRef}
+        value={message}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Type your message or use '@' to call a tool, e.g., '@analyse', '@research'"
+        className="min-h-[50px] max-h-[120px] pr-[150px] resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900"
+        rows={1}
+        disabled={isLoading}
+      />
+      {showToolList && filteredTools.length > 0 && (
+        <div className="absolute bottom-full left-0 mb-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 animate-fade-in-up">
+          {filteredTools.map((tool) => (
+            <div
+              key={tool.name}
+              className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-start"
+              onClick={() => handleToolSelect(tool)}
+            >
+              <span className="font-medium text-blue-600 dark:text-blue-400">
+                {tool.name}
+              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {tool.description}
+              </span>
+            </div>
+          ))}
         </div>
+      )}
+      <div className="absolute bottom-1 right-[10px] flex items-end space-x-2">
+        <div className="w-[40px] h-[40px] flex items-center justify-center">
+          <FileUploader
+            onFileUploaded={handleFileUploaded}
+            uploadedFiles={uploadedFiles}
+            onRemoveFile={handleRemoveFile}
+            disabled={isLoading}
+          />
+        </div>
+        <div className="w-[40px] h-[40px] flex items-center justify-center">
+          <VoiceRecorder onTranscript={handleTranscript} disabled={isLoading} />
+        </div>
+        <Button
+          type="submit"
+          size="icon"
+          onClick={handleSendMessage}
+          disabled={
+            (!message.trim() && uploadedFiles.length === 0) || isLoading
+          }
+          className="w-[40px] h-[40px]" // Reduced size
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
+        </Button>
       </div>
     </div>
   );

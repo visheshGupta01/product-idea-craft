@@ -19,7 +19,7 @@ const cardData: CardData[] = [
     description: "Strategic product launch support",
     content:
       "Tell us what you’re dreaming of—your product idea, the problem it solves, and the audience it serves. We’ll work with you to refine your concept and align on the goals, features, and direction before anything gets built with the power of AI.",
-    image: card1,
+    image: card2,
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const cardData: CardData[] = [
     description: "Leveraging cutting-edge tools and frameworks",
     content:
       "Imagine.bo doesn’t just generate—it thinks. Every response is backed by deep AI analysis and pattern recognition to shape your layout, structure, and content with clarity. The result: a website that makes sense for your audience and your goals.",
-    image: card2,
+    image: card3,
   },
   {
     id: 3,
@@ -35,7 +35,7 @@ const cardData: CardData[] = [
     description: "Crafting meaningful digital experiences",
     content:
       "As your project takes shape, our team supports you through critical development phases. Helps with custom code integration, backend logic, deployment pipelines, and even scaling strategies. And after you go live, we’re still here for updates, debugging, and improvements.",
-    image: card3,
+    image: card1,
   },
 ];
 

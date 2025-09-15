@@ -238,11 +238,6 @@ const [isExpanded, setIsExpanded] = useState(
         )}
         <span className="text-sm truncate flex items-center gap-1">
           {node.name}
-          {node.type === "file" && node.extension && (
-            <span className="text-xs text-sidebar-foreground/50 font-mono">
-              .{node.extension}
-            </span>
-          )}
         </span>
       </div>
       {node.type === "folder" && isExpanded && node.children && (

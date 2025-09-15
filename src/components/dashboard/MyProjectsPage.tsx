@@ -69,7 +69,7 @@ const MyProjectsPage = () => {
 
   const handleProjectClick = (project: Project) => {
     // Navigate with state to pass deploy_url for automatic preview opening
-    navigate(`/c/${project.session_id}`, { 
+    navigate(`/chat?${project.session_id}`, { 
       state: { 
         deployUrl: project.project_url,
         shouldOpenPreview: !!project.deploy_url 
@@ -147,7 +147,7 @@ const MyProjectsPage = () => {
           </div>
 
           {/* Search and Filters */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          {/* <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -170,7 +170,7 @@ const MyProjectsPage = () => {
                 <TabsTrigger value="draft">Draft</TabsTrigger>
               </TabsList>
             </Tabs>
-          </div>
+          </div> */}
 
           {/* Projects Grid */}
           {loading ? (

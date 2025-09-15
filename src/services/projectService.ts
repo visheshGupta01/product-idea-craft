@@ -62,7 +62,7 @@ export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
 export const fetchProjectDetails = async (sessionId: string): Promise<ProjectDetails> => {
   try {
     console.log('Fetching project details for sessionId:', sessionId);
-    const response = await apiClient.get(`/c/${sessionId}`);
+    const response = await apiClient.get(`/chat?session_id=${sessionId}`);
     console.log('Fetched project details for sessionId:', sessionId, response.data);
     return response.data;
   } catch (error) {

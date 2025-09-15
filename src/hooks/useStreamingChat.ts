@@ -147,11 +147,12 @@ export const useStreamingChat = (
             // Check for frontend_code_generator tool output with ngrok URL
             if (
               text.includes("[Tool Output for frontend_code_generator]:") &&
-              text.includes("localhost:8000")
+              text.includes("preview.imagine.bo")
             ) {
-              const urlMatch = text.match(
-                /https?:\/\/[^\s"]+\.localhost:8000\/?/
-              );
+const urlMatch = text.match(
+  /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo)\/?/
+);
+
               if (urlMatch && onFrontendGenerated) {
                 const localUrl = urlMatch[0];
                 console.log("🚀 Frontend generated with URL:", localUrl);

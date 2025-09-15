@@ -6,17 +6,15 @@ const IDE: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar: File Explorer */}
-      <div className="w-64 border-r">
+    <div className="flex mb-3 h-screen p-3">
+      <div className="w-64 border-r rounded-lg overflow-hidden">
         <FileExplorer
           onFileSelect={(file) => setSelectedFile(file)}
           selectedFile={selectedFile?.path || null}
         />
       </div>
 
-      {/* Main Panel: Code Editor */}
-      <div className="flex-1">
+      <div className="flex-1 ml-3 rounded-lg overflow-hidden">
         <CodeEditor file={selectedFile} />
       </div>
     </div>

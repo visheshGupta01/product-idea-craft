@@ -1,6 +1,6 @@
 // WebSocket Configuration
 export const WS_CONFIG = {
-  BASE_URL: "ws://http://54.166.141.144:8000/ws",
+  BASE_URL: "ws://http://98.87.215.219:8000/ws",
   RECONNECT_ATTEMPTS: 3,
   RECONNECT_DELAY: 2000,
 } as const;

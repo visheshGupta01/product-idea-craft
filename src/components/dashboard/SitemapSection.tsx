@@ -1,6 +1,6 @@
 import React from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Home, User, ShoppingBag, Grid3X3, MessageSquare, FileText, Phone, CheckCircle, Clock, RefreshCw } from 'lucide-react';
+import { ChevronDown, Home, User, ShoppingBag, Grid3X3, MessageSquare, FileText, Phone, CheckCircle, Clock, RefreshCw, Diamond } from 'lucide-react';
 import { ProjectDetails } from '@/services/projectService';
 
 interface SitemapSectionProps {
@@ -65,7 +65,7 @@ export default function SitemapSection({
   }
 
   return (
-    <div className="px-4 py-2 space-y-2">
+    <div className="px-4 py-2 space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900"> {/* Added max-h and overflow-y-auto */}
       {pages.map((page, index) => {
         const Icon = getPageIcon(page.name);
         const status = getPageStatus(index, pages.length);
@@ -78,7 +78,6 @@ export default function SitemapSection({
                 <span>{page.name}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <StatusIcon status={status} />
                 <ChevronDown
                   size={14}
                   className="transition-transform data-[state=open]:rotate-180"
@@ -92,7 +91,7 @@ export default function SitemapSection({
                     key={compIndex}
                     className="flex items-center space-x-2 p-1 text-xs text-muted-foreground hover:text-sidebar-foreground transition-colors"
                   >
-                    <div className="w-2 h-2 rounded-full bg-pink-400/50"></div>
+<Diamond size={12} className="text-muted-foreground text-pink-400" />
                     <span>{component}</span>
                   </div>
                 ))}
