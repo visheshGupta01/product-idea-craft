@@ -109,7 +109,7 @@ import { Loader2 } from "lucide-react";
         const paymentData = {
           userUUID: user.id!,
           price: plan.price.toString(),
-          planName: plan.name,
+          plan_name: plan.name,
         };
 
         await createStripeSession(paymentData);

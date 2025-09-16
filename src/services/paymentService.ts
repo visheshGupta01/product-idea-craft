@@ -7,20 +7,20 @@ const stripePromise = loadStripe('pk_test_51QCJweRSRZcJVhKkVEjYrMxB9TvULchZV9Us1
 export interface PaymentRequest {
   userUUID: string;
   price: string;
-  planName: string;
+  plan_name: string;
 }
 
 export interface PaymentResponse {
-  Status: number;
-  Message: string;
-  StatusCode: number;
-  SessionURL: {
-    SessionURL: string;
-    SessionID: string;
-    UserUUID: string;
-    PlanName: string;
-    Price: string;
-    CreatedAt: string;
+  status: number;
+  message: string;
+  status_code: number;
+  session_url: {
+    user_uuid: string;
+    session_url: string;
+    session_id: string;
+    plan_name: string;
+    price: string;
+    created_at: string;
   };
 }
 
@@ -41,7 +41,7 @@ export const createStripeSession = async (paymentData: PaymentRequest): Promise<
 
     // Redirect to Stripe Checkout
     const { error } = await stripe.redirectToCheckout({
-      sessionId: response.data.SessionURL.SessionID
+      sessionId: response.data.session_url.session_id
     });
 
     if (error) {
