@@ -1,4 +1,3 @@
-import { ServerResponse } from "@/types";
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -14,7 +13,7 @@ export class WebSocketService {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        const wsUrl = `ws://98.87.215.219:8000/ws?s_id=${this.sessionId}`;
+        const wsUrl = `wss://98.87.215.219:8000/ws?s_id=${this.sessionId}`;
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {

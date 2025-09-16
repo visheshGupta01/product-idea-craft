@@ -89,7 +89,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post("/login", { email, password });
+      const response = await apiClient.post("/api/auth/login", { email, password });
       const data: LoginResponse = response.data;
       console.log("Login response:", data);
       console.log("Logined at", new Date().toISOString());
@@ -156,7 +156,7 @@ export class AuthService {
       })
 
       // 3. Send signup + location to backend
-      const response = await apiClient.post("/signup", {
+      const response = await apiClient.post("/api/auth/signup", {
         first_name,
         last_name,
         email,
@@ -185,7 +185,7 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.get(`/verify?token=${token}`);
+      const response = await apiClient.get(`/api/auth/verify?token=${token}`);
       const data: VerificationResponse = response.data;
       console.log("Email verification response:", data);
       return {
@@ -203,7 +203,9 @@ export class AuthService {
 
   async forgotPassword(email: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post("/forget/password", { email });
+      const response = await apiClient.post("/api/auth/forget-password", {
+        email,
+      });
       const data: ForgotPasswordResponse = response.data;
 
       return {
@@ -232,11 +234,14 @@ export class AuthService {
       confirm_password,
     });
     try {
-      const response = await apiClient.post(`/reset?token=${token}`, {
-        token,
-        password,
-        confirm_password,
-      });
+      const response = await apiClient.post(
+        `/api/auth/reset-password?token=${token}`,
+        {
+          token,
+          password,
+          confirm_password,
+        }
+      );
 
       const data: ResetPasswordResponse = response.data;
       console.log("Reset password response:", data);
@@ -259,7 +264,7 @@ export class AuthService {
     }
 
     try {
-      const response = await apiClient.post("/refresh-token", {
+      const response = await apiClient.post("/api/auth/refresh-token", {
         refreshToken: this.refreshToken,
       });
 
@@ -305,7 +310,7 @@ export class AuthService {
 
     try {
       console.log("Creating session with idea:", idea);
-      const response = await apiClient.post("/create/session", { "message":idea });
+      const response = await apiClient.post("/api/chat/session/create", { "message":idea });
       const data = response.data;
       console.log("Create session response:", data);
 

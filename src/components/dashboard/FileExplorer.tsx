@@ -274,7 +274,9 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       }
 
       try {
-        const response = await apiClient.get(`/project/code?session_id=${sessionId}`);
+        const response = await apiClient.get(
+          `/api/project/code?session_id=${sessionId}`
+        );
         
         if (response.data.files) {
           const filesWithContent = response.data.files.map((file: { path: string; content: string }) => ({

@@ -45,7 +45,7 @@ export interface DashboardData {
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
   try {
-    const response = await apiClient.get('/admin/dashboard');
+    const response = await apiClient.get('/api/admin/dashboard');
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -70,7 +70,7 @@ export interface UsersData {
 
 export const fetchUsersData = async (): Promise<UsersData> => {
   try {
-    const response = await apiClient.get('/admin/users');
+    const response = await apiClient.get('/api/admin/users');
     console.log(response.data);
     if (response.data.success) {
       return {

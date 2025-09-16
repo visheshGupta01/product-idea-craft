@@ -67,7 +67,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       formData.append("video", audioBlob, "recording.wav");
 
       // ✅ axios POST request
-      const response = await apiClient.post("/audio", formData, {
+      const response = await apiClient.post("/api/audio", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

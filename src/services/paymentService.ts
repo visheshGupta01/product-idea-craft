@@ -24,7 +24,10 @@ export interface PaymentResponse {
 export const createStripeSession = async (paymentData: PaymentRequest): Promise<PaymentResponse> => {
   try {
     console.log('Creating Stripe session with data:', paymentData);
-    const response = await apiClient.post('/create-session', paymentData);
+    const response = await apiClient.post(
+      "/api/payment/create-session",
+      paymentData
+    );
     console.log('Stripe session response:', response.data);
     return response.data;
   } catch (error) {

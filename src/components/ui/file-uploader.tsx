@@ -42,7 +42,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       formData.append("file", file);
 
       // ✅ axios POST request
-      const response = await apiClient.post("/upload-pdf", formData, {
+      const response = await apiClient.post("/api/upload-pdf", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
