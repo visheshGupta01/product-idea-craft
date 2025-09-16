@@ -112,11 +112,7 @@ import { Loader2 } from "lucide-react";
           planName: plan.name,
         };
 
-        const response = await createStripeSession(paymentData);
-        
-if (response.session_url?.session_url) {
-  window.open(response.session_url.session_url, "_blank");
-}
+        await createStripeSession(paymentData);
       } catch (error) {
         console.error('Payment error:', error);
         toast({
