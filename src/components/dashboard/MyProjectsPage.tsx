@@ -132,14 +132,14 @@ const MyProjectsPage = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-foreground">
-                My Projects
+                John Doe's Projects
               </h1>
               <p className="text-muted-foreground">
-                Manage and track your development projects
+                Turn your ideas into revenue-ready apps & websites
               </p>
             </div>
             <a href="/">
-              <Button className="w-fit">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Plus className="h-4 w-4 mr-2" />
                 New Project
               </Button>
@@ -147,30 +147,59 @@ const MyProjectsPage = () => {
           </div>
 
           {/* Search and Filters */}
-          {/* <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="w-72 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search projects..."
+                placeholder="Search Projects"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-card border-border"
               />
             </div>
-            <Tabs
-              value={activeFilter}
-              onValueChange={setActiveFilter}
-              className="w-fit"
-            >
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="active">Active</TabsTrigger>
-                <TabsTrigger value="completed">Done</TabsTrigger>
-                <TabsTrigger value="paused">Paused</TabsTrigger>
-                <TabsTrigger value="draft">Draft</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div> */}
+            <div className="flex gap-2 ml-auto">
+              <Button
+                variant={activeFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter('all')}
+                className={activeFilter === 'all' ? 'bg-primary text-primary-foreground' : ''}
+              >
+                All
+              </Button>
+              <Button
+                variant={activeFilter === 'active' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter('active')}
+                className={activeFilter === 'active' ? 'bg-primary text-primary-foreground' : ''}
+              >
+                Active
+              </Button>
+              <Button
+                variant={activeFilter === 'completed' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter('completed')}
+                className={activeFilter === 'completed' ? 'bg-primary text-primary-foreground' : ''}
+              >
+                Done
+              </Button>
+              <Button
+                variant={activeFilter === 'paused' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter('paused')}
+                className={activeFilter === 'paused' ? 'bg-primary text-primary-foreground' : ''}
+              >
+                Paused
+              </Button>
+              <Button
+                variant={activeFilter === 'draft' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter('draft')}
+                className={activeFilter === 'draft' ? 'bg-primary text-primary-foreground' : ''}
+              >
+                Draft
+              </Button>
+            </div>
+          </div>
 
           {/* Projects Grid */}
           {loading ? (
@@ -190,75 +219,46 @@ const MyProjectsPage = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               {filteredProjects.map((project) => (
                 <Card
                   key={project.session_id}
-                  className="hover:shadow-lg transition-shadow cursor-pointer group"
+                  className="hover:shadow-lg transition-all duration-200 cursor-pointer group border-border bg-card overflow-hidden"
                   onClick={() => handleProjectClick(project)}
                 >
                   <div className="relative">
-                    <div className="aspect-video w-full bg-gradient-to-br from-primary/20 to-secondary/20 rounded-t-lg overflow-hidden flex items-center justify-center">
-                      <Code className="h-12 w-12 text-muted-foreground" />
+                    <div className="aspect-video w-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-t-lg overflow-hidden flex items-center justify-center relative">
+                      {/* Design elements similar to the image */}
+                      <div className="absolute top-4 left-4 w-8 h-1 bg-gray-700 rounded transform rotate-12"></div>
+                      <div className="absolute top-6 left-6 w-12 h-8 bg-yellow-400 rounded-sm shadow-md flex items-center justify-center">
+                        <span className="text-xs font-mono text-gray-800">SH</span>
+                      </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute top-2 right-2 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
                   </div>
 
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1 flex-1 min-w-0">
-                        <CardTitle className="text-lg truncate">
-                          {project.title || "Untitled Project"}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground truncate">
-                          Session: {project.session_id.slice(0, 8)}...
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {getStatusIcon(project.status)}
-                        {getStatusBadge(project.status)}
-                      </div>
-                      {project.project_url && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(project.project_url, "_blank");
-                          }}
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-
-                    {project.deploy_url && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Globe className="h-3 w-3" />
-                        <span className="truncate">Deployed</span>
-                      </div>
+                  <div className="p-4 bg-card">
+                    <h3 className="text-lg font-semibold text-foreground mb-2 truncate">
+                      {project.title || "Taskflow Pro"}
+                    </h3>
+                    
+                    {project.project_url && (
+                      <a
+                        href={project.project_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 text-sm truncate block mb-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {project.project_url}
+                      </a>
                     )}
-
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>{formatDate(project.created_at)}</span>
-                      </div>
+                    
+                    <div className="border-t border-border pt-3">
+                      <p className="text-xs text-muted-foreground">
+                        Last modified 2 hours ago
+                      </p>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               ))}
             </div>
