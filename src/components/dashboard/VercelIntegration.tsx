@@ -190,55 +190,7 @@ const VercelIntegration = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {!hasGitHubRepo ? (
-          <div className="text-center py-8">
-            <Github className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">GitHub Required</h3>
-            <p className="text-muted-foreground mb-6">
-              Connect to GitHub first to deploy your project to Vercel.
-            </p>
-            <Button variant="outline" disabled>
-              <Github className="h-4 w-4 mr-2" />
-              Connect GitHub First
-            </Button>
-          </div>
-        ) : !deployment ? (
-          <div className="space-y-4">
-            <div className="text-center py-8">
-              <Rocket className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Deploy to Vercel</h3>
-              <p className="text-muted-foreground mb-6">
-                Deploy your GitHub repository to Vercel for live hosting with automatic builds.
-              </p>
-              <Button 
-                onClick={handleDeployToVercel}
-                disabled={isDeploying}
-                className="flex items-center space-x-2"
-              >
-                {isDeploying ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Rocket className="h-4 w-4" />
-                )}
-                <span>{isDeploying ? 'Deploying...' : 'Deploy to Vercel'}</span>
-              </Button>
-            </div>
-            
-            <div className="bg-muted/50 rounded-lg p-4">
-              <h4 className="font-medium mb-2 flex items-center">
-                <AlertCircle className="h-4 w-4 mr-2 text-blue-600" />
-                What happens when you deploy?
-              </h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Your GitHub repository will be connected to Vercel</li>
-                <li>• Automatic builds triggered on every push</li>
-                <li>• Live URL generated for your application</li>
-                <li>• SSL certificate automatically configured</li>
-                <li>• Global CDN for fast loading worldwide</li>
-              </ul>
-            </div>
-          </div>
-        ) : (
+        {deployment ? (
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div className="space-y-2">
@@ -259,19 +211,21 @@ const VercelIntegration = () => {
                   <ExternalLink className="h-3 w-3 mr-2" />
                   View Live
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRedeploy}
-                  disabled={deployment.status === 'deploying'}
-                >
-                  {deployment.status === 'deploying' ? (
-                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                  ) : (
-                    <Rocket className="h-3 w-3 mr-2" />
-                  )}
-                  Redeploy
-                </Button>
+                {hasGitHubRepo && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRedeploy}
+                    disabled={deployment.status === 'deploying'}
+                  >
+                    {deployment.status === 'deploying' ? (
+                      <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                    ) : (
+                      <Rocket className="h-3 w-3 mr-2" />
+                    )}
+                    Redeploy
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -306,10 +260,71 @@ const VercelIntegration = () => {
                   🚀 Your app is live!
                 </h4>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  Your application is successfully deployed and accessible worldwide. Any future pushes to your GitHub repository will automatically trigger new deployments.
+                  Your application is successfully deployed and accessible worldwide.
+                  {hasGitHubRepo && " Any future pushes to your GitHub repository will automatically trigger new deployments."}
                 </p>
               </div>
             )}
+
+            {!hasGitHubRepo && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                <h4 className="font-medium mb-2 text-blue-800 dark:text-blue-200 flex items-center">
+                  <Github className="h-4 w-4 mr-2" />
+                  Connect GitHub for Auto-Deploy
+                </h4>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  Connect your GitHub repository to enable automatic deployments on code changes.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : !hasGitHubRepo ? (
+          <div className="text-center py-8">
+            <Github className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">GitHub Required</h3>
+            <p className="text-muted-foreground mb-6">
+              Connect to GitHub first to deploy your project to Vercel.
+            </p>
+            <Button variant="outline" disabled>
+              <Github className="h-4 w-4 mr-2" />
+              Connect GitHub First
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="text-center py-8">
+              <Rocket className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Deploy to Vercel</h3>
+              <p className="text-muted-foreground mb-6">
+                Deploy your GitHub repository to Vercel for live hosting with automatic builds.
+              </p>
+              <Button 
+                onClick={handleDeployToVercel}
+                disabled={isDeploying}
+                className="flex items-center space-x-2"
+              >
+                {isDeploying ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Rocket className="h-4 w-4" />
+                )}
+                <span>{isDeploying ? 'Deploying...' : 'Deploy to Vercel'}</span>
+              </Button>
+            </div>
+            
+            <div className="bg-muted/50 rounded-lg p-4">
+              <h4 className="font-medium mb-2 flex items-center">
+                <AlertCircle className="h-4 w-4 mr-2 text-blue-600" />
+                What happens when you deploy?
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Your GitHub repository will be connected to Vercel</li>
+                <li>• Automatic builds triggered on every push</li>
+                <li>• Live URL generated for your application</li>
+                <li>• SSL certificate automatically configured</li>
+                <li>• Global CDN for fast loading worldwide</li>
+              </ul>
+            </div>
           </div>
         )}
       </CardContent>
