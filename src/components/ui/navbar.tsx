@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Github, Rocket } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import GitHubIntegration from '../dashboard/GitHubIntegration';
 import ImagineboDarkBackground from "../../assets/ImagineboDarkBackground.svg";
 
 interface NavbarProps {
@@ -10,7 +12,21 @@ interface NavbarProps {
 }
 
 const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
+  const [showGitHubModal, setShowGitHubModal] = useState(false);
+
   return (
+    <>
+      <Dialog open={showGitHubModal} onOpenChange={setShowGitHubModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Github className="h-5 w-5" />
+              GitHub Integration
+            </DialogTitle>
+          </DialogHeader>
+          <GitHubIntegration />
+        </DialogContent>
+      </Dialog>
     <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar-background border-b border-sidebar-border flex items-center justify-between px-4">
       {/* Logo */}
       <div className="flex items-center space-x-2">
@@ -26,11 +42,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => {
-            // Open GitHub integration or redirect to GitHub
-            console.log('GitHub integration clicked');
-            // You can add GitHub integration modal or redirect logic here
-          }}
+          onClick={() => setShowGitHubModal(true)}
           className="flex items-center gap-2 h-8 px-3 text-sm border-sidebar-border hover:bg-sidebar-accent"
         >
           <Github className="h-4 w-4" />
@@ -47,6 +59,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
         </Button>
       </div>
     </div>
+    </>
   );
 };
 
