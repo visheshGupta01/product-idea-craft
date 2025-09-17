@@ -4,6 +4,7 @@ import { Github, Rocket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import GitHubIntegration from '../dashboard/GitHubIntegration';
+import VercelIntegration from '../dashboard/VercelIntegration';
 import ImagineboDarkBackground from "../../assets/ImagineboDarkBackground.svg";
 
 interface NavbarProps {
@@ -13,6 +14,7 @@ interface NavbarProps {
 
 const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
   const [showGitHubModal, setShowGitHubModal] = useState(false);
+  const [showVercelModal, setShowVercelModal] = useState(false);
 
   return (
     <>
@@ -25,6 +27,18 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
             </DialogTitle>
           </DialogHeader>
           <GitHubIntegration />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showVercelModal} onOpenChange={setShowVercelModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Rocket className="h-5 w-5" />
+              Deploy to Vercel
+            </DialogTitle>
+          </DialogHeader>
+          <VercelIntegration />
         </DialogContent>
       </Dialog>
     <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar-background border-b border-sidebar-border flex items-center justify-between px-4">
@@ -50,7 +64,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
         </Button>
         
         <Button
-          onClick={onPublish}
+          onClick={() => setShowVercelModal(true)}
           size="sm"
           className="flex items-center gap-2 h-8 px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
         >
