@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Rocket } from 'lucide-react';
+import { Github, Rocket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ImagineboDarkBackground from "../../assets/ImagineboDarkBackground.svg";
 
@@ -21,34 +21,30 @@ const Navbar = ({ onPublish, isFrontendCreated = false }: NavbarProps) => {
         </div>
       </div>
 
-      {/* Frontend Generation Task with Complete Button or Publish Button */}
+      {/* GitHub and Publish Buttons */}
       <div className="flex items-center space-x-3">
-        {/* {!isFrontendCreated ? (
-          <div className="flex items-center space-x-2 bg-sidebar-accent border border-sidebar-border rounded-lg px-3 py-1">
-            <span className="text-sm text-sidebar-foreground">
-              Frontend Generation
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                // This will trigger the frontend creation completion
-                const event = new CustomEvent("frontendComplete");
-                window.dispatchEvent(event);
-              }}
-              className="h-6 text-xs"
-            >
-              Complete
-            </Button>
-          </div>
-        ) : (
-          <Button
-            onClick={onPublish}
-            className="bg-white text-black hover:bg-gray-100 rounded-lg px-4 py-2 font-medium transition-all duration-200 border-0"
-          >
-            Publish
-          </Button>
-        )} */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            // Open GitHub integration or redirect to GitHub
+            console.log('GitHub integration clicked');
+            // You can add GitHub integration modal or redirect logic here
+          }}
+          className="flex items-center gap-2 h-8 px-3 text-sm border-sidebar-border hover:bg-sidebar-accent"
+        >
+          <Github className="h-4 w-4" />
+          GitHub
+        </Button>
+        
+        <Button
+          onClick={onPublish}
+          size="sm"
+          className="flex items-center gap-2 h-8 px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+        >
+          <Rocket className="h-4 w-4" />
+          Publish
+        </Button>
       </div>
     </div>
   );
