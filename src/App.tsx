@@ -14,6 +14,8 @@ import PaymentFailed from "./pages/PaymentFailed";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
+import EmailLogin from "./pages/EmailLogin";
+import DeveloperDashboard from "./pages/DeveloperDashboard";
 import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
 import { EmailVerificationModal } from "./components/auth/EmailVerificationModal";
 import { useSearchParams } from "react-router-dom";
@@ -51,6 +53,8 @@ const AppContent = () => {
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/email-login" element={<EmailLogin />} />
+        <Route path="/developer-dashboard" element={<DeveloperDashboard />} />
         <Route path="/c/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />

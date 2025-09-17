@@ -1,7 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import LogoIcon from "../../assets/ImagineboIcon.svg"; // Make sure TypeScript can import SVGs via module declaration
 
 const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="text-white text-center px-4 sm:px-6 py-12 md:py-16 bg-[#1B2123] font-['Poppins']">
       {/* Logo Icon */}
@@ -30,6 +34,16 @@ const HeroSection: React.FC = () => {
       {/* Powered by Tag */}
       <div className="border border-[#B1C5CE] inline-flex text-gray-300 items-center justify-center text-xs sm:text-sm rounded-[10px] mb-6 md:mb-10 px-2 py-1">
         Powered by AI & SDE * No coding required
+      </div>
+
+      {/* Developer Access Button */}
+      <div className="flex justify-center">
+        <Button 
+          onClick={() => navigate('/email-login')}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg font-medium"
+        >
+          Developer Access
+        </Button>
       </div>
     </section>
   );
