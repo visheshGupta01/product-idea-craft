@@ -167,9 +167,6 @@ const ProfilePopup = ({ open, onOpenChange }: ProfilePopupProps) => {
               <Button variant="outline" className="w-full justify-start">
                 Connect Vercel
               </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Connect Supabase
-              </Button>
             </div>
           </div>
         );
@@ -238,7 +235,7 @@ const ProfilePopup = ({ open, onOpenChange }: ProfilePopupProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[600px] p-0">
+      <DialogContent className="max-w-4xl h-[500px] p-0">
         <div className="flex h-full">
           {/* Sidebar */}
           <div className="w-64 bg-muted/30 border-r p-4 space-y-1">

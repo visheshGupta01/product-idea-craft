@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ProfilePopup from './ProfilePopup';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Menu, User, Moon, Sun, Database, Github, Settings, Users, CreditCard, Lightbulb, Home, Link } from 'lucide-react';
+import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link } from 'lucide-react';
 import SitemapSection from './SitemapSection';
 import { ProjectDetails } from '@/services/projectService';
 import myIcon from "../../assets/ImagineboIcon.svg";
@@ -148,18 +148,7 @@ const Sidebar = ({
                 <DialogTitle>Settings & Integrations</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => {
-                    // Connect to Supabase integration
-                    console.log('Connect Supabase clicked');
-                  }}
-                >
-                  <Database className="h-4 w-4 mr-2" />
-                  Connect Supabase
-                </Button>
-                <Button 
+               <Button 
                   variant={isGitHubConnected ? "default" : "outline"}
                   className="w-full justify-start"
                   onClick={handleGitHubConnect}
@@ -263,17 +252,6 @@ const Sidebar = ({
             <DialogTitle>Settings & Integrations</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => {
-                // Connect to Supabase integration
-                console.log('Connect Supabase clicked');
-              }}
-            >
-              <Database className="h-4 w-4 mr-2" />
-              Connect Supabase
-            </Button>
             <Button 
               variant={isGitHubConnected ? "default" : "outline"}
               className="w-full justify-start"
