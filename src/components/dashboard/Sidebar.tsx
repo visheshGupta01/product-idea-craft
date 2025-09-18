@@ -7,7 +7,8 @@ import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ProfilePopup from './ProfilePopup';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link, Shield, MessageCircle } from 'lucide-react';
 import SitemapSection from './SitemapSection';
 import { ProjectDetails } from '@/services/projectService';
 import myIcon from "../../assets/ImagineboIcon.svg";
@@ -40,6 +41,7 @@ const Sidebar = ({
   const [darkMode, setDarkMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [profileSection, setProfileSection] = useState('basic');
   const [isGitHubConnected, setIsGitHubConnected] = useState(false);
   const [isVercelConnected, setIsVercelConnected] = useState(false);
 
@@ -127,20 +129,60 @@ const Sidebar = ({
 
         {/* Bottom Section */}
         <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar flex flex-col items-center">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-8 p-0"
-            onClick={() => setProfileOpen(true)}
-          >
-             <Avatar className="h-6 w-6">
-               <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
-                 {user?.firstName && user?.lastName 
-                   ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                   : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
-               </AvatarFallback>
-             </Avatar>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0"
+              >
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
+                    {user?.firstName && user?.lastName 
+                      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+                      : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" side="right" className="w-56 bg-popover border border-border">
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('basic');
+                setProfileOpen(true);
+              }}>
+                <User className="mr-2 h-4 w-4" />
+                User Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('integration');
+                setProfileOpen(true);
+              }}>
+                <Settings className="mr-2 h-4 w-4" />
+                Integration
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('security');
+                setProfileOpen(true);
+              }}>
+                <Shield className="mr-2 h-4 w-4" />
+                Security
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('billing');
+                setProfileOpen(true);
+              }}>
+                <CreditCard className="mr-2 h-4 w-4" />
+                Credits & Billing
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('support');
+                setProfileOpen(true);
+              }}>
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Support & Feedback
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
             <DialogContent>
@@ -223,27 +265,67 @@ const Sidebar = ({
       <div className="p-2 border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar-background">
         <Separator className="bg-sidebar-border" />
         
-        <div 
-          className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50"
-          onClick={() => setProfileOpen(true)}
-        >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
-                {user?.firstName && user?.lastName 
-                  ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                  : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || (isAuthenticated ? 'U' : <User className="h-4 w-4" />)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">
-                {isAuthenticated 
-                  ? (user?.firstName && user?.lastName 
-                      ? `${user.firstName} ${user.lastName}` 
-                      : user?.firstName || 'User')
-                  : 'Guest'}
-              </p>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div 
+              className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
+                  {user?.firstName && user?.lastName 
+                    ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+                    : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || (isAuthenticated ? 'U' : <User className="h-4 w-4" />)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  {isAuthenticated 
+                    ? (user?.firstName && user?.lastName 
+                        ? `${user.firstName} ${user.lastName}` 
+                        : user?.firstName || 'User')
+                    : 'Guest'}
+                </p>
+              </div>
             </div>
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="top" className="w-56 mb-2 bg-popover border border-border">
+            <DropdownMenuItem onClick={() => {
+              setProfileSection('basic');
+              setProfileOpen(true);
+            }}>
+              <User className="mr-2 h-4 w-4" />
+              User Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              setProfileSection('integration');
+              setProfileOpen(true);
+            }}>
+              <Settings className="mr-2 h-4 w-4" />
+              Integration
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              setProfileSection('security');
+              setProfileOpen(true);
+            }}>
+              <Shield className="mr-2 h-4 w-4" />
+              Security
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              setProfileSection('billing');
+              setProfileOpen(true);
+            }}>
+              <CreditCard className="mr-2 h-4 w-4" />
+              Credits & Billing
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              setProfileSection('support');
+              setProfileOpen(true);
+            }}>
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Support & Feedback
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
@@ -272,7 +354,11 @@ const Sidebar = ({
         </DialogContent>
       </Dialog>
 
-      <ProfilePopup open={profileOpen} onOpenChange={setProfileOpen} />
+      <ProfilePopup 
+        open={profileOpen} 
+        onOpenChange={setProfileOpen} 
+        initialSection={profileSection}
+      />
     </div>
   );
 };

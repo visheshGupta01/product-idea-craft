@@ -14,11 +14,12 @@ import { Textarea } from '@/components/ui/textarea';
 interface ProfilePopupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialSection?: string;
 }
 
-const ProfilePopup = ({ open, onOpenChange }: ProfilePopupProps) => {
+  const ProfilePopup = ({ open, onOpenChange, initialSection = 'basic' }: ProfilePopupProps) => {
   const { user, profile, updateProfile } = useUser();
-  const [activeSection, setActiveSection] = useState('basic');
+  const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
@@ -26,6 +27,11 @@ const ProfilePopup = ({ open, onOpenChange }: ProfilePopupProps) => {
     email: user?.email || '',
     password: '••••••••••'
   });
+
+  // Update active section when initialSection prop changes
+  React.useEffect(() => {
+    setActiveSection(initialSection);
+  }, [initialSection]);
 
   const handleSave = async () => {
     // Save profile data
