@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useUser } from '@/context/UserContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';  
 import { Separator } from '@/components/ui/separator';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ProfilePopup from './ProfilePopup';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -127,45 +127,20 @@ const Sidebar = ({
 
         {/* Bottom Section */}
         <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar flex flex-col items-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                 <Avatar className="h-6 w-6">
-                   <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
-                     {user?.firstName && user?.lastName 
-                       ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                       : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
-                   </AvatarFallback>
-                 </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="right" className="w-56">
-              <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
-                <Lightbulb className="h-4 w-4 mr-2" />
-                My Projects
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setProfileOpen(true)}>
-                <User className="h-4 w-4 mr-2" />
-                Profile Settings
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem onClick={() => onViewChange?.('team')}>
-                <Users className="h-4 w-4 mr-2" />
-                Teams
-              </DropdownMenuItem> */}
-              <DropdownMenuItem onClick={() => onViewChange?.('subscription')}>
-                <CreditCard className="h-4 w-4 mr-2" />
-                Subscription
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </DropdownMenuItem> */}
-              <DropdownMenuItem onClick={toggleDarkMode}>
-                {darkMode ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
-                {darkMode ? 'Light Mode' : 'Dark Mode'}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0"
+            onClick={() => setProfileOpen(true)}
+          >
+             <Avatar className="h-6 w-6">
+               <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
+                 {user?.firstName && user?.lastName 
+                   ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+                   : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+               </AvatarFallback>
+             </Avatar>
+          </Button>
           
           <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
             <DialogContent>
@@ -259,54 +234,27 @@ const Sidebar = ({
       <div className="p-2 border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar-background">
         <Separator className="bg-sidebar-border" />
         
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
-                    {user?.firstName && user?.lastName 
-                      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                      : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || (isAuthenticated ? 'U' : <User className="h-4 w-4" />)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-sidebar-foreground truncate">
-                    {isAuthenticated 
-                      ? (user?.firstName && user?.lastName 
-                          ? `${user.firstName} ${user.lastName}` 
-                          : user?.firstName || 'User')
-                      : 'Guest'}
-                  </p>
-                </div>
+        <div 
+          className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50"
+          onClick={() => setProfileOpen(true)}
+        >
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
+                {user?.firstName && user?.lastName 
+                  ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+                  : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || (isAuthenticated ? 'U' : <User className="h-4 w-4" />)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-sidebar-foreground truncate">
+                {isAuthenticated 
+                  ? (user?.firstName && user?.lastName 
+                      ? `${user.firstName} ${user.lastName}` 
+                      : user?.firstName || 'User')
+                  : 'Guest'}
+              </p>
             </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
-              <Lightbulb className="h-4 w-4 mr-2" />
-              My Projects
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setProfileOpen(true)}>
-              <User className="h-4 w-4 mr-2" />
-              Profile Settings
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem onClick={() => onViewChange?.('team')}>
-              <Users className="h-4 w-4 mr-2" />
-              Teams
-            </DropdownMenuItem> */}
-            <DropdownMenuItem onClick={() => onViewChange?.('subscription')}>
-              <CreditCard className="h-4 w-4 mr-2" />
-              Subscription
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </DropdownMenuItem> */}
-            <DropdownMenuItem onClick={toggleDarkMode}>
-              {darkMode ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
-              {darkMode ? 'Light Mode' : 'Dark Mode'}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        </div>
       </div>
 
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
