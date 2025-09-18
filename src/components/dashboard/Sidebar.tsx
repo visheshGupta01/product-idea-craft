@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import ProfilePopup from './ProfilePopup';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Menu, User, Moon, Sun, Database, Github, Settings, Users, CreditCard, Lightbulb, Home, Link } from 'lucide-react';
 import SitemapSection from './SitemapSection';
@@ -38,6 +39,7 @@ const Sidebar = ({
   const { user, isAuthenticated } = useUser();
   const [darkMode, setDarkMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [isGitHubConnected, setIsGitHubConnected] = useState(false);
   const [isVercelConnected, setIsVercelConnected] = useState(false);
 
@@ -142,9 +144,9 @@ const Sidebar = ({
                 <Lightbulb className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
+              <DropdownMenuItem onClick={() => setProfileOpen(true)}>
                 <User className="h-4 w-4 mr-2" />
-                User Profile
+                Profile Settings
               </DropdownMenuItem>
               {/* <DropdownMenuItem onClick={() => onViewChange?.('team')}>
                 <Users className="h-4 w-4 mr-2" />
@@ -283,9 +285,9 @@ const Sidebar = ({
               <Lightbulb className="h-4 w-4 mr-2" />
               My Projects
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onViewChange?.('user-profile')}>
+            <DropdownMenuItem onClick={() => setProfileOpen(true)}>
               <User className="h-4 w-4 mr-2" />
-              User Profile
+              Profile Settings
             </DropdownMenuItem>
             {/* <DropdownMenuItem onClick={() => onViewChange?.('team')}>
               <Users className="h-4 w-4 mr-2" />
@@ -343,6 +345,8 @@ const Sidebar = ({
           </div>
         </DialogContent>
       </Dialog>
+
+      <ProfilePopup open={profileOpen} onOpenChange={setProfileOpen} />
     </div>
   );
 };
