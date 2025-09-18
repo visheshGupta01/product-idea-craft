@@ -9,9 +9,14 @@ import { AlertTriangle } from "lucide-react";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
+  requireDeveloper?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  children, 
+  requireAdmin = false,
+  requireDeveloper = false 
+}) => {
   const { userIdea, isProcessingIdea, initialResponse, isAuthenticated, sessionId, userRole, isLoading } = useUser();
   const location = useLocation();
 
@@ -34,7 +39,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
     return <Navigate to="/" replace />;
   }
 
-  // For admin routes, check if user has admin role
+  // Check admin requirements
   if (requireAdmin && userRole !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -61,8 +66,35 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
     );
   }
 
+  // Check developer requirements
+  if (requireDeveloper && userRole !== 'developer') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Access Denied
+            </CardTitle>
+            <CardDescription>
+              You need developer access to view this page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <button 
+              onClick={() => window.location.href = '/'} 
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Go to Home
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // For regular dashboard routes, allow direct session routes even without active chat
-  if (!requireAdmin) {
+  if (!requireAdmin && !requireDeveloper) {
     const isSessionPath = location.pathname.startsWith('/c/');
     const isProjectsOrProfilePath = location.pathname === '/projects' || location.pathname === '/profile';
     

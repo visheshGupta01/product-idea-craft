@@ -11,7 +11,7 @@ interface UserContextType {
   isProcessingIdea: boolean;
   isAuthenticated: boolean;
   sessionId: string | null;
-  userRole: 'admin' | 'user' | null;
+  userRole: 'admin' | 'user' | 'developer' | null;
   isLoading: boolean;
   userPlan: {
     planId: number;
@@ -19,7 +19,7 @@ interface UserContextType {
     isActive: boolean;
     expiresAt: string | null;
   } | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: 'admin' | 'user' }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: 'admin' | 'user' | 'developer' }>;
   logout: () => void;
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   verifyEmail: (token: string) => Promise<{ success: boolean; message?: string }>;
