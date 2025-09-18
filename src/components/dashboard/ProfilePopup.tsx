@@ -5,8 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useUser } from '@/context/UserContext';
-import { Camera, User, Shield, CreditCard, MessageCircle, Settings, Eye, EyeOff } from 'lucide-react';
+import { Camera, User, Shield, CreditCard, MessageCircle, Settings, Eye, EyeOff, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 interface ProfilePopupProps {
   open: boolean;
@@ -192,38 +195,145 @@ const ProfilePopup = ({ open, onOpenChange }: ProfilePopupProps) => {
 
       case 'billing':
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Credits and Billing</h3>
-            <p className="text-muted-foreground">Manage your subscription and billing information.</p>
-            <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
-                View Usage
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Billing History
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Payment Methods
-              </Button>
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Credits & Billing</h3>
+              <p className="text-muted-foreground text-sm">Manage your subscription, usage, and billing information</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-8">
+              {/* Left Column */}
+              <div className="space-y-6">
+                {/* Current Usage */}
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-3">Current Usage</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Credits Used</span>
+                        <span className="text-muted-foreground">1240/2000</span>
+                      </div>
+                      <Progress value={62} className="h-2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Method */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Payment Method</h4>
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-5 bg-slate-800 rounded flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">••••</span>
+                      </div>
+                      <span className="font-mono text-sm">•••• •••• •••• 1892</span>
+                    </div>
+                    <Button variant="outline" size="sm">Update</Button>
+                  </div>
+                </div>
+
+                {/* Next Billing */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Next Billing</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>October 1, 2026</span>
+                      <span className="text-muted-foreground">Auto Renew enabled</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-6">
+                {/* Current Plan */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Current Plan</h4>
+                  <div className="p-4 bg-muted/30 rounded-lg border space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium">Pro Plan</div>
+                        <div className="text-sm text-muted-foreground">2,000 credits</div>
+                      </div>
+                      <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                        Active
+                      </Badge>
+                    </div>
+                    <div className="pt-2 border-t">
+                      <div className="text-2xl font-bold">$29.99</div>
+                      <div className="text-sm text-muted-foreground">per month</div>
+                    </div>
+                  </div>
+                  <Button className="w-full" size="lg">
+                    <span className="mr-2">✨</span>
+                    Upgrade Plan
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         );
 
       case 'support':
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Support and Feedback</h3>
-            <p className="text-muted-foreground">Get help and share your feedback with us.</p>
-            <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
-                Contact Support
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Feature Requests
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Documentation
-              </Button>
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Support & Feedback</h3>
+              <p className="text-muted-foreground text-sm">Get help or share your thoughts with our team</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select>
+                    <SelectTrigger className="bg-background">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bug">Bug Report</SelectItem>
+                      <SelectItem value="feature">Feature Request</SelectItem>
+                      <SelectItem value="billing">Billing Issue</SelectItem>
+                      <SelectItem value="general">General Inquiry</SelectItem>
+                      <SelectItem value="technical">Technical Support</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input
+                    id="subject"
+                    placeholder="Brief description of your feedback"
+                    className="bg-background"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="message">Message</Label>
+                <div className="relative">
+                  <Textarea
+                    id="message"
+                    placeholder="Tell us more about your feedback..."
+                    className="bg-background min-h-[120px] resize-none pr-10"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute bottom-2 right-2 h-8 w-8 p-0"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex justify-end pt-4">
+                <Button className="bg-pink-500 hover:bg-pink-600 text-white px-6">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Send Feedback
+                </Button>
+              </div>
             </div>
           </div>
         );
