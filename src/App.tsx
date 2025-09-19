@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import DeveloperDashboard from "./pages/DeveloperDashboard";
 import NotFound from "./pages/NotFound";
 import MyProjects from "./pages/MyProjects";
 import Profile from "./pages/Profile";
@@ -73,6 +74,11 @@ const AppContent = () => {
         <Route path="/admin" element={
           <ProtectedRoute requireAdmin>
             <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/developer/*" element={
+          <ProtectedRoute requireDeveloper>
+            <DeveloperDashboard />
           </ProtectedRoute>
         } />
         <Route path="/testing/*" element={<AuthTestPanel />} />

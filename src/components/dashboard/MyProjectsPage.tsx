@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@/context/UserContext';
 import { 
   Plus, 
   Search, 
@@ -40,6 +41,18 @@ const MyProjectsPage = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user, profile } = useUser();
+
+  // Get user's display name
+  const getUserName = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name} ${profile.last_name}`;
+    }
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    return 'Your';
+  };
 
   useEffect(() => {
     loadProjects();
@@ -131,8 +144,8 @@ const MyProjectsPage = () => {
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold font-poppins text-foreground">
-                John Doe's Projects
+              <h1 className="text-3xl font-bold text-foreground">
+                {getUserName()} Projects
               </h1>
               <p className="text-muted-foreground font-supply mt-5">
                 Turn your ideas into revenue-ready apps & websites

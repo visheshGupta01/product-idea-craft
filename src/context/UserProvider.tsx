@@ -49,14 +49,31 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             };
             setUser(mappedUser);
             
-            // Create profile data from user data
+            // Create profile data from user data with defaults
             setProfile({
               id: userData.id,
               first_name: userData.first_name,
               last_name: userData.last_name,
               email: userData.email,
               user_type: userData.user_type,
-              created_at: userData.created_at
+              created_at: userData.created_at,
+              plan_id: (userData as any).plan_id || 1,
+              price: (userData as any).price || { id: 0, name: "", price: 0, is_default: false },
+              plan_started_at: (userData as any).plan_started_at || null,
+              plan_expires_at: (userData as any).plan_expires_at || null,
+              is_plan_active: (userData as any).is_plan_active || false,
+              balances: (userData as any).balances || 0,
+              country: (userData as any).country || "",
+              city: (userData as any).city || "",
+              github_url: (userData as any).github_url || "",
+              linkedin_url: (userData as any).linkedin_url || "",
+              total_solved_tasks: (userData as any).total_solved_tasks || 0,
+              total_pending_task: (userData as any).total_pending_task || 0,
+              company_name: (userData as any).company_name || "",
+              experience: (userData as any).experience || "",
+              skills: (userData as any).skills || null,
+              bio: (userData as any).bio || "",
+              hourpaid: (userData as any).hourpaid || 0
             });
 
             // Update user plan information if available
@@ -108,14 +125,31 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       };
       setUser(userData);
       
-      // Set profile data from login response
+      // Set profile data from login response with defaults
       setProfile({
         id: result.user.id,
         first_name: result.user.first_name,
         last_name: result.user.last_name,
         email: result.user.email,
         user_type: result.user.user_type,
-        created_at: result.user.created_at
+        created_at: result.user.created_at,
+        plan_id: (result.user as any).plan_id || 1,
+        price: (result.user as any).price || { id: 0, name: "", price: 0, is_default: false },
+        plan_started_at: (result.user as any).plan_started_at || null,
+        plan_expires_at: (result.user as any).plan_expires_at || null,
+        is_plan_active: (result.user as any).is_plan_active || false,
+        balances: (result.user as any).balances || 0,
+        country: (result.user as any).country || "",
+        city: (result.user as any).city || "",
+        github_url: (result.user as any).github_url || "",
+        linkedin_url: (result.user as any).linkedin_url || "",
+        total_solved_tasks: (result.user as any).total_solved_tasks || 0,
+        total_pending_task: (result.user as any).total_pending_task || 0,
+        company_name: (result.user as any).company_name || "",
+        experience: (result.user as any).experience || "",
+        skills: (result.user as any).skills || null,
+        bio: (result.user as any).bio || "",
+        hourpaid: (result.user as any).hourpaid || 0
       });
 
       // Update user plan information if available
