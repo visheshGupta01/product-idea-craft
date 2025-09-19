@@ -60,19 +60,16 @@ const AppContent = () => {
         } />
         <Route path="/projects" element={
           <ProtectedRoute>
-            <Navbar />
             <MyProjects />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
           <ProtectedRoute>
-            <Navbar />
             <Profile />
           </ProtectedRoute>
         } />
         <Route path="/subscription" element={
           <ProtectedRoute>
-            <Navbar />
             <SubscriptionPage />
           </ProtectedRoute>
         } />
