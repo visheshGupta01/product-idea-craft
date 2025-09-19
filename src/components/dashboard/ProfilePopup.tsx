@@ -21,24 +21,28 @@ interface ProfilePopupProps {
   const { user, profile, updateProfile } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
-  // User data from JSON response
-  const userData = {
-    first_name: "Vishesh",
-    last_name: "Gupta",
-    email: "visheshgupta890@gmail.com",
-    plan_id: 1,
-    is_plan_active: false,
-    balances: 1,
-    country: "India",
-    city: "New Delhi"
-  };
+  
+  // Use actual profile data from API
+  const userData = profile;
 
   const [formData, setFormData] = useState({
-    firstName: userData.first_name,
-    lastName: userData.last_name,
-    email: userData.email,
+    firstName: userData?.first_name || '',
+    lastName: userData?.last_name || '',
+    email: userData?.email || '',
     password: '••••••••••'
   });
+
+  // Update form data when userData changes
+  React.useEffect(() => {
+    if (userData) {
+      setFormData({
+        firstName: userData.first_name || '',
+        lastName: userData.last_name || '',
+        email: userData.email || '',
+        password: '••••••••••'
+      });
+    }
+  }, [userData]);
 
   // Update active section when initialSection prop changes
   React.useEffect(() => {
@@ -53,12 +57,14 @@ interface ProfilePopupProps {
 
   const handleCancel = () => {
     // Reset form data
-    setFormData({
-      firstName: userData.first_name,
-      lastName: userData.last_name,
-      email: userData.email,
-      password: '••••••••••'
-    });
+    if (userData) {
+      setFormData({
+        firstName: userData.first_name || '',
+        lastName: userData.last_name || '',
+        email: userData.email || '',
+        password: '••••••••••'
+      });
+    }
     onOpenChange(false);
   };
 
@@ -159,14 +165,14 @@ interface ProfilePopupProps {
               <div className="space-y-2">
                 <Label>Account Plan</Label>
                 <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                  Free Plan
+                  {userData?.plan_id === 1 ? 'Free Plan' : userData?.plan_id === 2 ? 'Pro Plan' : userData?.plan_id === 3 ? 'Enterprise Plan' : 'Free Plan'}
                 </Badge>
               </div>
             </div>
 
             <div className="pt-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{userData.balances} credits remaining.</span>
+                <span className="text-muted-foreground">{userData?.balances || 0} credits remaining.</span>
                 <Button variant="link" className="p-0 h-auto text-blue-500">
                   Upgrade
                 </Button>
@@ -228,7 +234,7 @@ interface ProfilePopupProps {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Credits Remaining</span>
-                        <span className="text-muted-foreground">{userData.balances}/3</span>
+                        <span className="text-muted-foreground">{userData?.balances || 0}/3</span>
                       </div>
                       <Progress value={33.3} className="h-2" />
                     </div>
@@ -369,12 +375,12 @@ interface ProfilePopupProps {
                     VG
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <div className="font-medium">
-                    {userData.first_name} {userData.last_name}
+                  <div>
+                    <div className="font-medium">
+                      {userData?.first_name && userData?.last_name ? `${userData.first_name} ${userData.last_name}` : 'User'}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{userData?.email || ''}</div>
                   </div>
-                  <div className="text-sm text-muted-foreground">{userData.email}</div>
-                </div>
               </div>
             </div>
             

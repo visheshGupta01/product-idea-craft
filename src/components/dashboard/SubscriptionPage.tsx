@@ -22,21 +22,20 @@ const SubscriptionPage = () => {
   const { profile } = useUser();
   const [upgrading, setUpgrading] = useState<string | null>(null);
   
-  // User data from JSON response
-  const userData = {
-    id: "7406cb56-8acd-4354-bbe7-34a67a5034fd",
-    first_name: "Vishesh",
-    last_name: "Gupta",
-    email: "visheshgupta890@gmail.com",
-    plan_id: 1,
-    price: { price: 0 },
-    is_plan_active: false,
-    plan_expires_at: null,
-    balances: 1,
-    country: "India",
-    city: "New Delhi",
-    created_at: "2025-09-13T10:09:39.864+05:30"
-  };
+  // Use actual profile data from API
+  const userData = profile;
+
+  // Show loading state if profile data is not yet loaded
+  if (!userData) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getPlanName = (planId: number) => {
     switch(planId) {
@@ -48,17 +47,17 @@ const SubscriptionPage = () => {
   };
 
   const currentPlan = {
-    name: getPlanName(userData.plan_id),
-    price: userData.price.price ? `$${userData.price.price}` : "$0",
+    name: getPlanName(userData?.plan_id || 1),
+    price: userData?.price?.price ? `$${userData.price.price}` : "$0",
     billing: "monthly",
-    status: userData.is_plan_active ? "active" : "inactive",
-    nextBilling: userData.plan_expires_at ? new Date(userData.plan_expires_at).toLocaleDateString() : "N/A",
-    daysLeft: userData.plan_expires_at ? Math.ceil((new Date(userData.plan_expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
+    status: userData?.is_plan_active ? "active" : "inactive",
+    nextBilling: userData?.plan_expires_at ? new Date(userData.plan_expires_at).toLocaleDateString() : "N/A",
+    daysLeft: userData?.plan_expires_at ? Math.ceil((new Date(userData.plan_expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
   };
 
   const usage = {
     projects: { current: 0, limit: 3 },
-    storage: { current: userData.balances, limit: 1 }, // GB
+    storage: { current: userData?.balances || 0, limit: 1 }, // GB
     teamMembers: { current: 1, limit: 1 },
     deployments: { current: 0, limit: 10 }
   };
@@ -77,7 +76,7 @@ const SubscriptionPage = () => {
         '10 Deployments/month',
         'Community Support'
       ],
-      current: userData.plan_id === 1,
+      current: userData?.plan_id === 1,
       popular: false
     },
     {
@@ -95,7 +94,7 @@ const SubscriptionPage = () => {
         'Custom Domains',
         'Advanced Analytics'
       ],
-      current: userData.plan_id === 2,
+      current: userData?.plan_id === 2,
       popular: true
     },
     {
@@ -115,7 +114,7 @@ const SubscriptionPage = () => {
         'SSO Integration',
         'Custom Integrations'
       ],
-      current: userData.plan_id === 3,
+      current: userData?.plan_id === 3,
       popular: false
     }
   ];
@@ -129,7 +128,7 @@ const SubscriptionPage = () => {
       setUpgrading(plan.name);
       
       await createStripeSession({
-        userUUID: userData.id,
+        userUUID: userData?.id || '',
         price: plan.priceValue,
         plan_name: plan.name
       });
