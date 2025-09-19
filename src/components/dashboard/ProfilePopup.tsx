@@ -123,7 +123,7 @@ interface ProfilePopupProps {
               </div>
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
@@ -143,7 +143,7 @@ interface ProfilePopupProps {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             <div className="pt-4 border-t">
               <div className="space-y-2">
