@@ -1,4 +1,5 @@
 import apiClient from '@/lib/apiClient';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface DashboardData {
   success: boolean;
@@ -45,7 +46,7 @@ export interface DashboardData {
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
   try {
-    const response = await apiClient.get('/api/admin/dashboard');
+    const response = await apiClient.get(API_ENDPOINTS.ADMIN.DASHBOARD);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -70,7 +71,7 @@ export interface UsersData {
 
 export const fetchUsersData = async (): Promise<UsersData> => {
   try {
-    const response = await apiClient.get('/api/admin/users');
+    const response = await apiClient.get(API_ENDPOINTS.ADMIN.USERS);
     console.log(response.data);
     if (response.data.success) {
       return {

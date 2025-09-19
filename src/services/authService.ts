@@ -1,5 +1,6 @@
 import { User } from "@/types";
 import apiClient from "@/lib/apiClient";
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface AuthResponse {
   success: boolean;
@@ -89,7 +90,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post("/api/auth/login", { email, password });
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, { email, password });
       const data: LoginResponse = response.data;
       console.log("Login response:", data);
       console.log("Logined at", new Date().toISOString());
@@ -156,7 +157,7 @@ export class AuthService {
       // })
 
       // 3. Send signup + location to backend
-      const response = await apiClient.post("/api/auth/signup", {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.SIGNUP, {
         first_name,
         last_name,
         email,
@@ -185,7 +186,7 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.get(`/api/auth/verify?token=${token}`);
+      const response = await apiClient.get(`${API_ENDPOINTS.AUTH.VERIFY}?token=${token}`);
       const data: VerificationResponse = response.data;
       console.log("Email verification response:", data);
       return {
@@ -203,7 +204,7 @@ export class AuthService {
 
   async forgotPassword(email: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post("/api/auth/forget-password", {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
         email,
       });
       const data: ForgotPasswordResponse = response.data;
@@ -235,7 +236,7 @@ export class AuthService {
     });
     try {
       const response = await apiClient.post(
-        `/api/auth/reset-password?token=${token}`,
+        `${API_ENDPOINTS.AUTH.RESET_PASSWORD}?token=${token}`,
         {
           token,
           password,
@@ -264,7 +265,7 @@ export class AuthService {
     }
 
     try {
-      const response = await apiClient.post("/api/auth/refresh-token", {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, {
         refreshToken: this.refreshToken,
       });
 
@@ -310,7 +311,7 @@ export class AuthService {
 
     try {
       console.log("Creating session with idea:", idea);
-      const response = await apiClient.post("/api/chat/session/create", { "message":idea });
+      const response = await apiClient.post(API_ENDPOINTS.CHAT.SESSION_CREATE, { "message":idea });
       const data = response.data;
       console.log("Create session response:", data);
 

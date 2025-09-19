@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_ENDPOINTS } from '@/config/api';
 import {
   ChevronRight,
   ChevronDown,
@@ -275,7 +276,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
 
       try {
         const response = await apiClient.get(
-          `/api/project/code?session_id=${sessionId}`
+          `${API_ENDPOINTS.PROJECT.CODE}?session_id=${sessionId}`
         );
         
         if (response.data.files) {

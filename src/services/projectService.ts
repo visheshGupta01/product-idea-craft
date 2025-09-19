@@ -1,4 +1,5 @@
 import apiClient from '@/lib/apiClient';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface ProjectFromAPI {
   session_id: string;
@@ -47,7 +48,7 @@ export interface ProjectDetails {
 
 export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
   try {
-    const response = await apiClient.get('/api/projects');
+    const response = await apiClient.get(API_ENDPOINTS.PROJECT.LIST);
     if (response.data.success) {
       return response.data.projects;
     } else {
@@ -63,7 +64,7 @@ export const fetchProjectDetails = async (sessionId: string): Promise<ProjectDet
   try {
     console.log('Fetching project details for sessionId:', sessionId);
     const response = await apiClient.get(
-      `/api/chat/session/content?session_id=${sessionId}`
+      `${API_ENDPOINTS.CHAT.SESSION_CONTENT}?session_id=${sessionId}`
     );
     console.log('Fetched project details for sessionId:', sessionId, response.data);
     return response.data;

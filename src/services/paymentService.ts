@@ -1,4 +1,5 @@
 import apiClient from '@/lib/apiClient';
+import { API_ENDPOINTS } from '@/config/api';
 import { loadStripe } from '@stripe/stripe-js';
 
 // Initialize Stripe
@@ -29,7 +30,7 @@ export const createStripeSession = async (paymentData: PaymentRequest): Promise<
   try {
     console.log('Creating Stripe session with data:', paymentData);
     const response = await apiClient.post<PaymentResponse>(
-      "/api/payment/create-session",
+      API_ENDPOINTS.PAYMENT.CREATE_SESSION,
       paymentData
     );
     console.log('Stripe session response:', response.data);

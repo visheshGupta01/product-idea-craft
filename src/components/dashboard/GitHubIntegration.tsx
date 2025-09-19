@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buildIntegrationUrl } from '@/config/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -127,7 +128,7 @@ const GitHubIntegration = () => {
     setIsConnecting(true);
     try {
       // Redirect to GitHub OAuth
-      const githubUrl = `http://98.87.215.219:8000/api/github/?sessionid=${sessionId}`;
+      const githubUrl = buildIntegrationUrl('github', sessionId);
       window.location.href = githubUrl;
     } catch (error) {
       console.error('Error connecting to GitHub:', error);

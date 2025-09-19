@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buildIntegrationUrl } from '@/config/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -121,7 +122,7 @@ const VercelIntegration = () => {
     setIsDeploying(true);
     try {
       // Redirect to Vercel OAuth with deployment flow
-      const vercelUrl = `http://98.87.215.219:8000/api/vercel/auth/?sessionid=${sessionId}`;
+      const vercelUrl = buildIntegrationUrl('vercel', sessionId);
       window.location.href = vercelUrl;
     } catch (error) {
       console.error("Error deploying to Vercel:", error);

@@ -1,4 +1,6 @@
 import { authService } from './authService';
+import { ProfileData } from '@/services/profileService';
+import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
 
 export interface DeveloperProfile {
   id: string;
@@ -81,7 +83,7 @@ class DeveloperService {
   }
 
   async getDeveloperProfile(): Promise<DeveloperProfileResponse> {
-    const response = await fetch(`${this.baseURL}/developer/profile`, {
+    const response = await fetch(buildApiUrl(API_ENDPOINTS.DEVELOPER.PROFILE), {
       method: 'GET',
       headers: this.getAuthHeaders(),
     });
@@ -94,7 +96,7 @@ class DeveloperService {
   }
 
   async updateDeveloperProfile(data: UpdateProfileData): Promise<{ status: 'success'; data: DeveloperProfile }> {
-    const response = await fetch(`${this.baseURL}/developer/profile`, {
+    const response = await fetch(buildApiUrl(API_ENDPOINTS.DEVELOPER.PROFILE), {
       method: 'PATCH',
       headers: this.getAuthHeaders(),
       body: JSON.stringify(data),
@@ -108,7 +110,7 @@ class DeveloperService {
   }
 
   async getDeveloperTasks(page: number = 1): Promise<TasksResponse> {
-    const response = await fetch(`${this.baseURL}/developer/tasks?page=${page}`, {
+    const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DEVELOPER.TASKS}?page=${page}`), {
       method: 'GET',
       headers: this.getAuthHeaders(),
     });
@@ -121,7 +123,7 @@ class DeveloperService {
   }
 
   async updateTaskStatus(taskId: number, status: 'todo' | 'in_progress' | 'done'): Promise<{ status: 'success'; data: Task }> {
-    const response = await fetch(`${this.baseURL}/task/status?task_id=${taskId}`, {
+    const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DEVELOPER.TASK_STATUS}?task_id=${taskId}`), {
       method: 'PATCH',
       headers: this.getAuthHeaders(),
       body: JSON.stringify({ status }),
@@ -135,7 +137,7 @@ class DeveloperService {
   }
 
   async getAllDevelopers(page: number = 1): Promise<{ status: 'success'; data: DeveloperProfile[] }> {
-    const response = await fetch(`${this.baseURL}/developers?page=${page}`, {
+    const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DEVELOPER.LIST}?page=${page}`), {
       method: 'GET',
       headers: this.getAuthHeaders(),
     });

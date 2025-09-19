@@ -1,4 +1,5 @@
 import apiClient from '@/lib/apiClient';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface ProfileData {
   id: string;
@@ -33,7 +34,7 @@ export interface ProfileData {
 
 export const fetchProfile = async (): Promise<ProfileData> => {
   try {
-    const response = await apiClient.get('/api/profile');
+    const response = await apiClient.get(API_ENDPOINTS.PROFILE.GET);
     return response.data;
   } catch (error) {
     console.error('Error fetching profile data:', error);
@@ -43,7 +44,7 @@ export const fetchProfile = async (): Promise<ProfileData> => {
 
 export const updateProfile = async (profileData: Partial<ProfileData>): Promise<{ success: boolean; message?: string }> => {
   try {
-    const response = await apiClient.put('/profile', profileData);
+    const response = await apiClient.put(API_ENDPOINTS.PROFILE.UPDATE, profileData);
     return { success: true, message: response.data.message };
   } catch (error) {
     console.error('Error updating profile:', error);
