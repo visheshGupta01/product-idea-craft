@@ -6,12 +6,14 @@ import { useUser } from '@/context/UserContext';
 import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
 import { User, FolderOpen, Settings, LogOut, CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
 
 const Navbar: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { user, isAuthenticated, logout } = useUser();
+  const navigate = useNavigate();
   return (
     <nav className="bg-[#1B2123] shadow-[0_2px_24px_rgba(0,0,0,0.5)] fixed top-0 left-0 w-full z-50">
       <div className="max-w-[1732px] mx-auto h-[60px] px-4 md:px-6 flex items-center justify-between">
@@ -58,19 +60,19 @@ const Navbar: React.FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem
-                onClick={() => (window.location.href = "/projects")}
+                onClick={() => navigate("/projects")}
               >
                 <FolderOpen className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => (window.location.href = "/profile")}
+                onClick={() => navigate("/profile")}
               >
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => (window.location.href = "/subscription")}
+                onClick={() => navigate("/subscription")}
               >
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscription
