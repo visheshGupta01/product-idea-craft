@@ -21,10 +21,22 @@ interface ProfilePopupProps {
   const { user, profile, updateProfile } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
+  // User data from JSON response
+  const userData = {
+    first_name: "Vishesh",
+    last_name: "Gupta",
+    email: "visheshgupta890@gmail.com",
+    plan_id: 1,
+    is_plan_active: false,
+    balances: 1,
+    country: "India",
+    city: "New Delhi"
+  };
+
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
+    firstName: userData.first_name,
+    lastName: userData.last_name,
+    email: userData.email,
     password: '••••••••••'
   });
 
@@ -42,9 +54,9 @@ interface ProfilePopupProps {
   const handleCancel = () => {
     // Reset form data
     setFormData({
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      email: user?.email || '',
+      firstName: userData.first_name,
+      lastName: userData.last_name,
+      email: userData.email,
       password: '••••••••••'
     });
     onOpenChange(false);
@@ -69,9 +81,7 @@ interface ProfilePopupProps {
               <div className="relative">
                 <Avatar className="h-24 w-24">
                   <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                    {user?.firstName && user?.lastName 
-                      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                      : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                    VG
                   </AvatarFallback>
                 </Avatar>
                 <Button 
@@ -149,14 +159,14 @@ interface ProfilePopupProps {
               <div className="space-y-2">
                 <Label>Account Plan</Label>
                 <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                  Pro Plan
+                  Free Plan
                 </Badge>
               </div>
             </div>
 
             <div className="pt-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">150k daily tokens remaining.</span>
+                <span className="text-muted-foreground">{userData.balances} credits remaining.</span>
                 <Button variant="link" className="p-0 h-auto text-blue-500">
                   Upgrade
                 </Button>
@@ -217,10 +227,10 @@ interface ProfilePopupProps {
                     <h4 className="font-medium mb-3">Current Usage</h4>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Credits Used</span>
-                        <span className="text-muted-foreground">1240/2000</span>
+                        <span>Credits Remaining</span>
+                        <span className="text-muted-foreground">{userData.balances}/3</span>
                       </div>
-                      <Progress value={62} className="h-2" />
+                      <Progress value={33.3} className="h-2" />
                     </div>
                   </div>
                 </div>
@@ -230,12 +240,9 @@ interface ProfilePopupProps {
                   <h4 className="font-medium">Payment Method</h4>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-5 bg-slate-800 rounded flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">••••</span>
-                      </div>
-                      <span className="font-mono text-sm">•••• •••• •••• 1892</span>
+                      <span className="text-sm text-muted-foreground">No payment method added</span>
                     </div>
-                    <Button variant="outline" size="sm">Update</Button>
+                    <Button variant="outline" size="sm">Add Card</Button>
                   </div>
                 </div>
 
@@ -244,8 +251,7 @@ interface ProfilePopupProps {
                   <h4 className="font-medium">Next Billing</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>October 1, 2026</span>
-                      <span className="text-muted-foreground">Auto Renew enabled</span>
+                      <span className="text-muted-foreground">No active subscription</span>
                     </div>
                   </div>
                 </div>
@@ -259,16 +265,16 @@ interface ProfilePopupProps {
                   <div className="p-4 bg-muted/30 rounded-lg border space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-medium">Pro Plan</div>
-                        <div className="text-sm text-muted-foreground">2,000 credits</div>
+                        <div className="font-medium">Free Plan</div>
+                        <div className="text-sm text-muted-foreground">3 projects limit</div>
                       </div>
-                      <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-                        Active
+                      <Badge variant="secondary" className="bg-red-100 text-red-800 border-red-200">
+                        Inactive
                       </Badge>
                     </div>
                     <div className="pt-2 border-t">
-                      <div className="text-2xl font-bold">$29.99</div>
-                      <div className="text-sm text-muted-foreground">per month</div>
+                      <div className="text-2xl font-bold">$0</div>
+                      <div className="text-sm text-muted-foreground">forever</div>
                     </div>
                   </div>
                   <Button className="w-full" size="lg">
@@ -360,18 +366,14 @@ interface ProfilePopupProps {
               <div className="flex items-center space-x-3 p-2">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary/10 text-primary">
-                    {user?.firstName && user?.lastName 
-                      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                      : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                    VG
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <div className="font-medium">
-                    {user?.firstName && user?.lastName 
-                      ? `${user.firstName} ${user.lastName}` 
-                      : user?.firstName || 'User'}
+                    {userData.first_name} {userData.last_name}
                   </div>
-                  <div className="text-sm text-muted-foreground">{user?.email}</div>
+                  <div className="text-sm text-muted-foreground">{userData.email}</div>
                 </div>
               </div>
             </div>
