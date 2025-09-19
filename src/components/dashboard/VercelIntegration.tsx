@@ -36,14 +36,14 @@ const VercelIntegration = () => {
         try {
           const session = JSON.parse(savedSession);
           const githubUrl = session.githubUrl;
-          const projectUrl = session.projectUrl;
+          const vercelUrl = session.vercelUrl; // Use separate vercelUrl
           setHasGitHubRepo(!!githubUrl);
           
           // Check if we have a Vercel deployment URL
-          if (projectUrl) {
+          if (vercelUrl) {
             const deploymentInfo: DeploymentInfo = {
-              url: projectUrl,
-              deployedAt: new Date().toISOString(),
+              url: vercelUrl,
+              deployedAt: session.vercelDeployedAt || new Date().toISOString(),
               status: 'deployed'
             };
             setDeployment(deploymentInfo);
@@ -89,13 +89,14 @@ const VercelIntegration = () => {
     setDeployment(deploymentInfo);
     setIsDeploying(false);
     
-    // Store in chat session
+    // Store in chat session with separate vercelUrl
     if (sessionId) {
       const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
       if (savedSession) {
         try {
           const session = JSON.parse(savedSession);
-          session.projectUrl = deployUrl;
+          session.vercelUrl = deployUrl; // Store as separate vercelUrl
+          session.vercelDeployedAt = new Date().toISOString();
           sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
         } catch (error) {
           console.error("Error updating chat session:", error);

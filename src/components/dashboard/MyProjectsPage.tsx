@@ -81,11 +81,12 @@ const MyProjectsPage = () => {
   };
 
   const handleProjectClick = (project: Project) => {
-    // Navigate with state to pass deploy_url for automatic preview opening
+    // Navigate with state to pass correct URLs
     navigate(`/c/${project.session_id}`, { 
       state: { 
-        deployUrl: project.project_url,
-        shouldOpenPreview: !!project.deploy_url 
+        previewUrl: project.project_url, // Use project_url for preview
+        deployUrl: project.deploy_url,   // Use deploy_url for Vercel deployment
+        shouldOpenPreview: !!project.project_url 
       } 
     });
   };
@@ -282,17 +283,32 @@ const MyProjectsPage = () => {
                       {project.title || "Taskflow Pro"}
                     </h3>
 
-                    {project.project_url && (
-                      <a
-                        href={project.project_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-400  hover:text-blue-300 text-sm truncate block mb-3"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {project.project_url}
-                      </a>
-                    )}
+                    <div className="space-y-2">
+                      {project.project_url && (
+                        <a
+                          href={project.project_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-300 text-sm truncate block flex items-center"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Globe className="h-3 w-3 mr-1" />
+                          Preview
+                        </a>
+                      )}
+                      {project.deploy_url && (
+                        <a
+                          href={project.deploy_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-400 hover:text-green-300 text-sm truncate block flex items-center"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          Live Site
+                        </a>
+                      )}
+                    </div>
                     {/* 
                     <div className="border-t border-border pt-3">
                       <p className="text-xs text-muted-foreground">
