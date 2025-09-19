@@ -12,6 +12,7 @@ import MyProjects from "./pages/MyProjects";
 import Profile from "./pages/Profile";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
+import SubscriptionPage from "./components/dashboard/SubscriptionPage";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -45,7 +46,7 @@ const AppContent = () => {
   }, [searchParams]);
 
   // Show navbar only on specific routes
-  const showNavbar = location.pathname === '/projects' || location.pathname === '/profile';
+  const showNavbar = location.pathname === '/projects' || location.pathname === '/profile' || location.pathname === '/subscription';
 
   return (
     <>
@@ -67,6 +68,12 @@ const AppContent = () => {
           <ProtectedRoute>
             <Navbar />
             <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/subscription" element={
+          <ProtectedRoute>
+            <Navbar />
+            <SubscriptionPage />
           </ProtectedRoute>
         } />
         <Route path="/payment-success" element={<PaymentSuccess />} />

@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from '../ui/avatar';
 import { useUser } from '@/context/UserContext';
 import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
-import { User, FolderOpen, Settings, LogOut } from 'lucide-react';
+import { User, FolderOpen, Settings, LogOut, CreditCard } from 'lucide-react';
 import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
 
 const Navbar: React.FC = () => {
@@ -68,6 +68,12 @@ const Navbar: React.FC = () => {
               >
                 <User className="h-4 w-4 mr-2" />
                 Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => (window.location.href = "/subscription")}
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Subscription
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Settings className="h-4 w-4 mr-2" />
