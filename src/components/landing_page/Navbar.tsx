@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { user, isAuthenticated, logout } = useUser();
   return (
-    <nav className="bg-[#1B2123] shadow-[0_8px_24px_rgba(0,0,0,0.5)] fixed top-0 left-0 w-full z-50">
+    <nav className="bg-[#1B2123] shadow-[0_2px_24px_rgba(0,0,0,0.5)] fixed top-0 left-0 w-full z-50">
       <div className="max-w-[1732px] mx-auto h-[60px] px-4 md:px-6 flex items-center justify-between">
         {/* Logo */}
         <div>

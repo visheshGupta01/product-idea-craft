@@ -141,19 +141,19 @@ export class AuthService {
       console.log("Last name:", last_name);
 
       // 1. Get user IP/location info
-      const ipRes = await fetch("http://ip-api.com/json/");
-      const ipData = await ipRes.json();
-      console.log("IP Data:", ipData);
-      console.log({
-        first_name,
-        last_name,
-        email,
-        password,
-        country: ipData.country,
-        city: ipData.city,
-        lat: ipData.lat,
-        lon: ipData.lon,
-      })
+      // const ipRes = await fetch("http://ip-api.com/json/");
+      // const ipData = await ipRes.json();
+      // console.log("IP Data:", ipData);
+      // console.log({
+      //   first_name,
+      //   last_name,
+      //   email,
+      //   password,
+      //   country: ipData.country,
+      //   city: ipData.city,
+      //   lat: ipData.lat,
+      //   lon: ipData.lon,
+      // })
 
       // 3. Send signup + location to backend
       const response = await apiClient.post("/api/auth/signup", {
@@ -161,10 +161,10 @@ export class AuthService {
         last_name,
         email,
         password,
-        country: ipData.country,
-        city: ipData.city,
-        lat: ipData.lat,
-        lon: ipData.lon,
+        // country: ipData.country,
+        // city: ipData.city,
+        // lat: ipData.lat,
+        // lon: ipData.lon,
       });
 
       const data: SignupResponse = response.data;

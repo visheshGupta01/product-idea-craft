@@ -69,7 +69,7 @@ const MyProjectsPage = () => {
 
   const handleProjectClick = (project: Project) => {
     // Navigate with state to pass deploy_url for automatic preview opening
-    navigate(`/chat?${project.session_id}`, { 
+    navigate(`/c/${project.session_id}`, { 
       state: { 
         deployUrl: project.project_url,
         shouldOpenPreview: !!project.deploy_url 
@@ -125,23 +125,23 @@ const MyProjectsPage = () => {
   });
 
   return (
-    <div className="h-full bg-background">
+    <div className="h-full bg-[#1B2123]">
       <div className="h-full overflow-auto">
         <div className="p-6 space-y-6">
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">
+              <h1 className="text-3xl font-bold font-poppins text-foreground">
                 John Doe's Projects
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground font-supply mt-5">
                 Turn your ideas into revenue-ready apps & websites
               </p>
             </div>
             <a href="/">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Plus className="h-4 w-4 mr-2" />
-                New Project
+                <p className=" font-poppins"> New Project</p>
               </Button>
             </a>
           </div>
@@ -154,51 +154,71 @@ const MyProjectsPage = () => {
                 placeholder="Search Projects"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-card border-border"
+                className="pl-10 bg-[#1B2123] border-border border-white border font-poppins"
               />
             </div>
-            <div className="flex gap-2 ml-auto">
+            {/* <div className="flex gap-2 ml-auto">
               <Button
-                variant={activeFilter === 'all' ? 'default' : 'outline'}
+                variant={activeFilter === "all" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setActiveFilter('all')}
-                className={activeFilter === 'all' ? 'bg-primary text-primary-foreground' : ''}
+                onClick={() => setActiveFilter("all")}
+                className={
+                  activeFilter === "all"
+                    ? "bg-primary text-primary-foreground"
+                    : ""
+                }
               >
                 All
               </Button>
               <Button
-                variant={activeFilter === 'active' ? 'default' : 'outline'}
+                variant={activeFilter === "active" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setActiveFilter('active')}
-                className={activeFilter === 'active' ? 'bg-primary text-primary-foreground' : ''}
+                onClick={() => setActiveFilter("active")}
+                className={
+                  activeFilter === "active"
+                    ? "bg-primary text-primary-foreground"
+                    : ""
+                }
               >
                 Active
               </Button>
               <Button
-                variant={activeFilter === 'completed' ? 'default' : 'outline'}
+                variant={activeFilter === "completed" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setActiveFilter('completed')}
-                className={activeFilter === 'completed' ? 'bg-primary text-primary-foreground' : ''}
+                onClick={() => setActiveFilter("completed")}
+                className={
+                  activeFilter === "completed"
+                    ? "bg-primary text-primary-foreground"
+                    : ""
+                }
               >
                 Done
               </Button>
               <Button
-                variant={activeFilter === 'paused' ? 'default' : 'outline'}
+                variant={activeFilter === "paused" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setActiveFilter('paused')}
-                className={activeFilter === 'paused' ? 'bg-primary text-primary-foreground' : ''}
+                onClick={() => setActiveFilter("paused")}
+                className={
+                  activeFilter === "paused"
+                    ? "bg-primary text-primary-foreground"
+                    : ""
+                }
               >
                 Paused
               </Button>
               <Button
-                variant={activeFilter === 'draft' ? 'default' : 'outline'}
+                variant={activeFilter === "draft" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setActiveFilter('draft')}
-                className={activeFilter === 'draft' ? 'bg-primary text-primary-foreground' : ''}
+                onClick={() => setActiveFilter("draft")}
+                className={
+                  activeFilter === "draft"
+                    ? "bg-primary text-primary-foreground"
+                    : ""
+                }
               >
                 Draft
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* Projects Grid */}
@@ -223,41 +243,49 @@ const MyProjectsPage = () => {
               {filteredProjects.map((project) => (
                 <Card
                   key={project.session_id}
-                  className="hover:shadow-lg transition-all duration-200 cursor-pointer group border-border bg-card overflow-hidden"
+                  className="hover:shadow-lg bg-black transition-all duration-200 cursor-pointer group border-border overflow-hidden"
                   onClick={() => handleProjectClick(project)}
                 >
                   <div className="relative">
-                    <div className="aspect-video w-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-t-lg overflow-hidden flex items-center justify-center relative">
-                      {/* Design elements similar to the image */}
-                      <div className="absolute top-4 left-4 w-8 h-1 bg-gray-700 rounded transform rotate-12"></div>
-                      <div className="absolute top-6 left-6 w-12 h-8 bg-yellow-400 rounded-sm shadow-md flex items-center justify-center">
-                        <span className="text-xs font-mono text-gray-800">SH</span>
-                      </div>
+                    <div className="aspect-video w-full rounded-t-lg overflow-hidden flex items-center justify-center bg-gray-900">
+                      {project.session_id ? (
+                        <img
+                          src={`https://www.google.com/s2/favicons?sz=64&domain_url=${project.session_id}`}
+                          alt={project.title || "Project Thumbnail"}
+                          className="w-full h-full object-cover rounded-xl"
+                        />
+                      ) : (
+                        <img
+                          src="/default-thumbnail.png" // fallback image in your /public folder
+                          alt="Default Thumbnail"
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                     </div>
                   </div>
 
-                  <div className="p-4 bg-card">
-                    <h3 className="text-lg font-semibold text-foreground mb-2 truncate">
+                  <div className="p-4 bg-black">
+                    <h3 className="text-xl font-semibold text-foreground mb-2 truncate">
                       {project.title || "Taskflow Pro"}
                     </h3>
-                    
+
                     {project.project_url && (
                       <a
                         href={project.project_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300 text-sm truncate block mb-3"
+                        className="text-blue-400  hover:text-blue-300 text-sm truncate block mb-3"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {project.project_url}
                       </a>
                     )}
-                    
+                    {/* 
                     <div className="border-t border-border pt-3">
                       <p className="text-xs text-muted-foreground">
                         Last modified 2 hours ago
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </Card>
               ))}
@@ -266,7 +294,7 @@ const MyProjectsPage = () => {
 
           {filteredProjects.length === 0 && (
             <div className="text-center py-12">
-              <Code className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <img src='no-project.png' className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">
                 No projects found
               </h3>

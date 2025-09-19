@@ -2,7 +2,7 @@ import React from "react";
 import { FaFacebookF, FaTwitter, FaYoutube } from "react-icons/fa";
 import LogoIcon from "../../assets/ImagineboIcon.svg";
 
-const socialIcons = [FaFacebookF, FaTwitter, FaYoutube];
+const socialIcons = [FaTwitter, FaYoutube];
 
 const Footer: React.FC = () => {
   return (

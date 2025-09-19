@@ -63,6 +63,7 @@ interface ProfilePopupProps {
       case 'basic':
         return (
           <div className="space-y-6">
+              <h3 className="text-lg font-semibold">Basic Info</h3>
             {/* Profile Photo Section */}
             <div className="flex flex-col items-center space-y-4">
               <div className="relative">
@@ -393,13 +394,13 @@ interface ProfilePopupProps {
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col">
-            <DialogHeader className="p-6 pb-4">
+            {/* <DialogHeader className="p-6 pb-4">
               <DialogTitle>
                 {menuItems.find(item => item.id === activeSection)?.label || 'Profile Settings'}
               </DialogTitle>
-            </DialogHeader>
+            </DialogHeader> */}
 
-            <div className="flex-1 px-6 pb-4 overflow-y-auto">
+            <div className="flex-1 mt-5 px-6 pb-4 overflow-y-auto">
               {renderContent()}
             </div>
 

@@ -69,16 +69,20 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
   };
 
   return (
-    <div className="h-full bg-background">
+    <div className="h-full bg-[#1B2123]">
       <div className="h-full overflow-auto">
         <div className="p-6 space-y-6">
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">User Profile</h1>
-              <p className="text-muted-foreground">Manage your account settings and preferences</p>
+              <h1 className="text-3xl font-bold text-foreground">
+                User Profile
+              </h1>
+              <p className="text-muted-foreground">
+                Manage your account settings and preferences
+              </p>
             </div>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               {isEditing ? (
                 <>
                   <Button variant="outline" onClick={handleCancel}>
@@ -98,7 +102,7 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                   </Button>
                 </>
               )}
-            </div>
+            </div> */}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -111,7 +115,8 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                       <Avatar className="h-24 w-24">
                         <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face" />
                         <AvatarFallback className="text-xl">
-                          {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+                          {profile?.first_name?.[0]}
+                          {profile?.last_name?.[0]}
                         </AvatarFallback>
                       </Avatar>
                       {isEditing && (
@@ -124,14 +129,14 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                         </Button>
                       )}
                     </div>
-                    
+
                     <div className="text-center space-y-2">
                       <h3 className="text-xl font-semibold">
                         {profile?.first_name} {profile?.last_name}
                       </h3>
                       <p className="text-muted-foreground">{profile?.email}</p>
                       <Badge variant="default" className="mt-2">
-                        {profile?.user_type || 'User'}
+                        {profile?.user_type || "User"}
                       </Badge>
                     </div>
                   </div>
@@ -146,12 +151,18 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">User Type</span>
-                    <span className="font-semibold capitalize">{profile?.user_type || 'user'}</span>
+                    <span className="font-semibold capitalize">
+                      {profile?.user_type || "user"}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Account Created</span>
+                    <span className="text-muted-foreground">
+                      Account Created
+                    </span>
                     <span className="font-semibold">
-                      {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
+                      {profile?.created_at
+                        ? new Date(profile.created_at).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
                 </CardContent>
@@ -161,11 +172,11 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <Tabs defaultValue="general" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-4 bg-[#1B2123]">
                   <TabsTrigger value="general">General</TabsTrigger>
-                  <TabsTrigger value="github">GitHub</TabsTrigger>
-                  <TabsTrigger value="vercel">Vercel</TabsTrigger>
-                  <TabsTrigger value="security">Security</TabsTrigger>
+                  {/* <TabsTrigger value="github">GitHub</TabsTrigger>
+                  <TabsTrigger value="vercel">Vercel</TabsTrigger> */}
+                  {/* <TabsTrigger value="security">Security</TabsTrigger> */}
                 </TabsList>
 
                 <TabsContent value="general" className="space-y-6">
@@ -181,7 +192,12 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                             id="first_name"
                             value={profileData.first_name}
                             disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, first_name: e.target.value})}
+                            onChange={(e) =>
+                              setProfileData({
+                                ...profileData,
+                                first_name: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2">
@@ -190,7 +206,12 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                             id="last_name"
                             value={profileData.last_name}
                             disabled={!isEditing}
-                            onChange={(e) => setProfileData({...profileData, last_name: e.target.value})}
+                            onChange={(e) =>
+                              setProfileData({
+                                ...profileData,
+                                last_name: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2 md:col-span-2">
@@ -200,7 +221,12 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                             type="email"
                             value={profileData.email}
                             disabled={true}
-                            onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                            onChange={(e) =>
+                              setProfileData({
+                                ...profileData,
+                                email: e.target.value,
+                              })
+                            }
                           />
                         </div>
                       </div>
@@ -227,11 +253,13 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                           <h4 className="font-medium mb-2">Password</h4>
                           <Button variant="outline">Change Password</Button>
                         </div>
-                        
+
                         <Separator />
-                        
+
                         <div>
-                          <h4 className="font-medium mb-2">Two-Factor Authentication</h4>
+                          <h4 className="font-medium mb-2">
+                            Two-Factor Authentication
+                          </h4>
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-muted-foreground">
@@ -241,12 +269,14 @@ const UserProfilePage = ({ onLogout }: UserProfilePageProps) => {
                             <Switch />
                           </div>
                         </div>
-                        
+
                         <Separator />
-                        
+
                         <div>
                           <h4 className="font-medium mb-2">Sessions</h4>
-                          <Button variant="outline">View Active Sessions</Button>
+                          <Button variant="outline">
+                            View Active Sessions
+                          </Button>
                         </div>
                       </div>
                     </CardContent>

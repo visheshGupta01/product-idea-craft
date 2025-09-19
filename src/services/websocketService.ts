@@ -13,7 +13,7 @@ export class WebSocketService {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        const wsUrl = `wss://98.87.215.219:8000/ws?s_id=${this.sessionId}`;
+        const wsUrl = `ws://localhost:8000/api/chat/ws?session_id=${this.sessionId}`;
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
