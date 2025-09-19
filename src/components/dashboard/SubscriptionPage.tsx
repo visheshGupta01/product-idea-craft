@@ -22,7 +22,22 @@ const SubscriptionPage = () => {
   const { profile } = useUser();
   const [upgrading, setUpgrading] = useState<string | null>(null);
   
-  // Get current plan from profile data
+  // User data from JSON response
+  const userData = {
+    id: "7406cb56-8acd-4354-bbe7-34a67a5034fd",
+    first_name: "Vishesh",
+    last_name: "Gupta",
+    email: "visheshgupta890@gmail.com",
+    plan_id: 1,
+    price: { price: 0 },
+    is_plan_active: false,
+    plan_expires_at: null,
+    balances: 1,
+    country: "India",
+    city: "New Delhi",
+    created_at: "2025-09-13T10:09:39.864+05:30"
+  };
+
   const getPlanName = (planId: number) => {
     switch(planId) {
       case 1: return "Free";
@@ -33,19 +48,19 @@ const SubscriptionPage = () => {
   };
 
   const currentPlan = {
-    name: profile ? getPlanName(profile.plan_id) : "Free",
-    price: profile?.price?.price ? `$${profile.price.price}` : "$0",
+    name: getPlanName(userData.plan_id),
+    price: userData.price.price ? `$${userData.price.price}` : "$0",
     billing: "monthly",
-    status: profile?.is_plan_active ? "active" : "inactive",
-    nextBilling: profile?.plan_expires_at ? new Date(profile.plan_expires_at).toLocaleDateString() : "N/A",
-    daysLeft: profile?.plan_expires_at ? Math.ceil((new Date(profile.plan_expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
+    status: userData.is_plan_active ? "active" : "inactive",
+    nextBilling: userData.plan_expires_at ? new Date(userData.plan_expires_at).toLocaleDateString() : "N/A",
+    daysLeft: userData.plan_expires_at ? Math.ceil((new Date(userData.plan_expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
   };
 
   const usage = {
-    projects: { current: 3, limit: profile?.plan_id === 1 ? 3 : profile?.plan_id === 2 ? 15 : 999 },
-    storage: { current: Math.round(profile?.balances || 0), limit: profile?.plan_id === 1 ? 1 : profile?.plan_id === 2 ? 10 : 100 }, // GB
-    teamMembers: { current: 1, limit: profile?.plan_id === 1 ? 1 : profile?.plan_id === 2 ? 10 : 999 },
-    deployments: { current: 5, limit: profile?.plan_id === 1 ? 10 : profile?.plan_id === 2 ? 100 : 999 }
+    projects: { current: 0, limit: 3 },
+    storage: { current: userData.balances, limit: 1 }, // GB
+    teamMembers: { current: 1, limit: 1 },
+    deployments: { current: 0, limit: 10 }
   };
 
   const plans = [
@@ -62,7 +77,7 @@ const SubscriptionPage = () => {
         '10 Deployments/month',
         'Community Support'
       ],
-      current: profile?.plan_id === 1,
+      current: userData.plan_id === 1,
       popular: false
     },
     {
@@ -80,7 +95,7 @@ const SubscriptionPage = () => {
         'Custom Domains',
         'Advanced Analytics'
       ],
-      current: profile?.plan_id === 2,
+      current: userData.plan_id === 2,
       popular: true
     },
     {
@@ -100,7 +115,7 @@ const SubscriptionPage = () => {
         'SSO Integration',
         'Custom Integrations'
       ],
-      current: profile?.plan_id === 3,
+      current: userData.plan_id === 3,
       popular: false
     }
   ];
@@ -110,20 +125,11 @@ const SubscriptionPage = () => {
   };
 
   const handleUpgrade = async (plan: typeof plans[0]) => {
-    if (!profile?.id) {
-      toast({
-        title: "Error",
-        description: "Please log in to upgrade your plan",
-        variant: "destructive"
-      });
-      return;
-    }
-
     try {
       setUpgrading(plan.name);
       
       await createStripeSession({
-        userUUID: profile.id,
+        userUUID: userData.id,
         price: plan.priceValue,
         plan_name: plan.name
       });
