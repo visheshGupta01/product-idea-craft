@@ -98,8 +98,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     const isSessionPath = location.pathname.startsWith('/c/');
     const isProjectsOrProfilePath = location.pathname === '/projects' || location.pathname === '/profile';
     
-    // Allow projects and profile pages without chat session requirement
-    if (!isSessionPath && !isProjectsOrProfilePath) {
+    // Allow projects, profile, and subscription pages without chat session requirement
+    if (!isSessionPath && !isProjectsOrProfilePath && location.pathname !== '/subscription') {
       const hasActiveChat = userIdea || isProcessingIdea || initialResponse || sessionId;
       const hasPersistedChat = authService.getUserIdea() || authService.getSessionId();
       
