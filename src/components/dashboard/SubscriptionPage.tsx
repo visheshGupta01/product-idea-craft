@@ -19,22 +19,32 @@ import {
 } from 'lucide-react';
 
 const SubscriptionPage = () => {
-  const { userPlan } = useUser();
-  // Get current plan from user context
+  const { profile } = useUser();
+  
+  // Get current plan from profile data
+  const getPlanName = (planId: number) => {
+    switch(planId) {
+      case 1: return "Free";
+      case 2: return "Pro"; 
+      case 3: return "Enterprise";
+      default: return "Free";
+    }
+  };
+
   const currentPlan = {
-    name: userPlan?.planName || "Free",
-    price: userPlan?.planId === 2 ? "$19" : userPlan?.planId === 3 ? "$49" : "$0",
+    name: profile ? getPlanName(profile.plan_id) : "Free",
+    price: profile?.price?.price ? `$${profile.price.price}` : "$0",
     billing: "monthly",
-    status: userPlan?.isActive ? "active" : "inactive",
-    nextBilling: userPlan?.expiresAt ? new Date(userPlan.expiresAt).toLocaleDateString() : "N/A",
-    daysLeft: userPlan?.expiresAt ? Math.ceil((new Date(userPlan.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
+    status: profile?.is_plan_active ? "active" : "inactive",
+    nextBilling: profile?.plan_expires_at ? new Date(profile.plan_expires_at).toLocaleDateString() : "N/A",
+    daysLeft: profile?.plan_expires_at ? Math.ceil((new Date(profile.plan_expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
   };
 
   const usage = {
-    projects: { current: 8, limit: 15 },
-    storage: { current: 2.4, limit: 10 }, // GB
-    teamMembers: { current: 3, limit: 10 },
-    deployments: { current: 45, limit: 100 }
+    projects: { current: 3, limit: profile?.plan_id === 1 ? 3 : profile?.plan_id === 2 ? 15 : 999 },
+    storage: { current: Math.round(profile?.balances || 0), limit: profile?.plan_id === 1 ? 1 : profile?.plan_id === 2 ? 10 : 100 }, // GB
+    teamMembers: { current: 1, limit: profile?.plan_id === 1 ? 1 : profile?.plan_id === 2 ? 10 : 999 },
+    deployments: { current: 5, limit: profile?.plan_id === 1 ? 10 : profile?.plan_id === 2 ? 100 : 999 }
   };
 
   const plans = [
@@ -49,12 +59,12 @@ const SubscriptionPage = () => {
         '10 Deployments/month',
         'Community Support'
       ],
-      current: false,
+      current: profile?.plan_id === 1,
       popular: false
     },
     {
       name: 'Pro',
-      price: '$29',
+      price: '$19',
       billing: 'per month',
       features: [
         '15 Projects',
@@ -65,12 +75,12 @@ const SubscriptionPage = () => {
         'Custom Domains',
         'Advanced Analytics'
       ],
-      current: true,
+      current: profile?.plan_id === 2,
       popular: true
     },
     {
       name: 'Enterprise',
-      price: '$99',
+      price: '$49',
       billing: 'per month',
       features: [
         'Unlimited Projects',
@@ -83,7 +93,7 @@ const SubscriptionPage = () => {
         'SSO Integration',
         'Custom Integrations'
       ],
-      current: false,
+      current: profile?.plan_id === 3,
       popular: false
     }
   ];
@@ -128,9 +138,9 @@ const SubscriptionPage = () => {
                     {currentPlan.price}/{currentPlan.billing}
                   </p>
                 </div>
-                <Badge variant="secondary" className="bg-green-100 text-green-700">
-                  Active
-                </Badge>
+                 <Badge variant="secondary" className={currentPlan.status === 'active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
+                  {currentPlan.status === 'active' ? 'Active' : 'Inactive'}
+                 </Badge>
               </div>
               <Separator />
               <div className="space-y-2">
