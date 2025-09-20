@@ -1,10 +1,18 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Message } from "@/types";
 import {
-  StreamingWebSocketClient,
-  StreamingCallbacks,
+  StreamingWebSocketService,
+  StreamingMessage,
 } from "@/services/streamingWebSocket";
 import { useChatPersistence } from "./useChatPersistence";
+
+export interface StreamingCallbacks {
+  onContent: (text: string) => void;
+  onToolStart: () => void;
+  onToolEnd: () => void;
+  onComplete: (fullContent: string) => void;
+  onError: (error: Error) => void;
+}
 
 export interface StreamingChatState {
   messages: Message[];
@@ -47,7 +55,7 @@ export const useStreamingChat = (
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const wsClientRef = useRef<StreamingWebSocketClient | null>(null);
+  const wsClientRef = useRef<StreamingWebSocketService | null>(null);
 
   // Trigger onFrontendGenerated if projectUrl is available on load
   useEffect(() => {
@@ -60,7 +68,7 @@ export const useStreamingChat = (
   // Initialize WebSocket client
   useEffect(() => {
     if (sessionId && !wsClientRef.current) {
-      wsClientRef.current = new StreamingWebSocketClient(sessionId);
+      wsClientRef.current = new StreamingWebSocketService(sessionId);
     }
   }, [sessionId]);
 
@@ -93,7 +101,7 @@ export const useStreamingChat = (
     }
 
     try {
-      if (!wsClientRef.current.isConnected()) {
+      if (!wsClientRef.current.isConnectionOpen()) {
         await wsClientRef.current.connect();
       }
       return true;
@@ -196,7 +204,21 @@ const urlMatch = text.match(
           },
         };
 
-        await wsClientRef.current.sendStreamingMessage(content, callbacks);
+        // Set up message handler for streaming
+        wsClientRef.current.onMessage((message: StreamingMessage) => {
+          if (message.type === "assistant" && message.content) {
+            callbacks.onContent(message.content);
+          } else if (message.type === "tool") {
+            callbacks.onToolStart();
+          } else if (message.type === "complete") {
+            callbacks.onComplete(message.content);
+          } else if (message.type === "error") {
+            callbacks.onError(new Error(message.content));
+          }
+        });
+
+        // Send the message
+        wsClientRef.current.sendMessage(content);
       } catch (error) {
         console.error("Error in sendMessage:", error);
 
