@@ -30,62 +30,77 @@ const GitHubIntegration = () => {
 
 
   useEffect(() => {
-    // Check if we have GitHub URL in the current chat session
-    if (sessionId) {
-      const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
-      if (savedSession) {
-        try {
-          const session = JSON.parse(savedSession);
-          const githubUrl = session.githubUrl;
-          
-          if (githubUrl) {
-            // Create repository object from URL
-            const repoName = githubUrl.split("/").pop() || "Unknown";
-            const repo: GitHubRepo = {
-              name: repoName,
-              clone_url: `${githubUrl}.git`,
-              html_url: githubUrl,
-              created_at: new Date().toISOString(),
-            };
-            setRepository(repo);
-            setIsConnected(true);
-            return;
+    const checkGitHubConnection = () => {
+      // Check if we have GitHub URL in the current chat session
+      if (sessionId) {
+        const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+        if (savedSession) {
+          try {
+            const session = JSON.parse(savedSession);
+            const githubUrl = session.githubUrl;
+            
+            if (githubUrl) {
+              // Create repository object from URL
+              const repoName = githubUrl.split("/").pop() || "Unknown";
+              const repo: GitHubRepo = {
+                name: repoName,
+                clone_url: `${githubUrl}.git`,
+                html_url: githubUrl,
+                created_at: new Date().toISOString(),
+              };
+              setRepository(repo);
+              setIsConnected(true);
+              return;
+            }
+          } catch (error) {
+            console.error("Error parsing chat session:", error);
           }
-        } catch (error) {
-          console.error("Error parsing chat session:", error);
         }
       }
-    }
 
-    // Fallback: check for old format
-    const savedRepo = sessionStorage.getItem("github_repository");
-    if (savedRepo) {
-      try {
-        const repo = JSON.parse(savedRepo);
-        setRepository(repo);
-        setIsConnected(true);
-      } catch (error) {
-        console.error("Error parsing saved repository:", error);
+      // Fallback: check for old format
+      const savedRepo = sessionStorage.getItem("github_repository");
+      if (savedRepo) {
+        try {
+          const repo = JSON.parse(savedRepo);
+          setRepository(repo);
+          setIsConnected(true);
+        } catch (error) {
+          console.error("Error parsing saved repository:", error);
+        }
       }
-    }
 
-    // Only check for OAuth callback if we don't already have GitHub URL
-    if (!isConnected) {
-      console.log("Checking URL for OAuth parameters...");
-      const urlParams = new URLSearchParams(window.location.search);
-      console.log("URL Params:", urlParams.toString());
-      const action = urlParams.get("action");
-      const status = urlParams.get("status");
-      const cloneUrl = urlParams.get("clone_url");
+      // Only check for OAuth callback if we don't already have GitHub URL
+      if (!isConnected) {
+        console.log("Checking URL for OAuth parameters...");
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log("URL Params:", urlParams.toString());
+        const action = urlParams.get("action");
+        const status = urlParams.get("status");
+        const cloneUrl = urlParams.get("clone_url");
 
-      if (action === "github-oauth" && status === "success" && cloneUrl) {
-        console.log("OAuth success! Clone URL:", cloneUrl);
-        handleOAuthSuccess(cloneUrl);
-        // Clean up URL
-        window.history.replaceState({}, document.title, window.location.pathname);
+        if (action === "github-oauth" && status === "success" && cloneUrl) {
+          console.log("OAuth success! Clone URL:", cloneUrl);
+          handleOAuthSuccess(cloneUrl);
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       }
-    }
-  }, [sessionId]);
+    };
+
+    // Initial check
+    checkGitHubConnection();
+
+    // Set up an interval to periodically check for updates
+    // This handles cases where project details are loaded after this component mounts
+    const interval = setInterval(() => {
+      if (!isConnected && sessionId) {
+        checkGitHubConnection();
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [sessionId, isConnected]);
 
  const handleOAuthSuccess = (cloneUrl: string) => {
    // Extract repository info from clone URL
