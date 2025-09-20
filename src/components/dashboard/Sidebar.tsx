@@ -8,9 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import ProfilePopup from './ProfilePopup';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link, Shield, MessageCircle } from 'lucide-react';
+import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link, Shield, MessageCircle, FolderOpen, ChevronDown } from 'lucide-react';
 import SitemapSection from './SitemapSection';
-import { ProjectDetails } from '@/services/projectService';
+import { ProjectDetails, ProjectFromAPI, fetchProjects } from '@/services/projectService';
 import myIcon from "../../assets/ImagineboIcon.svg";
 
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
@@ -44,6 +44,8 @@ const Sidebar = ({
   const [profileSection, setProfileSection] = useState('basic');
   const [isGitHubConnected, setIsGitHubConnected] = useState(false);
   const [isVercelConnected, setIsVercelConnected] = useState(false);
+  const [projects, setProjects] = useState<ProjectFromAPI[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
 
   // Check for existing dark mode preference and connection states
   useEffect(() => {
@@ -57,6 +59,25 @@ const Sidebar = ({
       // Example: setIsVercelConnected(projectDetails.vercelConnected);
     }
   }, [projectDetails]);
+
+  // Fetch user projects
+  useEffect(() => {
+    const loadProjects = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        setLoadingProjects(true);
+        const userProjects = await fetchProjects();
+        setProjects(userProjects);
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+
+    loadProjects();
+  }, [isAuthenticated]);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
@@ -251,6 +272,50 @@ const Sidebar = ({
               <path d="m18 17-5-5 5-5" />
             </svg>
           </button>
+        </div>
+      )}
+
+      {/* My Projects Dropdown */}
+      {activeView === 'main' && (
+        <div className="px-4 py-2 border-b border-sidebar-border">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-between h-8 px-2 text-left">
+                <div className="flex items-center space-x-2">
+                  <FolderOpen className="h-4 w-4" />
+                  <span className="text-sm">My Projects</span>
+                </div>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-popover border border-border">
+              {loadingProjects ? (
+                <DropdownMenuItem disabled>
+                  Loading projects...
+                </DropdownMenuItem>
+              ) : projects.length > 0 ? (
+                projects.map((project) => (
+                  <DropdownMenuItem 
+                    key={project.session_id}
+                    onClick={() => {
+                      window.location.href = `/dashboard?sessionid=${project.session_id}`;
+                    }}
+                  >
+                    <div className="flex flex-col space-y-1 w-full">
+                      <span className="font-medium text-sm truncate">{project.title}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(project.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>
+                  No projects found
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
 
