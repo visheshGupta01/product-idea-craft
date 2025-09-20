@@ -1,126 +1,188 @@
-import { API_ENDPOINTS, buildWsUrl } from '@/config/api';
+import { WS_BASE_URL } from "@/config/api";
 
 export interface StreamingMessage {
-  type: "user" | "assistant" | "error" | "tool" | "complete";
-  content: string;
-  timestamp: Date;
-  tool?: {
-    name: string;
-    output: string | null;
-  };
+  type: "done" | "error";
+  tool?: string;
+  text?: string;
+  message?: string;
+  success?: boolean;
 }
 
-export class StreamingWebSocketService {
+export interface StreamingCallbacks {
+  onContent: (text: string) => void;
+  onToolStart: () => void;
+  onToolEnd: () => void;
+  onComplete: (fullContent: string) => void;
+  onError: (error: Error) => void;
+}
+
+export class StreamingWebSocketClient {
   private ws: WebSocket | null = null;
   private sessionId: string;
-  private isConnected: boolean = false;
-  private messageQueue: string[] = [];
-  private reconnectAttempts: number = 0;
-  private maxReconnectAttempts: number = 3;
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 3;
+  private reconnectDelay = 2000;
 
   constructor(sessionId: string) {
     this.sessionId = sessionId;
   }
 
-  connect(): Promise<void> {
+  async connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        console.log("Connecting to streaming WebSocket...");
-        const wsUrl = buildWsUrl(API_ENDPOINTS.CHAT.WEBSOCKET, { session_id: this.sessionId });
-        console.log("WebSocket URL:", wsUrl);
-        
+        const wsUrl = WS_BASE_URL + `/api/chat/ws?session_id=${this.sessionId}`;
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log("Streaming WebSocket connected");
-          this.isConnected = true;
+          console.log("StreamingWebSocket connected");
           this.reconnectAttempts = 0;
-          
-          // Send any queued messages
-          while (this.messageQueue.length > 0) {
-            const message = this.messageQueue.shift();
-            if (message && this.ws) {
-              this.ws.send(message);
-            }
-          }
-          
           resolve();
         };
 
         this.ws.onerror = (error) => {
-          console.error("Streaming WebSocket error:", error);
-          this.isConnected = false;
+          console.error("StreamingWebSocket error:", error);
           reject(error);
         };
 
-        this.ws.onclose = (event) => {
-          console.log("Streaming WebSocket closed:", event.code, event.reason);
-          this.isConnected = false;
-          
-          // Attempt to reconnect if not manually closed
-          if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
-            this.reconnectAttempts++;
-            console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-            setTimeout(() => {
-              this.connect();
-            }, 2000 * this.reconnectAttempts);
-          }
+        this.ws.onclose = () => {
+          console.log("StreamingWebSocket disconnected");
+          this.handleReconnect();
         };
-
       } catch (error) {
-        console.error("Failed to create WebSocket connection:", error);
+        console.error("Error creating StreamingWebSocket:", error);
         reject(error);
       }
     });
   }
 
-  sendMessage(message: string): void {
-    if (this.isConnected && this.ws) {
-      console.log("Sending message:", message);
-      this.ws.send(message);
-    } else {
-      console.log("WebSocket not connected, queuing message");
-      this.messageQueue.push(message);
+  private handleReconnect() {
+    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+      this.reconnectAttempts++;
+      console.log(
+        `StreamingWebSocket reconnecting... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      );
+
+      setTimeout(() => {
+        this.connect().catch(console.error);
+      }, this.reconnectDelay);
     }
   }
 
-  onMessage(callback: (message: StreamingMessage) => void): void {
-    if (this.ws) {
-      this.ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log("Received streaming message:", data);
-          
-          const streamingMessage: StreamingMessage = {
-            type: data.type || "assistant",
-            content: data.content || data.message || "",
-            timestamp: new Date(),
-            tool: data.tool
-          };
-          
-          callback(streamingMessage);
-        } catch (error) {
-          console.error("Error parsing WebSocket message:", error);
-          callback({
-            type: "error",
-            content: "Failed to parse message",
-            timestamp: new Date()
-          });
+  async sendStreamingMessage(
+    message: string,
+    callbacks: StreamingCallbacks
+  ): Promise<void> {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      throw new Error("WebSocket is not connected");
+    }
+
+    let fullContent = "";
+    let isComplete = false;
+    let isInToolMode = false;
+
+    const messageHandler = (event: MessageEvent) => {
+      if (isComplete) return;
+
+      console.log("📨 Raw WebSocket message:", event.data);
+
+      // Handle JSON messages (completion signals)
+      try {
+        const data: any = JSON.parse(event.data);
+        console.log(" Parsed JSON message:", data);
+
+        // Handle completion signal from backend
+        if (data.success) {
+          console.log(" Stream completed with done signal");
+          if (!isComplete) {
+            isComplete = true;
+            if (isInToolMode) {
+              callbacks.onToolEnd();
+            }
+            callbacks.onComplete(fullContent);
+            this.cleanup(messageHandler);
+          }
+          return;
         }
-      };
+
+        // Handle error messages
+        if (data.type === "error") {
+          if (!isComplete) {
+            isComplete = true;
+            this.cleanup(messageHandler);
+            callbacks.onError(
+              new Error(data.message || "WebSocket streaming error")
+            );
+          }
+          return;
+        }
+      } catch (parseError) {
+        // Not JSON, handle as text content
+        if (typeof event.data === "string" && !isComplete) {
+          const content = event.data;
+
+          // Detect tool output by looking for tool output patterns
+          if (content.includes("[Tool Use Started]:")) {
+            console.log("🔧 Tool execution started");
+            isInToolMode = true;
+            callbacks.onToolStart();
+            fullContent += content;
+            callbacks.onContent(content);
+          } else if (
+            content.includes("[Tool Output for") &&
+            content.includes("]:")
+          ) {
+            console.log("🔧 Tool output received");
+            if (isInToolMode) {
+              callbacks.onToolEnd();
+              isInToolMode = false;
+            }
+            fullContent += content;
+            callbacks.onContent(content);
+          } else {
+            // Regular streaming text content
+            console.log(
+              "📝 Content chunk received:",
+              content.length,
+              "characters"
+            );
+            fullContent += content;
+            callbacks.onContent(content);
+          }
+        }
+      }
+    };
+
+    // Clean setup
+    this.cleanup(messageHandler);
+    this.ws.addEventListener("message", messageHandler);
+
+    // Send message
+    try {
+      this.ws.send(
+        JSON.stringify({
+          message,
+          session_id: this.sessionId,
+          stream: true,
+        })
+      );
+    } catch (error) {
+      this.cleanup(messageHandler);
+      throw error;
     }
   }
 
-  disconnect(): void {
+  private cleanup(messageHandler: (event: MessageEvent) => void) {
+    this.ws?.removeEventListener("message", messageHandler);
+  }
+
+  disconnect() {
     if (this.ws) {
-      console.log("Disconnecting streaming WebSocket");
-      this.isConnected = false;
-      this.ws.close(1000, "Manual disconnect");
+      this.ws.close();
       this.ws = null;
     }
   }
 
-  isConnectionOpen(): boolean {
-    return this.isConnected && this.ws?.readyState === WebSocket.OPEN;
+  isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
   }
 }

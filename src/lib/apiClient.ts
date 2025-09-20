@@ -49,9 +49,12 @@ console.log("Token expired, attempting to refresh...");
         }
 
         // Try to refresh the token
-        const refreshResponse = await axios.post(`${API_BASE_URL}/refresh-token`, {
-          refresh_token: refreshToken,
-        });
+        const refreshResponse = await axios.post(
+          `${API_BASE_URL}/api/auth/refresh-token`,
+          {
+            refresh_token: refreshToken,
+          }
+        );
 
         const data = refreshResponse.data;
         console.log(data);

@@ -3,7 +3,7 @@
 // Base URLs for different environments
 export const API_BASE_URLS = {
   LOCAL: "http://localhost:8000",
-  PRODUCTION: "http://98.87.215.219:8000",
+  PRODUCTION: "https://dev.imagine.bo",
 } as const;
 
 // Current environment - change this to switch between environments
@@ -13,7 +13,7 @@ export const API_BASE_URL = API_BASE_URLS[CURRENT_ENV];
 // WebSocket URLs
 export const WS_BASE_URLS = {
   LOCAL: "ws://localhost:8000",
-  PRODUCTION: "ws://98.87.215.219:8000",
+  PRODUCTION: "ws://dev.imagine.bo",
 } as const;
 
 export const WS_BASE_URL = WS_BASE_URLS[CURRENT_ENV];
@@ -46,7 +46,7 @@ export const API_ENDPOINTS = {
   // Profile
   PROFILE: {
     GET: "/api/profile",
-    UPDATE: "/profile", // Note: different from GET endpoint
+    UPDATE: "/api/profile", // Note: different from GET endpoint
   },
   
   // Admin

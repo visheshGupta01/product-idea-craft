@@ -1,18 +1,10 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Message } from "@/types";
 import {
-  StreamingWebSocketService,
-  StreamingMessage,
+  StreamingWebSocketClient,
+  StreamingCallbacks,
 } from "@/services/streamingWebSocket";
 import { useChatPersistence } from "./useChatPersistence";
-
-export interface StreamingCallbacks {
-  onContent: (text: string) => void;
-  onToolStart: () => void;
-  onToolEnd: () => void;
-  onComplete: (fullContent: string) => void;
-  onError: (error: Error) => void;
-}
 
 export interface StreamingChatState {
   messages: Message[];
@@ -55,7 +47,7 @@ export const useStreamingChat = (
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const wsClientRef = useRef<StreamingWebSocketService | null>(null);
+  const wsClientRef = useRef<StreamingWebSocketClient | null>(null);
 
   // Trigger onFrontendGenerated if projectUrl is available on load
   useEffect(() => {
@@ -68,7 +60,7 @@ export const useStreamingChat = (
   // Initialize WebSocket client
   useEffect(() => {
     if (sessionId && !wsClientRef.current) {
-      wsClientRef.current = new StreamingWebSocketService(sessionId);
+      wsClientRef.current = new StreamingWebSocketClient(sessionId);
     }
   }, [sessionId]);
 
@@ -101,7 +93,7 @@ export const useStreamingChat = (
     }
 
     try {
-      if (!wsClientRef.current.isConnectionOpen()) {
+      if (!wsClientRef.current.isConnected()) {
         await wsClientRef.current.connect();
       }
       return true;
@@ -130,7 +122,7 @@ export const useStreamingChat = (
         if (!isConnected) {
           throw new Error("Failed to establish WebSocket connection");
         }
-        
+
         // Add user message to chat history
         const userMessage = addMessage({
           type: "user",
@@ -157,9 +149,9 @@ export const useStreamingChat = (
               text.includes("[Tool Output for frontend_code_generator]:") &&
               text.includes("preview.imagine.bo")
             ) {
-const urlMatch = text.match(
-  /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo)\/?/
-);
+              const urlMatch = text.match(
+                /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo)\/?/
+              );
 
               if (urlMatch && onFrontendGenerated) {
                 const localUrl = urlMatch[0];
@@ -204,21 +196,7 @@ const urlMatch = text.match(
           },
         };
 
-        // Set up message handler for streaming
-        wsClientRef.current.onMessage((message: StreamingMessage) => {
-          if (message.type === "assistant" && message.content) {
-            callbacks.onContent(message.content);
-          } else if (message.type === "tool") {
-            callbacks.onToolStart();
-          } else if (message.type === "complete") {
-            callbacks.onComplete(message.content);
-          } else if (message.type === "error") {
-            callbacks.onError(new Error(message.content));
-          }
-        });
-
-        // Send the message
-        wsClientRef.current.sendMessage(content);
+        await wsClientRef.current.sendStreamingMessage(content, callbacks);
       } catch (error) {
         console.error("Error in sendMessage:", error);
 
