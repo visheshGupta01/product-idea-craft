@@ -167,6 +167,10 @@ const Sidebar = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center" side="right" className="w-56 bg-popover border border-border">
+              <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
+                <FolderOpen className="mr-2 h-4 w-4" />
+                My Projects
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 setProfileSection('basic');
                 setProfileOpen(true);
@@ -275,49 +279,6 @@ const Sidebar = ({
         </div>
       )}
 
-      {/* My Projects Dropdown */}
-      {activeView === 'main' && (
-        <div className="px-4 py-2 border-b border-sidebar-border">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-between h-8 px-2 text-left">
-                <div className="flex items-center space-x-2">
-                  <FolderOpen className="h-4 w-4" />
-                  <span className="text-sm">My Projects</span>
-                </div>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-popover border border-border">
-              {loadingProjects ? (
-                <DropdownMenuItem disabled>
-                  Loading projects...
-                </DropdownMenuItem>
-              ) : projects.length > 0 ? (
-                projects.map((project) => (
-                  <DropdownMenuItem 
-                    key={project.session_id}
-                    onClick={() => {
-                      window.location.href = `/dashboard?sessionid=${project.session_id}`;
-                    }}
-                  >
-                    <div className="flex flex-col space-y-1 w-full">
-                      <span className="font-medium text-sm truncate">{project.title}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(project.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </DropdownMenuItem>
-                ))
-              ) : (
-                <DropdownMenuItem disabled>
-                  No projects found
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
 
       {/* Sitemap Section - only show on main dashboard */}
       {activeView === 'main' && (
@@ -354,6 +315,10 @@ const Sidebar = ({
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" side="top" className="w-56 mb-2 bg-popover border border-border">
+            <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
+              <FolderOpen className="mr-2 h-4 w-4" />
+              My Projects
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => {
               setProfileSection('basic');
               setProfileOpen(true);
