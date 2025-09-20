@@ -3,36 +3,57 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { Github, Linkedin, User, Building, Clock, DollarSign } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { developerService, UpdateProfileData } from '@/services/developerService';
+import developerLogo from '@/assets/developer-logo.png';
 
 interface FirstTimeSetupProps {
   onComplete: () => void;
 }
 
 const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
-  const [formData, setFormData] = useState<UpdateProfileData>({
+  const [formData, setFormData] = useState({
+    first_name: '',
+    email: '',
     github_url: '',
     linkedin_url: '',
-    company_name: '',
-    experience: '',
     bio: '',
-    hourpaid: 0,
-    skills: [],
+    skills: [] as string[],
   });
-  const [skills, setSkills] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  const availableSkills = [
+    'React', 'TypeScript', 'Node.js', 'Python', 'UI/UX', 'Figma', 'Vue.js', 'Angular',
+    'Next.js', 'GraphQL', 'MongoDB', 'PostgreSQL', 'AWS', 'Docker', 'JavaScript', 'HTML/CSS'
+  ];
+
+  const toggleSkill = (skill: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.includes(skill)
+        ? prev.skills.filter(s => s !== skill)
+        : [...prev.skills, skill]
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.github_url || !formData.linkedin_url) {
+    if (!formData.github_url || !formData.linkedin_url || !formData.first_name || !formData.email) {
       toast({
         title: "Required Fields",
-        description: "GitHub and LinkedIn URLs are required to complete setup.",
+        description: "All required fields must be filled to complete setup.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.skills.length === 0) {
+      toast({
+        title: "Skills Required",
+        description: "Please select at least one skill.",
         variant: "destructive",
       });
       return;
@@ -40,11 +61,14 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
     setLoading(true);
     try {
-      const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill);
-      
       await developerService.updateDeveloperProfile({
-        ...formData,
-        skills: skillsArray,
+        github_url: formData.github_url,
+        linkedin_url: formData.linkedin_url,
+        bio: formData.bio,
+        skills: formData.skills,
+        company_name: '',
+        experience: '',
+        hourpaid: 0,
       });
 
       toast({
@@ -66,127 +90,148 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Complete Your Developer Profile</CardTitle>
-          <CardDescription>
-            Please provide your GitHub and LinkedIn profiles to get started as a developer.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Required Fields */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center">
-                <User className="h-5 w-5 mr-2" />
-                Required Information
-              </h3>
-              
-              <div className="space-y-2">
-                <Label htmlFor="github_url" className="flex items-center">
-                  <Github className="h-4 w-4 mr-2" />
-                  GitHub URL *
-                </Label>
-                <Input
-                  id="github_url"
-                  type="url"
-                  placeholder="https://github.com/yourusername"
-                  value={formData.github_url}
-                  onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
-                  required
-                />
-              </div>
+      <div className="w-full max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-6">
+            <img src={developerLogo} alt="Developer Logo" className="w-16 h-16 rounded-2xl" />
+          </div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Developer</h1>
+          <p className="text-muted-foreground text-lg">
+            Let's set up your profile to get you started with amazing projects
+          </p>
+        </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="linkedin_url" className="flex items-center">
-                  <Linkedin className="h-4 w-4 mr-2" />
-                  LinkedIn URL *
-                </Label>
-                <Input
-                  id="linkedin_url"
-                  type="url"
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  value={formData.linkedin_url}
-                  onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-                  required
-                />
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Info Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="first_name" className="text-sm font-medium">
+                First Name*
+              </Label>
+              <Input
+                id="first_name"
+                placeholder="Your Full Name"
+                value={formData.first_name}
+                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                className="h-12 rounded-xl border-2 border-border bg-background"
+                required
+              />
             </div>
 
-            {/* Optional Fields */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">Additional Information</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="company_name" className="flex items-center">
-                    <Building className="h-4 w-4 mr-2" />
-                    Current Company
-                  </Label>
-                  <Input
-                    id="company_name"
-                    placeholder="Acme Inc."
-                    value={formData.company_name}
-                    onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email*
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your@gmail.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="h-12 rounded-xl border-2 border-border bg-background"
+                required
+              />
+            </div>
+          </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="experience" className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2" />
-                    Experience
-                  </Label>
-                  <Input
-                    id="experience"
-                    placeholder="5 years"
-                    value={formData.experience}
-                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="hourpaid" className="flex items-center">
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  Hourly Rate (USD)
-                </Label>
-                <Input
-                  id="hourpaid"
-                  type="number"
-                  placeholder="50"
-                  value={formData.hourpaid}
-                  onChange={(e) => setFormData({ ...formData, hourpaid: Number(e.target.value) })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="skills">Skills (comma-separated)</Label>
-                <Input
-                  id="skills"
-                  placeholder="React, Node.js, Python, Docker"
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  placeholder="Tell us about yourself and your development experience..."
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  rows={4}
-                />
-              </div>
+          {/* Profile Links Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="github_url" className="text-sm font-medium">
+                GitHub
+              </Label>
+              <Input
+                id="github_url"
+                type="url"
+                placeholder="Username"
+                value={formData.github_url}
+                onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+                className="h-12 rounded-xl border-2 border-border bg-background"
+                required
+              />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Setting up..." : "Complete Setup"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            <div className="space-y-2">
+              <Label htmlFor="linkedin_url" className="text-sm font-medium">
+                LinkedIn Profile
+              </Label>
+              <Input
+                id="linkedin_url"
+                type="url"
+                placeholder="Profile-name"
+                value={formData.linkedin_url}
+                onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                className="h-12 rounded-xl border-2 border-border bg-background"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Skills Section */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium">
+                Skills * (Select at least one)
+              </Label>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {availableSkills.map((skill) => (
+                <Badge
+                  key={skill}
+                  variant={formData.skills.includes(skill) ? "default" : "secondary"}
+                  className={`cursor-pointer px-4 py-2 text-sm rounded-full transition-colors ${
+                    formData.skills.includes(skill)
+                      ? 'bg-foreground text-background hover:bg-foreground/90'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                  onClick={() => toggleSkill(skill)}
+                >
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* Bio Section */}
+          <div className="space-y-2">
+            <Label htmlFor="bio" className="text-sm font-medium">
+              Bio
+            </Label>
+            <Textarea
+              id="bio"
+              placeholder="Tell us about yourself, experience, or what you're passionate about..."
+              value={formData.bio}
+              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              rows={4}
+              className="rounded-xl border-2 border-border bg-background resize-none"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <Button 
+            type="submit" 
+            disabled={loading}
+            className="w-full h-14 rounded-full bg-foreground text-background hover:bg-foreground/90 text-lg font-semibold"
+          >
+            {loading ? "Setting up..." : "Complete Onboarding"}
+          </Button>
+
+          {/* Footer */}
+          <div className="text-center space-y-2 pt-4">
+            <p className="text-sm text-muted-foreground">
+              By continuing you agree to our{" "}
+              <a href="/terms" className="text-primary hover:underline">Terms</a>
+              {" "}and{" "}
+              <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <a href="/signin" className="text-primary hover:underline">Sign In</a>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
