@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Upload, FileText, Loader2, X, Check } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios"; // ✅ Import axios
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from '@/config/api';
 
@@ -42,7 +41,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       const formData = new FormData();
       formData.append("file", file);
 
-      // ✅ axios POST request
+      // apiClient POST request
       const response = await apiClient.post(API_ENDPOINTS.UPLOAD.PDF, formData, {
         headers: {
           "Content-Type": "multipart/form-data",

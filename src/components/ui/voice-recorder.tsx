@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, Square, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import axios from "axios"; // ✅ Import axios
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from '@/config/api';
 
@@ -67,7 +66,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       const formData = new FormData();
       formData.append("video", audioBlob, "recording.wav");
 
-      // ✅ axios POST request
+      // apiClient POST request
       const response = await apiClient.post(API_ENDPOINTS.UPLOAD.AUDIO, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
