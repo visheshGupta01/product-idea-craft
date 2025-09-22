@@ -1,6 +1,5 @@
-import { authService } from './authService';
-import { ProfileData } from '@/services/profileService';
-import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
+import apiClient from '@/lib/apiClient';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface DeveloperProfile {
   id: string;
@@ -72,81 +71,54 @@ export interface UpdateProfileData {
 }
 
 class DeveloperService {
-  private baseURL = '/api';
-
-  private getAuthHeaders() {
-    const token = authService.getToken();
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async getDeveloperProfile(): Promise<DeveloperProfileResponse> {
-    const response = await fetch(buildApiUrl(API_ENDPOINTS.DEVELOPER.PROFILE), {
-      method: 'GET',
-      headers: this.getAuthHeaders(),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch developer profile: ${response.statusText}`);
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.DEVELOPER.PROFILE);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching developer profile:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   async updateDeveloperProfile(data: UpdateProfileData): Promise<{ status: 'success'; data: DeveloperProfile }> {
-    const response = await fetch(buildApiUrl(API_ENDPOINTS.DEVELOPER.PROFILE), {
-      method: 'PATCH',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to update developer profile: ${response.statusText}`);
+    try {
+      const response = await apiClient.patch(API_ENDPOINTS.DEVELOPER.PROFILE, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating developer profile:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   async getDeveloperTasks(page: number = 1): Promise<TasksResponse> {
-    const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DEVELOPER.TASKS}?page=${page}`), {
-      method: 'GET',
-      headers: this.getAuthHeaders(),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch developer tasks: ${response.statusText}`);
+    try {
+      const response = await apiClient.get(`${API_ENDPOINTS.DEVELOPER.TASKS}?page=${page}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching developer tasks:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   async updateTaskStatus(taskId: number, status: 'todo' | 'in_progress' | 'done'): Promise<{ status: 'success'; data: Task }> {
-    const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DEVELOPER.TASK_STATUS}?task_id=${taskId}`), {
-      method: 'PATCH',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify({ status }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to update task status: ${response.statusText}`);
+    try {
+      const response = await apiClient.patch(`${API_ENDPOINTS.DEVELOPER.TASK_STATUS}?task_id=${taskId}`, { status });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   async getAllDevelopers(page: number = 1): Promise<{ status: 'success'; data: DeveloperProfile[] }> {
-    const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DEVELOPER.LIST}?page=${page}`), {
-      method: 'GET',
-      headers: this.getAuthHeaders(),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch developers: ${response.statusText}`);
+    try {
+      const response = await apiClient.get(`${API_ENDPOINTS.DEVELOPER.LIST}?page=${page}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all developers:', error);
+      throw error;
     }
-
-    return response.json();
   }
 }
 
