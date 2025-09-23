@@ -188,6 +188,12 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
             activeView={activeView}
             onViewChange={setActiveView}
             projectDetails={projectDetails}
+            sessionId={sessionId}
+            onProjectRenamed={(newTitle) => {
+              if (projectDetails) {
+                setProjectDetails({ ...projectDetails, title: newTitle });
+              }
+            }}
           />
         </div>
 
