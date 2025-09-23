@@ -31,8 +31,14 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Check if this is a login or signup request - don't try to refresh tokens for these
+    const isAuthRequest = originalRequest.url?.includes('/auth/login') || 
+                         originalRequest.url?.includes('/auth/signup') ||
+                         originalRequest.url?.includes('/auth/refresh-token');
+
     // Check if the error is 401 (Unauthorized) and we haven't already tried to refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip token refresh for auth requests
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
       originalRequest._retry = true;
 console.log("Token expired, attempting to refresh...");
       try {
