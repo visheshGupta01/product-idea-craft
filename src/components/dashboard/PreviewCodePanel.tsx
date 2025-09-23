@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Code, Expand, Monitor, Tablet, Smartphone, Save, Globe } from 'lucide-react';
+import { Code, Expand, Monitor, Tablet, Smartphone, Save, Globe, ExternalLink, RefreshCw } from 'lucide-react';
   import { Switch } from '@/components/ui/switch';
   import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
   import FileExplorer, { type FileNode } from './FileExplorer';
@@ -71,6 +71,17 @@ const handlePublish = () => {
   window.open('https://docs.lovable.dev/user-guides/deploying', '_blank');
 };
 
+const handleOpenInNewTab = () => {
+  window.open(iframeSrc, '_blank');
+};
+
+const handleReload = () => {
+  // Force reload by adding a timestamp parameter
+  const url = new URL(iframeSrc);
+  url.searchParams.set('_t', Date.now().toString());
+  setIframeSrc(url.toString());
+};
+
 
     const getDeviceIcon = () => {
       switch (activeDevice) {
@@ -122,8 +133,28 @@ const handlePublish = () => {
             )}
           </div>
 
-          {/* Right side buttons - Device toggle and Fullscreen */}
+          {/* Right side buttons - Open in new tab, Reload, Device toggle and Fullscreen */}
           <div className="flex items-center space-x-2">
+            {/* Open in new tab button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleOpenInNewTab}
+              className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Button>
+            
+            {/* Reload button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReload}
+              className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+            
             {/* Device toggle - only show icon, no text */}
             {!showCode && (
               <Button
