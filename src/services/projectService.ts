@@ -73,3 +73,16 @@ export const fetchProjectDetails = async (sessionId: string): Promise<ProjectDet
     throw error;
   }
 };
+
+export const renameProject = async (sessionId: string, newTitle: string): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const response = await apiClient.post(API_ENDPOINTS.PROJECT.RENAME, {
+      session_id: sessionId,
+      new_title: newTitle
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error renaming project:', error);
+    throw error;
+  }
+};

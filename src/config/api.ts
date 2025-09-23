@@ -41,6 +41,7 @@ export const API_ENDPOINTS = {
   PROJECT: {
     LIST: "/api/projects",
     CODE: "/api/project/code",
+    RENAME: "/api/project/rename",
   },
   
   // Profile

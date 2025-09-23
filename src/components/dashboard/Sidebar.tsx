@@ -8,9 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import ProfilePopup from './ProfilePopup';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link, Shield, MessageCircle, FolderOpen, ChevronDown } from 'lucide-react';
+import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link, Shield, MessageCircle, FolderOpen, ChevronDown, Edit } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import SitemapSection from './SitemapSection';
-import { ProjectDetails, ProjectFromAPI, fetchProjects } from '@/services/projectService';
+import { ProjectDetails, ProjectFromAPI, fetchProjects, renameProject } from '@/services/projectService';
 import myIcon from "../../assets/ImagineboIcon.svg";
 
 type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
@@ -27,6 +29,8 @@ interface SidebarProps {
   activeView?: ActiveView;
   onViewChange?: (view: ActiveView) => void;
   projectDetails?: ProjectDetails;
+  sessionId?: string;
+  onProjectRenamed?: (newTitle: string) => void;
 }
 const Sidebar = ({
   collapsed,
@@ -34,7 +38,9 @@ const Sidebar = ({
   currentProject,
   activeView = 'main',
   onViewChange,
-  projectDetails
+  projectDetails,
+  sessionId,
+  onProjectRenamed
 }: SidebarProps) => {
   console.log("Sidebar: received projectDetails", projectDetails);
   const { user, isAuthenticated } = useUser();
@@ -46,6 +52,9 @@ const Sidebar = ({
   const [isVercelConnected, setIsVercelConnected] = useState(false);
   const [projects, setProjects] = useState<ProjectFromAPI[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+  const { toast } = useToast();
 
   // Check for existing dark mode preference and connection states
   useEffect(() => {
@@ -96,6 +105,39 @@ const Sidebar = ({
   const handleVercelConnect = () => {
     // Vercel connection is now handled by VercelIntegration component
     console.log("Vercel connection should be handled by the Vercel integration component");
+  };
+
+  const handleRenameClick = () => {
+    setNewProjectName(projectDetails?.title || currentProject.name);
+    setRenameDialogOpen(true);
+  };
+
+  const handleRenameSubmit = async () => {
+    if (!newProjectName.trim() || !sessionId) return;
+
+    try {
+      const result = await renameProject(sessionId, newProjectName.trim());
+      if (result.success) {
+        toast({
+          title: "Project renamed successfully",
+          description: `Project name changed to "${newProjectName}"`,
+        });
+        onProjectRenamed?.(newProjectName.trim());
+        setRenameDialogOpen(false);
+      } else {
+        toast({
+          title: "Rename failed",
+          description: result.message || "Failed to rename project",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to rename project. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
   if (collapsed) {
     return <div className="w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
@@ -253,9 +295,20 @@ const Sidebar = ({
         <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
           <div className="flex items-center space-x-3">
             {!collapsed && (
-              <span className="text-lg font-semibold text-sidebar-foreground">
-                {projectDetails?.title || currentProject.name}
-              </span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <span className="text-lg font-semibold text-sidebar-foreground cursor-pointer hover:text-sidebar-foreground/80 transition-colors flex items-center gap-2">
+                    {projectDetails?.title || currentProject.name}
+                    <ChevronDown className="h-4 w-4" />
+                  </span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  <DropdownMenuItem onClick={handleRenameClick}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Rename Project
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
           
@@ -389,6 +442,36 @@ const Sidebar = ({
         onOpenChange={setProfileOpen} 
         initialSection={profileSection}
       />
+
+      {/* Rename Project Dialog */}
+      <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename Project</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              placeholder="Enter new project name"
+              className="w-full"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleRenameSubmit();
+                }
+              }}
+            />
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setRenameDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleRenameSubmit} disabled={!newProjectName.trim()}>
+                Rename
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
