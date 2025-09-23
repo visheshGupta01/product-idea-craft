@@ -13,7 +13,7 @@ export const API_BASE_URL = API_BASE_URLS[CURRENT_ENV];
 // WebSocket URLs
 export const WS_BASE_URLS = {
   LOCAL: "ws://localhost:8000",
-  PRODUCTION: "ws://dev.imagine.bo",
+  PRODUCTION: "wss://dev.imagine.bo",
 } as const;
 
 export const WS_BASE_URL = WS_BASE_URLS[CURRENT_ENV];
@@ -29,32 +29,32 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: "/api/auth/reset-password",
     REFRESH_TOKEN: "/api/auth/refresh-token",
   },
-  
+
   // Chat & Sessions
   CHAT: {
     SESSION_CREATE: "/api/chat/session/create",
     SESSION_CONTENT: "/api/chat/session/content",
     WEBSOCKET: "/api/chat/ws",
   },
-  
+
   // Projects
   PROJECT: {
     LIST: "/api/projects",
     CODE: "/api/project/code",
   },
-  
+
   // Profile
   PROFILE: {
     GET: "/api/profile",
     UPDATE: "/api/profile", // Note: different from GET endpoint
   },
-  
+
   // Admin
   ADMIN: {
     DASHBOARD: "/api/admin/dashboard",
     USERS: "/api/admin/users",
   },
-  
+
   // Developer
   DEVELOPER: {
     PROFILE: "/api/developer/profile",
@@ -62,22 +62,22 @@ export const API_ENDPOINTS = {
     TASK_STATUS: "/api/task/status",
     LIST: "/api/developers",
   },
-  
+
   // Payment
   PAYMENT: {
     CREATE_SESSION: "/api/payment/create-session",
   },
-  
+
   // File Upload
   UPLOAD: {
     PDF: "/api/upload-pdf",
     AUDIO: "/api/audio",
   },
-  
+
   // External Integrations
   INTEGRATIONS: {
-    GITHUB: "/api/github/",
-    VERCEL: "/api/vercel/auth/",
+    GITHUB: "/api/github",
+    VERCEL: "/api/vercel/auth",
   },
 } as const;
 
@@ -86,7 +86,10 @@ export const buildApiUrl = (endpoint: string): string => {
   return `${API_BASE_URL}${endpoint}`;
 };
 
-export const buildWsUrl = (endpoint: string, params?: Record<string, string>): string => {
+export const buildWsUrl = (
+  endpoint: string,
+  params?: Record<string, string>
+): string => {
   let url = `${WS_BASE_URL}${endpoint}`;
   if (params) {
     const searchParams = new URLSearchParams(params);
@@ -96,10 +99,14 @@ export const buildWsUrl = (endpoint: string, params?: Record<string, string>): s
 };
 
 // Helper to build integration URLs with session ID
-export const buildIntegrationUrl = (integration: 'github' | 'vercel', sessionId: string): string => {
-  const endpoint = integration === 'github' 
-    ? API_ENDPOINTS.INTEGRATIONS.GITHUB 
-    : API_ENDPOINTS.INTEGRATIONS.VERCEL;
+export const buildIntegrationUrl = (
+  integration: "github" | "vercel",
+  sessionId: string
+): string => {
+  const endpoint =
+    integration === "github"
+      ? API_ENDPOINTS.INTEGRATIONS.GITHUB
+      : API_ENDPOINTS.INTEGRATIONS.VERCEL;
   return buildApiUrl(`${endpoint}?sessionid=${sessionId}`);
 };
 
