@@ -121,8 +121,25 @@ export class AuthService {
         success: false,
         message: data.message || "Login failed",
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
+      
+      // Check if error response contains error object with message
+      if (error.response?.data?.error?.message) {
+        return {
+          success: false,
+          message: error.response.data.error.message,
+        };
+      }
+      
+      // Check if error response has direct message
+      if (error.response?.data?.message) {
+        return {
+          success: false,
+          message: error.response.data.message,
+        };
+      }
+      
       return {
         success: false,
         message: "Network error. Please try again.",
