@@ -99,14 +99,14 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   };
 
   const getButtonStyle = () => {
-    if (isProcessing) return "bg-yellow-500 hover:bg-yellow-600";
-    if (isRecording) return "bg-red-500 hover:bg-red-600 animate-pulse";
-    return "bg-gray-100 hover:bg-gray-200";
+    if (isProcessing) return "bg-accent hover:bg-accent/90";
+    if (isRecording) return "bg-destructive hover:bg-destructive/90 animate-pulse";
+    return "bg-sidebar-accent/50 hover:bg-sidebar-accent border border-sidebar-border";
   };
 
   const getIconColor = () => {
     if (isProcessing || isRecording) return "text-white";
-    return "text-gray-700";
+    return "text-chat-foreground";
   };
 
   return (
@@ -115,7 +115,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       onClick={handleClick}
       disabled={disabled || isProcessing}
       className={cn(
-        "p-2 w-[40px] h-[40px] flex items-center justify-center border border-gray-300 rounded-md transition",
+        "w-[36px] h-[36px] flex items-center justify-center rounded-md transition-colors",
         getButtonStyle(),
         className
       )}
@@ -129,12 +129,12 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     >
       {isProcessing ? (
         <Loader2
-          className={cn("w-[20px] h-[20px] animate-spin", getIconColor())}
+          className={cn("w-4 h-4 animate-spin", getIconColor())}
         />
       ) : isRecording ? (
-        <Square className={cn("w-[20px] h-[20px]", getIconColor())} />
+        <Square className={cn("w-4 h-4", getIconColor())} />
       ) : (
-        <Mic className={cn("w-[20px] h-[20px]", getIconColor())} />
+        <Mic className={cn("w-4 h-4", getIconColor())} />
       )}
     </Button>
   );

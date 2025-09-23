@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send, Loader2, Mic } from "lucide-react";
+import { Send, Loader2, Mic, X, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
-import { FileUploader, UploadedFile } from "@/components/ui/file-uploader"; // Import FileUploader
-import { cn } from "@/lib/utils"; // Assuming cn is available for conditional class names
+import { FileUploader, UploadedFile } from "@/components/ui/file-uploader";
+import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -150,65 +150,103 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="relative w-full mb-4">
-      {" "}
-      {/* Added mb-4 for spacing from bottom */}
-      <Textarea
-        ref={textareaRef}
-        value={message}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        placeholder="Type your message or use '@' to call a tool, e.g., '@analyse', '@research'"
-        className="min-h-[50px] max-h-[120px] pr-[150px] resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900"
-        rows={1}
-        disabled={isLoading}
-      />
-      {showToolList && filteredTools.length > 0 && (
-        <div className="absolute bottom-full left-0 mb-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 animate-fade-in-up">
-          {filteredTools.map((tool) => (
-            <div
-              key={tool.name}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-start"
-              onClick={() => handleToolSelect(tool)}
-            >
-              <span className="font-medium text-blue-600 dark:text-blue-400">
-                {tool.name}
-              </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {tool.description}
-              </span>
+    <div className="relative w-full">
+      {/* Chat Input Container */}
+      <div className="bg-chat-background border border-sidebar-border rounded-lg p-3 shadow-lg">
+        {/* Uploaded Files Display */}
+        {uploadedFiles.length > 0 && (
+          <div className="mb-3 space-y-2">
+            <div className="text-xs text-chat-foreground/70 font-medium">Attached Files:</div>
+            <div className="flex flex-wrap gap-2">
+              {uploadedFiles.map((file) => (
+                <div
+                  key={file.name}
+                  className="flex items-center gap-2 bg-sidebar-accent/50 border border-sidebar-border rounded-md px-3 py-2 text-sm"
+                >
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span className="text-chat-foreground truncate max-w-[200px]" title={file.name}>
+                    {file.name}
+                  </span>
+                  <button
+                    onClick={() => handleRemoveFile(file.name)}
+                    className="text-muted-foreground hover:text-destructive transition-colors ml-1"
+                    title="Remove file"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
-      <div className="absolute bottom-1 right-[10px] flex items-end space-x-2">
-        <div className="w-[40px] h-[40px] flex items-center justify-center">
-          <FileUploader
-            onFileUploaded={handleFileUploaded}
-            uploadedFiles={uploadedFiles}
-            onRemoveFile={handleRemoveFile}
+          </div>
+        )}
+
+        {/* Input Area */}
+        <div className="relative">
+          <Textarea
+            ref={textareaRef}
+            value={message}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message or use '@' to call a tool..."
+            className={cn(
+              "min-h-[50px] max-h-[120px] pr-[150px] resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+              "text-chat-foreground placeholder:text-chat-foreground/50",
+              "scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent"
+            )}
+            rows={1}
             disabled={isLoading}
           />
+          
+          {/* Action Buttons */}
+          <div className="absolute bottom-2 right-2 flex items-center space-x-2">
+            <FileUploader
+              onFileUploaded={handleFileUploaded}
+              uploadedFiles={uploadedFiles}
+              onRemoveFile={handleRemoveFile}
+              disabled={isLoading}
+            />
+            <VoiceRecorder onTranscript={handleTranscript} disabled={isLoading} />
+            <Button
+              type="submit"
+              size="icon"
+              onClick={handleSendMessage}
+              disabled={(!message.trim() && uploadedFiles.length === 0) || isLoading}
+              className="w-[36px] h-[36px] bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
-        <div className="w-[40px] h-[40px] flex items-center justify-center">
-          <VoiceRecorder onTranscript={handleTranscript} disabled={isLoading} />
-        </div>
-        <Button
-          type="submit"
-          size="icon"
-          onClick={handleSendMessage}
-          disabled={
-            (!message.trim() && uploadedFiles.length === 0) || isLoading
-          }
-          className="w-[40px] h-[40px]" // Reduced size
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-        </Button>
       </div>
+
+      {/* Tool Suggestions */}
+      {showToolList && filteredTools.length > 0 && (
+        <div className="absolute bottom-full left-0 mb-2 w-full bg-chat-background border border-sidebar-border rounded-lg shadow-xl z-20">
+          <div className="p-2 border-b border-sidebar-border">
+            <div className="text-xs text-chat-foreground/70 font-medium">Available Tools:</div>
+          </div>
+          <div className="max-h-[200px] overflow-y-auto">
+            {filteredTools.map((tool) => (
+              <div
+                key={tool.name}
+                className="px-4 py-3 cursor-pointer hover:bg-sidebar-accent/50 transition-colors flex flex-col items-start border-b border-sidebar-border/50 last:border-b-0"
+                onClick={() => handleToolSelect(tool)}
+              >
+                <span className="font-medium text-primary text-sm">
+                  {tool.name}
+                </span>
+                <span className="text-xs text-chat-foreground/70 mt-1">
+                  {tool.description}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
