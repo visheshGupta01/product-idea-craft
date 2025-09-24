@@ -6,6 +6,8 @@ export class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3;
   private reconnectDelay = 2000;
+  private pingInterval: NodeJS.Timeout | null = null;
+  private pingIntervalMs = 30000; // 30 seconds
 
   constructor(sessionId: string) {
     this.sessionId = sessionId;
@@ -20,6 +22,7 @@ export class WebSocketService {
         this.ws.onopen = () => {
           console.log("WebSocket connected");
           this.reconnectAttempts = 0;
+          this.startPing();
           resolve();
         };
 
@@ -30,6 +33,7 @@ export class WebSocketService {
 
         this.ws.onclose = () => {
           console.log("WebSocket disconnected");
+          this.stopPing();
           this.handleReconnect();
         };
       } catch (error) {
@@ -208,9 +212,39 @@ export class WebSocketService {
   }
 
   disconnect() {
+    this.stopPing();
     if (this.ws) {
       this.ws.close();
       this.ws = null;
+    }
+  }
+
+  private startPing() {
+    this.stopPing(); // Clear any existing interval
+    this.pingInterval = setInterval(() => {
+      this.sendPing();
+    }, this.pingIntervalMs);
+  }
+
+  private stopPing() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
+  }
+
+  private sendPing() {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      try {
+        this.ws.send(JSON.stringify({
+          type: "ping",
+          session_id: this.sessionId,
+          timestamp: Date.now()
+        }));
+        console.log("Ping sent to maintain session presence");
+      } catch (error) {
+        console.error("Failed to send ping:", error);
+      }
     }
   }
 
