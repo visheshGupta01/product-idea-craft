@@ -1,5 +1,4 @@
-
-import { API_ENDPOINTS, buildWsUrl } from '@/config/api';
+import { WS_BASE_URL } from "@/config/api";
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -15,7 +14,7 @@ export class WebSocketService {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        const wsUrl = buildWsUrl(API_ENDPOINTS.CHAT.WEBSOCKET, { session_id: this.sessionId });
+        const wsUrl = WS_BASE_URL + `/api/chat/ws?session_id=${this.sessionId}`;
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
