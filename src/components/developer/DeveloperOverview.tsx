@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Star, Github, Linkedin, Edit } from 'lucide-react';
-import { developerService, DeveloperProfile, DeveloperStats } from '@/services/developerService';
+import { developerService, DeveloperProfile, TasksCount, DeveloperProfileResponse } from '@/services/developerService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
@@ -68,8 +68,7 @@ const mockClientReviews = [
 ];
 
 export const DeveloperOverview: React.FC = () => {
-  const [profile, setProfile] = useState<DeveloperProfile | null>(null);
-  const [stats, setStats] = useState<DeveloperStats | null>(null);
+  const [profileData, setProfileData] = useState<DeveloperProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tasks' | 'reviews'>('tasks');
   const [taskFilter, setTaskFilter] = useState<'all' | 'awaiting' | 'pending'>('all');
@@ -83,12 +82,7 @@ export const DeveloperOverview: React.FC = () => {
     try {
       setLoading(true);
       const response = await developerService.getDeveloperProfile();
-      setProfile(response.data.developer_info);
-      setStats({
-        total_tasks: response.data.total_tasks,
-        total_pending: response.data.total_pending,
-        total_complete: response.data.total_complete
-      });
+      setProfileData(response);
     } catch (error) {
       toast({
         title: "Error",
@@ -114,22 +108,35 @@ export const DeveloperOverview: React.FC = () => {
   };
 
   const calculateProgress = () => {
-    if (!stats) return 0;
-    if (stats.total_tasks === 0) return 0;
-    return Math.round((stats.total_complete / stats.total_tasks) * 100);
+    if (!profileData?.tasks_count) return 0;
+    return profileData.tasks_count.percentage || 0;
   };
 
-  const filteredTasks = mockTasks.filter(task => {
-    if (taskFilter === 'all') return true;
-    if (taskFilter === 'awaiting') return task.status === 'pending';
-    if (taskFilter === 'pending') return task.status === 'in_progress';
-    return true;
-  });
+  const getFilteredTasks = () => {
+    if (!profileData) return [];
+    
+    if (taskFilter === 'all') {
+      return [
+        ...profileData.null_status_tasks,
+        ...profileData.in_progress_tasks,
+        ...profileData.todo_tasks
+      ];
+    }
+    if (taskFilter === 'awaiting') return profileData.null_status_tasks;
+    if (taskFilter === 'pending') return profileData.in_progress_tasks;
+    return [];
+  };
 
   const getTaskFilterCount = (filter: 'all' | 'awaiting' | 'pending') => {
-    if (filter === 'all') return mockTasks.length;
-    if (filter === 'awaiting') return mockTasks.filter(t => t.status === 'pending').length;
-    if (filter === 'pending') return mockTasks.filter(t => t.status === 'in_progress').length;
+    if (!profileData) return 0;
+    
+    if (filter === 'all') {
+      return (profileData.null_status_tasks?.length || 0) + 
+             (profileData.in_progress_tasks?.length || 0) + 
+             (profileData.todo_tasks?.length || 0);
+    }
+    if (filter === 'awaiting') return profileData.null_status_tasks?.length || 0;
+    if (filter === 'pending') return profileData.in_progress_tasks?.length || 0;
     return 0;
   };
 
@@ -151,13 +158,15 @@ export const DeveloperOverview: React.FC = () => {
     );
   }
 
-  if (!profile || !stats) {
+  if (!profileData) {
     return (
       <div className="p-6 text-center">
         <p className="text-muted-foreground">Unable to load profile data</p>
       </div>
     );
   }
+
+  const { developer_info: profile, tasks_count: stats } = profileData;
 
   return (
     <div className="p-6 space-y-6">
@@ -276,7 +285,7 @@ export const DeveloperOverview: React.FC = () => {
                     <div className="text-2xl font-bold mb-2">{calculateProgress()}%</div>
                     <Progress value={calculateProgress()} className="h-2 mb-2" />
                     <p className="text-xs text-muted-foreground">
-                      {stats.total_complete} of {stats.total_tasks} tasks completed
+                      {stats.done} of {stats.total} tasks completed
                     </p>
                   </CardContent>
                 </Card>
@@ -284,7 +293,7 @@ export const DeveloperOverview: React.FC = () => {
                 <Card className="bg-white">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Requests</h3>
-                    <div className="text-2xl font-bold mb-1">5</div>
+                    <div className="text-2xl font-bold mb-1">{stats.todo}</div>
                     <p className="text-xs text-muted-foreground">Awaiting your response</p>
                   </CardContent>
                 </Card>
@@ -292,7 +301,7 @@ export const DeveloperOverview: React.FC = () => {
                 <Card className="bg-white">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Pending Tasks</h3>
-                    <div className="text-2xl font-bold mb-1">{stats.total_pending}</div>
+                    <div className="text-2xl font-bold mb-1">{stats.in_progress}</div>
                     <p className="text-xs text-muted-foreground">To be completed</p>
                   </CardContent>
                 </Card>
@@ -300,7 +309,7 @@ export const DeveloperOverview: React.FC = () => {
                 <Card className="bg-white">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Completed</h3>
-                    <div className="text-2xl font-bold mb-1">{stats.total_complete}</div>
+                    <div className="text-2xl font-bold mb-1">{stats.done}</div>
                     <p className="text-xs text-muted-foreground">Completed tasks</p>
                   </CardContent>
                 </Card>
@@ -310,18 +319,18 @@ export const DeveloperOverview: React.FC = () => {
               <Card className="bg-white">
                 <CardContent className="p-4">
                   <h3 className="text-lg font-semibold mb-2">New Task Assignment</h3>
-                  <p className="text-sm text-muted-foreground mb-4">You have 3 task(s) pending your acceptance</p>
+                  <p className="text-sm text-muted-foreground mb-4">You have {profileData.null_status_tasks?.length || 0} task(s) pending your acceptance</p>
                   
                   <div className="space-y-3">
-                    {mockTasks.slice(0, 3).map((task) => (
-                      <Card key={task.id} className="border">
+                    {profileData.null_status_tasks?.slice(0, 3).map((task) => (
+                      <Card key={task.ID} className="border">
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h4 className="font-medium mb-1">{task.title}</h4>
-                              <p className="text-sm text-muted-foreground mb-2">From: {task.client}</p>
+                              <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
                               <p className="text-xs text-muted-foreground">
-                                Assign request: {task.assign_request} • {task.deadline}
+                                Due: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No deadline'}
                               </p>
                             </div>
                             <div className="flex gap-2 ml-4">
@@ -388,18 +397,19 @@ export const DeveloperOverview: React.FC = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {filteredTasks.map((task) => (
-                      <Card key={task.id} className="border">
+                    {getFilteredTasks().map((task) => (
+                      <Card key={task.ID} className="border">
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h4 className="font-medium mb-1">{task.title}</h4>
-                              <p className="text-sm text-muted-foreground mb-1">Client: {task.client}</p>
                               <p className="text-sm mb-2">{task.description}</p>
-                              <p className="text-xs text-muted-foreground">Deadline: {task.deadline}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Due: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No deadline'}
+                              </p>
                             </div>
                             <div className="flex items-center gap-2 ml-4">
-                              {task.status === 'pending' && (
+                              {task.status === 'todo' && (
                                 <>
                                   <Button size="sm" className="bg-black text-white hover:bg-gray-800">
                                     Start Working
@@ -418,6 +428,11 @@ export const DeveloperOverview: React.FC = () => {
                                     Message
                                   </Button>
                                 </>
+                              )}
+                              {task.status === 'done' && (
+                                <Badge variant="default" className="bg-green-500">
+                                  Completed
+                                </Badge>
                               )}
                             </div>
                           </div>

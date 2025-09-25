@@ -29,8 +29,8 @@ const DeveloperDashboard = () => {
 
   const checkSetupStatus = async () => {
     try {
-      const response = await developerService.getDeveloperProfile();
-      const profile = response.data.developer_info;
+    const response = await developerService.getDeveloperProfile();
+    const profile = response.developer_info;
       
       // Check if GitHub and LinkedIn are set up
       setNeedsSetup(!profile.github_url || !profile.linkedin_url);
