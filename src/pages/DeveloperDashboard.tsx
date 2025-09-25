@@ -62,9 +62,9 @@ const DeveloperDashboard = () => {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <DeveloperSidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="ml-12 min-h-screen">
         <div className="container mx-auto p-6">
           <Routes>
             <Route index element={<DeveloperOverview />} />
