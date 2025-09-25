@@ -88,27 +88,30 @@ const Navbar: React.FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <div className="w-[270px] md:w-[330px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="w-1/3 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
-            >
-              Login
-            </button>
-            <div className="w-[1px] h-[70%] bg-black" />
-            <button
-              onClick={() => setShowSignupModal(true)}
-              className="w-1/3 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
-            >
-              Sign Up
-            </button>
-            <div className="w-[1px] h-[70%] bg-black" />
-            <button
-              onClick={() => navigate('/developer-dashboard')}
-              className="w-1/3 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
-            >
-              Enroll as Dev
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="w-[180px] md:w-[220px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="w-1/2 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
+              >
+                Login
+              </button>
+              <div className="w-[1px] h-[70%] bg-black" />
+              <button
+                onClick={() => setShowSignupModal(true)}
+                className="w-1/2 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
+              >
+                Sign Up
+              </button>
+            </div>
+            <div className="w-[100px] md:w-[120px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
+              <button
+                onClick={() => navigate('/developer-dashboard')}
+                className="w-full h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
+              >
+                Enroll as Dev
+              </button>
+            </div>
           </div>
         )}
       </div>
