@@ -28,17 +28,20 @@ export interface DeveloperProfile {
   last_login_at: string;
 }
 
-export interface DeveloperStats {
-  total_tasks: number;
-  total_pending: number;
-  total_complete: number;
+export interface TasksCount {
+  total: number;
+  in_progress: number;
+  done: number;
+  todo: number;
+  percentage: number;
 }
 
 export interface DeveloperProfileResponse {
-  status: 'success';
-  data: DeveloperStats & {
-    developer_info: DeveloperProfile;
-  };
+  developer_info: DeveloperProfile;
+  tasks_count: TasksCount;
+  null_status_tasks: Task[];
+  in_progress_tasks: Task[];
+  todo_tasks: Task[];
 }
 
 export interface Task {
@@ -90,6 +93,27 @@ export interface CreateTaskResponse {
     ShareChat: string;
     AssignerName: string;
     AssigneeName: string;
+  };
+}
+
+export interface CreateDeveloperData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  github_url: string;
+  linkedin_url: string;
+  skills: string[];
+  company_name: string;
+  experience: string;
+  bio: string;
+  hourpaid: number;
+}
+
+export interface CreateDeveloperResponse {
+  status: 'success';
+  data: {
+    message: string;
+    developer_id: string;
   };
 }
 
@@ -150,6 +174,25 @@ class DeveloperService {
       return response.data;
     } catch (error) {
       console.error('Error creating task:', error);
+      throw error;
+    }
+  }
+
+  async createDeveloper(developerData: CreateDeveloperData): Promise<CreateDeveloperResponse> {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.DEVELOPER.CREATE, {
+        email: developerData.email,
+        github_url: developerData.github_url,
+        linkedin_url: developerData.linkedin_url,
+        skills: developerData.skills,
+        company_name: developerData.company_name,
+        experience: developerData.experience,
+        bio: developerData.bio,
+        hourpaid: developerData.hourpaid
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating developer:', error);
       throw error;
     }
   }

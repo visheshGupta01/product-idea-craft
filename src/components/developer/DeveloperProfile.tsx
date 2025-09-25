@@ -22,12 +22,12 @@ import {
   Save,
   X
 } from 'lucide-react';
-import { developerService, DeveloperProfile as DeveloperProfileType, DeveloperStats, UpdateProfileData } from '@/services/developerService';
+import { developerService, DeveloperProfile as DeveloperProfileType, TasksCount, UpdateProfileData } from '@/services/developerService';
 import { format } from 'date-fns';
 
 const DeveloperProfile = () => {
   const [profile, setProfile] = useState<DeveloperProfileType | null>(null);
-  const [stats, setStats] = useState<DeveloperStats | null>(null);
+  const [stats, setStats] = useState<TasksCount | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -42,21 +42,17 @@ const DeveloperProfile = () => {
   const loadProfile = async () => {
     try {
       const response = await developerService.getDeveloperProfile();
-      setProfile(response.data.developer_info);
-      setStats({
-        total_tasks: response.data.total_tasks,
-        total_pending: response.data.total_pending,
-        total_complete: response.data.total_complete,
-      });
+      setProfile(response.developer_info);
+      setStats(response.tasks_count);
       
       // Initialize edit data
       setEditData({
-        github_url: response.data.developer_info.github_url || '',
-        linkedin_url: response.data.developer_info.linkedin_url || '',
-        company_name: response.data.developer_info.company_name || '',
-        experience: response.data.developer_info.experience || '',
-        bio: response.data.developer_info.bio || '',
-        hourpaid: response.data.developer_info.hourpaid || 0,
+        github_url: response.developer_info.github_url || '',
+        linkedin_url: response.developer_info.linkedin_url || '',
+        company_name: response.developer_info.company_name || '',
+        experience: response.developer_info.experience || '',
+        bio: response.developer_info.bio || '',
+        hourpaid: response.developer_info.hourpaid || 0,
       });
     } catch (error) {
       toast({
@@ -182,7 +178,7 @@ const DeveloperProfile = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Tasks</p>
-                <p className="text-2xl font-bold">{stats.total_tasks}</p>
+                <p className="text-2xl font-bold">{stats.total}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-primary" />
             </div>
@@ -193,7 +189,7 @@ const DeveloperProfile = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Completed</p>
-                <p className="text-2xl font-bold text-green-600">{stats.total_complete}</p>
+                <p className="text-2xl font-bold text-green-600">{stats.done}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
@@ -204,7 +200,7 @@ const DeveloperProfile = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold text-orange-600">{stats.total_pending}</p>
+                <p className="text-2xl font-bold text-orange-600">{stats.in_progress + stats.todo}</p>
               </div>
               <Clock className="h-8 w-8 text-orange-600" />
             </div>

@@ -62,6 +62,7 @@ export const API_ENDPOINTS = {
     TASKS: "/api/developer/tasks",
     TASK_STATUS: "/api/task/status",
     LIST: "/api/developers",
+    CREATE: "/api/developer/create",
   },
 
   // Task Management
