@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from '../ui/avatar';
 import { useUser } from '@/context/UserContext';
 import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
+import { DeveloperEnrollmentForm } from '../developer/DeveloperEnrollmentForm';
 import { User, FolderOpen, Settings, LogOut, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
@@ -12,6 +13,7 @@ import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if neede
 const Navbar: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showDeveloperForm, setShowDeveloperForm] = useState(false);
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
   return (
@@ -106,7 +108,7 @@ const Navbar: React.FC = () => {
             </div>
             <div className="w-[100px] md:w-[120px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
               <button
-                onClick={() => navigate('/developer-dashboard')}
+                onClick={() => setShowDeveloperForm(true)}
                 className="w-full h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
               >
                 Enroll as Dev
@@ -125,13 +127,17 @@ const Navbar: React.FC = () => {
           setShowSignupModal(true);
         }}
       />
-      <SignupModal
-        isOpen={showSignupModal}
-        onClose={() => setShowSignupModal(false)}
+      <SignupModal 
+        isOpen={showSignupModal} 
+        onClose={() => setShowSignupModal(false)} 
         onSwitchToLogin={() => {
           setShowSignupModal(false);
           setShowLoginModal(true);
         }}
+      />
+      <DeveloperEnrollmentForm
+        isOpen={showDeveloperForm}
+        onClose={() => setShowDeveloperForm(false)}
       />
     </nav>
   );

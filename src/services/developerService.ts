@@ -93,6 +93,27 @@ export interface CreateTaskResponse {
   };
 }
 
+export interface CreateDeveloperData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  github_url: string;
+  linkedin_url: string;
+  skills: string[];
+  company_name: string;
+  experience: string;
+  bio: string;
+  hourpaid: number;
+}
+
+export interface CreateDeveloperResponse {
+  status: 'success';
+  data: {
+    message: string;
+    developer_id: string;
+  };
+}
+
 class DeveloperService {
   async getDeveloperProfile(): Promise<DeveloperProfileResponse> {
     try {
@@ -150,6 +171,25 @@ class DeveloperService {
       return response.data;
     } catch (error) {
       console.error('Error creating task:', error);
+      throw error;
+    }
+  }
+
+  async createDeveloper(developerData: CreateDeveloperData): Promise<CreateDeveloperResponse> {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.DEVELOPER.CREATE, {
+        email: developerData.email,
+        github_url: developerData.github_url,
+        linkedin_url: developerData.linkedin_url,
+        skills: developerData.skills,
+        company_name: developerData.company_name,
+        experience: developerData.experience,
+        bio: developerData.bio,
+        hourpaid: developerData.hourpaid
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating developer:', error);
       throw error;
     }
   }
