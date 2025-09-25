@@ -26,7 +26,10 @@ const Navbar: React.FC = () => {
 
         {/* Menu items - Hidden on mobile */}
         <div className="hidden md:flex gap-6 lg:gap-10 text-white text-[12px] font-medium font-supply">
-          <a href="https://imagine.bo" className="hover:text-pink-400 transition">
+          <a
+            href="https://imagine.bo"
+            className="hover:text-pink-400 transition"
+          >
             About Us
           </a>
           <a href="#community" className="hover:text-pink-400 transition">
@@ -35,7 +38,10 @@ const Navbar: React.FC = () => {
           <a href="#pricing" className="hover:text-pink-400 transition">
             Pricing
           </a>
-          <a href="https://blog.imagine.bo" className="hover:text-pink-400 transition">
+          <a
+            href="https://blog.imagine.bo"
+            className="hover:text-pink-400 transition"
+          >
             Blog
           </a>
         </div>
@@ -59,21 +65,15 @@ const Navbar: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem
-                onClick={() => navigate("/projects")}
-              >
+              <DropdownMenuItem onClick={() => navigate("/projects")}>
                 <FolderOpen className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate("/profile")}
-              >
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate("/subscription")}
-              >
+              <DropdownMenuItem onClick={() => navigate("/subscription")}>
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscription
               </DropdownMenuItem>
@@ -89,6 +89,14 @@ const Navbar: React.FC = () => {
           </DropdownMenu>
         ) : (
           <div className="flex items-center gap-2">
+            <div className="w-[100px] md:w-[120px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
+              <button
+                onClick={() => navigate("/developer-dashboard")}
+                className="w-full h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
+              >
+                Enroll as Dev
+              </button>
+            </div>
             <div className="w-[180px] md:w-[220px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
               <button
                 onClick={() => setShowLoginModal(true)}
@@ -102,14 +110,6 @@ const Navbar: React.FC = () => {
                 className="w-1/2 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
               >
                 Sign Up
-              </button>
-            </div>
-            <div className="w-[100px] md:w-[120px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
-              <button
-                onClick={() => navigate('/developer-dashboard')}
-                className="w-full h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
-              >
-                Enroll as Dev
               </button>
             </div>
           </div>
