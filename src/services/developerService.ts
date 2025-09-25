@@ -70,6 +70,29 @@ export interface UpdateProfileData {
   hourpaid?: number;
 }
 
+export interface CreateTaskData {
+  title: string;
+  description: string;
+  session_id: string;
+  assignee_id: string;
+  due_date?: string;
+}
+
+export interface CreateTaskResponse {
+  status: 'success';
+  data: {
+    Title: string;
+    Description: string;
+    SessionId: string;
+    AssigneeID: string;
+    AssignerID: string;
+    DueDate?: string;
+    ShareChat: string;
+    AssignerName: string;
+    AssigneeName: string;
+  };
+}
+
 class DeveloperService {
   async getDeveloperProfile(): Promise<DeveloperProfileResponse> {
     try {
@@ -117,6 +140,16 @@ class DeveloperService {
       return response.data;
     } catch (error) {
       console.error('Error fetching all developers:', error);
+      throw error;
+    }
+  }
+
+  async createTask(taskData: CreateTaskData): Promise<CreateTaskResponse> {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.TASK.CREATE, taskData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating task:', error);
       throw error;
     }
   }

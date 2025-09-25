@@ -166,7 +166,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
   return (
     <div className="h-screen bg-background overflow-hidden">
       {/* Fixed Navbar - only show on main dashboard */}
-      <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} />
+      <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} sessionId={sessionId} />
 
       {/* Main content with conditional top padding for navbar */}
       <div className="h-full pt-14 flex">

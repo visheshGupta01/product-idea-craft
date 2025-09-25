@@ -64,6 +64,11 @@ export const API_ENDPOINTS = {
     LIST: "/api/developers",
   },
 
+  // Task Management
+  TASK: {
+    CREATE: "/api/task/create",
+  },
+
   // Payment
   PAYMENT: {
     CREATE_SESSION: "/api/payment/create-session",
