@@ -15,7 +15,7 @@ const FeedbackManagement: React.FC = () => {
     const loadFeedbacks = async () => {
       try {
         const response = await getAllFeedbacks();
-        setFeedbacks(response.feedbacks || []);
+        setFeedbacks(response || []);
       } catch (error) {
         console.error('Failed to load feedbacks:', error);
         toast.error('Failed to load feedbacks');
