@@ -69,9 +69,9 @@ export interface UsersData {
   users: User[];
 }
 
-export const fetchUsersData = async (): Promise<UsersData> => {
+export const fetchUsersData = async (page: number = 1): Promise<UsersData> => {
   try {
-    const response = await apiClient.get(API_ENDPOINTS.ADMIN.USERS);
+    const response = await apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}?page=${page}`);
     console.log(response.data);
     if (response.data.success) {
       return {

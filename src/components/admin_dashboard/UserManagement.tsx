@@ -43,15 +43,14 @@ export default function UserManagement() {
   const [pageSize, setPageSize] = useState(10);
   const [usersData, setUsersData] = useState<UsersData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [cancellingUser, setCancellingUser] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUsersData = async () => {
       try {
-        const data = await fetchUsersData();
+        setIsLoading(true);
+        const data = await fetchUsersData(currentPage);
         setUsersData(data);
-        setFilteredUsers(data.users);
       } catch (error) {
         console.error('Failed to load users data:', error);
         toast.error('Failed to load users data');
@@ -61,23 +60,14 @@ export default function UserManagement() {
     };
 
     loadUsersData();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
-    if (usersData) {
-      let filtered = usersData.users;
-      
-      // Search filter
-      if (searchQuery) {
-        filtered = filtered.filter(user =>
-          user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
-      
-      setFilteredUsers(filtered);
+    if (searchQuery) {
+      // Reset to first page when searching
+      setCurrentPage(1);
     }
-  }, [searchQuery, usersData, activeFilter]);
+  }, [searchQuery]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -98,10 +88,9 @@ export default function UserManagement() {
       
       if (response.success) {
         toast.success(`Subscription cancelled successfully for ${userName}`);
-        // Refresh the users data
-        const updatedData = await fetchUsersData();
+        // Refresh the current page data
+        const updatedData = await fetchUsersData(currentPage);
         setUsersData(updatedData);
-        setFilteredUsers(updatedData.users);
       } else {
         toast.error(response.message || 'Failed to cancel subscription');
       }
@@ -114,9 +103,15 @@ export default function UserManagement() {
   };
 
   const totalUsers = usersData?.total_verified_users || 0;
-  const totalPages = Math.ceil(filteredUsers.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + pageSize);
+  const displayedUsers = usersData?.users || [];
+  
+  // Filter users based on search query (client-side for displayed results)
+  const filteredUsers = searchQuery 
+    ? displayedUsers.filter(user =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : displayedUsers;
 
   if (isLoading) {
     return (
@@ -220,7 +215,7 @@ export default function UserManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedUsers.length === 0 ? (
+              {filteredUsers.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={5}
@@ -232,7 +227,7 @@ export default function UserManagement() {
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedUsers.map((user) => (
+                filteredUsers.map((user) => (
                   <TableRow
                     key={user.id}
                     className="border-b border-gray-100 hover:bg-gray-50"
@@ -288,24 +283,9 @@ export default function UserManagement() {
         {/* Pagination */}
         <div className="flex items-center justify-between p-6 border-t border-gray-200">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-black font-poppins">Showing</span>
-            <Select
-              value={pageSize.toString()}
-              onValueChange={(value) => setPageSize(Number(value))}
-            >
-              <SelectTrigger className="w-16 bg-white text-[#1E1E1E] border border-gray-500">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-white font-poppins text-[#1E1E1E]">
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
+            <span className="text-sm text-black font-poppins">Page {currentPage}</span>
             <span className="text-xs whitespace-nowrap font-poppins font-medium text-black">
-              Out of {filteredUsers.length} filtered (
-              {totalUsers.toLocaleString()} total)
+              Total {totalUsers.toLocaleString()} users
             </span>
           </div>
 
@@ -326,24 +306,13 @@ export default function UserManagement() {
                 </PaginationItem>
 
                 <PaginationItem>
-                  <Select
-                    value={currentPage.toString()}
-                    onValueChange={(value) => setCurrentPage(Number(value))}
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
                   >
-                    <SelectTrigger className="w-12 bg-white text-[#1E1E1E] border border-gray-500">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white font-poppins text-[#1E1E1E]">
-                      {Array.from(
-                        { length: Math.min(totalPages, 10) },
-                        (_, i) => (
-                          <SelectItem key={i + 1} value={(i + 1).toString()}>
-                            {i + 1}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
+                    {currentPage}
+                  </Button>
                 </PaginationItem>
 
                 <PaginationItem>
@@ -351,14 +320,8 @@ export default function UserManagement() {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (currentPage < totalPages)
-                        setCurrentPage(currentPage + 1);
+                      setCurrentPage(currentPage + 1);
                     }}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
                   />
                 </PaginationItem>
               </PaginationContent>

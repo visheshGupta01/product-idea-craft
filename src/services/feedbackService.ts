@@ -46,9 +46,13 @@ export const getFeedbackCategories = async (): Promise<FeedbackCategories> => {
   }
 };
 
-export const getAllFeedbacks = async (): Promise<FeedbacksResponse> => {
+export const getAllFeedbacks = async (page: number = 1, category?: string): Promise<FeedbacksResponse> => {
   try {
-    const response = await apiClient.get('/api/feedbacks');
+    let url = `/api/feedbacks?page=${page}`;
+    if (category) {
+      url += `&category=${encodeURIComponent(category)}`;
+    }
+    const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
     console.error('Error fetching feedbacks:', error);

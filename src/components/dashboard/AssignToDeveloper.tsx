@@ -27,10 +27,12 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
   const [currentView, setCurrentView] = useState<ViewState>('list');
   const [developers, setDevelopers] = useState<DeveloperProfile[]>([]);
   const [selectedDeveloper, setSelectedDeveloper] = useState<DeveloperProfile | null>(null);
+  const [developerDetails, setDeveloperDetails] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [dueDate, setDueDate] = useState<Date>();
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -42,7 +44,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
   const fetchDevelopers = async () => {
     setLoading(true);
     try {
-      const response = await developerService.getAllDevelopers();
+      const response = await developerService.getAllDevelopers(currentPage);
       console.log('Developer Service Response:', response);
       setDevelopers(Array.isArray(response) ? response : response?.data || []);
       console.log('Fetched Developers:', Array.isArray(response) ? response : response?.data);
@@ -58,9 +60,24 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
     }
   };
 
-  const handleDeveloperSelect = (developer: DeveloperProfile) => {
+  const fetchDeveloperDetails = async (developerId: string) => {
+    try {
+      const details = await developerService.getDeveloperById(developerId);
+      setDeveloperDetails(details);
+    } catch (error) {
+      console.error('Error fetching developer details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load developer details",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeveloperSelect = async (developer: DeveloperProfile) => {
     setSelectedDeveloper(developer);
     setCurrentView('profile');
+    await fetchDeveloperDetails(developer.id);
   };
 
   const handleAssignClick = () => {
@@ -104,9 +121,11 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
   const handleClose = () => {
     setCurrentView('list');
     setSelectedDeveloper(null);
+    setDeveloperDetails(null);
     setTaskTitle('');
     setTaskDescription('');
     setDueDate(undefined);
+    setCurrentPage(1);
     onClose();
   };
 
@@ -131,77 +150,104 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
       ) : developers.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground">No developers available</div>
       ) : (
-        developers.map((developer) => (
-          <Card key={developer.id} className="p-4 hover:bg-muted/50 transition-colors cursor-pointer">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback>
-                    {developer.first_name[0]}{developer.last_name[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h3 className="font-semibold">{developer.first_name} {developer.last_name}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    {renderStars(developer.rating)}
-                    <span className="text-sm text-muted-foreground">
-                      ({developer.rating || 0}) • {developer.total_solved_tasks} Projects
-                    </span>
+        <>
+          {developers.map((developer) => (
+            <Card key={developer.id} className="p-4 hover:bg-muted/50 transition-colors cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback>
+                      {developer.first_name[0]}{developer.last_name[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{developer.first_name} {developer.last_name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      {renderStars(developer.rating)}
+                      <span className="text-sm text-muted-foreground">
+                        ({developer.rating || 0}) • {developer.total_solved_tasks} Projects
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {developer.bio || 'Full-stack developer with experience building scalable web applications.'}
+                    </p>
+                    <div className="flex gap-1 mt-2 flex-wrap">
+                      {['React', 'Node.js', 'MongoDB', 'AWS'].map((skill) => (
+                        <Badge key={skill} variant="secondary" className="text-xs px-2 py-1 bg-pink-500 text-white">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                    {developer.bio || 'Full-stack developer with experience building scalable web applications.'}
-                  </p>
-                  <div className="flex gap-1 mt-2 flex-wrap">
-                    {['React', 'Node.js', 'MongoDB', 'AWS'].map((skill) => (
-                      <Badge key={skill} variant="secondary" className="text-xs px-2 py-1 bg-pink-500 text-white">
-                        {skill}
-                      </Badge>
-                    ))}
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <div className="text-right">
+                    <div className="font-semibold">${developer.hourpaid || 50}/hr</div>
+                    <div className="flex items-center gap-1 text-sm text-green-600">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      Available Now
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeveloperSelect(developer);
+                      }}
+                    >
+                      View Profile
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="bg-black text-white hover:bg-black/90"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDeveloper(developer);
+                        setCurrentView('assign');
+                      }}
+                    >
+                      <User className="h-4 w-4 mr-1" />
+                      Assign
+                    </Button>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-2">
-                <div className="text-right">
-                  <div className="font-semibold">${developer.hourpaid || 50}/hr</div>
-                  <div className="flex items-center gap-1 text-sm text-green-600">
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                    Available Now
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeveloperSelect(developer);
-                    }}
-                  >
-                    View Profile
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="bg-black text-white hover:bg-black/90"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedDeveloper(developer);
-                      setCurrentView('assign');
-                    }}
-                  >
-                    <User className="h-4 w-4 mr-1" />
-                    Assign
-                  </Button>
-                </div>
-              </div>
+            </Card>
+          ))}
+          
+          {/* Pagination */}
+          <div className="flex items-center justify-between pt-4 border-t">
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage}
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1 || loading}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={developers.length < 10 || loading}
+              >
+                Next
+              </Button>
             </div>
-          </Card>
-        ))
+          </div>
+        </>
       )}
     </div>
   );
 
   const renderDeveloperProfile = () => {
-    if (!selectedDeveloper) return null;
+    if (!selectedDeveloper || !developerDetails) return null;
 
     return (
       <div className="space-y-6 max-h-96 overflow-y-auto">
@@ -222,32 +268,32 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             </Avatar>
             <div>
               <h2 className="text-2xl font-semibold">
-                {selectedDeveloper.first_name} {selectedDeveloper.last_name}
+                {developerDetails.Name}
               </h2>
               <div className="flex items-center gap-2 mt-1">
-                {renderStars(selectedDeveloper.rating)}
+                {renderStars(developerDetails.Rating)}
                 <span className="text-sm text-muted-foreground">
-                  ({selectedDeveloper.rating || 0}) • {selectedDeveloper.total_solved_tasks} Projects
+                  ({developerDetails.Rating || 0}) • {developerDetails.TaskComplete} Projects
                 </span>
               </div>
             </div>
           </div>
           <div className="ml-auto text-right">
-            <div className="font-semibold text-lg">${selectedDeveloper.hourpaid || 50}/hr</div>
+            <div className="font-semibold text-lg">${developerDetails.HourPaid || 50}/hr</div>
             <div className="flex items-center gap-1 text-sm text-green-600">
-              <div className="h-2 w-2 rounded-full bg-green-500"></div>
-              Available Now
+              <div className={`h-2 w-2 rounded-full ${developerDetails.Available ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              {developerDetails.Available ? 'Available Now' : 'Unavailable'}
             </div>
           </div>
         </div>
 
         <div className="space-y-4">
           <p className="text-muted-foreground">
-            {selectedDeveloper.bio || 'Full-stack developer with 6+ years of experience building scalable web applications. Passionate about technology and innovation, with experience in web development and design. Always eager to learn new skills and collaborate on exciting projects.'}
+            {developerDetails.Bio || 'Full-stack developer with 6+ years of experience building scalable web applications. Passionate about technology and innovation, with experience in web development and design. Always eager to learn new skills and collaborate on exciting projects.'}
           </p>
 
           <div className="flex gap-1 flex-wrap">
-            {['React', 'Node.js', 'MongoDB', 'AWS'].map((skill) => (
+            {(developerDetails.Skills || ['React', 'Node.js', 'MongoDB', 'AWS']).map((skill: string) => (
               <Badge key={skill} variant="secondary" className="bg-pink-500 text-white">
                 {skill}
               </Badge>
@@ -255,9 +301,9 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
           </div>
 
           <div className="bg-muted/30 p-4 rounded-lg">
-            <h3 className="font-semibold mb-3">Reviews</h3>
+            <h3 className="font-semibold mb-3">Reviews ({developerDetails.RatingCount || 0})</h3>
             <div className="space-y-3">
-              {[
+              {(developerDetails.Reviews || [
                 {
                   description: "Great work on Integrate Payment Gateway APIs with the existing system",
                   client: "XYZ INC.",
@@ -268,7 +314,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
                   client: "Database Optimization",
                   date: "15/10/2025"
                 }
-              ].map((review, index) => (
+              ]).map((review: any, index: number) => (
                 <div key={index} className="bg-background p-3 rounded-lg border">
                   <div className="flex justify-between items-start mb-2">
                     <p className="text-sm">{review.description}</p>

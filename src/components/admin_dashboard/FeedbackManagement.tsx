@@ -3,19 +3,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { MessageCircle, User, Calendar, Tag } from 'lucide-react';
-import { getAllFeedbacks, Feedback } from '@/services/feedbackService';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { MessageCircle, User, Calendar, Tag, Filter } from 'lucide-react';
+import { getAllFeedbacks, getFeedbackCategories, Feedback } from '@/services/feedbackService';
 import { toast } from 'sonner';
 
 const FeedbackManagement: React.FC = () => {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await getFeedbackCategories();
+        setCategories(response.categories);
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     const loadFeedbacks = async () => {
       try {
-        const response = await getAllFeedbacks();
-        setFeedbacks(response || []);
+        setIsLoading(true);
+        const response = await getAllFeedbacks(currentPage, selectedCategory || undefined);
+        setFeedbacks(response.feedbacks || []);
       } catch (error) {
         console.error('Failed to load feedbacks:', error);
         toast.error('Failed to load feedbacks');
@@ -25,7 +45,7 @@ const FeedbackManagement: React.FC = () => {
     };
 
     loadFeedbacks();
-  }, []);
+  }, [currentPage, selectedCategory]);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -71,7 +91,26 @@ const FeedbackManagement: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
-          <span className="text-sm font-medium">{feedbacks.length} Total Feedbacks</span>
+          <span className="text-sm font-medium">{feedbacks.length} Feedbacks</span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 px-6 pb-4">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-64">
+              <SelectValue placeholder="Filter by category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Categories</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -86,47 +125,74 @@ const FeedbackManagement: React.FC = () => {
           </CardContent>
         </Card>
       ) : (
-        <ScrollArea className="h-[calc(100vh-200px)]">
-          <div className="space-y-4">
-            {feedbacks.map((feedback) => (
-              <Card key={feedback.ID} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <CardTitle className="text-lg">{feedback.subject}</CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <User className="h-4 w-4" />
-                          <span>{feedback.name}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{formatDate(feedback.CreatedAt)}</span>
+        <div className="space-y-4">
+          <ScrollArea className="h-[calc(100vh-300px)]">
+            <div className="space-y-4">
+              {feedbacks.map((feedback) => (
+                <Card key={feedback.ID} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <CardTitle className="text-lg">{feedback.subject}</CardTitle>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            <span>{feedback.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>{formatDate(feedback.CreatedAt)}</span>
+                          </div>
                         </div>
                       </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`${getCategoryColor(feedback.category)} border`}
+                      >
+                        <Tag className="h-3 w-3 mr-1" />
+                        {feedback.category}
+                      </Badge>
                     </div>
-                    <Badge 
-                      variant="outline" 
-                      className={`${getCategoryColor(feedback.category)} border`}
-                    >
-                      <Tag className="h-3 w-3 mr-1" />
-                      {feedback.category}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <Separator />
-                <CardContent className="pt-4">
-                  <div className="space-y-3">
-                    <p className="text-sm leading-relaxed">{feedback.content}</p>
-                    <div className="text-xs text-muted-foreground">
-                      User ID: {feedback.user_id}
+                  </CardHeader>
+                  <Separator />
+                  <CardContent className="pt-4">
+                    <div className="space-y-3">
+                      <p className="text-sm leading-relaxed">{feedback.content}</p>
+                      <div className="text-xs text-muted-foreground">
+                        User ID: {feedback.user_id}
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </ScrollArea>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between pt-4 border-t">
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage}
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={feedbacks.length < 10}
+              >
+                Next
+              </Button>
+            </div>
           </div>
-        </ScrollArea>
+        </div>
       )}
     </div>
   );
