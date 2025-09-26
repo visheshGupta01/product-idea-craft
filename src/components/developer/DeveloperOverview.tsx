@@ -172,7 +172,7 @@ export const DeveloperOverview: React.FC = () => {
     <div className="p-6 space-y-6">
       <div className="flex gap-6">
         {/* Left Sidebar - Profile */}
-        <Card className="w-80 bg-white">
+        <Card className="w-80 bg-black">
           <CardContent className="p-6">
             <div className="text-center">
               <div className="relative mb-4">
@@ -279,7 +279,7 @@ export const DeveloperOverview: React.FC = () => {
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-4 gap-4">
-                <Card className="bg-white">
+                <Card className="bg-black">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Progress</h3>
                     <div className="text-2xl font-bold mb-2">{calculateProgress()}%</div>
@@ -290,7 +290,7 @@ export const DeveloperOverview: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white">
+                <Card className="bg-black">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Requests</h3>
                     <div className="text-2xl font-bold mb-1">{stats.todo}</div>
@@ -298,7 +298,7 @@ export const DeveloperOverview: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white">
+                <Card className="bg-black">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Pending Tasks</h3>
                     <div className="text-2xl font-bold mb-1">{stats.in_progress}</div>
@@ -306,7 +306,7 @@ export const DeveloperOverview: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white">
+                <Card className="bg-black">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Completed</h3>
                     <div className="text-2xl font-bold mb-1">{stats.done}</div>
@@ -316,7 +316,7 @@ export const DeveloperOverview: React.FC = () => {
               </div>
 
               {/* New Task Assignment */}
-              <Card className="bg-white">
+              <Card className="bg-black">
                 <CardContent className="p-4">
                   <h3 className="text-lg font-semibold mb-2">New Task Assignment</h3>
                   <p className="text-sm text-muted-foreground mb-4">You have {profileData.null_status_tasks?.length || 0} task(s) pending your acceptance</p>
@@ -350,7 +350,7 @@ export const DeveloperOverview: React.FC = () => {
               </Card>
 
               {/* My Tasks */}
-              <Card className="bg-white">
+              <Card className="bg-black">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">My Tasks</h3>
@@ -446,7 +446,7 @@ export const DeveloperOverview: React.FC = () => {
           )}
 
           {activeTab === 'reviews' && (
-            <Card className="bg-white">
+            <Card className="bg-black">
               <CardContent className="p-4">
                 <h3 className="text-lg font-semibold mb-2">Client Reviews</h3>
                 <p className="text-sm text-muted-foreground mb-4">Feedback from your client</p>

@@ -109,7 +109,7 @@ export class AuthService {
 
         // Redirect developers to developer dashboard
         if (data.user.user_type === 'developer') {
-          window.location.href = '/developer-dashboard';
+          window.location.href = '/developer';
         }
 
         return {

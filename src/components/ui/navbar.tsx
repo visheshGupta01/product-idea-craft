@@ -46,56 +46,60 @@ const Navbar = ({ onPublish, isFrontendCreated = false, sessionId }: NavbarProps
       </Dialog>
 
       {sessionId && (
-        <AssignToDeveloper 
+        <AssignToDeveloper
           isOpen={showAssignModal}
           onClose={() => setShowAssignModal(false)}
           sessionId={sessionId}
         />
       )}
-    <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar-background border-b border-sidebar-border flex items-center justify-between px-4">
-      {/* Logo */}
-      <div className="flex items-center space-x-2">
-        <div className="flex items-center justify-center w-32 h-7 rounded-lg">
-          <Link to="/">
-            <img alt="Imagine.bo Logo" src={ImagineboDarkBackground} className="text-white" />
-          </Link>
+      <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar-background border-b border-sidebar-border flex items-center justify-between px-4">
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-center w-32 h-7 rounded-lg">
+            <Link to="/">
+              <img
+                alt="Imagine.bo Logo"
+                src={ImagineboDarkBackground}
+                className="text-white"
+              />
+            </Link>
+          </div>
         </div>
-      </div>
 
-      {/* GitHub, Assign to Dev, and Publish Buttons */}
-      <div className="flex items-center space-x-3">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowGitHubModal(true)}
-          className="flex items-center gap-2 h-8 px-3 text-sm border-sidebar-border hover:bg-sidebar-accent"
-        >
-          <Github className="h-4 w-4" />
-          GitHub
-        </Button>
+        {/* GitHub, Assign to Dev, and Publish Buttons */}
 
-        {sessionId && (
+        <div className="flex items-center space-x-3">
+          {sessionId && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAssignModal(true)}
+              className="flex items-center gap-2 h-8 px-3 text-sm border-sidebar-border hover:bg-sidebar-accent"
+            >
+              <User className="h-4 w-4" />
+              Assign to Dev
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setShowAssignModal(true)}
+            onClick={() => setShowGitHubModal(true)}
             className="flex items-center gap-2 h-8 px-3 text-sm border-sidebar-border hover:bg-sidebar-accent"
           >
-            <User className="h-4 w-4" />
-            Assign to Dev
+            <Github className="h-4 w-4" />
+            GitHub
           </Button>
-        )}
-        
-        <Button
-          onClick={() => setShowVercelModal(true)}
-          size="sm"
-          className="flex items-center gap-2 h-8 px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-        >
-          <Rocket className="h-4 w-4" />
-          Publish
-        </Button>
+
+          <Button
+            onClick={() => setShowVercelModal(true)}
+            size="sm"
+            className="flex items-center gap-2 h-8 px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+          >
+            <Rocket className="h-4 w-4" />
+            Publish
+          </Button>
+        </div>
       </div>
-    </div>
     </>
   );
 };

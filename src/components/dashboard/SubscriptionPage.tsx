@@ -146,7 +146,7 @@ const SubscriptionPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="mt-14 flex flex-col h-full bg-background">
       {/* Header */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between">
@@ -199,7 +199,7 @@ const SubscriptionPage = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="text-lg">Billing Information</CardTitle>
               <CardDescription>Payment method and billing history</CardDescription>
@@ -226,11 +226,11 @@ const SubscriptionPage = () => {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Usage Overview */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle className="text-lg">Usage Overview</CardTitle>
             <CardDescription>Current usage across your plan limits</CardDescription>
@@ -278,7 +278,7 @@ const SubscriptionPage = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Available Plans */}
         <Card>

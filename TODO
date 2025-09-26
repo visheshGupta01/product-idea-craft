@@ -1,11 +1,24 @@
-1. Update FAQ's
-6. Code Preview
-9. Frontend preview fix
-13. Add cancel subscription button
-14. Ask about separation of flow of project creation and oauth in github and vercel
-15. Also ask if repo from same name exists
-16. Tell to update plan with plan_id in db
-17. Tell him to fix default user signup plan setting
-18. Change getUserID in backend
-19. Pushing after generating frontend
-20. reload button in preview section
+1. Update Profile Page - Open Popup instead of page
+2. Fix Subscription UI - Open Popup instead of page
+4. Update Credits Page - Cancel Subs, Populate Page
+5. Project Rename - Relocate
+6. Pagination Admin Dashboard
+7. Chat Test
+8. Github, Vercel Flow check
+9. Developer Full Flow
+10. Cancel Subscription - Admin Dashboard
+11. Feedback API integration
+12. Remove Ping
+13. Update Assign to Dev UI - Increase Panel Size, Collapse and assign button fixed at bottom
+
+Ques -
+1. Will dev need to accept the task. If yes, how is he accepting the task - /update/task
+2. What will share chat url do
+3. Does dev do a onboarding or enter the details during signup - During Signup
+4. Does share chat update after user updates its session
+
+Bugs -
+1. If sidebar is collapsed and I click user profile from the dropdown, popup does not show until I uncollapse the sidebar.
+2. It is showing error fetching projects even if projects are fetched successfully but user does not have any project.
+3. Preview URL not updated in preview section after project rename
+

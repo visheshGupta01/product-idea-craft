@@ -323,7 +323,7 @@ const MyProjectsPage = () => {
 
           {filteredProjects.length === 0 && (
             <div className="text-center py-12">
-              <img src='no-project.png' className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <img src='no-project.png' className="h-40 w-40 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">
                 No projects found
               </h3>
