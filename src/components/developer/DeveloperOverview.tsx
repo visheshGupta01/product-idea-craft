@@ -8,6 +8,8 @@ import { Star, Github, Linkedin, Edit } from 'lucide-react';
 import { developerService, DeveloperProfile, TasksCount, DeveloperProfileResponse } from '@/services/developerService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { Switch } from '@/components/ui/switch';
+import { useNavigate } from 'react-router-dom';
 
 interface Task {
   id: number;
@@ -72,7 +74,10 @@ export const DeveloperOverview: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tasks' | 'reviews'>('tasks');
   const [taskFilter, setTaskFilter] = useState<'all' | 'awaiting' | 'pending'>('all');
+  const [isAvailable, setIsAvailable] = useState(true);
+  const [updatingTasks, setUpdatingTasks] = useState<Set<number>>(new Set());
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadProfile();
@@ -84,6 +89,7 @@ export const DeveloperOverview: React.FC = () => {
       const response = await developerService.getDeveloperProfile();
       console.log(response);
       setProfileData(response);
+      setIsAvailable(response.developer_info.is_available || true);
     } catch (error) {
       toast({
         title: "Error",
@@ -92,6 +98,71 @@ export const DeveloperOverview: React.FC = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAcceptTask = async (taskId: number) => {
+    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    try {
+      await developerService.updateTaskStatus(taskId, 'todo');
+      toast({
+        title: "Success",
+        description: "Task accepted successfully",
+      });
+      loadProfile(); // Refresh data
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to accept task",
+        variant: "destructive"
+      });
+    } finally {
+      setUpdatingTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(taskId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleDenyTask = async (taskId: number) => {
+    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    try {
+      await developerService.denyTask(taskId);
+      toast({
+        title: "Success",
+        description: "Task declined successfully",
+      });
+      loadProfile(); // Refresh data
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to decline task",
+        variant: "destructive"
+      });
+    } finally {
+      setUpdatingTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(taskId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleAvailabilityToggle = async (available: boolean) => {
+    try {
+      await developerService.updateDeveloperStatus(available);
+      setIsAvailable(available);
+      toast({
+        title: "Success",
+        description: `Availability updated to ${available ? 'available' : 'unavailable'}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update availability",
+        variant: "destructive"
+      });
     }
   };
 
@@ -191,9 +262,15 @@ export const DeveloperOverview: React.FC = () => {
               </div>
 
               <div className="mb-2">
-                <Badge variant="secondary" className="mb-2">
-                  Availability
-                </Badge>
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant="secondary">
+                    Availability
+                  </Badge>
+                  <Switch
+                    checked={isAvailable}
+                    onCheckedChange={handleAvailabilityToggle}
+                  />
+                </div>
                 <div className="text-right">
                   <span className="text-2xl font-bold">
                     $
@@ -204,6 +281,8 @@ export const DeveloperOverview: React.FC = () => {
                   <span className="text-sm text-muted-foreground ml-1">
                     Hourly rate
                   </span>
+                  <span className="text-2xl font-bold">${profile.hourpaid || 50}</span>
+                  <span className="text-sm text-gray-400 ml-1">Hourly rate</span>
                 </div>
               </div>
 
@@ -279,7 +358,7 @@ export const DeveloperOverview: React.FC = () => {
                 </div>
               </div>
 
-              <Button className="w-full bg-black text-white hover:bg-gray-800">
+              <Button className="w-full bg-black text-white hover:bg-gray-800" onClick={() => navigate('/developer-dashboard/profile')}>
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Profile Info
               </Button>
@@ -403,18 +482,22 @@ export const DeveloperOverview: React.FC = () => {
                               </p>
                             </div>
                             <div className="flex gap-2 ml-4">
-                              <Button
-                                size="sm"
+                              <Button 
+                                size="sm" 
                                 className="bg-pink-500 hover:bg-pink-600 text-white px-4"
+                                onClick={() => handleAcceptTask(task.ID)}
+                                disabled={updatingTasks.has(task.ID)}
                               >
-                                Accept
+                                {updatingTasks.has(task.ID) ? 'Accepting...' : 'Accept'}
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
                                 className="px-4"
+                                onClick={() => handleDenyTask(task.ID)}
+                                disabled={updatingTasks.has(task.ID)}
                               >
-                                Decline
+                                {updatingTasks.has(task.ID) ? 'Declining...' : 'Decline'}
                               </Button>
                             </div>
                           </div>

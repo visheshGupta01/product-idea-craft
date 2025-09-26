@@ -23,6 +23,7 @@ export interface DeveloperProfile {
   experience?: string;
   bio?: string;
   hourpaid?: number;
+  is_available?: boolean;
   flag: boolean;
   created_at: string;
   last_login_at: string;
@@ -150,10 +151,30 @@ class DeveloperService {
 
   async updateTaskStatus(taskId: number, status: 'todo' | 'in_progress' | 'done'): Promise<{ status: 'success'; data: Task }> {
     try {
-      const response = await apiClient.patch(`${API_ENDPOINTS.DEVELOPER.TASK_STATUS}?task_id=${taskId}`, { status });
+      const response = await apiClient.patch(`/api/update/status?id=${taskId}`, { status });
       return response.data;
     } catch (error) {
       console.error('Error updating task status:', error);
+      throw error;
+    }
+  }
+
+  async denyTask(taskId: number): Promise<{ status: 'success' }> {
+    try {
+      const response = await apiClient.delete(`/api/tasks/deny?id=${taskId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error denying task:', error);
+      throw error;
+    }
+  }
+
+  async updateDeveloperStatus(isAvailable: boolean): Promise<{ status: 'success' }> {
+    try {
+      const response = await apiClient.patch('/api/developer/status', { is_available: isAvailable });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating developer status:', error);
       throw error;
     }
   }

@@ -44,8 +44,8 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
     try {
       const response = await developerService.getAllDevelopers();
       console.log('Developer Service Response:', response);
-      setDevelopers(response || []);
-      console.log('Fetched Developers:', response.data); 
+      setDevelopers(Array.isArray(response) ? response : response?.data || []);
+      console.log('Fetched Developers:', Array.isArray(response) ? response : response?.data);
     } catch (error) {
       console.error('Error fetching developers:', error);
       toast({
