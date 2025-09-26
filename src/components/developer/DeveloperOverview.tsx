@@ -89,7 +89,7 @@ export const DeveloperOverview: React.FC = () => {
       const response = await developerService.getDeveloperProfile();
       console.log(response);
       setProfileData(response);
-      setIsAvailable(response.developer_info.is_available || true);
+      setIsAvailable(response.developer_info.status || false);
     } catch (error) {
       toast({
         title: "Error",
@@ -104,6 +104,7 @@ export const DeveloperOverview: React.FC = () => {
   const handleAcceptTask = async (taskId: number) => {
     setUpdatingTasks(prev => new Set(prev).add(taskId));
     try {
+      console.log('Accepting task', taskId);
       await developerService.updateTaskStatus(taskId, 'todo');
       toast({
         title: "Success",
@@ -272,15 +273,6 @@ export const DeveloperOverview: React.FC = () => {
                   />
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl font-bold">
-                    $
-                  </span>
-                  <span className="text-2xl font-bold">
-                    {profile.hourpaid || 5}
-                  </span>
-                  <span className="text-sm text-muted-foreground ml-1">
-                    Hourly rate
-                  </span>
                   <span className="text-2xl font-bold">${profile.hourpaid || 50}</span>
                   <span className="text-sm text-gray-400 ml-1">Hourly rate</span>
                 </div>
@@ -302,7 +294,7 @@ export const DeveloperOverview: React.FC = () => {
                 <h3 className="text-sm font-medium mb-2 flex items-center">
                   Skills
                   <div className="flex ml-2">
-                    {renderStars(profile.rating || 4)}
+                    {renderStars(profile.rating || 0)}
                   </div>
                 </h3>
                 <div className="flex flex-wrap gap-1">

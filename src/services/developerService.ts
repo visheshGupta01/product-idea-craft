@@ -23,7 +23,7 @@ export interface DeveloperProfile {
   experience?: string;
   bio?: string;
   hourpaid?: number;
-  is_available?: boolean;
+  status?: boolean;
   flag: boolean;
   created_at: string;
   last_login_at: string;
@@ -151,7 +151,7 @@ class DeveloperService {
 
   async updateTaskStatus(taskId: number, status: 'todo' | 'in_progress' | 'done'): Promise<{ status: 'success'; data: Task }> {
     try {
-      const response = await apiClient.patch(`/api/update/status?id=${taskId}`, { status });
+      const response = await apiClient.patch(`/api/update/status?task_id=${taskId}`, { status });
       return response.data;
     } catch (error) {
       console.error('Error updating task status:', error);
@@ -161,7 +161,7 @@ class DeveloperService {
 
   async denyTask(taskId: number): Promise<{ status: 'success' }> {
     try {
-      const response = await apiClient.delete(`/api/tasks/deny?id=${taskId}`);
+      const response = await apiClient.delete(`/api/tasks/deny?task_id=${taskId}`);
       return response.data;
     } catch (error) {
       console.error('Error denying task:', error);
