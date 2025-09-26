@@ -167,6 +167,56 @@ export const DeveloperOverview: React.FC = () => {
     }
   };
 
+  const handleStartWorking = async (taskId: number) => {
+    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    try {
+      console.log('Starting work on task', taskId);
+      await developerService.updateTaskStatus(taskId, 'in_progress');
+      toast({
+        title: "Success",
+        description: "Task started successfully",
+      });
+      loadProfile(); // Refresh data
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start task. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(taskId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleMarkCompleted = async (taskId: number) => {
+    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    try {
+      console.log('Completing task', taskId);
+      await developerService.updateTaskStatus(taskId, 'done');
+      toast({
+        title: "Success",
+        description: "Task completed successfully",
+      });
+      loadProfile(); // Refresh data
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to complete task. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(taskId);
+        return newSet;
+      });
+    }
+  };
+
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
@@ -568,8 +618,10 @@ export const DeveloperOverview: React.FC = () => {
                                   <Button
                                     size="sm"
                                     className="bg-black text-white hover:bg-gray-800"
+                                    onClick={() => handleStartWorking(task.ID)}
+                                    disabled={updatingTasks.has(task.ID)}
                                   >
-                                    Start Working
+                                    {updatingTasks.has(task.ID) ? 'Starting...' : 'Start Working'}
                                   </Button>
                                   <Badge
                                     variant="secondary"
@@ -584,8 +636,10 @@ export const DeveloperOverview: React.FC = () => {
                                   <Button
                                     size="sm"
                                     className="bg-black text-white hover:bg-gray-800"
+                                    onClick={() => handleMarkCompleted(task.ID)}
+                                    disabled={updatingTasks.has(task.ID)}
                                   >
-                                    Mark Complete
+                                    {updatingTasks.has(task.ID) ? 'Completing...' : 'Mark Complete'}
                                   </Button>
                                   <Button size="sm" variant="outline">
                                     Message

@@ -6,6 +6,7 @@ import { useUser } from '@/context/UserContext';
 import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
 import { DeveloperEnrollmentForm } from '../developer/DeveloperEnrollmentForm';
+import ProfilePopup from '../dashboard/ProfilePopup';
 import { User, FolderOpen, Settings, LogOut, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
@@ -14,6 +15,8 @@ const Navbar: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showDeveloperForm, setShowDeveloperForm] = useState(false);
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const [profileSection, setProfileSection] = useState<string>('basic-info');
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
   return (
@@ -71,15 +74,24 @@ const Navbar: React.FC = () => {
                 <FolderOpen className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('basic-info');
+                setShowProfilePopup(true);
+              }}>
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/subscription")}>
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('billing');
+                setShowProfilePopup(true);
+              }}>
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscription
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                setProfileSection('security');
+                setShowProfilePopup(true);
+              }}>
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </DropdownMenuItem>
@@ -138,6 +150,11 @@ const Navbar: React.FC = () => {
       <DeveloperEnrollmentForm
         isOpen={showDeveloperForm}
         onClose={() => setShowDeveloperForm(false)}
+      />
+      <ProfilePopup
+        open={showProfilePopup}
+        onOpenChange={setShowProfilePopup}
+        initialSection={profileSection}
       />
     </nav>
   );

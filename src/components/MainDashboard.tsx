@@ -4,9 +4,7 @@ import Sidebar from './dashboard/Sidebar';
 import ChatPanel from './dashboard/ChatPanel';
 import PreviewCodePanel from './dashboard/PreviewCodePanel';
 import TeamPage from './dashboard/TeamPage';
-import SubscriptionPage from './dashboard/SubscriptionPage';
 import MyProjectsPage from './dashboard/MyProjectsPage';
-import UserProfilePage from './dashboard/UserProfilePage';
 import Navbar from './ui/navbar';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useUser } from '@/context/UserContext';
@@ -19,7 +17,7 @@ interface MainDashboardProps {
   shouldOpenPreview?: boolean;
 }
 
-type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
+type ActiveView = 'main' | 'team' | 'my-projects';
 
 const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>('main');
@@ -110,12 +108,8 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
     switch (activeView) {
       case 'team':
        return <TeamPage />;
-      case 'subscription':
-        return <SubscriptionPage />;
       case 'my-projects':
         return <MyProjectsPage />;
-      case 'user-profile':
-        return <UserProfilePage onLogout={handleLogout} />;
       default:
         // Show fullscreen chat if we have initial MCP response but frontend isn't created
         // OR if we don't have initial response (fallback to original behavior)

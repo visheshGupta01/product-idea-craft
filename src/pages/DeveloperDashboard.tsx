@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useUser } from '@/context/UserContext';
 import DeveloperSidebar from '@/components/developer/DeveloperSidebar';
-import DeveloperProfile from '@/components/developer/DeveloperProfile';
-import DeveloperTasks from '@/components/developer/DeveloperTasks';
 import FirstTimeSetup from '@/components/developer/FirstTimeSetup';
 import { DeveloperOverview } from '@/components/developer/DeveloperOverview';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -68,8 +66,6 @@ const DeveloperDashboard = () => {
         <div className="container mx-auto p-6">
           <Routes>
             <Route index element={<DeveloperOverview />} />
-            <Route path="profile" element={<DeveloperProfile />} />
-            <Route path="tasks" element={<DeveloperTasks />} />
             <Route path="analytics" element={<div className="p-6">Analytics coming soon...</div>} />
           </Routes>
         </div>

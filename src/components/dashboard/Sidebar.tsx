@@ -15,7 +15,7 @@ import SitemapSection from './SitemapSection';
 import { ProjectDetails, ProjectFromAPI, fetchProjects, renameProject } from '@/services/projectService';
 import myIcon from "../../assets/ImagineboIcon.svg";
 
-type ActiveView = 'main' | 'team' | 'subscription' | 'my-projects' | 'user-profile';
+type ActiveView = 'main' | 'team' | 'my-projects';
 
 interface SidebarProps {
   collapsed: boolean;
