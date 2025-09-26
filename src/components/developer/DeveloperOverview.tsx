@@ -82,6 +82,7 @@ export const DeveloperOverview: React.FC = () => {
     try {
       setLoading(true);
       const response = await developerService.getDeveloperProfile();
+      console.log(response);
       setProfileData(response);
     } catch (error) {
       toast({
@@ -188,24 +189,34 @@ export const DeveloperOverview: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mb-2">
                 <Badge variant="secondary" className="mb-2">
                   Availability
                 </Badge>
                 <div className="text-right">
-                  <span className="text-2xl font-bold">{profile.rating || 5}</span>
-                  <span className="text-sm text-muted-foreground ml-1">Hourly rate</span>
+                  <span className="text-2xl font-bold">
+                    $
+                  </span>
+                  <span className="text-2xl font-bold">
+                    {profile.hourpaid || 5}
+                  </span>
+                  <span className="text-sm text-muted-foreground ml-1">
+                    Hourly rate
+                  </span>
                 </div>
               </div>
 
               <h2 className="text-xl font-semibold mb-1">
                 {profile.first_name} {profile.last_name}
               </h2>
-              <p className="text-sm text-muted-foreground mb-4">{profile.email}</p>
-              
+              <p className="text-sm text-muted-foreground mb-4">
+                {profile.email}
+              </p>
+
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                {profile.bio || "Passionate about technology and innovation. Experienced in full-stack development and database optimization."}
+                {profile.bio ||
+                  "Passionate about technology and innovation. Experienced in full-stack development and database optimization."}
               </p>
 
               <div className="mb-4">
@@ -216,10 +227,30 @@ export const DeveloperOverview: React.FC = () => {
                   </div>
                 </h3>
                 <div className="flex flex-wrap gap-1">
-                  <Badge variant="secondary" className="bg-pink-500 text-white text-xs">React</Badge>
-                  <Badge variant="secondary" className="bg-pink-500 text-white text-xs">Node.js</Badge>
-                  <Badge variant="secondary" className="bg-pink-500 text-white text-xs">MongoDB</Badge>
-                  <Badge variant="secondary" className="bg-pink-500 text-white text-xs">AWS</Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-pink-500 text-white text-xs"
+                  >
+                    React
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-pink-500 text-white text-xs"
+                  >
+                    Node.js
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-pink-500 text-white text-xs"
+                  >
+                    MongoDB
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-pink-500 text-white text-xs"
+                  >
+                    AWS
+                  </Badge>
                 </div>
               </div>
 
@@ -229,13 +260,20 @@ export const DeveloperOverview: React.FC = () => {
                   {profile.github_url && (
                     <div className="flex items-center gap-2 text-sm">
                       <Github className="w-4 h-4" />
-                      <span className="truncate">{profile.github_url.replace('https://github.com/', '')}</span>
+                      <span className="truncate">
+                        {profile.github_url.replace("https://github.com/", "")}
+                      </span>
                     </div>
                   )}
                   {profile.linkedin_url && (
                     <div className="flex items-center gap-2 text-sm">
                       <Linkedin className="w-4 h-4" />
-                      <span className="truncate">{profile.linkedin_url.replace('https://linkedin.com/in/', '')}</span>
+                      <span className="truncate">
+                        {profile.linkedin_url.replace(
+                          "https://linkedin.com/in/",
+                          ""
+                        )}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -254,36 +292,43 @@ export const DeveloperOverview: React.FC = () => {
           {/* Tab Navigation */}
           <div className="flex gap-6 border-b">
             <button
-              onClick={() => setActiveTab('tasks')}
+              onClick={() => setActiveTab("tasks")}
               className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'tasks'
-                  ? 'border-black text-black'
-                  : 'border-transparent text-muted-foreground hover:text-black'
+                activeTab === "tasks"
+                  ? "border-black text-black"
+                  : "border-transparent text-muted-foreground hover:text-black"
               }`}
             >
               My Tasks
             </button>
             <button
-              onClick={() => setActiveTab('reviews')}
+              onClick={() => setActiveTab("reviews")}
               className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'reviews'
-                  ? 'border-black text-black'
-                  : 'border-transparent text-muted-foreground hover:text-black'
+                activeTab === "reviews"
+                  ? "border-black text-black"
+                  : "border-transparent text-muted-foreground hover:text-black"
               }`}
             >
               Client Reviews
             </button>
           </div>
 
-          {activeTab === 'tasks' && (
+          {activeTab === "tasks" && (
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-4 gap-4">
                 <Card className="bg-black">
                   <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Progress</h3>
-                    <div className="text-2xl font-bold mb-2">{calculateProgress()}%</div>
-                    <Progress value={calculateProgress()} className="h-2 mb-2" />
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Progress
+                    </h3>
+                    <div className="text-2xl font-bold mb-2">
+                      {calculateProgress()}%
+                    </div>
+                    <Progress
+                      value={calculateProgress()}
+                      className="h-2 mb-2"
+                    />
                     <p className="text-xs text-muted-foreground">
                       {stats.done} of {stats.total} tasks completed
                     </p>
@@ -292,25 +337,39 @@ export const DeveloperOverview: React.FC = () => {
 
                 <Card className="bg-black">
                   <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Requests</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Requests
+                    </h3>
                     <div className="text-2xl font-bold mb-1">{stats.todo}</div>
-                    <p className="text-xs text-muted-foreground">Awaiting your response</p>
+                    <p className="text-xs text-muted-foreground">
+                      Awaiting your response
+                    </p>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-black">
                   <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Pending Tasks</h3>
-                    <div className="text-2xl font-bold mb-1">{stats.in_progress}</div>
-                    <p className="text-xs text-muted-foreground">To be completed</p>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Pending Tasks
+                    </h3>
+                    <div className="text-2xl font-bold mb-1">
+                      {stats.in_progress}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      To be completed
+                    </p>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-black">
                   <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Completed</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Completed
+                    </h3>
                     <div className="text-2xl font-bold mb-1">{stats.done}</div>
-                    <p className="text-xs text-muted-foreground">Completed tasks</p>
+                    <p className="text-xs text-muted-foreground">
+                      Completed tasks
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -318,9 +377,14 @@ export const DeveloperOverview: React.FC = () => {
               {/* New Task Assignment */}
               <Card className="bg-black">
                 <CardContent className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">New Task Assignment</h3>
-                  <p className="text-sm text-muted-foreground mb-4">You have {profileData.null_status_tasks?.length || 0} task(s) pending your acceptance</p>
-                  
+                  <h3 className="text-lg font-semibold mb-2">
+                    New Task Assignment
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    You have {profileData.null_status_tasks?.length || 0}{" "}
+                    task(s) pending your acceptance
+                  </p>
+
                   <div className="space-y-3">
                     {profileData.null_status_tasks?.slice(0, 3).map((task) => (
                       <Card key={task.ID} className="border">
@@ -328,16 +392,28 @@ export const DeveloperOverview: React.FC = () => {
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h4 className="font-medium mb-1">{task.title}</h4>
-                              <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
+                              <p className="text-sm text-muted-foreground mb-2">
+                                {task.description}
+                              </p>
                               <p className="text-xs text-muted-foreground">
-                                Due: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No deadline'}
+                                Due:{" "}
+                                {task.due_date
+                                  ? new Date(task.due_date).toLocaleDateString()
+                                  : "No deadline"}
                               </p>
                             </div>
                             <div className="flex gap-2 ml-4">
-                              <Button size="sm" className="bg-pink-500 hover:bg-pink-600 text-white px-4">
+                              <Button
+                                size="sm"
+                                className="bg-pink-500 hover:bg-pink-600 text-white px-4"
+                              >
                                 Accept
                               </Button>
-                              <Button size="sm" variant="outline" className="px-4">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="px-4"
+                              >
                                 Decline
                               </Button>
                             </div>
@@ -365,34 +441,34 @@ export const DeveloperOverview: React.FC = () => {
 
                   <div className="flex gap-4 mb-4">
                     <button
-                      onClick={() => setTaskFilter('all')}
+                      onClick={() => setTaskFilter("all")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        taskFilter === 'all'
-                          ? 'bg-pink-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        taskFilter === "all"
+                          ? "bg-pink-500 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      All {getTaskFilterCount('all')}
+                      All {getTaskFilterCount("all")}
                     </button>
                     <button
-                      onClick={() => setTaskFilter('awaiting')}
+                      onClick={() => setTaskFilter("awaiting")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        taskFilter === 'awaiting'
-                          ? 'bg-pink-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        taskFilter === "awaiting"
+                          ? "bg-pink-500 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      Awaiting {getTaskFilterCount('awaiting')}
+                      Awaiting {getTaskFilterCount("awaiting")}
                     </button>
                     <button
-                      onClick={() => setTaskFilter('pending')}
+                      onClick={() => setTaskFilter("pending")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        taskFilter === 'pending'
-                          ? 'bg-pink-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        taskFilter === "pending"
+                          ? "bg-pink-500 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      Pending {getTaskFilterCount('pending')}
+                      Pending {getTaskFilterCount("pending")}
                     </button>
                   </div>
 
@@ -405,23 +481,35 @@ export const DeveloperOverview: React.FC = () => {
                               <h4 className="font-medium mb-1">{task.title}</h4>
                               <p className="text-sm mb-2">{task.description}</p>
                               <p className="text-xs text-muted-foreground">
-                                Due: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No deadline'}
+                                Due:{" "}
+                                {task.due_date
+                                  ? new Date(task.due_date).toLocaleDateString()
+                                  : "No deadline"}
                               </p>
                             </div>
                             <div className="flex items-center gap-2 ml-4">
-                              {task.status === 'todo' && (
+                              {task.status === "todo" && (
                                 <>
-                                  <Button size="sm" className="bg-black text-white hover:bg-gray-800">
+                                  <Button
+                                    size="sm"
+                                    className="bg-black text-white hover:bg-gray-800"
+                                  >
                                     Start Working
                                   </Button>
-                                  <Badge variant="secondary" className="text-red-500">
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-red-500"
+                                  >
                                     Pending
                                   </Badge>
                                 </>
                               )}
-                              {task.status === 'in_progress' && (
+                              {task.status === "in_progress" && (
                                 <>
-                                  <Button size="sm" className="bg-black text-white hover:bg-gray-800">
+                                  <Button
+                                    size="sm"
+                                    className="bg-black text-white hover:bg-gray-800"
+                                  >
                                     Mark Complete
                                   </Button>
                                   <Button size="sm" variant="outline">
@@ -429,8 +517,11 @@ export const DeveloperOverview: React.FC = () => {
                                   </Button>
                                 </>
                               )}
-                              {task.status === 'done' && (
-                                <Badge variant="default" className="bg-green-500">
+                              {task.status === "done" && (
+                                <Badge
+                                  variant="default"
+                                  className="bg-green-500"
+                                >
                                   Completed
                                 </Badge>
                               )}
@@ -445,12 +536,14 @@ export const DeveloperOverview: React.FC = () => {
             </>
           )}
 
-          {activeTab === 'reviews' && (
+          {activeTab === "reviews" && (
             <Card className="bg-black">
               <CardContent className="p-4">
                 <h3 className="text-lg font-semibold mb-2">Client Reviews</h3>
-                <p className="text-sm text-muted-foreground mb-4">Feedback from your client</p>
-                
+                <p className="text-sm text-muted-foreground mb-4">
+                  Feedback from your client
+                </p>
+
                 <div className="space-y-4">
                   {mockClientReviews.map((review) => (
                     <Card key={review.id} className="border">
@@ -461,10 +554,14 @@ export const DeveloperOverview: React.FC = () => {
                               {renderStars(review.rating)}
                             </div>
                           </div>
-                          <span className="text-sm text-muted-foreground">{review.date}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {review.date}
+                          </span>
                         </div>
                         <p className="text-sm mb-2">{review.description}</p>
-                        <p className="text-sm text-muted-foreground">Client: {review.client}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Client: {review.client}
+                        </p>
                       </CardContent>
                     </Card>
                   ))}
