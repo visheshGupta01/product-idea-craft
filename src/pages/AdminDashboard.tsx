@@ -14,6 +14,7 @@ import MetricsCards from '@/components/admin_dashboard/MetrixCard';
 import MapAnalytics from '@/components/admin_dashboard/MapAnalytics';
 import DropRateCard from '@/components/admin_dashboard/DropRateCard';
 import UserManagement from '@/components/admin_dashboard/UserManagement';
+import FeedbackManagement from '@/components/admin_dashboard/FeedbackManagement';
 
 
 const AdminDashboard: React.FC = () => {
@@ -68,6 +69,8 @@ const AdminDashboard: React.FC = () => {
     switch (activeView) {
       case 'users':
         return <UserManagement />;
+      case 'feedback':
+        return <FeedbackManagement />;
       case 'dashboard':
       default:
         return (

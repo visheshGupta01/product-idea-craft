@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,10 @@ import { Camera, User, Shield, CreditCard, MessageCircle, Settings, Eye, EyeOff,
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/ui/textarea';  
+import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
+import { submitFeedback, getFeedbackCategories, FeedbackSubmission } from '@/services/feedbackService';
 
 interface ProfilePopupProps {
   open: boolean;
@@ -294,68 +297,7 @@ interface ProfilePopupProps {
         );
 
       case 'support':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold mb-2">Support & Feedback</h3>
-              <p className="text-muted-foreground text-sm">Get help or share your thoughts with our team</p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Select>
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="bug">Bug Report</SelectItem>
-                      <SelectItem value="feature">Feature Request</SelectItem>
-                      <SelectItem value="billing">Billing Issue</SelectItem>
-                      <SelectItem value="general">General Inquiry</SelectItem>
-                      <SelectItem value="technical">Technical Support</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input
-                    id="subject"
-                    placeholder="Brief description of your feedback"
-                    className="bg-background"
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
-                <div className="relative">
-                  <Textarea
-                    id="message"
-                    placeholder="Tell us more about your feedback..."
-                    className="bg-background min-h-[120px] resize-none pr-10"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute bottom-2 right-2 h-8 w-8 p-0"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="flex justify-end pt-4">
-                <Button className="bg-pink-500 hover:bg-pink-600 text-white px-6">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Send Feedback
-                </Button>
-              </div>
-            </div>
-          </div>
-        );
+        return <FeedbackForm />;
 
       default:
         return null;
@@ -427,6 +369,116 @@ interface ProfilePopupProps {
         </div>
       </DialogContent>
     </Dialog>
+  );
+};
+
+// Feedback Form Component
+const FeedbackForm: React.FC = () => {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [formData, setFormData] = useState<FeedbackSubmission>({
+    content: '',
+    subject: '',
+    category: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await getFeedbackCategories();
+        setCategories(response.categories);
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+        toast.error('Failed to load feedback categories');
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  const handleSubmit = async () => {
+    if (!formData.category || !formData.subject || !formData.content) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await submitFeedback(formData);
+      toast.success('Feedback submitted successfully!');
+      setFormData({ content: '', subject: '', category: '' });
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      toast.error('Failed to submit feedback. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof FeedbackSubmission, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-semibold mb-2">Support & Feedback</h3>
+        <p className="text-muted-foreground text-sm">Get help or share your thoughts with our team</p>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="subject">Subject</Label>
+            <Input
+              id="subject"
+              value={formData.subject}
+              onChange={(e) => handleInputChange('subject', e.target.value)}
+              placeholder="Brief description of your feedback"
+              className="bg-background"
+            />
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="message">Message</Label>
+          <Textarea
+            id="message"
+            value={formData.content}
+            onChange={(e) => handleInputChange('content', e.target.value)}
+            placeholder="Tell us more about your feedback..."
+            className="bg-background min-h-[120px] resize-none"
+          />
+        </div>
+        
+        <div className="flex justify-end pt-4">
+          <Button 
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="bg-pink-500 hover:bg-pink-600 text-white px-6"
+          >
+            <MessageCircle className="h-4 w-4 mr-2" />
+            {isSubmitting ? 'Sending...' : 'Send Feedback'}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
