@@ -171,7 +171,7 @@ class DeveloperService {
 
   async updateDeveloperStatus(isAvailable: boolean): Promise<{ status: 'success' }> {
     try {
-      const response = await apiClient.patch('/api/developer/status', { is_available: isAvailable });
+      const response = await apiClient.get('/api/developer/status');
       return response.data;
     } catch (error) {
       console.error('Error updating developer status:', error);
@@ -185,6 +185,27 @@ class DeveloperService {
       return response.data;
     } catch (error) {
       console.error('Error fetching all developers:', error);
+      throw error;
+    }
+  }
+
+  async getDeveloperById(developerId: string): Promise<{ 
+    Name: string; 
+    Rating: number; 
+    RatingCount: number; 
+    TaskComplete: number; 
+    HourPaid: number; 
+    Available: boolean; 
+    Skills: string[]; 
+    Bio: string; 
+    Experience: string; 
+    Reviews: any[] 
+  }> {
+    try {
+      const response = await apiClient.get(`/api/developer?dev_id=${developerId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching developer by ID:', error);
       throw error;
     }
   }
