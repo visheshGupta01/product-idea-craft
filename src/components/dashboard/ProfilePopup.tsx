@@ -26,6 +26,7 @@ interface ProfilePopupProps {
   const { user, profile, updateProfile } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   
   // Use actual profile data from API
   const userData = profile;
