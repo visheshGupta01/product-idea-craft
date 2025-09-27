@@ -217,9 +217,12 @@ export const DeveloperOverview: React.FC = () => {
     }
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-  };
+const getInitials = (firstName?: string, lastName?: string): string => {
+  const f = firstName?.trim().charAt(0).toUpperCase() ?? "";
+  const l = lastName?.trim().charAt(0).toUpperCase() ?? "";
+  return f + l || "?";
+};
+
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -237,16 +240,18 @@ export const DeveloperOverview: React.FC = () => {
 
   const getFilteredTasks = () => {
     if (!profileData) return [];
-    
-    if (taskFilter === 'all') {
-      return [
-        ...profileData.null_status_tasks,
-        ...profileData.in_progress_tasks,
-        ...profileData.todo_tasks
-      ];
+
+    const nullStatus = profileData.null_status_tasks ?? [];
+    const inProgress = profileData.in_progress_tasks ?? [];
+    const todo = profileData.todo_tasks ?? [];
+
+    if (taskFilter === "all") {
+      return [...nullStatus, ...inProgress, ...todo];
     }
-    if (taskFilter === 'awaiting') return profileData.null_status_tasks;
-    if (taskFilter === 'pending') return profileData.in_progress_tasks;
+    if (taskFilter === "awaiting") return nullStatus;
+    if (taskFilter === "pending") return inProgress;
+    if (taskFilter === "todo") return todo;
+
     return [];
   };
 
@@ -314,17 +319,19 @@ export const DeveloperOverview: React.FC = () => {
 
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="secondary">
-                    Availability
-                  </Badge>
+                  <Badge variant="secondary">Availability</Badge>
                   <Switch
                     checked={isAvailable}
                     onCheckedChange={handleAvailabilityToggle}
                   />
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl font-bold">${profile.hourpaid || 50}</span>
-                  <span className="text-sm text-gray-400 ml-1">Hourly rate</span>
+                  <span className="text-2xl font-bold">
+                    ${profile.hourpaid || 50}
+                  </span>
+                  <span className="text-sm text-gray-400 ml-1">
+                    Hourly rate
+                  </span>
                 </div>
               </div>
 
@@ -400,7 +407,10 @@ export const DeveloperOverview: React.FC = () => {
                 </div>
               </div>
 
-              <Button className="w-full bg-black text-white hover:bg-gray-800" onClick={() => navigate('/developer-dashboard/profile')}>
+              <Button
+                className="w-full bg-black text-white hover:bg-gray-800"
+                onClick={() => navigate("/developer-dashboard/profile")}
+              >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Profile Info
               </Button>
@@ -461,7 +471,7 @@ export const DeveloperOverview: React.FC = () => {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
                       Requests
                     </h3>
-                    <div className="text-2xl font-bold mb-1">{stats.todo}</div>
+                    {/* <div className="text-2xl font-bold mb-1">{stats.todo}</div> */}
                     <p className="text-xs text-muted-foreground">
                       Awaiting your response
                     </p>
@@ -474,7 +484,7 @@ export const DeveloperOverview: React.FC = () => {
                       Pending Tasks
                     </h3>
                     <div className="text-2xl font-bold mb-1">
-                      {stats.in_progress}
+                      {/* {stats.in_progress} */}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       To be completed
@@ -487,7 +497,7 @@ export const DeveloperOverview: React.FC = () => {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
                       Completed
                     </h3>
-                    <div className="text-2xl font-bold mb-1">{stats.done}</div>
+                    {/* <div className="text-2xl font-bold mb-1">{stats.done}</div> */}
                     <p className="text-xs text-muted-foreground">
                       Completed tasks
                     </p>
@@ -503,7 +513,10 @@ export const DeveloperOverview: React.FC = () => {
                   </h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     You have {profileData.null_status_tasks?.length || 0}{" "}
-                    task(s) pending your acceptance
+                    {profileData.null_status_tasks?.length === 1
+                      ? "task"
+                      : "tasks"}{" "}
+                    pending your acceptance
                   </p>
 
                   <div className="space-y-3">
@@ -524,22 +537,26 @@ export const DeveloperOverview: React.FC = () => {
                               </p>
                             </div>
                             <div className="flex gap-2 ml-4">
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 className="bg-pink-500 hover:bg-pink-600 text-white px-4"
                                 onClick={() => handleAcceptTask(task.ID)}
                                 disabled={updatingTasks.has(task.ID)}
                               >
-                                {updatingTasks.has(task.ID) ? 'Accepting...' : 'Accept'}
+                                {updatingTasks.has(task.ID)
+                                  ? "Accepting..."
+                                  : "Accept"}
                               </Button>
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
+                              <Button
+                                size="sm"
+                                variant="outline"
                                 className="px-4"
                                 onClick={() => handleDenyTask(task.ID)}
                                 disabled={updatingTasks.has(task.ID)}
                               >
-                                {updatingTasks.has(task.ID) ? 'Declining...' : 'Decline'}
+                                {updatingTasks.has(task.ID)
+                                  ? "Declining..."
+                                  : "Decline"}
                               </Button>
                             </div>
                           </div>
@@ -621,7 +638,9 @@ export const DeveloperOverview: React.FC = () => {
                                     onClick={() => handleStartWorking(task.ID)}
                                     disabled={updatingTasks.has(task.ID)}
                                   >
-                                    {updatingTasks.has(task.ID) ? 'Starting...' : 'Start Working'}
+                                    {updatingTasks.has(task.ID)
+                                      ? "Starting..."
+                                      : "Start Working"}
                                   </Button>
                                   <Badge
                                     variant="secondary"
@@ -639,7 +658,9 @@ export const DeveloperOverview: React.FC = () => {
                                     onClick={() => handleMarkCompleted(task.ID)}
                                     disabled={updatingTasks.has(task.ID)}
                                   >
-                                    {updatingTasks.has(task.ID) ? 'Completing...' : 'Mark Complete'}
+                                    {updatingTasks.has(task.ID)
+                                      ? "Completing..."
+                                      : "Mark Complete"}
                                   </Button>
                                   <Button size="sm" variant="outline">
                                     Message
