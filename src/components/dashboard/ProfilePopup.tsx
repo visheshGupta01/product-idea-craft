@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import CancelSubscriptionDialog from '@/components/ui/cancel-subscription-dialog';
+import { cancelUserSubscription } from '@/services/adminService';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -289,6 +291,9 @@ interface ProfilePopupProps {
                   <Button className="w-full" size="lg">
                     <span className="mr-2">✨</span>
                     Upgrade Plan
+                  </Button>
+                  <Button variant="destructive" size="sm" className="w-full mt-2" onClick={() => setShowCancelDialog(true)}>
+                    Cancel Subscription
                   </Button>
                 </div>
               </div>

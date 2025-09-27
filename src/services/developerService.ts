@@ -1,48 +1,29 @@
 import apiClient from '@/lib/apiClient';
 import { API_ENDPOINTS } from '@/config/api';
 
-export interface DeveloperProfile {
+export interface DeveloperInfo {
   id: string;
-  first_name: string;
-  last_name: string;
+  name: string;
+  skills: string[];
+  linkedin_url: string;
+  github_url: string;
+  hourpaid: number;
+  status: boolean;
+  total_tasks: number;
+  total_in_progress: number;
+  total_pending: number;
+  total_done: number;
+  bio: string;
+  experience: string;
+  avg_rating: number;
+  rating_count: number;
   email: string;
-  country: string;
-  city: string;
-  lat: number;
-  lon: number;
-  user_type: 'developer';
-  plan_id: number;
-  is_plan_active: boolean;
-  balances: number;
-  rating: number;
-  github_url?: string;
-  linkedin_url?: string;
-  total_solved_tasks: number;
-  total_pending_task: number;
-  company_name?: string;
-  experience?: string;
-  bio?: string;
-  hourpaid?: number;
-  status?: boolean;
-  flag: boolean;
-  created_at: string;
-  last_login_at: string;
-}
-
-export interface TasksCount {
-  total: number;
-  in_progress: number;
-  done: number;
-  todo: number;
-  percentage: number;
 }
 
 export interface DeveloperProfileResponse {
-  developer_info: DeveloperProfile;
-  tasks_count: TasksCount;
+  active_tasks: Task[];
+  developer_info: DeveloperInfo;
   null_status_tasks: Task[];
-  in_progress_tasks: Task[];
-  todo_tasks: Task[];
 }
 
 export interface Task {
@@ -129,7 +110,7 @@ class DeveloperService {
     }
   }
 
-  async updateDeveloperProfile(data: UpdateProfileData): Promise<{ status: 'success'; data: DeveloperProfile }> {
+  async updateDeveloperProfile(data: UpdateProfileData): Promise<{ status: 'success'; data: DeveloperInfo }> {
     try {
       const response = await apiClient.patch(API_ENDPOINTS.DEVELOPER.PROFILE, data);
       return response.data;
@@ -169,7 +150,7 @@ class DeveloperService {
     }
   }
 
-  async updateDeveloperStatus(isAvailable: boolean): Promise<{ status: 'success' }> {
+  async updateDeveloperStatus(): Promise<{ status: 'success' }> {
     try {
       const response = await apiClient.get('/api/developer/status');
       return response.data;
@@ -179,7 +160,7 @@ class DeveloperService {
     }
   }
 
-  async getAllDevelopers(page: number = 1): Promise<{ status: 'success'; data: DeveloperProfile[] }> {
+  async getAllDevelopers(page: number = 1): Promise<{ status: 'success'; data: DeveloperInfo[] }> {
     try {
       const response = await apiClient.get(`${API_ENDPOINTS.DEVELOPER.LIST}?page=${page}`);
       return response.data;

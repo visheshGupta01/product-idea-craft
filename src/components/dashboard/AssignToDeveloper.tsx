@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Star, Github, Linkedin, User, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { developerService, DeveloperProfile, CreateTaskData } from '@/services/developerService';
+import { developerService, DeveloperInfo, CreateTaskData } from '@/services/developerService';
 import { useToast } from '@/hooks/use-toast';
 
 interface AssignToDeveloperProps {
@@ -25,8 +25,8 @@ type ViewState = 'list' | 'profile' | 'assign' | 'success';
 
 const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, sessionId }) => {
   const [currentView, setCurrentView] = useState<ViewState>('list');
-  const [developers, setDevelopers] = useState<DeveloperProfile[]>([]);
-  const [selectedDeveloper, setSelectedDeveloper] = useState<DeveloperProfile | null>(null);
+  const [developers, setDevelopers] = useState<DeveloperInfo[]>([]);
+  const [selectedDeveloper, setSelectedDeveloper] = useState<DeveloperInfo | null>(null);
   const [developerDetails, setDeveloperDetails] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [taskTitle, setTaskTitle] = useState('');
@@ -74,7 +74,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
     }
   };
 
-  const handleDeveloperSelect = async (developer: DeveloperProfile) => {
+  const handleDeveloperSelect = async (developer: DeveloperInfo) => {
     setSelectedDeveloper(developer);
     setCurrentView('profile');
     await fetchDeveloperDetails(developer.id);
@@ -155,24 +155,24 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             <Card key={developer.id} className="p-4 hover:bg-muted/50 transition-colors cursor-pointer">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12">
+                   <Avatar className="h-12 w-12">
                     <AvatarFallback>
-                      {developer.first_name[0]}{developer.last_name[0]}
+                      {developer.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h3 className="font-semibold">{developer.first_name} {developer.last_name}</h3>
+                    <h3 className="font-semibold">{developer.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      {renderStars(developer.rating)}
+                      {renderStars(developer.avg_rating)}
                       <span className="text-sm text-muted-foreground">
-                        ({developer.rating || 0}) • {developer.total_solved_tasks} Projects
+                        ({developer.avg_rating || 0}) • {developer.total_done} Projects
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                       {developer.bio || 'Full-stack developer with experience building scalable web applications.'}
                     </p>
                     <div className="flex gap-1 mt-2 flex-wrap">
-                      {['React', 'Node.js', 'MongoDB', 'AWS'].map((skill) => (
+                      {(developer.skills || ['React', 'Node.js', 'MongoDB', 'AWS']).map((skill) => (
                         <Badge key={skill} variant="secondary" className="text-xs px-2 py-1 bg-pink-500 text-white">
                           {skill}
                         </Badge>
@@ -263,7 +263,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
               <AvatarFallback className="text-xl">
-                {selectedDeveloper.first_name[0]}{selectedDeveloper.last_name[0]}
+                {selectedDeveloper.name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -292,43 +292,37 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             {developerDetails.Bio || 'Full-stack developer with 6+ years of experience building scalable web applications. Passionate about technology and innovation, with experience in web development and design. Always eager to learn new skills and collaborate on exciting projects.'}
           </p>
 
-          <div className="flex gap-1 flex-wrap">
-            {(developerDetails.Skills || ['React', 'Node.js', 'MongoDB', 'AWS']).map((skill: string) => (
-              <Badge key={skill} variant="secondary" className="bg-pink-500 text-white">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-
-          <div className="bg-muted/30 p-4 rounded-lg">
-            <h3 className="font-semibold mb-3">Reviews ({developerDetails.RatingCount || 0})</h3>
-            <div className="space-y-3">
-              {(developerDetails.Reviews || [
-                {
-                  description: "Great work on Integrate Payment Gateway APIs with the existing system",
-                  client: "XYZ INC.",
-                  date: "15/12/2025"
-                },
-                {
-                  description: "Good optimization work. Database performance improved significantly.",
-                  client: "Database Optimization",
-                  date: "15/10/2025"
-                }
-              ]).map((review: any, index: number) => (
-                <div key={index} className="bg-background p-3 rounded-lg border">
-                  <div className="flex justify-between items-start mb-2">
-                    <p className="text-sm">{review.description}</p>
-                    <div className="flex ml-2">
-                      {renderStars(5)}
-                    </div>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Client: {review.client} • {review.date}
-                  </div>
-                </div>
+            <div className="flex gap-1 flex-wrap">
+              {(developerDetails.Skills || []).map((skill: string) => (
+                <Badge key={skill} variant="secondary" className="bg-pink-500 text-white">
+                  {skill}
+                </Badge>
               ))}
             </div>
-          </div>
+
+            <div className="bg-muted/30 p-4 rounded-lg">
+              <h3 className="font-semibold mb-3">Reviews ({developerDetails.RatingCount || 0})</h3>
+              <div className="space-y-3">
+                {(developerDetails.Reviews && developerDetails.Reviews.length > 0 ? developerDetails.Reviews : []).map((review: any, index: number) => (
+                  <div key={index} className="bg-background p-3 rounded-lg border">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-sm">{review.description || review.comment || 'Great work!'}</p>
+                      <div className="flex ml-2">
+                        {renderStars(review.rating || 5)}
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Client: {review.client || review.reviewer || 'Anonymous'} • {review.date || review.created_at || 'Recent'}
+                    </div>
+                  </div>
+                ))}
+                {(!developerDetails.Reviews || developerDetails.Reviews.length === 0) && (
+                  <div className="text-center text-sm text-muted-foreground py-4">
+                    No reviews yet
+                  </div>
+                )}
+              </div>
+            </div>
 
           <div className="flex justify-between pt-4">
             <Button 
@@ -365,7 +359,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h2 className="text-xl font-semibold">
-            Assign to {selectedDeveloper.first_name} {selectedDeveloper.last_name}
+            Assign to {selectedDeveloper.name}
           </h2>
         </div>
 
@@ -439,11 +433,11 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
           <div className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full">
             <CheckCircle2 className="h-5 w-5" />
             <span className="font-medium">
-              Request sent to {selectedDeveloper.first_name} {selectedDeveloper.last_name}
+              Request sent to {selectedDeveloper.name}
             </span>
             <Avatar className="h-6 w-6 ml-2">
               <AvatarFallback className="text-xs">
-                {selectedDeveloper.first_name[0]}{selectedDeveloper.last_name[0]}
+                {selectedDeveloper.name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
