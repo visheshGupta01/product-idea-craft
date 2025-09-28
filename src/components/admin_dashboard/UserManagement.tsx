@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/pagination";
 import { fetchUsersData, UsersData, User, cancelUserSubscription } from '@/services/adminService';
 import { toast } from 'sonner';
+import CancelSubscriptionDialog from '@/components/ui/cancel-subscription-dialog';
 
 export default function UserManagement() {
   const [activeFilter, setActiveFilter] = useState<string>("All");
@@ -44,6 +45,8 @@ export default function UserManagement() {
   const [usersData, setUsersData] = useState<UsersData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [cancellingUser, setCancellingUser] = useState<string | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     const loadUsersData = async () => {
@@ -81,13 +84,18 @@ export default function UserManagement() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const handleCancelSubscription = async (userId: string, userName: string) => {
+  const handleCancelSubscription = (userId: string, userName: string) => {
+    setSelectedUser({ id: userId, name: userName, email: '', created_at: '', last_login_at: '', no_of_projects: 0 });
+    setShowCancelDialog(true);
+  };
+
+  const handleConfirmCancellation = async (userId: string) => {
     try {
       setCancellingUser(userId);
       const response = await cancelUserSubscription(userId);
       
       if (response.success) {
-        toast.success(`Subscription cancelled successfully for ${userName}`);
+        toast.success(`Subscription cancelled successfully`);
         // Refresh the current page data
         const updatedData = await fetchUsersData(currentPage);
         setUsersData(updatedData);
@@ -99,6 +107,8 @@ export default function UserManagement() {
       toast.error('Failed to cancel subscription');
     } finally {
       setCancellingUser(null);
+      setShowCancelDialog(false);
+      setSelectedUser(null);
     }
   };
 
@@ -329,6 +339,20 @@ export default function UserManagement() {
           </div>
         </div>
       </div>
+
+      {showCancelDialog && selectedUser && (
+        <CancelSubscriptionDialog
+          isOpen={showCancelDialog}
+          onClose={() => {
+            setShowCancelDialog(false);
+            setSelectedUser(null);
+          }}
+          userId={selectedUser.id}
+          userName={selectedUser.name}
+          planName="Pro"
+          onConfirm={handleConfirmCancellation}
+        />
+      )}
     </div>
   );
 }

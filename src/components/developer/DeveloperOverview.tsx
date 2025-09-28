@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Star, Github, Linkedin, Edit } from 'lucide-react';
-import { developerService, DeveloperProfile, TasksCount, DeveloperProfileResponse } from '@/services/developerService';
+import { developerService, DeveloperInfo, DeveloperProfileResponse } from '@/services/developerService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
@@ -150,13 +150,13 @@ export const DeveloperOverview: React.FC = () => {
     }
   };
 
-  const handleAvailabilityToggle = async (available: boolean) => {
+  const handleAvailabilityToggle = async () => {
     try {
-      await developerService.updateDeveloperStatus(available);
-      setIsAvailable(available);
+      await developerService.updateDeveloperStatus();
+      setIsAvailable(!isAvailable);
       toast({
         title: "Success",
-        description: `Availability updated to ${available ? 'available' : 'unavailable'}`,
+        description: `Availability updated`,
       });
     } catch (error) {
       toast({
@@ -234,24 +234,22 @@ const getInitials = (firstName?: string, lastName?: string): string => {
   };
 
   const calculateProgress = () => {
-    if (!profileData?.tasks_count) return 0;
-    return profileData.tasks_count.percentage || 0;
+    if (!profileData?.developer_info) return 0;
+    const { total_tasks, total_done } = profileData.developer_info;
+    return total_tasks > 0 ? Math.round((total_done / total_tasks) * 100) : 0;
   };
 
   const getFilteredTasks = () => {
     if (!profileData) return [];
-
-    const nullStatus = profileData.null_status_tasks ?? [];
-    const inProgress = profileData.in_progress_tasks ?? [];
-    const todo = profileData.todo_tasks ?? [];
-
-    if (taskFilter === "all") {
-      return [...nullStatus, ...inProgress, ...todo];
+    
+    if (taskFilter === 'all') {
+      return [
+        ...profileData.null_status_tasks,
+        ...profileData.active_tasks
+      ];
     }
-    if (taskFilter === "awaiting") return nullStatus;
-    if (taskFilter === "pending") return inProgress;
-    if (taskFilter === "todo") return todo;
-
+    if (taskFilter === 'awaiting') return profileData.null_status_tasks;
+    if (taskFilter === 'pending') return profileData.active_tasks;
     return [];
   };
 
@@ -260,11 +258,10 @@ const getInitials = (firstName?: string, lastName?: string): string => {
     
     if (filter === 'all') {
       return (profileData.null_status_tasks?.length || 0) + 
-             (profileData.in_progress_tasks?.length || 0) + 
-             (profileData.todo_tasks?.length || 0);
+             (profileData.active_tasks?.length || 0);
     }
     if (filter === 'awaiting') return profileData.null_status_tasks?.length || 0;
-    if (filter === 'pending') return profileData.in_progress_tasks?.length || 0;
+    if (filter === 'pending') return profileData.active_tasks?.length || 0;
     return 0;
   };
 
@@ -294,7 +291,7 @@ const getInitials = (firstName?: string, lastName?: string): string => {
     );
   }
 
-  const { developer_info: profile, tasks_count: stats } = profileData;
+  const { developer_info: profile } = profileData;
 
   return (
     <div className="p-6 space-y-6">
@@ -305,9 +302,9 @@ const getInitials = (firstName?: string, lastName?: string): string => {
             <div className="text-center">
               <div className="relative mb-4">
                 <Avatar className="w-24 h-24 mx-auto">
-                  <AvatarImage src="" alt={profile.first_name} />
+                  <AvatarImage src="" alt={profile.name} />
                   <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
-                    {getInitials(profile.first_name, profile.last_name)}
+                    {profile.name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
@@ -336,7 +333,7 @@ const getInitials = (firstName?: string, lastName?: string): string => {
               </div>
 
               <h2 className="text-xl font-semibold mb-1">
-                {profile.first_name} {profile.last_name}
+                {profile.name}
               </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 {profile.email}
@@ -351,34 +348,19 @@ const getInitials = (firstName?: string, lastName?: string): string => {
                 <h3 className="text-sm font-medium mb-2 flex items-center">
                   Skills
                   <div className="flex ml-2">
-                    {renderStars(profile.rating || 0)}
+                    {renderStars(profile.avg_rating || 0)}
                   </div>
                 </h3>
                 <div className="flex flex-wrap gap-1">
-                  <Badge
-                    variant="secondary"
-                    className="bg-pink-500 text-white text-xs"
-                  >
-                    React
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-pink-500 text-white text-xs"
-                  >
-                    Node.js
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-pink-500 text-white text-xs"
-                  >
-                    MongoDB
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-pink-500 text-white text-xs"
-                  >
-                    AWS
-                  </Badge>
+                  {(profile.skills || ['React', 'Node.js', 'MongoDB', 'AWS']).map((skill) => (
+                    <Badge
+                      key={skill}
+                      variant="secondary"
+                      className="bg-pink-500 text-white text-xs"
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
                 </div>
               </div>
 
@@ -461,7 +443,7 @@ const getInitials = (firstName?: string, lastName?: string): string => {
                       className="h-2 mb-2"
                     />
                     <p className="text-xs text-muted-foreground">
-                      {stats.done} of {stats.total} tasks completed
+                      {profile.total_done} of {profile.total_tasks} tasks completed
                     </p>
                   </CardContent>
                 </Card>
@@ -471,7 +453,7 @@ const getInitials = (firstName?: string, lastName?: string): string => {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
                       Requests
                     </h3>
-                    {/* <div className="text-2xl font-bold mb-1">{stats.todo}</div> */}
+                    <div className="text-2xl font-bold mb-1">{profile.total_pending}</div>
                     <p className="text-xs text-muted-foreground">
                       Awaiting your response
                     </p>
@@ -484,7 +466,7 @@ const getInitials = (firstName?: string, lastName?: string): string => {
                       Pending Tasks
                     </h3>
                     <div className="text-2xl font-bold mb-1">
-                      {/* {stats.in_progress} */}
+                      {profile.total_in_progress}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       To be completed
@@ -497,7 +479,7 @@ const getInitials = (firstName?: string, lastName?: string): string => {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
                       Completed
                     </h3>
-                    {/* <div className="text-2xl font-bold mb-1">{stats.done}</div> */}
+                    <div className="text-2xl font-bold mb-1">{profile.total_done}</div>
                     <p className="text-xs text-muted-foreground">
                       Completed tasks
                     </p>
