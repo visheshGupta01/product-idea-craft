@@ -90,55 +90,35 @@ interface ProfilePopupProps {
               <h3 className="text-lg font-semibold">Basic Info</h3>
             {/* Profile Photo Section */}
             <div className="flex flex-col items-center space-y-4">
-              <div className="relative">
-                <Avatar className="h-24 w-24">
-                  <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                    VG
-                  </AvatarFallback>
-                </Avatar>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-8 px-2"
-                >
-                  <Camera className="h-3 w-3 mr-1" />
-                  Edit photo
-                </Button>
-              </div>
+              <Avatar className="h-24 w-24">
+                <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                  VG
+                </AvatarFallback>
+              </Avatar>
             </div>
 
             {/* Form Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="bg-background"
-                />
+                <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
+                  {formData.firstName || 'Not provided'}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="bg-background"
-                />
+                <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
+                  {formData.lastName || 'Not provided'}
+                </div>
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-background pr-10"
-                />
+                <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm pr-10">
+                  {formData.email || 'Not provided'}
+                </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <div className="h-2 w-2 bg-green-500 rounded-full"></div>
                 </div>
@@ -360,20 +340,44 @@ interface ProfilePopupProps {
               {renderContent()}
             </div>
 
-            {/* Footer with Save/Cancel buttons - only show on basic info */}
-            {activeSection === 'basic' && (
-              <div className="border-t p-6 flex justify-end space-x-2">
-                <Button variant="outline" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSave} className="bg-pink-500 hover:bg-pink-600">
-                  Save
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </DialogContent>
+
+      {showCancelDialog && (
+        <CancelSubscriptionDialog
+          isOpen={showCancelDialog}
+          onClose={() => setShowCancelDialog(false)}
+          userId={userData?.id || ''}
+          userName={`${userData?.first_name || ''} ${userData?.last_name || ''}`.trim() || 'User'}
+          planName={userData?.plan_id === 1 ? 'Free Plan' : userData?.plan_id === 2 ? 'Pro Plan' : userData?.plan_id === 3 ? 'Enterprise Plan' : 'Free Plan'}
+          onConfirm={async (userId: string) => {
+            try {
+              const response = await cancelUserSubscription(userId);
+              
+              if (response?.success) {
+                toast.success('Subscription cancelled successfully');
+              } else {
+                toast.error('Failed to cancel subscription');
+              }
+            } catch (error: any) {
+              console.error('Error cancelling subscription:', error);
+              
+              // Show the actual error message from the API
+              let errorMessage = "Error cancelling subscription";
+              if (error?.response?.data?.error?.message) {
+                errorMessage = error.response.data.error.message;
+              } else if (error?.message) {
+                errorMessage = error.message;
+              }
+              
+              toast.error(errorMessage);
+            } finally {
+              setShowCancelDialog(false);
+            }
+          }}
+        />
+      )}
     </Dialog>
   );
 };

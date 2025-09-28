@@ -62,6 +62,7 @@ export interface User {
   created_at: string;
   last_login_at: string;
   no_of_projects: number;
+  plan_name?: string;
 }
 
 export interface UsersData {

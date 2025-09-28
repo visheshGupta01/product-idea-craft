@@ -46,11 +46,20 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
       setTimeout(() => {
         handleClose();
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error cancelling subscription:', error);
+      
+      // Check if error response has specific message structure
+      let errorMessage = "Failed to cancel subscription. Please try again.";
+      if (error?.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to cancel subscription. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

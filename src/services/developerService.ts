@@ -26,23 +26,28 @@ export interface DeveloperProfileResponse {
   null_status_tasks: Task[];
 }
 
-export interface Task {
+interface Task {
   ID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-  DeletedAt: string | null;
   title: string;
   description: string;
   session_id: string;
   assignee_id: string;
   assigner_id: string;
-  status: 'todo' | 'in_progress' | 'done';
-  due_date: string;
+  status: string | null;
+  share_chat: string;
+  chat_mode: boolean;
+  due_date: string | null;
+  created_at: string;
+  assigner_name: string;
+  assignee_name: string;
 }
 
 export interface TasksResponse {
-  status: 'success';
-  data: Task[];
+  tasks: Task[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
 }
 
 export interface UpdateProfileData {
@@ -120,9 +125,13 @@ class DeveloperService {
     }
   }
 
-  async getDeveloperTasks(page: number = 1): Promise<TasksResponse> {
+  async getDeveloperTasks(page: number = 1, status?: string): Promise<TasksResponse> {
     try {
-      const response = await apiClient.get(`${API_ENDPOINTS.DEVELOPER.TASKS}?page=${page}`);
+      const params = new URLSearchParams({ page: page.toString() });
+      if (status && status !== '') {
+        params.append('status', status);
+      }
+      const response = await apiClient.get(`${API_ENDPOINTS.TASK.GET_TASKS}?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching developer tasks:', error);
