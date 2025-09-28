@@ -219,6 +219,12 @@ export default function UserManagement() {
                     <ArrowUpDown className="h-4 w-4 text-gray-900" />
                   </div>
                 </TableHead>
+                <TableHead className="text-left font-medium text-gray-900">
+                  <div className="flex text-[16px] items-center gap-2">
+                    Plan
+                    <ArrowUpDown className="h-4 w-4 text-gray-900" />
+                  </div>
+                </TableHead>
                 <TableHead className="text-right text-[16px] font-medium text-gray-900">
                   Actions
                 </TableHead>
@@ -228,7 +234,7 @@ export default function UserManagement() {
               {filteredUsers.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="text-center text-gray-500 py-8"
                   >
                     {searchQuery
@@ -271,6 +277,14 @@ export default function UserManagement() {
                         className="text-[14px] font-normal text-gray-900 px-3 py-1"
                       >
                         {user.no_of_projects} projects
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className="text-[14px] font-normal text-gray-900 px-3 py-1"
+                      >
+                        {user.plan_name || 'Free Plan'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right text-black">

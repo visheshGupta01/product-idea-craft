@@ -7,14 +7,7 @@ import { DeveloperOverview } from '@/components/developer/DeveloperOverview';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { developerService } from '@/services/developerService';
-import { 
-  CheckCircle, 
-  Clock, 
-  TrendingUp, 
-  Star,
-  Github,
-  Linkedin
-} from 'lucide-react';
+import TasksPage from '@/components/developer/TasksPage';
 
 const DeveloperDashboard = () => {
   const { userRole, isAuthenticated } = useUser();
@@ -66,7 +59,7 @@ const DeveloperDashboard = () => {
         <div className="container mx-auto p-6">
           <Routes>
             <Route index element={<DeveloperOverview />} />
-            <Route path="analytics" element={<div className="p-6">Analytics coming soon...</div>} />
+            <Route path="tasks" element={<TasksPage />} />
           </Routes>
         </div>
       </main>

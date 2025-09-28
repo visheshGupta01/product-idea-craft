@@ -50,6 +50,11 @@ export const API_ENDPOINTS = {
     UPDATE: "/api/profile", // Note: different from GET endpoint
   },
 
+  // User
+  USER: {
+    TASKS: "/api/user/tasks",
+  },
+
   // Admin
   ADMIN: {
     DASHBOARD: "/api/admin/dashboard",
@@ -68,11 +73,13 @@ export const API_ENDPOINTS = {
   // Task Management
   TASK: {
     CREATE: "/api/task/create",
+    GET_TASKS: "/api/tasks",
   },
 
   // Payment
   PAYMENT: {
     CREATE_SESSION: "/api/payment/create-session",
+    CANCEL_PLAN: "/api/payment/cancel-plan",
   },
 
   // File Upload
