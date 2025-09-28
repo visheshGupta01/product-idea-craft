@@ -14,6 +14,8 @@ import PaymentFailed from "./pages/PaymentFailed";
 import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
+import SharedChat from "./pages/SharedChat";
+import UserTasks from "./pages/UserTasks";
 import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
 import { EmailVerificationModal } from "./components/auth/EmailVerificationModal";
 import { useSearchParams } from "react-router-dom";
@@ -44,7 +46,7 @@ const AppContent = () => {
   }, [searchParams]);
 
   // Show navbar only on specific routes
-  const showNavbar = location.pathname === '/projects';
+  const showNavbar = location.pathname === '/projects' || location.pathname === '/tasks';
 
   return (
     <>
@@ -61,6 +63,12 @@ const AppContent = () => {
             <MyProjects />
           </ProtectedRoute>
         } />
+        <Route path="/tasks" element={
+          <ProtectedRoute>
+            <UserTasks />
+          </ProtectedRoute>
+        } />
+        <Route path="/share-url" element={<SharedChat />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/admin" element={

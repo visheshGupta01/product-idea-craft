@@ -88,6 +88,11 @@ export const API_ENDPOINTS = {
     AUDIO: "/api/audio",
   },
 
+  // Share Chat
+  SHARE: {
+    CHAT: "/api/share-chat",
+  },
+
   // External Integrations
   INTEGRATIONS: {
     GITHUB: "/api/github",
