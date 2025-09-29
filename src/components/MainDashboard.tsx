@@ -183,9 +183,19 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
             onViewChange={setActiveView}
             projectDetails={projectDetails}
             sessionId={sessionId}
-            onProjectRenamed={(newTitle) => {
-              if (projectDetails) {
+            onProjectRenamed={async (newTitle) => {
+              if (projectDetails && sessionId) {
                 setProjectDetails({ ...projectDetails, title: newTitle });
+                // Refresh project details to get updated preview URL
+                try {
+                  const details = await fetchProjectDetails(sessionId);
+                  setProjectDetails(details);
+                  if (details.project_url) {
+                    setPreviewUrl(details.project_url);
+                  }
+                } catch (error) {
+                  console.error('Failed to refresh project details:', error);
+                }
               }
             }}
           />
