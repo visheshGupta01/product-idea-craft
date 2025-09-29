@@ -68,7 +68,7 @@ const AppContent = () => {
             <UserTasks />
           </ProtectedRoute>
         } />
-        <Route path="/share-url" element={<SharedChat />} />
+        <Route path="/share-chat" element={<SharedChat />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/admin" element={

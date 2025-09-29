@@ -37,11 +37,12 @@ export interface ShareChatResponse {
   title: string;
 }
 
-export const fetchSharedChat = async (chatId: string, token: string): Promise<ShareChatResponse> => {
+export const fetchSharedChat = async (chatId: string): Promise<ShareChatResponse> => {
   try {
     const response = await apiClient.get(
-      `${API_ENDPOINTS.SHARE.CHAT}?chat=${chatId}&token=${token}`
+      `${API_ENDPOINTS.SHARE.CHAT}?chat=${chatId}`
     );
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching shared chat:', error);

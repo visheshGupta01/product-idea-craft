@@ -34,8 +34,12 @@ const FeedbackManagement: React.FC = () => {
     const loadFeedbacks = async () => {
       try {
         setIsLoading(true);
-        const response = await getAllFeedbacks(currentPage, selectedCategory || undefined);
-        setFeedbacks(response.feedbacks || []);
+        const response = await getAllFeedbacks(
+          currentPage,
+          selectedCategory === "all" ? undefined : selectedCategory
+        );
+        console.log('Fetched feedbacks:', response);
+        setFeedbacks(response || []);
       } catch (error) {
         console.error('Failed to load feedbacks:', error);
         toast.error('Failed to load feedbacks');
@@ -84,26 +88,26 @@ const FeedbackManagement: React.FC = () => {
     <div className="flex-1 ml-16 p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Feedback Management</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl text-black font-bold tracking-tight">Feedback Management</h1>
+          <p className="text-black">
             Review and manage user feedback submissions
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5" />
-          <span className="text-sm font-medium">{feedbacks.length} Feedbacks</span>
+          <MessageCircle className="h-5 w-5 text-black" />
+          <span className="text-sm text-black font-medium">{feedbacks.length} Feedbacks</span>
         </div>
       </div>
 
       <div className="flex items-center gap-4 px-6 pb-4">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Filter className="h-4 w-4 text-black" />
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-64">
               <SelectValue placeholder="Filter by category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}

@@ -217,12 +217,6 @@ export const DeveloperOverview: React.FC = () => {
     }
   };
 
-const getInitials = (firstName?: string, lastName?: string): string => {
-  const f = firstName?.trim().charAt(0).toUpperCase() ?? "";
-  const l = lastName?.trim().charAt(0).toUpperCase() ?? "";
-  return f + l || "?";
-};
-
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (

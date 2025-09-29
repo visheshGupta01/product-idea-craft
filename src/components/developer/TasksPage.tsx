@@ -66,7 +66,7 @@ const TasksPage: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await developerService.getDeveloperTasks(page, status === '' ? undefined : status);
-      setTasks(response.tasks || []);
+      setTasks(response || []);
       setTotalPages(response.total_pages || 1);
       setCurrentPage(page);
     } catch (error) {
@@ -81,11 +81,10 @@ const TasksPage: React.FC = () => {
     loadTasks(1, statusFilter);
   }, [statusFilter]);
 
-  const handleStatusChange = (status: string) => {
-    setStatusFilter(status);
-    setCurrentPage(1);
-  };
-
+const handleStatusChange = (status: string) => {
+  setStatusFilter(status === "all" ? "" : status);
+  setCurrentPage(1);
+};
   const handlePageChange = (page: number) => {
     loadTasks(page, statusFilter);
   };
@@ -228,7 +227,7 @@ const TasksPage: React.FC = () => {
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="todo">To Do</SelectItem>
             <SelectItem value="in_progress">In Progress</SelectItem>

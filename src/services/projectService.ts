@@ -80,6 +80,8 @@ export const renameProject = async (sessionId: string, newTitle: string): Promis
       session_id: sessionId,
       new_title: newTitle
     });
+    console.log(response)
+    console.log('Renamed project:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error renaming project:', error);

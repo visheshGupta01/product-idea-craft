@@ -1,4 +1,3 @@
-import React from 'react';
 import MyProjectsPage from '@/components/dashboard/MyProjectsPage';
 
 const MyProjects = () => {
