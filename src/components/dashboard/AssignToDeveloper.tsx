@@ -59,6 +59,19 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
         bio: dev.bio,
         hourpaid: dev.hourpaid,
         skills: dev.skills || [],
+        linkedin_url: dev.linkedin_url || '',
+        github_url: dev.github_url || '',
+        status: dev.status || 'available',
+        total_tasks: dev.total_tasks || 0,
+        phone: dev.phone || '',
+        image: dev.image || '',
+        location: dev.location || '',
+        created_at: dev.created_at || new Date().toISOString(),
+        total_in_progress: dev.total_in_progress || 0,
+        total_pending: dev.total_pending || 0,
+        experience: dev.experience || '',
+        rating_count: dev.rating_count || 0,
+        email: dev.email || '',
       }));
       setDevelopers(mapped);
       console.log('Fetched Developers:', Array.isArray(response) ? response : response?.data);
@@ -293,7 +306,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
     if (!selectedDeveloper || !developerDetails) return null;
 
     return (
-      <div className="space-y-6 max-h-96 overflow-y-auto">
+      <div className="space-y-6 flex-1 overflow-y-auto">
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
@@ -395,18 +408,6 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             </div>
           </div>
 
-          <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={() => setCurrentView("list")}>
-              Collapse
-            </Button>
-            <Button
-              className="bg-black text-white hover:bg-black/90"
-              onClick={handleAssignClick}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Assign
-            </Button>
-          </div>
         </div>
       </div>
     );
@@ -416,7 +417,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
     if (!selectedDeveloper) return null;
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 flex-1 overflow-y-auto">
         <div className="flex items-center gap-4 mb-6">
           <Button 
             variant="ghost" 
@@ -480,14 +481,6 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
           />
         </div>
 
-        <Button 
-          className="w-full bg-black text-white hover:bg-black/90"
-          onClick={handleAssignTask}
-          disabled={loading || !taskTitle.trim() || !taskDescription.trim()}
-        >
-          <User className="h-4 w-4 mr-2" />
-          {loading ? 'Assigning Task...' : 'Assign Task'}
-        </Button>
       </div>
     );
   };
@@ -534,8 +527,53 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        {renderCurrentView()}
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
+        <DialogHeader>
+          <DialogTitle>
+            {currentView === 'list' && 'Assign to Developer'}
+            {currentView === 'profile' && 'Developer Profile'}
+            {currentView === 'assign' && `Assign to ${selectedDeveloper?.name}`}
+            {currentView === 'success' && 'Task Assigned Successfully'}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {currentView === 'list' && renderDeveloperList()}
+          {currentView === 'profile' && renderDeveloperProfile()}
+          {currentView === 'assign' && renderAssignForm()}
+          {currentView === 'success' && renderSuccess()}
+        </div>
+
+        {/* Fixed bottom buttons for profile and assign views */}
+        {(currentView === 'profile' || currentView === 'assign') && (
+          <div className="border-t pt-4 mt-4 flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={() => currentView === 'profile' ? setCurrentView('list') : setCurrentView('profile')}
+            >
+              {currentView === 'profile' ? 'Collapse' : 'Back'}
+            </Button>
+            {currentView === 'profile' && (
+              <Button
+                className="bg-black text-white hover:bg-black/90"
+                onClick={handleAssignClick}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Assign
+              </Button>
+            )}
+            {currentView === 'assign' && (
+              <Button 
+                className="bg-black text-white hover:bg-black/90"
+                onClick={handleAssignTask}
+                disabled={loading || !taskTitle.trim() || !taskDescription.trim()}
+              >
+                <User className="h-4 w-4 mr-2" />
+                {loading ? 'Assigning Task...' : 'Assign Task'}
+              </Button>
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

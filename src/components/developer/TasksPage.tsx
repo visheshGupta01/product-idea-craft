@@ -66,9 +66,15 @@ const TasksPage: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await developerService.getDeveloperTasks(page, status === '' ? undefined : status);
-      setTasks(response || []);
-      setTotalPages(response.total_pages || 1);
-      setCurrentPage(page);
+      if (response && typeof response === 'object' && 'tasks' in response) {
+        setTasks(response.tasks || []);
+        setTotalPages(response.total_pages || 1);
+        setCurrentPage(page);
+      } else {
+        setTasks(Array.isArray(response) ? response : []);
+        setTotalPages(1);
+        setCurrentPage(page);
+      }
     } catch (error) {
       console.error('Failed to load tasks:', error);
       toast.error('Failed to load tasks');
