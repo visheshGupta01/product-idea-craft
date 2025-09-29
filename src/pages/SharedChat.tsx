@@ -18,18 +18,20 @@ const SharedChat: React.FC = () => {
   const [loading, setLoading] = useState(true);
   
   const chatId = searchParams.get('chat');
-  const token = searchParams.get('token');
+  console.log("Chat ID:", chatId);
+  // const token = searchParams.get('token');
 
   useEffect(() => {
     const loadSharedChat = async () => {
-      if (!chatId || !token) {
+      if (!chatId) {
         toast.error('Invalid share link');
         setLoading(false);
         return;
       }
 
       try {
-        const data = await fetchSharedChat(chatId, token);
+        const data = await fetchSharedChat(chatId);
+        console.log("Fetched Chat Data:", data);
         setChatData(data);
       } catch (error) {
         console.error('Failed to load shared chat:', error);
@@ -40,7 +42,7 @@ const SharedChat: React.FC = () => {
     };
 
     loadSharedChat();
-  }, [chatId, token]);
+  }, [chatId]);
 
   if (loading) {
     return (
