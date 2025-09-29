@@ -10,12 +10,14 @@ import { SitemapRenderer } from '@/components/chat/SitemapRenderer';
 import PreviewCodePanel from '@/components/dashboard/PreviewCodePanel';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, Github, ChevronDown, ChevronUp } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const SharedChat: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [chatData, setChatData] = useState<ShareChatResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sitemapOpen, setSitemapOpen] = useState(false);
   
   const chatId = searchParams.get('chat');
   const token = searchParams.get('token');
@@ -120,15 +122,24 @@ const SharedChat: React.FC = () => {
 
               {/* Sitemap Section */}
               {chatData.sitemap && (
-                <div className="border-t p-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Project Structure</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <SitemapRenderer data={chatData.sitemap} />
-                    </CardContent>
-                  </Card>
+                <div className="border-t p-4 flex-shrink-0">
+                  <Collapsible open={sitemapOpen} onOpenChange={setSitemapOpen}>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <span className="text-lg font-semibold">Project Structure</span>
+                        {sitemapOpen ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2">
+                      <div className="max-h-60 overflow-y-auto">
+                        <SitemapRenderer data={chatData.sitemap} />
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
               )}
             </div>
