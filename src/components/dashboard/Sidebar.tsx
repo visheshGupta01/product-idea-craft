@@ -124,8 +124,6 @@ const Sidebar = ({
         });
         onProjectRenamed?.(newProjectName.trim());
         setRenameDialogOpen(false);
-        // Refresh project details to get updated preview URL
-        window.location.reload();
       } else {
         toast({
           title: "Rename failed",
