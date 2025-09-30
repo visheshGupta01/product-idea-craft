@@ -70,7 +70,7 @@ const UserInbox: React.FC = () => {
         wsService.setToken(token);
         await wsService.connect(token);
         wsService.onMessage((data) => {
-          if (data.task_id && selectedTask && data.task_id === selectedTask.id) {
+          if (data.task_id && selectedTask && data.task_id === selectedTask.ID) {
             setMessages((prev) => [...prev, data]);
           }
           // Refresh inbox to update unread counts
@@ -91,7 +91,7 @@ const UserInbox: React.FC = () => {
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
     console.log("Selected task:", task);
-    fetchMessages(task.id);
+    fetchMessages(task.ID);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -108,7 +108,7 @@ const UserInbox: React.FC = () => {
       console.log("Role:", role);
       wsService.sendMessage({
         content: content,
-        task_id: selectedTask.id,
+        task_id: selectedTask.ID,
         sender_id: user.id,
         receiver_id: receiverId,
         role: role,
@@ -117,7 +117,7 @@ const UserInbox: React.FC = () => {
       // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
-        task_id: selectedTask.id,
+        task_id: selectedTask.ID,
         role: role,
         sender_id: user.id,
         receiver_id: receiverId,
@@ -154,7 +154,7 @@ const UserInbox: React.FC = () => {
           <div className="flex-1 overflow-auto">
             <InboxList
               tasks={tasks}
-              selectedTaskId={selectedTask?.id || null}
+              selectedTaskId={selectedTask?.ID || null}
               onSelectTask={handleSelectTask}
               role={role}
             />

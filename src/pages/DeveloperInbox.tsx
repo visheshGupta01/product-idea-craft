@@ -72,7 +72,7 @@ const DeveloperInbox: React.FC = () => {
         await wsService.connect(token);
         wsService.onMessage((data) => {
           console.log("Received WebSocket message:", data);
-          if (data.task_id && selectedTask && data.task_id === selectedTask.id) {
+          if (data.task_id && selectedTask && data.task_id === selectedTask.ID) {
             setMessages((prev) => [...prev, data]);
           }
           // Refresh inbox to update unread counts
@@ -92,7 +92,7 @@ const DeveloperInbox: React.FC = () => {
 
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
-    fetchMessages(task.id);
+    fetchMessages(task.ID);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -106,7 +106,7 @@ const DeveloperInbox: React.FC = () => {
 
       wsService.sendMessage({
         content: content,
-        task_id: selectedTask.id,
+        task_id: selectedTask.ID,
         sender_id: user.id,
         receiver_id: receiverId,
         role: role,
@@ -115,7 +115,7 @@ const DeveloperInbox: React.FC = () => {
       // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
-        task_id: selectedTask.id,
+        task_id: selectedTask.ID,
         role: role,
         sender_id: user.id,
         receiver_id: receiverId,
@@ -152,7 +152,7 @@ const DeveloperInbox: React.FC = () => {
           <div className="flex-1 overflow-auto">
             <InboxList
               tasks={tasks}
-              selectedTaskId={selectedTask?.id || null}
+              selectedTaskId={selectedTask?.ID || null}
               onSelectTask={handleSelectTask}
               role={role}
             />

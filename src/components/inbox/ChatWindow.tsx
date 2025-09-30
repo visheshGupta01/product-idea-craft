@@ -102,7 +102,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     }`}
                   >
                     <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback className={isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"}>
+                      <AvatarFallback className={isCurrentUser ? "bg-primary text-primary-foreground" : "bg-accent"}>
                         {isCurrentUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                       </AvatarFallback>
                     </Avatar>
@@ -115,7 +115,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                         className={`rounded-lg px-4 py-2 ${
                           isCurrentUser
                             ? "bg-primary text-primary-foreground"
-                            : "bg-muted"
+                            : "bg-accent"
                         }`}
                       >
                         <p className="text-sm whitespace-pre-wrap break-words">
