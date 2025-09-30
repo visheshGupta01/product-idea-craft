@@ -82,7 +82,7 @@ const MyProjectsPage = () => {
 
   const handleProjectClick = (project: Project) => {
     // Navigate with state to pass correct URLs
-    navigate(`/c/${project.session_id}`, { 
+    navigate(`/chat/${project.session_id}`, {
       state: { 
         previewUrl: project.project_url, // Use project_url for preview
         deployUrl: project.deploy_url,   // Use deploy_url for Vercel deployment

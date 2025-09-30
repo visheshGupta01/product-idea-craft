@@ -24,7 +24,7 @@ const PaymentFailed = () => {
             No charges have been made to your account.
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={() => navigate('/#pricing')} className="w-full">
+            <Button onClick={() => navigate('/pricing')} className="w-full">
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>

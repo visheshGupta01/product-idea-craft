@@ -13,7 +13,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isProcessingIdea, setIsProcessingIdea] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
+  const [userRole, setUserRole] = useState<'admin' | 'user' | 'developer' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userPlan, setUserPlan] = useState<{
     planId: number;
@@ -161,6 +161,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           isActive: (result.user as any).is_plan_active || false,
           expiresAt: (result.user as any).plan_expires_at || null,
         });
+      }
+
+      // Auto-redirect developers to developer dashboard
+      if (result.user.user_type === 'developer') {
+        window.location.href = '/developer';
       }
     }
     return { success: result.success, message: result.message, role: result.role };

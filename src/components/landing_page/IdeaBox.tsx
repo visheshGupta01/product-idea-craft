@@ -109,7 +109,7 @@ const IdeaBox: React.FC = () => {
     const result = await sendIdeaWithAuth(combinedIdea);
     
     if (result.success && result.session_id) {
-      navigate(`/c/${result.session_id}`);
+      navigate(`/chat/${result.session_id}`);
     } else {
       // Handle error
       console.error("Failed to create session:", result.message);

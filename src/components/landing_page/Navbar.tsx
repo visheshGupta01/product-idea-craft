@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
           <a href="#community" className="hover:text-pink-400 transition">
             Community
           </a>
-          <a href="#pricing" className="hover:text-pink-400 transition">
+          <a href="/pricing" className="hover:text-pink-400 transition">
             Pricing
           </a>
           <a

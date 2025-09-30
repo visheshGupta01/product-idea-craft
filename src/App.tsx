@@ -18,6 +18,7 @@ import SharedChat from "./pages/SharedChat";
 import UserTasks from "./pages/UserTasks";
 import UserInbox from "./pages/UserInbox";
 import DeveloperInbox from "./pages/DeveloperInbox";
+import Pricing from "./pages/Pricing";
 import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
 import { EmailVerificationModal } from "./components/auth/EmailVerificationModal";
 import { useSearchParams } from "react-router-dom";
@@ -55,7 +56,7 @@ const AppContent = () => {
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/c/:sessionid" element={
+        <Route path="/chat/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
@@ -70,7 +71,12 @@ const AppContent = () => {
             <UserTasks />
           </ProtectedRoute>
         } />
-        <Route path="/share-chat" element={<SharedChat />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/share-chat" element={
+          <ProtectedRoute>
+            <SharedChat />
+          </ProtectedRoute>
+        } />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/inbox" element={

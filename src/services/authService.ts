@@ -107,11 +107,6 @@ export class AuthService {
         localStorage.setItem("user_role", data.role);
         localStorage.setItem("user_data", JSON.stringify(data.user));
 
-        // Redirect developers to developer dashboard
-        if (data.user.user_type === 'developer') {
-          window.location.href = '/developer';
-        }
-
         return {
           success: true,
           token: data.token,
