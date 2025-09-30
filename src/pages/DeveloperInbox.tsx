@@ -25,6 +25,7 @@ const DeveloperInbox: React.FC = () => {
     try {
       setIsLoading(true);
       const data = await inboxService.getDeveloperInbox(currentPage);
+      console.log(data);
       setTasks(data.tasks || []);
       setRole(data.Role);
       setTotalPages(Math.ceil((data.total || 0) / 20));
@@ -43,6 +44,7 @@ const DeveloperInbox: React.FC = () => {
   const fetchMessages = useCallback(async (taskId: number) => {
     try {
       const data = await inboxService.getChatMessages(taskId);
+      console.log(data);
       setMessages(data || []);
     } catch (error) {
       console.error("Failed to fetch messages:", error);
@@ -61,10 +63,11 @@ const DeveloperInbox: React.FC = () => {
   useEffect(() => {
     const connectWebSocket = async () => {
       try {
-        const token = localStorage.getItem("authToken") || "";
+        const token = localStorage.getItem("auth_token") || "";
         wsService.setToken(token);
         await wsService.connect(token);
         wsService.onMessage((data) => {
+          console.log("Received WebSocket message:", data);
           if (data.task_id && selectedTask && data.task_id === selectedTask.id) {
             setMessages((prev) => [...prev, data]);
           }
@@ -85,7 +88,7 @@ const DeveloperInbox: React.FC = () => {
 
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
-    fetchMessages(task.id);
+    fetchMessages(task.ID);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -98,8 +101,8 @@ const DeveloperInbox: React.FC = () => {
         : selectedTask.assignee_id;
 
       wsService.sendMessage({
-        message: content,
-        task_id: selectedTask.id,
+        content: content,
+        task_id: selectedTask.ID,
         sender_id: user.id,
         receiver_id: receiverId,
         role: role,
@@ -108,7 +111,7 @@ const DeveloperInbox: React.FC = () => {
       // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
-        task_id: selectedTask.id,
+        task_id: selectedTask.ID,
         role: role,
         sender_id: user.id,
         receiver_id: receiverId,

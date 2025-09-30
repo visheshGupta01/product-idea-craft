@@ -48,7 +48,7 @@ const AppContent = () => {
   }, [searchParams]);
 
   // Show navbar only on specific routes
-  const showNavbar = location.pathname === '/projects' || location.pathname === '/tasks';
+  const showNavbar = location.pathname === '/projects' || location.pathname === '/tasks' || location.pathname === '/inbox';
 
   return (
     <>
@@ -76,11 +76,6 @@ const AppContent = () => {
         <Route path="/inbox" element={
           <ProtectedRoute>
             <UserInbox />
-          </ProtectedRoute>
-        } />
-        <Route path="/developer/inbox" element={
-          <ProtectedRoute requireDeveloper>
-            <DeveloperInbox />
           </ProtectedRoute>
         } />
         <Route path="/admin" element={

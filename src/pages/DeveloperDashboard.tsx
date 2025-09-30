@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { developerService } from '@/services/developerService';
 import TasksPage from '@/components/developer/TasksPage';
+import DeveloperInbox from './DeveloperInbox';
 
 const DeveloperDashboard = () => {
   const { userRole, isAuthenticated } = useUser();
@@ -60,6 +61,7 @@ const DeveloperDashboard = () => {
           <Routes>
             <Route index element={<DeveloperOverview />} />
             <Route path="tasks" element={<TasksPage />} />
+            <Route path="inbox" element={<DeveloperInbox />} />
           </Routes>
         </div>
       </main>

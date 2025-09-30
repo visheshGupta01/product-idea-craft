@@ -7,7 +7,8 @@ import {
   CheckSquare, 
   LogOut,
   Home,
-  BarChart3
+  BarChart3,
+  Inbox
 } from "lucide-react";
 
 interface DeveloperSidebarProps {
@@ -79,6 +80,11 @@ export default function DeveloperSidebar({ activeView, onViewChange }: Developer
           icon={<BarChart3 />}
           active={isActive("/developer/analytics")}
           onClick={() => handleNavigation("/developer/analytics")}
+        />
+        <SidebarIcon
+          icon={<Inbox />}
+          active={isActive("/developer/inbox")}
+          onClick={() => handleNavigation("/developer/inbox")}
         />
       </div>
 

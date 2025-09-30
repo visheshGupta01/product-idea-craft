@@ -7,7 +7,7 @@ import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
 import { DeveloperEnrollmentForm } from '../developer/DeveloperEnrollmentForm';
 import ProfilePopup from '../dashboard/ProfilePopup';
-import { User, FolderOpen, Settings, LogOut, CreditCard, CheckSquare } from 'lucide-react';
+import { User, FolderOpen, Settings, LogOut, CreditCard, CheckSquare, Inbox } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
 
@@ -74,28 +74,38 @@ const Navbar: React.FC = () => {
                 <FolderOpen className="h-4 w-4 mr-2" />
                 My Projects
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/inbox")}>
+                <Inbox className="h-4 w-4 mr-2" />
+                Inbox
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/tasks")}>
                 <CheckSquare className="h-4 w-4 mr-2" />
                 Tasks
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setProfileSection('basic-info');
-                setShowProfilePopup(true);
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setProfileSection("basic-info");
+                  setShowProfilePopup(true);
+                }}
+              >
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setProfileSection('billing');
-                setShowProfilePopup(true);
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setProfileSection("billing");
+                  setShowProfilePopup(true);
+                }}
+              >
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscription
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setProfileSection('security');
-                setShowProfilePopup(true);
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setProfileSection("security");
+                  setShowProfilePopup(true);
+                }}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </DropdownMenuItem>

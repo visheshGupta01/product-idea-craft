@@ -43,6 +43,7 @@ const UserInbox: React.FC = () => {
   const fetchMessages = useCallback(async (taskId: number) => {
     try {
       const data = await inboxService.getChatMessages(taskId);
+      console.log(data);
       setMessages(data || []);
     } catch (error) {
       console.error("Failed to fetch messages:", error);
@@ -61,7 +62,7 @@ const UserInbox: React.FC = () => {
   useEffect(() => {
     const connectWebSocket = async () => {
       try {
-        const token = localStorage.getItem("authToken") || "";
+        const token = localStorage.getItem("auth_token") || "";
         wsService.setToken(token);
         await wsService.connect(token);
         wsService.onMessage((data) => {
@@ -85,21 +86,25 @@ const UserInbox: React.FC = () => {
 
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
-    fetchMessages(task.id);
+    console.log("Selected task:", task);
+    fetchMessages(task.ID);
   };
 
   const handleSendMessage = async (content: string) => {
     if (!selectedTask || !user?.id) return;
 
     setIsSending(true);
+    console.log("Sending message:", content);
     try {
       const receiverId = role === "user" || role === "admin" 
         ? selectedTask.assignee_id 
         : selectedTask.assigner_id;
-
+      console.log("Receiver ID:", receiverId);
+      console.log("Sender ID:", user.id);
+      console.log("Role:", role);
       wsService.sendMessage({
-        message: content,
-        task_id: selectedTask.id,
+        content: content,
+        task_id: selectedTask.ID,
         sender_id: user.id,
         receiver_id: receiverId,
         role: role,
@@ -108,7 +113,7 @@ const UserInbox: React.FC = () => {
       // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
-        task_id: selectedTask.id,
+        task_id: selectedTask.ID,
         role: role,
         sender_id: user.id,
         receiver_id: receiverId,
@@ -130,14 +135,14 @@ const UserInbox: React.FC = () => {
 
   if (isLoading && tasks.length === 0) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="pt-[60px] flex items-center justify-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 h-screen flex flex-col">
+    <div className="pt-[90px] container mx-auto p-6 h-screen flex flex-col">
       <h1 className="text-3xl font-bold mb-6">Inbox</h1>
 
       <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
@@ -167,7 +172,9 @@ const UserInbox: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next
