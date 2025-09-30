@@ -35,7 +35,9 @@ export interface ProfileData {
 export const fetchProfile = async (): Promise<ProfileData> => {
   try {
     const response = await apiClient.get(API_ENDPOINTS.PROFILE.GET);
+    console.log('Profile data fetched:', response.data);
     return response.data;
+
   } catch (error) {
     console.error('Error fetching profile data:', error);
     throw error;

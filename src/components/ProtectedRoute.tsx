@@ -96,10 +96,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // For regular dashboard routes, allow direct session routes even without active chat
   if (!requireAdmin && !requireDeveloper) {
     const isSessionPath = location.pathname.startsWith('/c/');
-    const isProjectsOrProfilePath = location.pathname === '/projects' || location.pathname === '/profile';
+    const isProjectsOrProfilePath = location.pathname === '/projects' || location.pathname === '/profile' || location.pathname === '/tasks';
     
     // Allow projects, profile, and subscription pages without chat session requirement
-    if (!isSessionPath && !isProjectsOrProfilePath && location.pathname !== '/subscription') {
+    if (!isSessionPath && !isProjectsOrProfilePath) {
       const hasActiveChat = userIdea || isProcessingIdea || initialResponse || sessionId;
       const hasPersistedChat = authService.getUserIdea() || authService.getSessionId();
       

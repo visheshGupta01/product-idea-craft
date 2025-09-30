@@ -221,20 +221,6 @@ const Sidebar = ({
                 User Profile
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
-                setProfileSection('integration');
-                setProfileOpen(true);
-              }}>
-                <Settings className="mr-2 h-4 w-4" />
-                Integration
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setProfileSection('security');
-                setProfileOpen(true);
-              }}>
-                <Shield className="mr-2 h-4 w-4" />
-                Security
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
                 setProfileSection('billing');
                 setProfileOpen(true);
               }}>
@@ -378,20 +364,6 @@ const Sidebar = ({
             }}>
               <User className="mr-2 h-4 w-4" />
               User Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              setProfileSection('integration');
-              setProfileOpen(true);
-            }}>
-              <Settings className="mr-2 h-4 w-4" />
-              Integration
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              setProfileSection('security');
-              setProfileOpen(true);
-            }}>
-              <Shield className="mr-2 h-4 w-4" />
-              Security
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => {
               setProfileSection('billing');

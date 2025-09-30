@@ -76,8 +76,8 @@ interface ProfilePopupProps {
 
   const menuItems = [
     { id: 'basic', label: 'Basic Info', icon: User },
-    { id: 'integration', label: 'Integration', icon: Settings },
-    { id: 'security', label: 'Security', icon: Shield },
+    // { id: 'integration', label: 'Integration', icon: Settings },
+    // { id: 'security', label: 'Security', icon: Shield },
     { id: 'billing', label: 'Credits and Billing', icon: CreditCard },
     { id: 'support', label: 'Support and feedback', icon: MessageCircle },
   ];

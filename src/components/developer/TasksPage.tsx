@@ -297,39 +297,47 @@ const handleStatusChange = (status: string) => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
                     if (currentPage > 1) handlePageChange(currentPage - 1);
                   }}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                />
               </PaginationItem>
               
-              <PaginationItem>
-                <span className="px-4 py-2 text-sm">
-                  Page {currentPage} of {totalPages}
-                </span>
-              </PaginationItem>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1;
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page);
+                      }}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
               
               <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
                     if (currentPage < totalPages) handlePageChange(currentPage + 1);
                   }}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </Button>
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>

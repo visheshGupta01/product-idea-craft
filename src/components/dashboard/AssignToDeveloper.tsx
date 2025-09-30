@@ -172,7 +172,6 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
 
   const renderDeveloperList = () => (
     <div className="space-y-4 max-h-96 overflow-y-auto">
-      <h2 className="text-xl font-semibold mb-4">Assign to Developer</h2>
       {loading ? (
         <div className="text-center py-8 text-muted-foreground">
           Loading developers...

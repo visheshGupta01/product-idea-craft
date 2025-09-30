@@ -118,7 +118,7 @@ export const DeveloperEnrollmentForm: React.FC<DeveloperEnrollmentFormProps> = (
       setSkills([]);
       setSkillInput('');
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || "Failed to submit application. Please try again.";
+      const errorMessage = error.response?.data?.error?.message || error.message || "Failed to submit application. Please try again.";
       toast({
         title: "Error",
         description: errorMessage,
