@@ -35,6 +35,8 @@ export const API_ENDPOINTS = {
     SESSION_CREATE: "/api/chat/session/create",
     SESSION_CONTENT: "/api/chat/session/content",
     WEBSOCKET: "/api/chat/ws",
+    READ: "/api/chat/read",
+    SUPPORT: "/api/chat/support",
   },
 
   // Projects
@@ -53,6 +55,7 @@ export const API_ENDPOINTS = {
   // User
   USER: {
     TASKS: "/api/user/tasks",
+    INBOX: "/api/user/inbox",
   },
 
   // Admin
@@ -68,6 +71,7 @@ export const API_ENDPOINTS = {
     TASK_STATUS: "/api/task/status",
     LIST: "/api/developers",
     CREATE: "/api/developer/create",
+    INBOX: "/api/developer/inbox",
   },
 
   // Task Management

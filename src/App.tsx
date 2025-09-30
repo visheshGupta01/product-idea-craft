@@ -16,6 +16,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import SharedChat from "./pages/SharedChat";
 import UserTasks from "./pages/UserTasks";
+import UserInbox from "./pages/UserInbox";
+import DeveloperInbox from "./pages/DeveloperInbox";
 import { ResetPasswordModal } from "./components/auth/ResetPasswordModal";
 import { EmailVerificationModal } from "./components/auth/EmailVerificationModal";
 import { useSearchParams } from "react-router-dom";
@@ -71,6 +73,16 @@ const AppContent = () => {
         <Route path="/share-chat" element={<SharedChat />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
+        <Route path="/inbox" element={
+          <ProtectedRoute>
+            <UserInbox />
+          </ProtectedRoute>
+        } />
+        <Route path="/developer/inbox" element={
+          <ProtectedRoute requireDeveloper>
+            <DeveloperInbox />
+          </ProtectedRoute>
+        } />
         <Route path="/admin" element={
           <ProtectedRoute requireAdmin>
             <AdminDashboard />
