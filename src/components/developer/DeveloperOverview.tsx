@@ -4,84 +4,56 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Star, Github, Linkedin, Edit } from 'lucide-react';
-import { developerService, DeveloperInfo, DeveloperProfileResponse } from '@/services/developerService';
+import { Star, Github, Linkedin, Edit, Loader2 } from 'lucide-react';
+import { developerService, DeveloperInfo, DeveloperProfileResponse, Review } from '@/services/developerService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { useNavigate } from 'react-router-dom';
 
 interface Task {
-  id: number;
+  ID: number;
   title: string;
   description: string;
-  client: string;
-  status: 'pending' | 'in_progress' | 'completed';
-  assign_request: string;
-  deadline: string;
+  session_id: string;
+  assignee_id: string;
+  assigner_id: string;
+  status: string | null;
+  share_chat: string;
+  chat_mode: boolean;
+  due_date: string | null;
+  created_at: string;
+  assigner_name: string;
+  assignee_name: string;
 }
-
-// Mock data for demo purposes - replace with actual API calls
-const mockTasks: Task[] = [
-  {
-    id: 1,
-    title: "API Integration",
-    description: "Integrate Payment Gateway APIs with the existing system",
-    client: "Ecommerce Solutions",
-    status: "pending",
-    assign_request: "23/09/25",
-    deadline: "30hrs left"
-  },
-  {
-    id: 2,
-    title: "API Integration", 
-    description: "Integrate Payment Gateway APIs with the existing system",
-    client: "Ecommerce Solutions",
-    status: "pending",
-    assign_request: "23/09/25",
-    deadline: "30hrs left"
-  },
-  {
-    id: 3,
-    title: "API Integration",
-    description: "Integrate Payment Gateway APIs with the existing system", 
-    client: "Ecommerce Solutions",
-    status: "pending",
-    assign_request: "24/09/25",
-    deadline: "30hrs left"
-  }
-];
-
-const mockClientReviews = [
-  {
-    id: 1,
-    description: "Great work on Integrate Payment Gateway APIs with the existing system",
-    client: "XYZ INC.",
-    rating: 4,
-    date: "15/12/2025"
-  },
-  {
-    id: 2,
-    description: "Good optimization work. Database performance improved significantly.",
-    client: "Database Optimization",
-    rating: 4,
-    date: "15/10/2025"
-  }
-];
 
 export const DeveloperOverview: React.FC = () => {
   const [profileData, setProfileData] = useState<DeveloperProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tasks' | 'reviews'>('tasks');
-  const [taskFilter, setTaskFilter] = useState<'all' | 'awaiting' | 'pending'>('all');
+  const [taskFilter, setTaskFilter] = useState<'all' | 'awaiting' | 'pending' | 'done' | 'in_progress' | 'todo' | 'not_accepted'>('all');
   const [isAvailable, setIsAvailable] = useState(true);
   const [updatingTasks, setUpdatingTasks] = useState<Set<number>>(new Set());
+  const [additionalTasks, setAdditionalTasks] = useState<Task[]>([]);
+  const [taskPage, setTaskPage] = useState(1);
+  const [hasMoreTasks, setHasMoreTasks] = useState(false);
+  const [loadingMoreTasks, setLoadingMoreTasks] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewPage, setReviewPage] = useState(1);
+  const [hasMoreReviews, setHasMoreReviews] = useState(false);
+  const [loadingReviews, setLoadingReviews] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     loadProfile();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'reviews' && profileData) {
+      loadReviews();
+    }
+  }, [activeTab, profileData]);
 
   const loadProfile = async () => {
     try {
@@ -233,18 +205,74 @@ export const DeveloperOverview: React.FC = () => {
     return total_tasks > 0 ? Math.round((total_done / total_tasks) * 100) : 0;
   };
 
+  const loadReviews = async () => {
+    if (!profileData?.developer_info?.id) return;
+    
+    try {
+      setLoadingReviews(true);
+      const response = await developerService.getReviews(profileData.developer_info.id, reviewPage);
+      if (reviewPage === 1) {
+        setReviews(response.reviews || []);
+      } else {
+        setReviews(prev => [...prev, ...(response.reviews || [])]);
+      }
+      setHasMoreReviews(reviewPage < (response.total_pages || 0));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load reviews",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const loadMoreTasks = async () => {
+    if (!profileData?.developer_info?.id || loadingMoreTasks) return;
+    
+    try {
+      setLoadingMoreTasks(true);
+      const nextPage = taskPage + 1;
+      const status = taskFilter === 'all' ? undefined : taskFilter;
+      const response = await developerService.getDeveloperTasks(nextPage, status);
+      
+      setAdditionalTasks(prev => [...prev, ...(response.tasks || [])]);
+      setTaskPage(nextPage);
+      setHasMoreTasks(nextPage < (response.total_pages || 0));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load more tasks",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingMoreTasks(false);
+    }
+  };
+
+  const loadMoreReviews = async () => {
+    setReviewPage(prev => prev + 1);
+  };
+
+  useEffect(() => {
+    if (reviewPage > 1) {
+      loadReviews();
+    }
+  }, [reviewPage]);
+
   const getFilteredTasks = () => {
     if (!profileData) return [];
     
-    if (taskFilter === 'all') {
-      return [
-        ...profileData.null_status_tasks,
-        ...profileData.active_tasks
-      ];
-    }
-    if (taskFilter === 'awaiting') return profileData.null_status_tasks;
-    if (taskFilter === 'pending') return profileData.active_tasks;
-    return [];
+    const baseTasks = taskFilter === 'all' 
+      ? [...profileData.null_status_tasks, ...profileData.active_tasks]
+      : taskFilter === 'awaiting' 
+        ? profileData.null_status_tasks
+        : taskFilter === 'pending'
+          ? profileData.active_tasks
+          : [];
+    
+    return [...baseTasks, ...additionalTasks];
   };
 
   const getTaskFilterCount = (filter: 'all' | 'awaiting' | 'pending') => {
@@ -557,9 +585,13 @@ export const DeveloperOverview: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-4 mb-4">
+                  <div className="flex gap-4 mb-4 flex-wrap">
                     <button
-                      onClick={() => setTaskFilter("all")}
+                      onClick={() => {
+                        setTaskFilter("all");
+                        setAdditionalTasks([]);
+                        setTaskPage(1);
+                      }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "all"
                           ? "bg-pink-500 text-white"
@@ -569,7 +601,11 @@ export const DeveloperOverview: React.FC = () => {
                       All {getTaskFilterCount("all")}
                     </button>
                     <button
-                      onClick={() => setTaskFilter("awaiting")}
+                      onClick={() => {
+                        setTaskFilter("awaiting");
+                        setAdditionalTasks([]);
+                        setTaskPage(1);
+                      }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "awaiting"
                           ? "bg-pink-500 text-white"
@@ -579,7 +615,11 @@ export const DeveloperOverview: React.FC = () => {
                       Awaiting {getTaskFilterCount("awaiting")}
                     </button>
                     <button
-                      onClick={() => setTaskFilter("pending")}
+                      onClick={() => {
+                        setTaskFilter("pending");
+                        setAdditionalTasks([]);
+                        setTaskPage(1);
+                      }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "pending"
                           ? "bg-pink-500 text-white"
@@ -587,6 +627,62 @@ export const DeveloperOverview: React.FC = () => {
                       }`}
                     >
                       Pending {getTaskFilterCount("pending")}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTaskFilter("done");
+                        setAdditionalTasks([]);
+                        setTaskPage(1);
+                      }}
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        taskFilter === "done"
+                          ? "bg-pink-500 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      Done
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTaskFilter("in_progress");
+                        setAdditionalTasks([]);
+                        setTaskPage(1);
+                      }}
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        taskFilter === "in_progress"
+                          ? "bg-pink-500 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      In Progress
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTaskFilter("todo");
+                        setAdditionalTasks([]);
+                        setTaskPage(1);
+                      }}
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        taskFilter === "todo"
+                          ? "bg-pink-500 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      To Do
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTaskFilter("not_accepted");
+                        setAdditionalTasks([]);
+                        setTaskPage(1);
+                      }}
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        taskFilter === "not_accepted"
+                          ? "bg-pink-500 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      Not Accepted
                     </button>
                   </div>
 
@@ -656,6 +752,26 @@ export const DeveloperOverview: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
+                    
+                    {(taskFilter !== 'awaiting' && taskFilter !== 'pending') && hasMoreTasks && (
+                      <div className="flex justify-center pt-4">
+                        <Button
+                          onClick={loadMoreTasks}
+                          disabled={loadingMoreTasks}
+                          variant="outline"
+                          className="w-full max-w-xs"
+                        >
+                          {loadingMoreTasks ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Loading...
+                            </>
+                          ) : (
+                            'Load More Tasks'
+                          )}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -667,31 +783,67 @@ export const DeveloperOverview: React.FC = () => {
               <CardContent className="p-4">
                 <h3 className="text-lg font-semibold mb-2">Client Reviews</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Feedback from your client
+                  Feedback from your clients
                 </p>
 
-                <div className="space-y-4">
-                  {mockClientReviews.map((review) => (
-                    <Card key={review.id} className="border">
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="flex">
-                              {renderStars(review.rating)}
+                {loadingReviews && reviews.length === 0 ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <Card key={i} className="border">
+                        <CardContent className="p-4">
+                          <Skeleton className="h-20 w-full" />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : reviews.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No reviews yet
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <Card key={review.id} className="border">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="flex">
+                                {renderStars(review.rating)}
+                              </div>
                             </div>
+                            <span className="text-sm text-muted-foreground">
+                              {new Date(review.created_at).toLocaleDateString()}
+                            </span>
                           </div>
-                          <span className="text-sm text-muted-foreground">
-                            {review.date}
-                          </span>
-                        </div>
-                        <p className="text-sm mb-2">{review.description}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Client: {review.client}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                          <p className="text-sm mb-2">{review.comment}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Client: {review.reviewer_name}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    
+                    {hasMoreReviews && (
+                      <div className="flex justify-center pt-4">
+                        <Button
+                          onClick={loadMoreReviews}
+                          disabled={loadingReviews}
+                          variant="outline"
+                          className="w-full max-w-xs"
+                        >
+                          {loadingReviews ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Loading...
+                            </>
+                          ) : (
+                            'Load More Reviews'
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}

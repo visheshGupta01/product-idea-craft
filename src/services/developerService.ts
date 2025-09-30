@@ -104,6 +104,23 @@ export interface CreateDeveloperResponse {
   };
 }
 
+export interface Review {
+  id: number;
+  developer_id: string;
+  reviewer_name: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
+export interface ReviewsResponse {
+  reviews: Review[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+}
+
 class DeveloperService {
   async getDeveloperProfile(): Promise<DeveloperProfileResponse> {
     try {
@@ -225,6 +242,16 @@ class DeveloperService {
       return response.data;
     } catch (error) {
       console.error('Error creating developer:', error);
+      throw error;
+    }
+  }
+
+  async getReviews(developerId: string, page: number = 1): Promise<ReviewsResponse> {
+    try {
+      const response = await apiClient.get(`/api/reviews?dev_id=${developerId}&page=${page}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
       throw error;
     }
   }
