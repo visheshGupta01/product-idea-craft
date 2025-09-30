@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Send, User, Bot } from "lucide-react";
+import { Send, User, Bot, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChatWindowProps {
   task: InboxTask;
@@ -15,6 +16,7 @@ interface ChatWindowProps {
   currentRole: string;
   onSendMessage: (content: string) => void;
   isLoading: boolean;
+  isLoadingMessages: boolean;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -24,6 +26,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   currentRole,
   onSendMessage,
   isLoading,
+  isLoadingMessages,
 }) => {
   const [messageInput, setMessageInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -63,12 +66,30 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col p-0">
+      <CardContent className="flex-1 flex flex-col p-0 min-h-0">
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-4">
-            {messages.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No messages yet. Start the conversation!
+            {isLoadingMessages ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex gap-3">
+                    <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+                    <div className="flex flex-col gap-2 flex-1">
+                      <Skeleton className="h-16 w-3/4 rounded-lg" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                    <Bot className="h-6 w-6" />
+                  </div>
+                  <p className="font-medium">No messages yet</p>
+                  <p className="text-sm">Start the conversation!</p>
+                </div>
               </div>
             ) : (
               messages.map((message) => {
@@ -81,14 +102,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     }`}
                   >
                     <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback>
+                      <AvatarFallback className={isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"}>
                         {isCurrentUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                       </AvatarFallback>
                     </Avatar>
                     <div
                       className={`flex flex-col ${
                         isCurrentUser ? "items-end" : "items-start"
-                      } max-w-[70%]`}
+                      } max-w-[75%]`}
                     >
                       <div
                         className={`rounded-lg px-4 py-2 ${
@@ -115,7 +136,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
         </ScrollArea>
 
-        <div className="border-t p-4">
+        <div className="border-t p-4 bg-background">
           <div className="flex gap-2">
             <Textarea
               value={messageInput}
@@ -124,15 +145,19 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               placeholder="Type your message..."
               className="resize-none"
               rows={2}
-              disabled={isLoading}
+              disabled={isLoading || isLoadingMessages}
             />
             <Button
               onClick={handleSend}
-              disabled={!messageInput.trim() || isLoading}
+              disabled={!messageInput.trim() || isLoading || isLoadingMessages}
               size="icon"
-              className="shrink-0"
+              className="shrink-0 h-auto"
             >
-              <Send className="h-4 w-4" />
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>

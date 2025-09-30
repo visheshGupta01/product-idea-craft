@@ -16,6 +16,7 @@ const DeveloperInbox: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [role, setRole] = useState("developer");
   const { toast } = useToast();
   const { user } = useUser();
@@ -43,6 +44,7 @@ const DeveloperInbox: React.FC = () => {
 
   const fetchMessages = useCallback(async (taskId: number) => {
     try {
+      setIsLoadingMessages(true);
       const data = await inboxService.getChatMessages(taskId);
       console.log(data);
       setMessages(data || []);
@@ -53,6 +55,8 @@ const DeveloperInbox: React.FC = () => {
         description: "Failed to load messages",
         variant: "destructive",
       });
+    } finally {
+      setIsLoadingMessages(false);
     }
   }, [toast]);
 
@@ -88,7 +92,7 @@ const DeveloperInbox: React.FC = () => {
 
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
-    fetchMessages(task.ID);
+    fetchMessages(task.id);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -102,7 +106,7 @@ const DeveloperInbox: React.FC = () => {
 
       wsService.sendMessage({
         content: content,
-        task_id: selectedTask.ID,
+        task_id: selectedTask.id,
         sender_id: user.id,
         receiver_id: receiverId,
         role: role,
@@ -111,7 +115,7 @@ const DeveloperInbox: React.FC = () => {
       // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
-        task_id: selectedTask.ID,
+        task_id: selectedTask.id,
         role: role,
         sender_id: user.id,
         receiver_id: receiverId,
@@ -143,8 +147,8 @@ const DeveloperInbox: React.FC = () => {
     <div className="container mx-auto p-6 h-screen flex flex-col">
       <h1 className="text-3xl font-bold mb-6">Inbox</h1>
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
-        <div className="md:col-span-1 flex flex-col">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden min-h-0">
+        <div className="lg:col-span-1 flex flex-col min-h-0">
           <div className="flex-1 overflow-auto">
             <InboxList
               tasks={tasks}
@@ -179,7 +183,7 @@ const DeveloperInbox: React.FC = () => {
           )}
         </div>
 
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2 min-h-0">
           {selectedTask ? (
             <ChatWindow
               task={selectedTask}
@@ -188,9 +192,10 @@ const DeveloperInbox: React.FC = () => {
               currentRole={role}
               onSendMessage={handleSendMessage}
               isLoading={isSending}
+              isLoadingMessages={isLoadingMessages}
             />
           ) : (
-            <div className="h-full flex items-center justify-center text-muted-foreground">
+            <div className="h-full flex items-center justify-center text-muted-foreground border rounded-lg bg-muted/20">
               Select a conversation to start chatting
             </div>
           )}

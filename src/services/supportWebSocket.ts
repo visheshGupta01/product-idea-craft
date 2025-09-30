@@ -1,7 +1,7 @@
 import { buildWsUrl } from "@/config/api";
 
 export interface SupportMessage {
-  message: string;
+  content: string;
   task_id: number;
   sender_id: string;
   receiver_id: string;
