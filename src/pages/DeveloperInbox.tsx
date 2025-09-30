@@ -61,7 +61,9 @@ const DeveloperInbox: React.FC = () => {
   useEffect(() => {
     const connectWebSocket = async () => {
       try {
-        await wsService.connect();
+        const token = localStorage.getItem("authToken") || "";
+        wsService.setToken(token);
+        await wsService.connect(token);
         wsService.onMessage((data) => {
           if (data.task_id && selectedTask && data.task_id === selectedTask.id) {
             setMessages((prev) => [...prev, data]);

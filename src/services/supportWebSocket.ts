@@ -14,10 +14,10 @@ export class SupportWebSocketService {
   private maxReconnectAttempts = 5;
   private messageHandlers: ((message: any) => void)[] = [];
 
-  connect(): Promise<void> {
+  connect(token: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        const wsUrl = buildWsUrl("/api/chat/support");
+        const wsUrl = buildWsUrl("/api/chat/support", { token });
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
@@ -50,14 +50,20 @@ export class SupportWebSocketService {
     });
   }
 
+  private storedToken: string = "";
+
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
       console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
       setTimeout(() => {
-        this.connect().catch(console.error);
+        this.connect(this.storedToken).catch(console.error);
       }, 2000 * this.reconnectAttempts);
     }
+  }
+
+  setToken(token: string) {
+    this.storedToken = token;
   }
 
   sendMessage(message: SupportMessage) {
