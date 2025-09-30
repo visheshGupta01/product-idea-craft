@@ -75,8 +75,8 @@ const UserTasksPage: React.FC = () => {
       
       const response = await apiClient.get(`${API_ENDPOINTS.USER.TASKS}?${params.toString()}`);
       const data = response.data;
-      
-      setTasks(data.tasks || []);
+      console.log('Fetched tasks:', data);
+      setTasks(data || []);
       setTotalPages(data.total_pages || 1);
       setCurrentPage(page);
     } catch (error) {
@@ -91,10 +91,10 @@ const UserTasksPage: React.FC = () => {
     loadTasks(1, statusFilter, sortOrder);
   }, [statusFilter, sortOrder]);
 
-  const handleStatusChange = (status: string) => {
-    setStatusFilter(status);
-    setCurrentPage(1);
-  };
+const handleStatusChange = (status: string) => {
+  setStatusFilter(status === "all" ? "" : status);  // interpret "all" as no filter
+  setCurrentPage(1);
+};
 
   const handleSortChange = (sort: string) => {
     setSortOrder(sort);
@@ -160,73 +160,13 @@ const UserTasksPage: React.FC = () => {
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="mt-14 p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">My Tasks</h1>
           <p className="text-muted-foreground">Track tasks assigned to developers</p>
         </div>
       </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 text-gray-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold">{stats.pending}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-orange-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">To Do</p>
-                <p className="text-2xl font-bold">{stats.todo}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-blue-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">In Progress</p>
-                <p className="text-2xl font-bold">{stats.inProgress}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Done</p>
-                <p className="text-2xl font-bold">{stats.done}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative">
@@ -243,7 +183,7 @@ const UserTasksPage: React.FC = () => {
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="todo">To Do</SelectItem>
             <SelectItem value="in_progress">In Progress</SelectItem>
