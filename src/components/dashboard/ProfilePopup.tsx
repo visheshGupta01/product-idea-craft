@@ -295,7 +295,7 @@ interface ProfilePopupProps {
       <DialogContent className="max-w-4xl h-[500px] p-0">
         <div className="flex h-full">
           {/* Sidebar */}
-          <div className="w-64 bg-muted/30 border-r p-4 space-y-1">
+          <div className="w-[17rem] bg-muted/30 border-r p-4 space-y-1">
             <div className="mb-6">
               <div className="flex items-center space-x-3 p-2">
                 <Avatar className="h-10 w-10">
