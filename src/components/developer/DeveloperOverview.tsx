@@ -42,6 +42,8 @@ export const DeveloperOverview: React.FC = () => {
   const [reviewPage, setReviewPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(false);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [showAllNewTasks, setShowAllNewTasks] = useState(false);
+  const [showAllMyTasks, setShowAllMyTasks] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -524,7 +526,10 @@ export const DeveloperOverview: React.FC = () => {
                   </p>
 
                   <div className="space-y-3">
-                    {profileData.null_status_tasks?.slice(0, 3).map((task) => (
+                    {(showAllNewTasks 
+                      ? profileData.null_status_tasks 
+                      : profileData.null_status_tasks?.slice(0, 3)
+                    )?.map((task) => (
                       <Card key={task.ID} className="border">
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
@@ -567,6 +572,18 @@ export const DeveloperOverview: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
+                    
+                    {!showAllNewTasks && (profileData.null_status_tasks?.length || 0) > 3 && (
+                      <div className="flex justify-center pt-2">
+                        <Button
+                          onClick={() => setShowAllNewTasks(true)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Show More ({(profileData.null_status_tasks?.length || 0) - 3} more)
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -591,6 +608,7 @@ export const DeveloperOverview: React.FC = () => {
                         setTaskFilter("all");
                         setAdditionalTasks([]);
                         setTaskPage(1);
+                        setShowAllMyTasks(false);
                       }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "all"
@@ -605,6 +623,7 @@ export const DeveloperOverview: React.FC = () => {
                         setTaskFilter("awaiting");
                         setAdditionalTasks([]);
                         setTaskPage(1);
+                        setShowAllMyTasks(false);
                       }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "awaiting"
@@ -619,6 +638,7 @@ export const DeveloperOverview: React.FC = () => {
                         setTaskFilter("pending");
                         setAdditionalTasks([]);
                         setTaskPage(1);
+                        setShowAllMyTasks(false);
                       }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "pending"
@@ -633,6 +653,7 @@ export const DeveloperOverview: React.FC = () => {
                         setTaskFilter("done");
                         setAdditionalTasks([]);
                         setTaskPage(1);
+                        setShowAllMyTasks(false);
                       }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "done"
@@ -647,6 +668,7 @@ export const DeveloperOverview: React.FC = () => {
                         setTaskFilter("in_progress");
                         setAdditionalTasks([]);
                         setTaskPage(1);
+                        setShowAllMyTasks(false);
                       }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "in_progress"
@@ -661,6 +683,7 @@ export const DeveloperOverview: React.FC = () => {
                         setTaskFilter("todo");
                         setAdditionalTasks([]);
                         setTaskPage(1);
+                        setShowAllMyTasks(false);
                       }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "todo"
@@ -675,6 +698,7 @@ export const DeveloperOverview: React.FC = () => {
                         setTaskFilter("not_accepted");
                         setAdditionalTasks([]);
                         setTaskPage(1);
+                        setShowAllMyTasks(false);
                       }}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "not_accepted"
@@ -687,7 +711,10 @@ export const DeveloperOverview: React.FC = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {getFilteredTasks().map((task) => (
+                    {(showAllMyTasks 
+                      ? getFilteredTasks() 
+                      : getFilteredTasks().slice(0, 3)
+                    ).map((task) => (
                       <Card key={task.ID} className="border">
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
@@ -752,6 +779,18 @@ export const DeveloperOverview: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
+                    
+                    {!showAllMyTasks && getFilteredTasks().length > 3 && (
+                      <div className="flex justify-center pt-2">
+                        <Button
+                          onClick={() => setShowAllMyTasks(true)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Show More ({getFilteredTasks().length - 3} more)
+                        </Button>
+                      </div>
+                    )}
                     
                     {(taskFilter !== 'awaiting' && taskFilter !== 'pending') && hasMoreTasks && (
                       <div className="flex justify-center pt-4">
