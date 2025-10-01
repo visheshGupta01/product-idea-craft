@@ -9,6 +9,7 @@ export interface PaymentRequest {
   userUUID: string;
   price: string;
   plan_name: string;
+  credits: number;
 }
 
 export interface PaymentResponse {
