@@ -57,8 +57,8 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
       case 'phone':
         return {
           container: "w-full h-full flex items-center justify-center bg-background p-2",
-          frame: "w-full max-w-sm mx-auto rounded-lg shadow-2xl overflow-hidden relative",
-          iframe: "w-full h-[calc(100vh-45px)] border-0 overflow-hidden"
+          frame: "w-full max-w-sm mx-auto rounded-lg shadow-2xl overflow-hidden relative h-[667px]",
+          iframe: "w-full h-full border-0"
         };
     }
   };

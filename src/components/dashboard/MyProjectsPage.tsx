@@ -70,9 +70,10 @@ const MyProjectsPage = () => {
       }));
       setProjects(formattedProjects);
     } catch (error) {
+      console.error('Error fetching projects:', error);
       toast({
         title: "Error",
-        description: "Failed to load projects",
+        description: "Failed to load projects. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -321,7 +322,7 @@ const MyProjectsPage = () => {
             </div>
           )}
 
-          {filteredProjects.length === 0 && (
+          {!loading && filteredProjects.length === 0 && (
             <div className="text-center py-12">
               <img src='no-project.png' className="h-40 w-40 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">
@@ -332,10 +333,12 @@ const MyProjectsPage = () => {
                   ? "Try adjusting your search terms"
                   : "Create your first project to get started"}
               </p>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                New Project
-              </Button>
+              <a href="/">
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Project
+                </Button>
+              </a>
             </div>
           )}
         </div>

@@ -65,7 +65,7 @@ export default function SitemapSection({
   }
 
   return (
-    <div className="px-4 py-2 space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900"> {/* Added max-h and overflow-y-auto */}
+    <div className="px-4 py-2 space-y-2 overflow-y-auto">
       {pages.map((page, index) => {
         const Icon = getPageIcon(page.name);
         const status = getPageStatus(index, pages.length);
