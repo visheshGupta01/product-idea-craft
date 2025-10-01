@@ -7,12 +7,11 @@ import { Loader2 } from "lucide-react";
 import { PRICING_PLANS } from "@/utils/constants";
 
   const PricingSection: React.FC = () => {
-    const [billing, setBilling] = useState<"Monthly" | "Yearly">("Monthly");
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const { user, isAuthenticated } = useUser();
-    const plans = billing === "Monthly" ? PRICING_PLANS.MONTHLY : PRICING_PLANS.YEARLY;
+    const plans = PRICING_PLANS.MONTHLY;
 
-    const handlePlanSelection = async (plan: typeof PRICING_PLANS.MONTHLY[0]) => {
+    const handlePlanSelection = async (plan: typeof PRICING_PLANS.MONTHLY[number]) => {
       if (!isAuthenticated || !user) {
         toast({
           title: "Authentication Required",
@@ -57,41 +56,8 @@ import { PRICING_PLANS } from "@/utils/constants";
     <section id="pricing" className="bg-[#0f1116] text-white py-12 md:py-20 px-4 sm:px-6 font-['Poppins'] text-center">
       <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2">Lean Pricing.</h2>
       <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8">Limitless Potential.</h3>
-      {/* Billing Toggle - Responsive */}
-      <div className="max-w-6xl mx-auto flex justify-center sm:justify-start mb-8 md:mb-12">
-        <div className="relative border border-gray-500 rounded-[10px] px-1 py-1 flex w-[140px] sm:w-[160px] h-[40px] overflow-hidden">
-          {/* Sliding Background */}
-          <motion.div
-            layout
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-[8px] bg-[#FF0E8E]/30 z-0"
-            style={{
-              left: billing === "Monthly" ? "4px" : "50%",
-              transform: billing === "Yearly" ? "translateX(-4px)" : "none",
-            }}
-          />
-
-          {/* Buttons */}
-          <button
-            onClick={() => setBilling("Monthly")}
-            className={`w-1/2 h-full relative z-10 flex items-center justify-center text-xs sm:text-sm font-medium transition-all duration-200 ${
-              billing === "Monthly" ? "text-white" : "text-white/70"
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setBilling("Yearly")}
-            className={`w-1/2 h-full relative z-10 flex items-center justify-center text-xs sm:text-sm font-medium transition-all duration-200 ${
-              billing === "Yearly" ? "text-white" : "text-white/70"
-            }`}
-          >
-            Yearly
-          </button>
-        </div>
-      </div>
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl min-h-[400px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl min-h-[400px] mx-auto justify-items-center">
           {plans.map((plan, idx) => (
             <div
               key={idx}
@@ -105,7 +71,7 @@ import { PRICING_PLANS } from "@/utils/constants";
                     <sup className="align-super text-xl">$</sup>
                     {plan.price}
                     <span className="text-base font-medium text-gray-700">
-                      {billing === "Monthly" ? <sub>/mo</sub> : <sub>/yr</sub>}
+                      <sub>/mo</sub>
                     </span>
                   </div>
                 </div>
