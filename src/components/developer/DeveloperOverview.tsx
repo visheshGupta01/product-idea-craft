@@ -328,7 +328,11 @@ export const DeveloperOverview: React.FC = () => {
                 <Avatar className="w-24 h-24 mx-auto">
                   <AvatarImage src="" alt={profile.name} />
                   <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
-                    {profile.name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                    {profile.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
@@ -356,9 +360,7 @@ export const DeveloperOverview: React.FC = () => {
                 </div>
               </div>
 
-              <h2 className="text-xl font-semibold mb-1">
-                {profile.name}
-              </h2>
+              <h2 className="text-xl font-semibold mb-1">{profile.name}</h2>
               <p className="text-sm text-muted-foreground mb-4">
                 {profile.email}
               </p>
@@ -376,7 +378,9 @@ export const DeveloperOverview: React.FC = () => {
                   </div>
                 </h3>
                 <div className="flex flex-wrap gap-1">
-                  {(profile.skills || ['React', 'Node.js', 'MongoDB', 'AWS']).map((skill) => (
+                  {(
+                    profile.skills || ["React", "Node.js", "MongoDB", "AWS"]
+                  ).map((skill) => (
                     <Badge
                       key={skill}
                       variant="secondary"
@@ -413,13 +417,13 @@ export const DeveloperOverview: React.FC = () => {
                 </div>
               </div>
 
-              <Button
+              {/* <Button
                 className="w-full bg-black text-white hover:bg-gray-800"
                 onClick={() => navigate("/developer-dashboard/profile")}
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Profile Info
-              </Button>
+              </Button> */}
             </div>
           </CardContent>
         </Card>
@@ -432,8 +436,8 @@ export const DeveloperOverview: React.FC = () => {
               onClick={() => setActiveTab("tasks")}
               className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "tasks"
-                  ? "border-black text-black"
-                  : "border-transparent text-muted-foreground hover:text-black"
+                  ? "border-pink-600 text-pink-600"
+                  : "border-transparent text-muted-foreground hover:text-pink-500"
               }`}
             >
               My Tasks
@@ -442,8 +446,8 @@ export const DeveloperOverview: React.FC = () => {
               onClick={() => setActiveTab("reviews")}
               className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "reviews"
-                  ? "border-black text-black"
-                  : "border-transparent text-muted-foreground hover:text-black"
+                  ? "border-pink-600 text-pink-600"
+                  : "border-transparent text-muted-foreground hover:text-pink-500"
               }`}
             >
               Client Reviews
@@ -467,7 +471,8 @@ export const DeveloperOverview: React.FC = () => {
                       className="h-2 mb-2"
                     />
                     <p className="text-xs text-muted-foreground">
-                      {profile.total_done} of {profile.total_tasks} tasks completed
+                      {profile.total_done} of {profile.total_tasks} tasks
+                      completed
                     </p>
                   </CardContent>
                 </Card>
@@ -475,9 +480,11 @@ export const DeveloperOverview: React.FC = () => {
                 <Card className="bg-black">
                   <CardContent className="p-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                      Requests
+                      In Progress
                     </h3>
-                    <div className="text-2xl font-bold mb-1">{profile.total_pending}</div>
+                    <div className="text-2xl font-bold mb-1">
+                      {profile.total_in_progress}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       Awaiting your response
                     </p>
@@ -490,7 +497,7 @@ export const DeveloperOverview: React.FC = () => {
                       Pending Tasks
                     </h3>
                     <div className="text-2xl font-bold mb-1">
-                      {profile.total_in_progress}
+                      {profile.total_pending}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       To be completed
@@ -503,7 +510,9 @@ export const DeveloperOverview: React.FC = () => {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
                       Completed
                     </h3>
-                    <div className="text-2xl font-bold mb-1">{profile.total_done}</div>
+                    <div className="text-2xl font-bold mb-1">
+                      {profile.total_done}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       Completed tasks
                     </p>
@@ -526,8 +535,8 @@ export const DeveloperOverview: React.FC = () => {
                   </p>
 
                   <div className="space-y-3">
-                    {(showAllNewTasks 
-                      ? profileData.null_status_tasks 
+                    {(showAllNewTasks
+                      ? profileData.null_status_tasks
                       : profileData.null_status_tasks?.slice(0, 3)
                     )?.map((task) => (
                       <Card key={task.ID} className="border">
@@ -572,18 +581,21 @@ export const DeveloperOverview: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
-                    
-                    {!showAllNewTasks && (profileData.null_status_tasks?.length || 0) > 3 && (
-                      <div className="flex justify-center pt-2">
-                        <Button
-                          onClick={() => setShowAllNewTasks(true)}
-                          variant="outline"
-                          className="w-full"
-                        >
-                          Show More ({(profileData.null_status_tasks?.length || 0) - 3} more)
-                        </Button>
-                      </div>
-                    )}
+
+                    {!showAllNewTasks &&
+                      (profileData.null_status_tasks?.length || 0) > 3 && (
+                        <div className="flex justify-center pt-2">
+                          <Button
+                            onClick={() => setShowAllNewTasks(true)}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            Show More (
+                            {(profileData.null_status_tasks?.length || 0) - 3}{" "}
+                            more)
+                          </Button>
+                        </div>
+                      )}
                   </div>
                 </CardContent>
               </Card>
@@ -711,8 +723,8 @@ export const DeveloperOverview: React.FC = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {(showAllMyTasks 
-                      ? getFilteredTasks() 
+                    {(showAllMyTasks
+                      ? getFilteredTasks()
                       : getFilteredTasks().slice(0, 3)
                     ).map((task) => (
                       <Card key={task.ID} className="border">
@@ -779,7 +791,7 @@ export const DeveloperOverview: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
-                    
+
                     {!showAllMyTasks && getFilteredTasks().length > 3 && (
                       <div className="flex justify-center pt-2">
                         <Button
@@ -791,26 +803,28 @@ export const DeveloperOverview: React.FC = () => {
                         </Button>
                       </div>
                     )}
-                    
-                    {(taskFilter !== 'awaiting' && taskFilter !== 'pending') && hasMoreTasks && (
-                      <div className="flex justify-center pt-4">
-                        <Button
-                          onClick={loadMoreTasks}
-                          disabled={loadingMoreTasks}
-                          variant="outline"
-                          className="w-full max-w-xs"
-                        >
-                          {loadingMoreTasks ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Loading...
-                            </>
-                          ) : (
-                            'Load More Tasks'
-                          )}
-                        </Button>
-                      </div>
-                    )}
+
+                    {taskFilter !== "awaiting" &&
+                      taskFilter !== "pending" &&
+                      hasMoreTasks && (
+                        <div className="flex justify-center pt-4">
+                          <Button
+                            onClick={loadMoreTasks}
+                            disabled={loadingMoreTasks}
+                            variant="outline"
+                            className="w-full max-w-xs"
+                          >
+                            {loadingMoreTasks ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Loading...
+                              </>
+                            ) : (
+                              "Load More Tasks"
+                            )}
+                          </Button>
+                        </div>
+                      )}
                   </div>
                 </CardContent>
               </Card>
@@ -861,7 +875,7 @@ export const DeveloperOverview: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
-                    
+
                     {hasMoreReviews && (
                       <div className="flex justify-center pt-4">
                         <Button
@@ -876,7 +890,7 @@ export const DeveloperOverview: React.FC = () => {
                               Loading...
                             </>
                           ) : (
-                            'Load More Reviews'
+                            "Load More Reviews"
                           )}
                         </Button>
                       </div>
