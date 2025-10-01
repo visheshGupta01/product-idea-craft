@@ -8,45 +8,23 @@ import { useUser } from '@/context/UserContext';
 import { createStripeSession } from '@/services/paymentService';
 import { toast } from 'sonner';
 import Navbar from '@/components/landing_page/Navbar';
+import { PRICING_PLANS } from '@/utils/constants';
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useUser();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-  const plans = [
-    {
-      name: 'Free',
-      subtitle: 'Starter',
-      price: '0',
-      credits: '5 prompts/month',
-      features: [
-        'Basic prompt-to-build flow',
-        'Public projects only',
-        'Limited AI generations',
-        'Watermarked "Built with imagine.bo"',
-        'Community support',
-      ],
-      popular: false,
-      planId: 1,
-    },
-    {
-      name: 'Pro',
-      subtitle: 'Creator',
-      price: '25',
-      credits: '150 credits/month',
-      features: [
-        'Custom domains',
-        'Remove imagine.bo badge',
-        'Private projects',
-        '10GB storage',
-        'Rollover enabled',
-        'SDE support in 24 hrs',
-      ],
-      popular: true,
-      planId: 2,
-    },
-  ];
+  const plans = PRICING_PLANS.MONTHLY.map(plan => ({
+    name: plan.name,
+    subtitle: plan.name === 'Free' ? 'Starter' : plan.name === 'Pro' ? 'Creator' : 'Enterprise',
+    price: plan.price.toString(),
+    credits: `${plan.credits} credits/month`,
+    features: plan.features,
+    popular: plan.name === 'Pro',
+    planId: plan.planId,
+    creditsNum: plan.credits,
+  }));
 
   const handleSelectPlan = async (planName: string, price: string) => {
     if (!isAuthenticated) {
@@ -63,11 +41,12 @@ const Pricing = () => {
     setLoadingPlan(planName);
 
     try {
+      const selectedPlan = plans.find(p => p.name === planName);
       await createStripeSession({
-        userUUID: user?.id || '',
+        user_uuid: user?.id || '',
         price: price,
         plan_name: planName,
-        credits: planName === 'Pro' ? 150 : 0,
+        credits: selectedPlan?.creditsNum || 0,
       });
     } catch (error) {
       console.error('Payment error:', error);

@@ -23,13 +23,20 @@ interface ProfilePopupProps {
 }
 
   const ProfilePopup = ({ open, onOpenChange, initialSection = 'basic' }: ProfilePopupProps) => {
-  const { user, profile, updateProfile } = useUser();
+  const { user, profile, updateProfile, fetchProfile } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   
   // Use actual profile data from API
   const userData = profile;
+
+  // Fetch profile when popup opens
+  useEffect(() => {
+    if (open) {
+      fetchProfile();
+    }
+  }, [open, fetchProfile]);
 
   const [formData, setFormData] = useState({
     firstName: userData?.first_name || '',
@@ -156,13 +163,48 @@ interface ProfilePopupProps {
               </div>
             </div>
 
-            <div className="pt-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{userData?.balances || 0} credits remaining.</span>
-                <Button variant="link" className="p-0 h-auto text-blue-500">
-                  Upgrade
-                </Button>
+            <div className="pt-4 space-y-2">
+              <div className="space-y-2">
+                <Label>Credits</Label>
+                <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
+                  {userData?.credits || 0} credits
+                </div>
               </div>
+              <div className="space-y-2">
+                <Label>Account Status</Label>
+                <Badge variant={userData?.status ? "default" : "secondary"}>
+                  {userData?.status ? 'Active' : 'Inactive'}
+                </Badge>
+              </div>
+              {userData?.user_type === 'developer' && (
+                <>
+                  <div className="space-y-2">
+                    <Label>Tasks Statistics</Label>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="px-2 py-1 bg-muted/30 border rounded-md text-center">
+                        <div className="font-medium">{userData?.total_solved_tasks || 0}</div>
+                        <div className="text-muted-foreground">Solved</div>
+                      </div>
+                      <div className="px-2 py-1 bg-muted/30 border rounded-md text-center">
+                        <div className="font-medium">{userData?.total_in_progress_task || 0}</div>
+                        <div className="text-muted-foreground">In Progress</div>
+                      </div>
+                      <div className="px-2 py-1 bg-muted/30 border rounded-md text-center">
+                        <div className="font-medium">{userData?.total_pending_task || 0}</div>
+                        <div className="text-muted-foreground">Pending</div>
+                      </div>
+                    </div>
+                  </div>
+                  {userData?.rating_count > 0 && (
+                    <div className="space-y-2">
+                      <Label>Rating</Label>
+                      <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
+                        {userData?.avg_rating?.toFixed(2)} ⭐ ({userData?.rating_count} reviews)
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         );
@@ -220,9 +262,12 @@ interface ProfilePopupProps {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Credits Remaining</span>
-                        <span className="text-muted-foreground">{userData?.balances || 0}/3</span>
+                        <span className="text-muted-foreground">{userData?.credits || 0}</span>
                       </div>
-                      <Progress value={33.3} className="h-2" />
+                      <div className="flex justify-between text-sm mt-2">
+                        <span>Balance</span>
+                        <span className="text-muted-foreground">${userData?.balances?.toFixed(2) || '0.00'}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -257,25 +302,31 @@ interface ProfilePopupProps {
                   <div className="p-4 bg-muted/30 rounded-lg border space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-medium">Free Plan</div>
-                        <div className="text-sm text-muted-foreground">3 projects limit</div>
+                        <div className="font-medium">{userData?.price?.name || 'Free Plan'}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {userData?.plan_expires_at ? `Expires: ${new Date(userData.plan_expires_at).toLocaleDateString()}` : 'No expiration'}
+                        </div>
                       </div>
-                      <Badge variant="secondary" className="bg-red-100 text-red-800 border-red-200">
-                        Inactive
+                      <Badge variant={userData?.is_plan_active ? "default" : "secondary"} className={userData?.is_plan_active ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
+                        {userData?.is_plan_active ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
                     <div className="pt-2 border-t">
-                      <div className="text-2xl font-bold">$0</div>
-                      <div className="text-sm text-muted-foreground">forever</div>
+                      <div className="text-2xl font-bold">${userData?.price?.price || 0}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {userData?.plan_started_at ? `Started: ${new Date(userData.plan_started_at).toLocaleDateString()}` : 'Not started'}
+                      </div>
                     </div>
                   </div>
                   <Button className="w-full" size="lg">
                     <span className="mr-2">✨</span>
                     Upgrade Plan
                   </Button>
-                  <Button variant="destructive" size="sm" className="w-full mt-2" onClick={() => setShowCancelDialog(true)}>
-                    Cancel Subscription
-                  </Button>
+                  {userData?.is_plan_active && (
+                    <Button variant="destructive" size="sm" className="w-full mt-2" onClick={() => setShowCancelDialog(true)}>
+                      Cancel Subscription
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

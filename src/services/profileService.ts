@@ -6,8 +6,14 @@ export interface ProfileData {
   first_name: string;
   last_name: string;
   email: string;
+  password: string;
+  verified: boolean;
+  token: string;
+  country: string;
+  city: string;
+  lat: number;
+  lon: number;
   user_type: string;
-  created_at: string;
   plan_id: number;
   price: {
     id: number;
@@ -19,17 +25,27 @@ export interface ProfileData {
   plan_expires_at: string | null;
   is_plan_active: boolean;
   balances: number;
-  country: string;
-  city: string;
+  rating?: number;
+  reset_token: string;
+  reset_token_expiry: string | null;
+  github_access_token?: string;
+  vercel_access_token?: string;
+  created_at: string;
+  last_login_at: string;
   github_url: string;
   linkedin_url: string;
   total_solved_tasks: number;
   total_pending_task: number;
+  total_in_progress_task: number;
   company_name: string;
   experience: string;
   skills: string[] | null;
   bio: string;
   hourpaid: number;
+  avg_rating: number;
+  rating_count: number;
+  status: boolean;
+  credits: number;
 }
 
 export const fetchProfile = async (): Promise<ProfileData> => {
