@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { submitFeedback, getFeedbackCategories, FeedbackSubmission } from '@/services/feedbackService';
+import { redirect, useNavigate } from 'react-router-dom';
 
 interface ProfilePopupProps {
   open: boolean;
@@ -26,7 +27,8 @@ interface ProfilePopupProps {
   const { user, profile, updateProfile, fetchProfile } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const navigate = useNavigate();
   
   // Use actual profile data from API
   const userData = profile;
@@ -95,15 +97,6 @@ interface ProfilePopupProps {
         return (
           <div className="space-y-6">
               <h3 className="text-lg font-semibold">Basic Info</h3>
-            {/* Profile Photo Section */}
-            <div className="flex flex-col items-center space-y-4">
-              <Avatar className="h-24 w-24">
-                <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                  VG
-                </AvatarFallback>
-              </Avatar>
-            </div>
-
             {/* Form Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -249,9 +242,11 @@ interface ProfilePopupProps {
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-semibold mb-2">Credits & Billing</h3>
-              <p className="text-muted-foreground text-sm">Manage your subscription, usage, and billing information</p>
+              <p className="text-muted-foreground text-sm">
+                Manage your subscription, usage, and billing information
+              </p>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-8">
               {/* Left Column */}
               <div className="space-y-6">
@@ -262,33 +257,10 @@ interface ProfilePopupProps {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Credits Remaining</span>
-                        <span className="text-muted-foreground">{userData?.credits || 0}</span>
+                        <span className="text-muted-foreground">
+                          {userData?.credits || 0}
+                        </span>
                       </div>
-                      <div className="flex justify-between text-sm mt-2">
-                        <span>Balance</span>
-                        <span className="text-muted-foreground">${userData?.balances?.toFixed(2) || '0.00'}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Payment Method */}
-                <div className="space-y-4">
-                  <h4 className="font-medium">Payment Method</h4>
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-sm text-muted-foreground">No payment method added</span>
-                    </div>
-                    <Button variant="outline" size="sm">Add Card</Button>
-                  </div>
-                </div>
-
-                {/* Next Billing */}
-                <div className="space-y-4">
-                  <h4 className="font-medium">Next Billing</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">No active subscription</span>
                     </div>
                   </div>
                 </div>
@@ -302,28 +274,58 @@ interface ProfilePopupProps {
                   <div className="p-4 bg-muted/30 rounded-lg border space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-medium">{userData?.price?.name || 'Free Plan'}</div>
+                        <div className="font-medium">
+                          {userData?.price?.name || "Free Plan"}
+                        </div>
                         <div className="text-sm text-muted-foreground">
-                          {userData?.plan_expires_at ? `Expires: ${new Date(userData.plan_expires_at).toLocaleDateString()}` : 'No expiration'}
+                          {userData?.plan_expires_at
+                            ? `Expires: ${new Date(
+                                userData.plan_expires_at
+                              ).toLocaleDateString()}`
+                            : "No expiration"}
                         </div>
                       </div>
-                      <Badge variant={userData?.is_plan_active ? "default" : "secondary"} className={userData?.is_plan_active ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
-                        {userData?.is_plan_active ? 'Active' : 'Inactive'}
+                      <Badge
+                        variant={
+                          userData?.is_plan_active ? "default" : "secondary"
+                        }
+                        className={
+                          userData?.is_plan_active
+                            ? "bg-green-100 text-green-800 border-green-200"
+                            : "bg-red-100 text-red-800 border-red-200"
+                        }
+                      >
+                        {userData?.is_plan_active ? "Active" : "Inactive"}
                       </Badge>
                     </div>
                     <div className="pt-2 border-t">
-                      <div className="text-2xl font-bold">${userData?.price?.price || 0}</div>
+                      {/* <div className="text-2xl font-bold">
+                        ${userData?.price?.price || 0}
+                      </div> */}
                       <div className="text-sm text-muted-foreground">
-                        {userData?.plan_started_at ? `Started: ${new Date(userData.plan_started_at).toLocaleDateString()}` : 'Not started'}
+                        {userData?.plan_started_at
+                          ? `Started: ${new Date(
+                              userData.plan_started_at
+                            ).toLocaleDateString()}`
+                          : "Not started"}
                       </div>
                     </div>
                   </div>
-                  <Button className="w-full" size="lg">
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={() => navigate("/pricing")}
+                  >
                     <span className="mr-2">✨</span>
                     Upgrade Plan
                   </Button>
                   {userData?.is_plan_active && (
-                    <Button variant="destructive" size="sm" className="w-full mt-2" onClick={() => setShowCancelDialog(true)}>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="w-full mt-2"
+                      onClick={() => setShowCancelDialog(true)}
+                    >
                       Cancel Subscription
                     </Button>
                   )}

@@ -143,7 +143,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="resize-none min-h-[60px] max-h-[60px]"
+              className="resize-none min-h-[40px] max-h-[40px]"
               rows={2}
               disabled={isLoading || isLoadingMessages}
             />

@@ -1,24 +1,24 @@
-1. Update Profile Page - Open Popup instead of page
-2. Fix Subscription UI - Open Popup instead of page
-4. Update Credits Page - Cancel Subs, Populate Page
-5. Project Rename - Relocate
-6. Pagination Admin Dashboard
-7. Chat Test
 8. Github, Vercel Flow check
-9. Developer Full Flow
-10. Cancel Subscription - Admin Dashboard
-11. Feedback API integration
-12. Remove Ping
-13. Update Assign to Dev UI - Increase Panel Size, Collapse and assign button fixed at bottom
+21. Stripe api again and again
+22. Landing page idea submit 
+24. Full response
+25. Redesign forgot password and mail received
 
 Ques -
-1. Will dev need to accept the task. If yes, how is he accepting the task - /update/task
-2. What will share chat url do
-3. Does dev do a onboarding or enter the details during signup - During Signup
-4. Does share chat update after user updates its session
+4. Does share chat update after user updates its session - Yes updates
+5. Ask about task statuses and which one to show where and what is api returning - Fix card names
+6. Task page problem - total tasks and all problems - 5 cards delete
 
 Bugs -
-1. If sidebar is collapsed and I click user profile from the dropdown, popup does not show until I uncollapse the sidebar.
 2. It is showing error fetching projects even if projects are fetched successfully but user does not have any project.
 3. Preview URL not updated in preview section after project rename
+4. Next button still working in users list even if total users are finished in admin dashboard
+7. Fix pending tasks filter in user tasks
+8. Update preview on frontend updates and project rename
+9. preview gets cut from top when phone view
+10. sitemap not scrolling in sidebar 
+11. Share chat shows preview even if project_url is not there 
 
+Changes from aadesh - 
+2. CountUser gets started when admin dashboard is loaded, so main admin dashboard is not being shown and only loading
+6. add not_accepted in user tasks api

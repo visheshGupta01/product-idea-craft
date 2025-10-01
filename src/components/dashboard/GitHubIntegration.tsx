@@ -171,12 +171,15 @@ const GitHubIntegration = () => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <Github className="h-5 w-5" />
             <CardTitle>GitHub Integration</CardTitle>
-          </div>
+          </div> */}
           {isConnected && (
-            <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            <Badge
+              variant="default"
+              className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+            >
               <CheckCircle className="h-3 w-3 mr-1" />
               Connected
             </Badge>
@@ -186,27 +189,30 @@ const GitHubIntegration = () => {
       <CardContent className="space-y-4">
         {!isConnected ? (
           <div className="space-y-4">
-            <div className="text-center py-8">
+            <div className="text-center py-8 flex flex-col items-center">
               <Github className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">Connect to GitHub</h3>
-              <p className="text-muted-foreground mb-6">
-                Sync your projects with GitHub repositories for version control and collaboration.
+              <p className="text-muted-foreground mb-6 max-w-md">
+                Sync your projects with GitHub repositories for version control
+                and collaboration.
               </p>
-              <Button 
+              <Button
                 onClick={handleConnectGitHub}
                 disabled={isConnecting}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 mx-auto"
               >
                 {isConnecting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Github className="h-4 w-4" />
                 )}
-                <span>{isConnecting ? 'Connecting...' : 'Connect to GitHub'}</span>
+                <span>
+                  {isConnecting ? "Connecting..." : "Connect to GitHub"}
+                </span>
               </Button>
             </div>
-            
-            <div className="bg-muted/50 rounded-lg p-4">
+
+            <div className="bg-muted/50 rounded-lg p-4 ">
               <h4 className="font-medium mb-2 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-2 text-yellow-600" />
                 What happens when you connect?
@@ -236,12 +242,12 @@ const GitHubIntegration = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(repository.html_url, '_blank')}
+                    onClick={() => window.open(repository.html_url, "_blank")}
                   >
                     <ExternalLink className="h-3 w-3 mr-2" />
                     View on GitHub
                   </Button>
-                    {/* <Button
+                  {/* <Button
                       variant="outline"
                       size="sm"
                       onClick={handleDisconnect}

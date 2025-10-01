@@ -66,7 +66,7 @@ const TasksPage: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await developerService.getDeveloperTasks(page, status === '' ? undefined : status);
-            setTasks(response.tasks || []);
+            setTasks(response || []);
             setTotalPages(response.total_pages || 1);
             setCurrentPage(page);
     } catch (error) {
@@ -82,27 +82,52 @@ const TasksPage: React.FC = () => {
   }, [statusFilter]);
 
 const handleStatusChange = (status: string) => {
-  setStatusFilter(status === "all" ? "" : status);
+  let apiStatus = "";
+
+  if (status === "all") {
+    apiStatus = "";
+  } else if (status === "pending") {
+    apiStatus = "not_accepted"; // map Pending → not_accepted
+  } else {
+    apiStatus = status;
+  }
+
+  setStatusFilter(apiStatus);
   setCurrentPage(1);
 };
+
   const handlePageChange = (page: number) => {
     loadTasks(page, statusFilter);
   };
 
-  const getStatusBadge = (status: string | null) => {
-    if (!status) return <Badge variant="secondary">Pending</Badge>;
-    
-    switch (status) {
-      case 'todo':
-        return <Badge variant="outline" className="text-orange-600 border-orange-600">To Do</Badge>;
-      case 'in_progress':
-        return <Badge variant="outline" className="text-blue-600 border-blue-600">In Progress</Badge>;
-      case 'done':
-        return <Badge variant="outline" className="text-green-600 border-green-600">Done</Badge>;
-      default:
-        return <Badge variant="secondary">Unknown</Badge>;
-    }
-  };
+const getStatusBadge = (status: string | null) => {
+  if (!status) return <Badge variant="secondary">Pending</Badge>;
+
+  switch (status) {
+    case "not_accepted":
+      return <Badge variant="secondary">Pending</Badge>;
+    case "todo":
+      return (
+        <Badge variant="outline" className="text-orange-600 border-orange-600">
+          To Do
+        </Badge>
+      );
+    case "in_progress":
+      return (
+        <Badge variant="outline" className="text-blue-600 border-blue-600">
+          In Progress
+        </Badge>
+      );
+    case "done":
+      return (
+        <Badge variant="outline" className="text-green-600 border-green-600">
+          Done
+        </Badge>
+      );
+    default:
+      return <Badge variant="secondary">Unknown</Badge>;
+  }
+};
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'No due date';
@@ -121,15 +146,19 @@ const handleStatusChange = (status: string) => {
       )
     : tasks;
 
-  const getTaskStats = () => {
-    const total = tasks.length;
-    const pending = tasks.filter(task => !task.status).length;
-    const todo = tasks.filter(task => task.status === 'todo').length;
-    const inProgress = tasks.filter(task => task.status === 'in_progress').length;
-    const done = tasks.filter(task => task.status === 'done').length;
-    
-    return { total, pending, todo, inProgress, done };
-  };
+const getTaskStats = () => {
+  const total = tasks.length;
+  const pending = tasks.filter(
+    (task) => task.status === "not_accepted" || !task.status
+  ).length;
+  const todo = tasks.filter((task) => task.status === "todo").length;
+  const inProgress = tasks.filter(
+    (task) => task.status === "in_progress"
+  ).length;
+  const done = tasks.filter((task) => task.status === "done").length;
+
+  return { total, pending, todo, inProgress, done };
+};
 
   const stats = getTaskStats();
 
@@ -152,65 +181,6 @@ const handleStatusChange = (status: string) => {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 text-gray-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold">{stats.pending}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-orange-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">To Do</p>
-                <p className="text-2xl font-bold">{stats.todo}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-blue-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">In Progress</p>
-                <p className="text-2xl font-bold">{stats.inProgress}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Done</p>
-                <p className="text-2xl font-bold">{stats.done}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative">
@@ -228,7 +198,7 @@ const handleStatusChange = (status: string) => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="not_accepted">Pending</SelectItem>
             <SelectItem value="todo">To Do</SelectItem>
             <SelectItem value="in_progress">In Progress</SelectItem>
             <SelectItem value="done">Done</SelectItem>

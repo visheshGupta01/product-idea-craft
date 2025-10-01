@@ -98,6 +98,7 @@ export const DeveloperEnrollmentForm: React.FC<DeveloperEnrollmentFormProps> = (
     }
 
     setIsSubmitting(true);
+    console.log({ data, skills });
     try {
       const developerData: CreateDeveloperData = {
         first_name: data.first_name,

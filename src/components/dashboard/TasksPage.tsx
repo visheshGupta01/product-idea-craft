@@ -92,7 +92,17 @@ const UserTasksPage: React.FC = () => {
   }, [statusFilter, sortOrder]);
 
 const handleStatusChange = (status: string) => {
-  setStatusFilter(status === "all" ? "" : status);  // interpret "all" as no filter
+  let apiStatus = "";
+
+  if (status === "all") {
+    apiStatus = "";
+  } else if (status === "pending") {
+    apiStatus = "not_accepted"; // map pending to not_accepted
+  } else {
+    apiStatus = status;
+  }
+
+  setStatusFilter(apiStatus);
   setCurrentPage(1);
 };
 
@@ -139,7 +149,7 @@ const handleStatusChange = (status: string) => {
 
   const getTaskStats = () => {
     const total = tasks.length;
-    const pending = tasks.filter(task => !task.status).length;
+    const pending = tasks.filter(task => task.status === null).length;
     const todo = tasks.filter(task => task.status === 'todo').length;
     const inProgress = tasks.filter(task => task.status === 'in_progress').length;
     const done = tasks.filter(task => task.status === 'done').length;

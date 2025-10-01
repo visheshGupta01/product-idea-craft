@@ -66,21 +66,21 @@ export default function DeveloperSidebar({ activeView, onViewChange }: Developer
           active={isActive("/developer")}
           onClick={() => handleNavigation("/developer")}
         />
-        <SidebarIcon
+        {/* <SidebarIcon
           icon={<User />}
           active={isActive("/developer/profile")}
           onClick={() => handleNavigation("/developer/profile")}
-        />
+        /> */}
         <SidebarIcon
           icon={<CheckSquare />}
           active={isActive("/developer/tasks")}
           onClick={() => handleNavigation("/developer/tasks")}
         />
-        <SidebarIcon
+        {/* <SidebarIcon
           icon={<BarChart3 />}
           active={isActive("/developer/analytics")}
           onClick={() => handleNavigation("/developer/analytics")}
-        />
+        /> */}
         <SidebarIcon
           icon={<Inbox />}
           active={isActive("/developer/inbox")}

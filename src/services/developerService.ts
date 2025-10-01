@@ -237,7 +237,9 @@ class DeveloperService {
         company_name: developerData.company_name,
         experience: developerData.experience,
         bio: developerData.bio,
-        hourpaid: developerData.hourpaid
+        hourpaid: developerData.hourpaid,
+        first_name: developerData.first_name,
+        last_name: developerData.last_name
       });
       return response.data;
     } catch (error) {

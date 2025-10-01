@@ -84,7 +84,7 @@ const Navbar: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  setProfileSection("basic-info");
+                  setProfileSection("basic");
                   setShowProfilePopup(true);
                 }}
               >
@@ -100,7 +100,7 @@ const Navbar: React.FC = () => {
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscription
               </DropdownMenuItem>
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onClick={() => {
                   setProfileSection("security");
                   setShowProfilePopup(true);
@@ -108,7 +108,7 @@ const Navbar: React.FC = () => {
               >
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={logout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -117,14 +117,14 @@ const Navbar: React.FC = () => {
           </DropdownMenu>
         ) : (
           <div className="flex items-center gap-2">
-            <div className="w-[100px] md:w-[120px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
+            {/* <div className="w-[100px] md:w-[120px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
               <button
                 onClick={() => setShowDeveloperForm(true)}
                 className="w-full h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"
               >
                 Enroll as Dev
               </button>
-            </div>
+            </div> */}
             <div className="w-[180px] md:w-[220px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
               <button
                 onClick={() => setShowLoginModal(true)}
