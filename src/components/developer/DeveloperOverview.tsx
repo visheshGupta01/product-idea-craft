@@ -321,7 +321,7 @@ export const DeveloperOverview: React.FC = () => {
     <div className="p-6 space-y-6">
       <div className="flex gap-6">
         {/* Left Sidebar - Profile */}
-        <Card className="w-80 bg-black">
+        <Card className="w-80 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto bg-black">
           <CardContent className="p-6">
             <div className="text-center">
               <div className="relative mb-4">
@@ -576,7 +576,7 @@ export const DeveloperOverview: React.FC = () => {
                     {!showAllNewTasks && (profileData.null_status_tasks?.length || 0) > 3 && (
                       <div className="flex justify-center pt-2">
                         <Button
-                          onClick={() => setShowAllNewTasks(true)}
+                          onClick={() => navigate('/developer-dashboard/tasks')}
                           variant="outline"
                           className="w-full"
                         >
@@ -783,7 +783,7 @@ export const DeveloperOverview: React.FC = () => {
                     {!showAllMyTasks && getFilteredTasks().length > 3 && (
                       <div className="flex justify-center pt-2">
                         <Button
-                          onClick={() => setShowAllMyTasks(true)}
+                          onClick={() => navigate('/developer-dashboard/tasks')}
                           variant="outline"
                           className="w-full"
                         >

@@ -67,6 +67,7 @@ const Pricing = () => {
         userUUID: user?.id || '',
         price: price,
         plan_name: planName,
+        credits: planName === 'Pro' ? 2500 : 0,
       });
     } catch (error) {
       console.error('Payment error:', error);
