@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '@/config/api';
 import { loadStripe } from '@stripe/stripe-js';
 
 // Initialize Stripe
-const stripePromise = loadStripe('pk_test_51QCJweRSRZcJVhKkVEjYrMxB9TvULchZV9Us1PON1j8xmowuu6Etb5OGZchy8uXTtm9Ce8T0nFptrlA8ABsh7BDE00E8gu1wqN');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY || "");
 
 export interface PaymentRequest {
   userUUID: string;

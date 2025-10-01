@@ -34,7 +34,7 @@ const Pricing = () => {
       name: 'Pro',
       subtitle: 'Creator',
       price: '25',
-      credits: '2500 credits/month',
+      credits: '150 credits/month',
       features: [
         'Custom domains',
         'Remove imagine.bo badge',
@@ -67,6 +67,7 @@ const Pricing = () => {
         userUUID: user?.id || '',
         price: price,
         plan_name: planName,
+        credits: 150.00,
       });
     } catch (error) {
       console.error('Payment error:', error);
@@ -79,7 +80,7 @@ const Pricing = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 mt-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Choose Your Plan
