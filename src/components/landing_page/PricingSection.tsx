@@ -4,88 +4,15 @@ import { useUser } from "@/context/UserContext";
 import { createStripeSession } from "@/services/paymentService";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-
-  interface Plan {
-    name: string;
-    price: number;
-    desc: string;
-    features: string[];
-    button: string;
-  }
-
-  const monthlyPlans: Plan[] = [
-    {
-      name: "Free",
-      price: 0,
-      desc: "Perfect for **early-stage builders** exploring AI-generated sites.",
-      features: ["Generate up to 3 projects/month", "Access to core AI prompts"],
-      button: "Get Starter Plan",
-    },
-    {
-      name: "Pro",
-      price: 19,
-      desc: "For **creators and indie founders** who want more flexibility.",
-      features: [
-        "Unlimited projects",
-        "Custom domains",
-        "Full prompt library access",
-      ],
-      button: "Get Pro Plan",
-    },
-    {
-      name: "Team",
-      price: 49,
-      desc: "For **growing businesses** with advanced needs.",
-      features: [
-        "Unlimited projects",
-        "Custom domains",
-        "Full prompt library access",
-        "Export code (HTML/CSS)",
-      ],
-      button: "Get Team Plan",
-    },
-  ];
-
-  const yearlyPlans: Plan[] = [
-    {
-      name: "Free",
-      price: 0,
-      desc: "Perfect for **early-stage builders** exploring AI-generated sites.",
-      features: ["Generate up to 3 projects/month", "Access to core AI prompts"],
-      button: "Get Starter Plan",
-    },
-    {
-      name: "Pro",
-      price: 190,
-      desc: "Annual Pro plan for **creators and indie founders** with 2 months free.",
-      features: [
-        "Unlimited projects",
-        "Custom domains",
-        "Full prompt library access",
-      ],
-      button: "Get Pro Plan",
-    },
-    {
-      name: "Team",
-      price: 490,
-      desc: "Best value for **growing businesses** and fast-growing teams.",
-      features: [
-        "Unlimited projects",
-        "Custom domains",
-        "Full prompt library access",
-        "Export code (HTML/CSS)",
-      ],
-      button: "Get Team Plan",
-    },
-  ];
+import { PRICING_PLANS } from "@/utils/constants";
 
   const PricingSection: React.FC = () => {
     const [billing, setBilling] = useState<"Monthly" | "Yearly">("Monthly");
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const { user, isAuthenticated } = useUser();
-    const plans = billing === "Monthly" ? monthlyPlans : yearlyPlans;
+    const plans = billing === "Monthly" ? PRICING_PLANS.MONTHLY : PRICING_PLANS.YEARLY;
 
-    const handlePlanSelection = async (plan: Plan) => {
+    const handlePlanSelection = async (plan: typeof PRICING_PLANS.MONTHLY[0]) => {
       if (!isAuthenticated || !user) {
         toast({
           title: "Authentication Required",
@@ -107,10 +34,10 @@ import { Loader2 } from "lucide-react";
       
       try {
         const paymentData = {
-          userUUID: user.id!,
+          user_uuid: user.id!,
           price: plan.price.toString(),
           plan_name: plan.name,
-          credits: plan.name === 'Pro' ? 150 : plan.name === 'Team' ? 5000 : 0,
+          credits: plan.credits,
         };
 
         await createStripeSession(paymentData);
