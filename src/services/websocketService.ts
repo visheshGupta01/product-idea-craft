@@ -14,7 +14,8 @@ export class WebSocketService {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        const wsUrl = WS_BASE_URL + `/api/chat/ws?session_id=${this.sessionId}`;
+        const token = localStorage.getItem('token');
+        const wsUrl = WS_BASE_URL + `/api/chat/ws?session_id=${this.sessionId}${token ? `&token=${token}` : ''}`;
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {

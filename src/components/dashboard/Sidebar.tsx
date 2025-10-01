@@ -321,7 +321,7 @@ const Sidebar = ({
 
       {/* Sitemap Section - only show on main dashboard */}
       {activeView === 'main' && (
-        <div className="flex-1 min-h-0 bg-sidebar-background">
+        <div className="flex-1 min-h-0 overflow-y-auto bg-sidebar-background">
           <SitemapSection collapsed={false} projectDetails={projectDetails} />
         </div>
       )}

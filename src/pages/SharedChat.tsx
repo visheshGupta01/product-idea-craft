@@ -103,7 +103,7 @@ const SharedChat: React.FC = () => {
       <div className="h-[calc(100vh-80px)]">
         <ResizablePanelGroup direction="horizontal" className="h-full">
           {/* Chat Panel */}
-          <ResizablePanel defaultSize={50} minSize={30}>
+          <ResizablePanel defaultSize={chatData.project_url ? 50 : 100} minSize={30}>
             <div className="h-full flex flex-col">
               {/* Messages */}
               <div className="flex-1 p-4 overflow-y-auto">
@@ -147,15 +147,19 @@ const SharedChat: React.FC = () => {
             </div>
           </ResizablePanel>
 
-          <ResizableHandle withHandle />
+          {chatData.project_url && (
+            <>
+              <ResizableHandle withHandle />
 
-          {/* Preview Panel */}
-          <ResizablePanel defaultSize={50} minSize={30}>
-            <PreviewCodePanel 
-              previewUrl={chatData.project_url}
-              sessionId={undefined}
-            />
-          </ResizablePanel>
+              {/* Preview Panel */}
+              <ResizablePanel defaultSize={50} minSize={30}>
+                <PreviewCodePanel 
+                  previewUrl={chatData.project_url}
+                  sessionId={undefined}
+                />
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
       </div>
     </div>
