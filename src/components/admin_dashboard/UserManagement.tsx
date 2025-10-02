@@ -344,8 +344,13 @@ export default function UserManagement() {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentPage(currentPage + 1);
+                      if (displayedUsers.length === 10) {
+                        setCurrentPage(currentPage + 1);
+                      }
                     }}
+                    className={
+                      displayedUsers.length < 10 ? "pointer-events-none opacity-50" : ""
+                    }
                   />
                 </PaginationItem>
               </PaginationContent>

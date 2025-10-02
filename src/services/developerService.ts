@@ -257,6 +257,16 @@ class DeveloperService {
       throw error;
     }
   }
+
+  async submitReview(reviewData: { developer_id: string; reviewer_name: string; rating: number; comment: string }): Promise<{ status: 'success' }> {
+    try {
+      const response = await apiClient.post('/api/submit/review', reviewData);
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      throw error;
+    }
+  }
 }
 
 export const developerService = new DeveloperService();

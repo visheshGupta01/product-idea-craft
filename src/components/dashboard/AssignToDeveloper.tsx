@@ -9,11 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Star, Github, Linkedin, User, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { CalendarIcon, Star, Github, Linkedin, User, ArrowLeft, CheckCircle2, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { developerService, DeveloperInfo, CreateTaskData } from '@/services/developerService';
 import { useToast } from '@/hooks/use-toast';
+import ReviewDialog from './ReviewDialog';
 
 interface AssignToDeveloperProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
   const [taskDescription, setTaskDescription] = useState('');
   const [dueDate, setDueDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
+  const [showReviewDialog, setShowReviewDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -407,6 +409,16 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             </div>
           </div>
 
+          <div className="flex gap-2 mt-4">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setShowReviewDialog(true)}
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Write a Review
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -574,6 +586,15 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
           </div>
         )}
       </DialogContent>
+
+      {selectedDeveloper && (
+        <ReviewDialog
+          isOpen={showReviewDialog}
+          onClose={() => setShowReviewDialog(false)}
+          developerId={selectedDeveloper.id}
+          developerName={selectedDeveloper.name}
+        />
+      )}
     </Dialog>
   );
 };
