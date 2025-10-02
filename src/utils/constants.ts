@@ -74,5 +74,19 @@ export const PRICING_PLANS = {
       planId: 2,
       credits: 150,
     },
+    {
+      name: "Enterprise",
+      price: 250,
+      desc: "For **teams and businesses** that need advanced features, scalability, and priority support.",
+      features: [
+        "2000 credits",
+        "200GB storage",
+        "Dedicated CSM for onboarding",
+        "SDE support within 12 hours",
+      ],
+      button: "Get Enterprise Plan",
+      planId: 3,
+      credits: 2000,
+    },
   ],
 } as const;

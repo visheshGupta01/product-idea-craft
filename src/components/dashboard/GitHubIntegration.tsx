@@ -70,7 +70,7 @@ const GitHubIntegration = () => {
         }
       }
 
-      // Only check for OAuth callback if we don't already have GitHub URL
+      // Only check for OAucallback if we don't already have GitHub URL
       if (!isConnected) {
         console.log("Checking URL for OAuth parameters...");
         const urlParams = new URLSearchParams(window.location.search);

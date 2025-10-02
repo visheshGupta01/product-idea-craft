@@ -60,6 +60,8 @@ export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
   }
 };
 
+
+
 export const fetchProjectDetails = async (sessionId: string): Promise<ProjectDetails> => {
   try {
     console.log('Fetching project details for sessionId:', sessionId);
@@ -67,6 +69,15 @@ export const fetchProjectDetails = async (sessionId: string): Promise<ProjectDet
       `${API_ENDPOINTS.CHAT.SESSION_CONTENT}?session_id=${sessionId}`
     );
     console.log('Fetched project details for sessionId:', sessionId, response.data);
+    sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify({
+      sessionId,
+      messages: response.data.response.map((msg: any) => ({ id: msg.id, role: msg.role, msg: msg.msg, created_at: msg.created_at })),
+      projectUrl: response.data.project_url,  // Use project_url for preview
+      sitemap: response.data.sitemap,        // Use sitemap for Vercel deployment
+      title: response.data.title,            // Use title for Vercel deployment
+      githubUrl: response.data.github_url,
+      vercelUrl: response.data.vercel_url,   // Use github_url for Vercel deployment
+    }));
     return response.data;
   } catch (error) {
     console.error('Error fetching project details:', error);
