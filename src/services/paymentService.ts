@@ -56,25 +56,12 @@ export const createStripeSession = async (paymentData: PaymentRequest): Promise<
   }
 };
 
-export const getPaymentPlans = () => {
-  return [
-    {
-      name: 'Free',
-      price: '0',
-      planId: 1,
-      features: ['Generate up to 3 projects/month', 'Access to core AI prompts']
-    },
-    {
-      name: 'Pro',
-      price: '19',
-      planId: 2,
-      features: ['Unlimited projects', 'Custom domains', 'Full prompt library access']
-    },
-    {
-      name: 'Team',
-      price: '49',
-      planId: 3,
-      features: ['Unlimited projects', 'Custom domains', 'Full prompt library access', 'Export code (HTML/CSS)']
-    }
-  ];
+export const getPaymentPlans = async () => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.PAYMENT.GET_PRICING);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching payment plans:', error);
+    throw error;
+  }
 };

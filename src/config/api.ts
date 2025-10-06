@@ -51,7 +51,7 @@ export const API_ENDPOINTS = {
   // Profile
   PROFILE: {
     GET: "/api/profile",
-    UPDATE: "/api/profile", // Note: different from GET endpoint
+    UPDATE: "/api/profile",
   },
 
   // User
@@ -86,6 +86,7 @@ export const API_ENDPOINTS = {
   PAYMENT: {
     CREATE_SESSION: "/api/payment/create-session",
     CANCEL_PLAN: "/api/payment/cancel-plan",
+    GET_PRICING: "/api/get/pricing",
   },
 
   // File Upload
