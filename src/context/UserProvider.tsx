@@ -1,5 +1,5 @@
 
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useCallback } from "react";
 import { UserContext } from "./UserContext";
 import { User, InitialResponse } from "@/types";
 import { authService } from "@/services/authService";
@@ -287,7 +287,7 @@ console.log("Sending idea:", idea);
     setInitialResponse(null);
   };
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       const profileData = await fetchProfile();
       setProfile(profileData);
@@ -305,9 +305,9 @@ console.log("Sending idea:", idea);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
-  };
+  }, []);
 
-  const updateUserProfile = async (data: Partial<ProfileData>) => {
+  const updateUserProfile = useCallback(async (data: Partial<ProfileData>) => {
     try {
       const result = await updateProfile(data);
       if (result.success) {
@@ -319,10 +319,10 @@ console.log("Sending idea:", idea);
       console.error('Error updating profile:', error);
       return { success: false, message: 'Failed to update profile' };
     }
-  };
+  }, [fetchUserProfile]);
 
   return (
-    <UserContext.Provider value={{ 
+    <UserContext.Provider value={{
       user, 
       profile,
       userIdea, 

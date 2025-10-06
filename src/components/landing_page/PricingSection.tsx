@@ -38,7 +38,6 @@ import { PRICING_PLANS } from "@/utils/constants";
           plan_name: plan.name,
           credits: plan.credits,
         };
-
         await createStripeSession(paymentData);
       } catch (error) {
         console.error('Payment error:', error);
@@ -68,7 +67,7 @@ import { PRICING_PLANS } from "@/utils/constants";
         {plans.map((plan, idx) => (
           <div
             key={idx}
-            className="bg-[#D5E1E7] text-black rounded-xl px-6 py-6 flex flex-col items-center text-center h-full w-[300px]"
+            className="bg-[#D5E1E7] text-black rounded-xl px-6 py-6 flex flex-col items-center text-center w-[300px] h-auto"
           >
             <div className="flex flex-col items-center flex-grow w-full">
               <h4 className="text-lg font-semibold mb-2">{plan.name}</h4>

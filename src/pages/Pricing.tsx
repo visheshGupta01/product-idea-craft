@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Loader2 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
-import { createStripeSession } from '@/services/paymentService';
+import { createStripeSession, getPaymentPlans } from '@/services/paymentService';
 import { toast } from 'sonner';
 import Navbar from '@/components/landing_page/Navbar';
-import { PRICING_PLANS } from '@/utils/constants';
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useUser();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [plans, setPlans] = useState<any[]>([]);
 
-  const plans = PRICING_PLANS.MONTHLY.map(plan => ({
-    name: plan.name,
-    subtitle: plan.name === 'Free' ? 'Starter' : plan.name === 'Pro' ? 'Creator' : 'Enterprise',
-    price: plan.price.toString(),
-    credits: `${plan.credits} credits/month`,
-    features: plan.features,
-    popular: plan.name === 'Pro',
-    planId: plan.planId,
-    creditsNum: plan.credits,
-  }));
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const fetchedPlans = await getPaymentPlans();
+        setPlans(fetchedPlans);
+      } catch (error) {
+        toast.error('Failed to fetch pricing plans.');
+      }
+    };
+
+    fetchPlans();
+  }, []);
 
   const handleSelectPlan = async (planName: string, price: string) => {
     if (!isAuthenticated) {
@@ -46,7 +48,7 @@ const Pricing = () => {
         user_uuid: user?.id || '',
         price: price,
         plan_name: planName,
-        credits: selectedPlan?.creditsNum || 0,
+        credits: selectedPlan?.credits || 0,
       });
     } catch (error) {
       console.error('Payment error:', error);
@@ -54,6 +56,14 @@ const Pricing = () => {
       setLoadingPlan(null);
     }
   };
+
+  if (plans.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,7 +109,7 @@ const Pricing = () => {
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <p className="text-sm font-medium text-primary mt-2">
-                  {plan.credits}
+                  {plan.credits} credits/month
                 </p>
               </CardHeader>
 
