@@ -129,7 +129,7 @@ const Pricing = () => {
                   className="w-full"
                   variant={plan.popular ? 'default' : 'outline'}
                   size="lg"
-                  onClick={() => handleSelectPlan(plan.name, plan.price)}
+                  onClick={() => handleSelectPlan(plan.name, String(plan.price))}
                   disabled={loadingPlan === plan.name || plan.name === 'Free'}
                 >
                   {loadingPlan === plan.name ? (
