@@ -353,7 +353,7 @@ interface ProfilePopupProps {
               <div className="flex items-center space-x-3 p-2">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary/10 text-primary">
-                    VG
+                    {user?.firstName?.[0] || ''}{user?.lastName?.[0] || ''}
                   </AvatarFallback>
                 </Avatar>
                   <div>
@@ -383,11 +383,7 @@ interface ProfilePopupProps {
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col">
-            {/* <DialogHeader className="p-6 pb-4">
-              <DialogTitle>
-                {menuItems.find(item => item.id === activeSection)?.label || 'Profile Settings'}
-              </DialogTitle>
-            </DialogHeader> */}
+            
 
             <div className="flex-1 mt-5 px-6 pb-4 overflow-y-auto">
               {renderContent()}

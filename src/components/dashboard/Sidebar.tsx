@@ -13,7 +13,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import SitemapSection from './SitemapSection';
 import { ProjectDetails, ProjectFromAPI, fetchProjects, renameProject } from '@/services/projectService';
-import myIcon from "../../assets/ImagineboIcon.svg";
+import { inboxService } from '@/services/inboxService';
+import { useNavigate } from 'react-router-dom';
 
 type ActiveView = 'main' | 'team' | 'my-projects';
 
@@ -44,6 +45,7 @@ const Sidebar = ({
 }: SidebarProps) => {
   console.log("Sidebar: received projectDetails", projectDetails);
   const { user, isAuthenticated } = useUser();
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -55,19 +57,7 @@ const Sidebar = ({
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const { toast } = useToast();
-
-  // Check for existing dark mode preference and connection states
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    setDarkMode(isDark);
-    
-    // GitHub and Vercel connections are now handled by their respective integration components
-    // If projectDetails is available, you might update connection states based on it
-    if (projectDetails) {
-      // Example: setIsGitHubConnected(projectDetails.githubConnected);
-      // Example: setIsVercelConnected(projectDetails.vercelConnected);
-    }
-  }, [projectDetails]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Fetch user projects
   useEffect(() => {
@@ -86,6 +76,25 @@ const Sidebar = ({
     };
 
     loadProjects();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const fetchInbox = async () => {
+      if (!isAuthenticated) return;
+
+      try {
+        const inboxData = await inboxService.getUserInbox();
+        const count = inboxData.tasks.reduce((acc, task) => acc + task.assigner_unread_count, 0);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error('Failed to fetch inbox:', error);
+      }
+    };
+
+    fetchInbox();
+    const interval = setInterval(fetchInbox, 60000); // Refetch every 60 seconds
+
+    return () => clearInterval(interval);
   }, [isAuthenticated]);
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
@@ -363,8 +372,17 @@ const Sidebar = ({
               setProfileOpen(true);
             }}>
               <User className="mr-2 h-4 w-4" />
-              User Profile
+              Profile
             </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/inbox')}>
+                <FolderOpen className="mr-2 h-4 w-4" />
+                Inbox
+                {unreadCount > 0 && (
+                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </DropdownMenuItem>
             <DropdownMenuItem onClick={() => {
               setProfileSection('billing');
               setProfileOpen(true);

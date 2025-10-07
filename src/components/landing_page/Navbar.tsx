@@ -61,11 +61,17 @@ const Navbar: React.FC = () => {
               >
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-pink-500 text-white">
-                    <User className="h-4 w-4" />
+                  {user?.firstName && user?.lastName ? (
+                      `${user.firstName[0]}${user.lastName[0]}`
+                    ) : (
+                      <User className="h-4 w-4" />
+                    )}
                   </AvatarFallback>
                 </Avatar>
                 <span className="hidden md:inline text-sm font-medium">
-                  Profile
+                  {user?.firstName && user?.lastName
+                    ? `${user.firstName} ${user.lastName}`
+                    : "Profile"}
                 </span>
               </Button>
             </DropdownMenuTrigger>
