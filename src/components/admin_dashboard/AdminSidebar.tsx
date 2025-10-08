@@ -1,6 +1,8 @@
 import React from "react";
 import myIcon from "../../assets/ImagineboIcon.svg"; // Adjust the path as necessary
-import { Menu, LayoutGrid, Users, Settings, User, MessageCircle } from "lucide-react";
+import { Menu, LayoutGrid, Users, Settings, User, MessageCircle, LogOut } from "lucide-react";
+import { useUser } from "@/context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 interface AdminSidebarProps {
   activeView: string;
@@ -8,6 +10,13 @@ interface AdminSidebarProps {
 }
 
 export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarProps) {
+  const { logout } = useUser();
+    const navigate = useNavigate();
+  
+    const handleLogout = () => {
+      logout();
+      navigate("/");
+    };
   return (
     <div
       className="fixed flex flex-col items-center justify-between py-6 left-0 top-1/2 transform -translate-y-1/2 bg-black rounded-r-[25px]"
@@ -19,7 +28,7 @@ export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarP
       {/* Top Section */}
       <div className="flex flex-col items-center space-y-6">
         {/* Replace logo placeholder with image */}
-        <a href="/">
+        <a href="/" className="mb-24">
           <img
             src={myIcon}
             alt="Logo"
@@ -33,7 +42,6 @@ export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarP
         </a>
 
         {/* Faded menu icon */}
-        <SidebarIcon icon={<Menu />} faded />
 
         <SidebarIcon
           icon={<LayoutGrid />}
@@ -50,7 +58,6 @@ export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarP
           active={activeView === "feedback"}
           onClick={() => onViewChange("feedback")}
         />
-        <SidebarIcon icon={<Settings />} />
       </div>
 
       {/* Bottom Section */}
@@ -63,7 +70,7 @@ export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarP
             backgroundColor: "#555",
           }}
         ></div>
-        <SidebarIcon icon={<User />} />
+        <SidebarIcon icon={<LogOut />} onClick={handleLogout} />
       </div>
     </div>
   );

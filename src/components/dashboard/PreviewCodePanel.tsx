@@ -24,7 +24,7 @@ const PreviewCodePanel = ({ previewUrl, sessionId }: PreviewCodePanelProps) => {
   const [originalContent, setOriginalContent] = useState<string>('');
   const [currentContent, setCurrentContent] = useState<string>('');
   const [iframeSrc, setIframeSrc] = useState(
-    "https://94153f317dee.ngrok-free.app/"
+    "https://app.imagine.bo"
   );
 
   // Update iframe src when previewUrl changes

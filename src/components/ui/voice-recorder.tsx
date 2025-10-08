@@ -75,15 +75,19 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
       const result = response.data;
 
+      console.log(result);
+
       if (result.success && result.text) {
+        console.log("Transcribed text:", result.text);
         onTranscript(result.text);
       } else {
         throw new Error("No transcript received");
       }
     } catch (error) {
+      console.log("Audio upload error:", error);
       console.error("Failed to process audio:", error);
       alert(
-        "Failed to transcribe audio. Please make sure the backend server is running on localhost:8000"
+        "Failed to transcribe audio."
       );
     } finally {
       setIsProcessing(false);

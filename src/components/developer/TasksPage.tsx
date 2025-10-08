@@ -66,7 +66,7 @@ const TasksPage: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await developerService.getDeveloperTasks(page, status === '' ? undefined : status);
-            setTasks(response.tasks || []);
+            setTasks(response || []);
             setTotalPages(response.total_pages || 1);
             setCurrentPage(page);
     } catch (error) {

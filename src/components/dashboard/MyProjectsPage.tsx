@@ -61,9 +61,13 @@ const MyProjectsPage = () => {
   const loadProjects = async () => {
     try {
       setLoading(true);
-      const apiProjects = await fetchProjects();
+const apiProjects = (await fetchProjects()) || [];
       
       console.log('Fetched projects:', apiProjects);
+      if (!Array.isArray(apiProjects)) {
+        setProjects([]);
+        return;
+      }
       const formattedProjects: Project[] = apiProjects.map(project => ({
         ...project,
         status: project.title ? 'active' : 'draft' as 'active' | 'completed' | 'paused' | 'draft'

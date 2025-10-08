@@ -82,10 +82,7 @@ export const PRICING_PLANS = {
         "2000 credits",
         "200GB storage",
         "Dedicated CSM for onboarding",
-        "SDE support within 12 hours",
-        "Hello ",
-        "HOw Are YOU???",
-        "Hello Again"
+        "SDE support within 12 hours"
       ],
       button: "Get Enterprise Plan",
       planId: 3,

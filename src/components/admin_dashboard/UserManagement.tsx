@@ -284,7 +284,7 @@ export default function UserManagement() {
                         variant="outline"
                         className="text-[14px] font-normal text-gray-900 px-3 py-1"
                       >
-                        {user.plan_name || 'Free Plan'}
+                        {user.plan_name || "Free Plan"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right text-black">
@@ -292,9 +292,13 @@ export default function UserManagement() {
                         variant="link"
                         className="text-red-500"
                         disabled={cancellingUser === user.id}
-                        onClick={() => handleCancelSubscription(user.id, user.name)}
+                        onClick={() =>
+                          handleCancelSubscription(user.id, user.name)
+                        }
                       >
-                        {cancellingUser === user.id ? 'Cancelling...' : 'Cancel Subscription'}
+                        {cancellingUser === user.id
+                          ? "Cancelling..."
+                          : "Cancel Subscription"}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -307,7 +311,9 @@ export default function UserManagement() {
         {/* Pagination */}
         <div className="flex items-center justify-between p-6 border-t border-gray-200">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-black font-poppins">Page {currentPage}</span>
+            <span className="text-sm text-black font-poppins">
+              Page {currentPage}
+            </span>
             <span className="text-xs whitespace-nowrap font-poppins font-medium text-black">
               Total {totalUsers.toLocaleString()} users
             </span>
@@ -332,10 +338,8 @@ export default function UserManagement() {
                 <PaginationItem>
                   <Button
                     variant="outline"
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
                   >
-                    {currentPage}
+                    <p className="text-white">{currentPage}</p>
                   </Button>
                 </PaginationItem>
 
@@ -349,7 +353,9 @@ export default function UserManagement() {
                       }
                     }}
                     className={
-                      displayedUsers.length < 10 ? "pointer-events-none opacity-50" : ""
+                      displayedUsers.length < 10
+                        ? "pointer-events-none opacity-50"
+                        : ""
                     }
                   />
                 </PaginationItem>

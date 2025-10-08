@@ -50,6 +50,7 @@ export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
   try {
     const response = await apiClient.get(API_ENDPOINTS.PROJECT.LIST);
     if (response.data.success) {
+        return response.data?.projects || [];
       return response.data.projects;
     } else {
       throw new Error(response.data.message || 'Failed to fetch projects');
