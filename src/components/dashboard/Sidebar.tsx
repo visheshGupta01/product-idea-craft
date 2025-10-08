@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useUser } from '@/context/UserContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';  
 import { Separator } from '@/components/ui/separator';
+import { getInitialsFromNames } from '@/lib/avatarUtils';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ProfilePopup from './ProfilePopup';
@@ -210,9 +211,7 @@ const Sidebar = ({
               >
                 <Avatar className="h-6 w-6">
                   <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
-                    {user?.firstName && user?.lastName 
-                      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                      : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                    {getInitialsFromNames(user?.firstName, user?.lastName)}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -346,9 +345,7 @@ const Sidebar = ({
             >
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
-                  {user?.firstName && user?.lastName 
-                    ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                    : user?.firstName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || (isAuthenticated ? 'U' : <User className="h-4 w-4" />)}
+                  {getInitialsFromNames(user?.firstName, user?.lastName)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">

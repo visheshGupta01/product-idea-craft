@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Send, User, Bot, Loader2 } from "lucide-react";
+import { Send, Loader2, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getInitials } from "@/lib/avatarUtils";
 
 interface ChatWindowProps {
   task: InboxTask;
@@ -85,7 +86,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               <div className="text-center py-12 text-muted-foreground">
                 <div className="flex flex-col items-center gap-2">
                   <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                    <Bot className="h-6 w-6" />
+                    <MessageCircle className="h-6 w-6" />
                   </div>
                   <p className="font-medium">No messages yet</p>
                   <p className="text-sm">Start the conversation!</p>
@@ -103,7 +104,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   >
                     <Avatar className="h-8 w-8 shrink-0">
                       <AvatarFallback className={isCurrentUser ? "bg-primary text-primary-foreground" : "bg-accent"}>
-                        {isCurrentUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                        {isCurrentUser 
+                          ? getInitials(currentRole === "user" || currentRole === "admin" ? task.assigner_name : task.assignee_name)
+                          : getInitials(currentRole === "user" || currentRole === "admin" ? task.assignee_name : task.assigner_name)
+                        }
                       </AvatarFallback>
                     </Avatar>
                     <div

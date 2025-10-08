@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useUser } from '@/context/UserContext';
 import { Camera, User, Shield, CreditCard, MessageCircle, Settings, Eye, EyeOff, Plus } from 'lucide-react';
+import { getInitialsFromNames } from '@/lib/avatarUtils';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -353,7 +354,7 @@ interface ProfilePopupProps {
               <div className="flex items-center space-x-3 p-2">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary/10 text-primary">
-                    {user?.firstName?.[0] || ''}{user?.lastName?.[0] || ''}
+                    {getInitialsFromNames(userData?.first_name, userData?.last_name)}
                   </AvatarFallback>
                 </Avatar>
                   <div>

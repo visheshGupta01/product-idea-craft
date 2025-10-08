@@ -6,6 +6,7 @@ import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
 import { useUser } from "@/context/UserContext";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface StreamingChatInterfaceProps {
   userIdea?: string;
@@ -101,10 +102,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     <div className="flex flex-col h-full bg-[#1E1E1E]">
       {isLoadingMessages ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-white mx-auto mb-4" />
-            <p className="text-white/70">Loading chat history...</p>
-          </div>
+          <LoadingSpinner size="lg" text="Loading chat history..." />
         </div>
       ) : (
         <>
@@ -129,7 +127,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
                   </Avatar>
                   <div className="bg-[#D9D9D9] rounded-2xl rounded-bl-sm px-4 py-3">
                     <div className="flex items-center space-x-2">
-                      <Loader2 className="h-4 w-4 animate-spin text-black" />
+                      <LoadingSpinner size="sm" />
                       {showToolsIndicator ? (
                         <span className="text-sm text-black">Running Tools...</span>
                       ) : (

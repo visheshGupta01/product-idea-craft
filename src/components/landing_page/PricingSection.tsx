@@ -1,17 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useUser } from "@/context/UserContext";
-import { createStripeSession } from "@/services/paymentService";
+import { createStripeSession, getPaymentPlans } from "@/services/paymentService";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { PRICING_PLANS } from "@/utils/constants";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
   const PricingSection: React.FC = () => {
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+    const [plans, setPlans] = useState<any[]>([]);
+    const [isLoadingPlans, setIsLoadingPlans] = useState(true);
     const { user, isAuthenticated } = useUser();
-    const plans = PRICING_PLANS.MONTHLY;
 
-    const handlePlanSelection = async (plan: typeof PRICING_PLANS.MONTHLY[number]) => {
+    useEffect(() => {
+      const fetchPlans = async () => {
+        try {
+          setIsLoadingPlans(true);
+          const fetchedPlans = await getPaymentPlans();
+          setPlans(fetchedPlans);
+        } catch (error) {
+          console.error('Error fetching plans:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load pricing plans.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoadingPlans(false);
+        }
+      };
+
+      fetchPlans();
+    }, []);
+
+    const handlePlanSelection = async (plan: any) => {
       if (!isAuthenticated || !user) {
         toast({
           title: "Authentication Required",
@@ -34,9 +56,9 @@ import { PRICING_PLANS } from "@/utils/constants";
       try {
         const paymentData = {
           user_uuid: user.id!,
-          price: plan.price.toString(),
+          price: String(plan.price),
           plan_name: plan.name,
-          credits: plan.credits,
+          credits: plan.credits || 0,
         };
         await createStripeSession(paymentData);
       } catch (error) {
@@ -63,6 +85,11 @@ import { PRICING_PLANS } from "@/utils/constants";
         Limitless Potential.
       </h3>
       {/* Cards */}
+      {isLoadingPlans ? (
+        <div className="flex justify-center items-center min-h-[400px]">
+          <LoadingSpinner size="lg" text="Loading plans..." />
+        </div>
+      ) : (
       <div className="flex flex-wrap justify-center gap-8 max-w-6xl min-h-[400px] mx-auto">
         {plans.map((plan, idx) => (
           <div
@@ -83,19 +110,21 @@ import { PRICING_PLANS } from "@/utils/constants";
               </div>
 
               <p className="text-sm mb-4 max-w-xs">
-                {plan.desc
-                  .split("**")
-                  .map((text, i) =>
-                    i % 2 === 1 ? (
-                      <strong key={i}>{text}</strong>
-                    ) : (
-                      <span key={i}>{text}</span>
-                    )
-                  )}
+                {plan.subtitle || plan.desc
+                  ? (plan.subtitle || plan.desc)
+                      .split("**")
+                      .map((text: string, i: number) =>
+                        i % 2 === 1 ? (
+                          <strong key={i}>{text}</strong>
+                        ) : (
+                          <span key={i}>{text}</span>
+                        )
+                      )
+                  : ""}
               </p>
 
               <ul className="text-sm text-left mb-6 w-full max-w-xs">
-                {plan.features.map((f, i) => (
+                {(plan.features || []).map((f: string, i: number) => (
                   <li
                     key={i}
                     className="mb-2 font-semibold list-disc list-inside"
@@ -117,12 +146,13 @@ import { PRICING_PLANS } from "@/utils/constants";
                   Processing...
                 </>
               ) : (
-                plan.button
+                plan.button || 'Get Started'
               )}
             </button>
           </div>
         ))}
       </div>
+      )}
       <p className="mt-12 text-sm text-gray-400">
         Don’t find a plan that suits you?{" "}
         <span className="text-pink-400 cursor-pointer hover:underline">
