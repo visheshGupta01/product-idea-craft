@@ -33,6 +33,7 @@ export const useChatPersistence = (sessionId: string | null) => {
       if (!sessionId) {
         console.log('📝 No sessionId provided, clearing messages');
         setMessages([]);
+        setIsLoadingMessages(false);
         return;
       }
 
@@ -56,8 +57,15 @@ export const useChatPersistence = (sessionId: string | null) => {
         if (savedSession) {
           try {
             const session: ChatSession = JSON.parse(savedSession);
-            console.log('📝 Loaded from sessionStorage:', session.messages?.length || 0, 'messages');
-            setMessages(session.messages || []);
+            
+            // Validate message format - ensure timestamps are Date objects
+            const validatedMessages = (session.messages || []).map(msg => ({
+              ...msg,
+              timestamp: msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp)
+            }));
+            
+            console.log('📝 Loaded from sessionStorage:', validatedMessages.length, 'messages');
+            setMessages(validatedMessages);
             setProjectUrl(session.projectUrl || '');
             setSitemap(session.sitemap || null);
             setTitle(session.title || '');
@@ -65,8 +73,9 @@ export const useChatPersistence = (sessionId: string | null) => {
             setIsLoadingMessages(false);
             return;
           } catch (error) {
-            console.error('Error loading chat session from storage:', error);
+            console.error('Error parsing chat session from storage:', error);
             sessionStorage.removeItem(`chat_session_${sessionId}`);
+            // Continue to API fetch
           }
         }
 
@@ -76,7 +85,6 @@ export const useChatPersistence = (sessionId: string | null) => {
           const projectDetails = await fetchProjectDetails(sessionId);
           console.log('📝 API response:', projectDetails);
           
-          console.log('Loaded messages from API for session:', sessionId);
           if (projectDetails.success && projectDetails.response) {
             const apiMessages = projectDetails.response.map(convertApiMessageToMessage);
             console.log('📝 Loaded from API:', apiMessages.length, 'messages');
@@ -109,12 +117,12 @@ export const useChatPersistence = (sessionId: string | null) => {
           // Clear any potentially unauthorized session data
           sessionStorage.removeItem(`chat_session_${sessionId}`);
           setMessages([]);
-          throw apiError; // Re-throw to be handled by calling component
         }
       } catch (error) {
         console.error('📝 Error in loadMessages:', error);
         setMessages([]);
       } finally {
+        // ALWAYS set loading to false, no matter what
         setIsLoadingMessages(false);
       }
     };
