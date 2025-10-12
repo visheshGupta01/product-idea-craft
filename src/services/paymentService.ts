@@ -30,7 +30,7 @@ export const createRazorpayPayment = async (paymentData: PaymentRequest): Promis
     
     // Create order on backend
     const response = await apiClient.post<RazorpayOrderResponse>(
-      '/create-order',
+      '/api/payment/create-order',
       {
         user_id: paymentData.user_uuid,
         amount: parseFloat(paymentData.price) * 100, // Convert to paise
@@ -57,7 +57,7 @@ export const createRazorpayPayment = async (paymentData: PaymentRequest): Promis
 
         try {
           // Verify payment on backend
-          const verifyRes = await apiClient.post('/verify-payment', {
+          const verifyRes = await apiClient.post('/api/payment/verify-payment', {
             razorpay_payment_id: razorpayResponse.razorpay_payment_id,
             razorpay_order_id: razorpayResponse.razorpay_order_id,
             razorpay_signature: razorpayResponse.razorpay_signature,
