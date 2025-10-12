@@ -59,6 +59,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
           price: String(plan.price),
           plan_name: plan.name,
           credits: plan.credits || 0,
+          plan_id: plan.id || plan.planid || 0,
         };
         await createRazorpayPayment(paymentData);
       } catch (error) {
