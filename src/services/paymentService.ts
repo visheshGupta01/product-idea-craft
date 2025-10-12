@@ -9,6 +9,7 @@ export interface PaymentRequest {
   price: string;
   plan_name: string;
   credits: number;
+  plan_id: number;
 }
 
 export interface RazorpayOrderResponse {
@@ -34,7 +35,9 @@ export const createRazorpayPayment = async (paymentData: PaymentRequest): Promis
       {
         user_id: paymentData.user_uuid,
         amount: parseFloat(paymentData.price) * 100, // Convert to paise
-        currency: 'INR'
+        currency: 'INR',
+        credits: paymentData.credits,
+        planid: paymentData.plan_id
       }
     );
     

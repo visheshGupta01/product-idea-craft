@@ -49,6 +49,7 @@ const Pricing = () => {
         price: price,
         plan_name: planName,
         credits: selectedPlan?.credits || 0,
+        plan_id: selectedPlan?.id || selectedPlan?.planid || 0,
       });
     } catch (error) {
       console.error('Payment error:', error);
