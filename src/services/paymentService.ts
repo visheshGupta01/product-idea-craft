@@ -1,9 +1,8 @@
 import apiClient from '@/lib/apiClient';
 import { API_ENDPOINTS } from '@/config/api';
-import { loadStripe } from '@stripe/stripe-js';
 
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY || "");
+// Razorpay key
+const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_RReeLKTiqG0e3W";
 
 export interface PaymentRequest {
   user_uuid: string;
@@ -12,46 +11,84 @@ export interface PaymentRequest {
   credits: number;
 }
 
-export interface PaymentResponse {
-  status: number;
-  message: string;
-  status_code: number;
-  session_url: {
-    user_uuid: string;
-    session_url: string;
-    session_id: string;
-    plan_name: string;
-    price: string;
-    created_at: string;
-  };
+export interface RazorpayOrderResponse {
+  id: string;
+  amount: number;
+  currency: string;
+  user_id: string;
 }
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
-export const createStripeSession = async (paymentData: PaymentRequest): Promise<void> => {
+export const createRazorpayPayment = async (paymentData: PaymentRequest): Promise<void> => {
   try {
-    console.log('Creating Stripe session with data:', paymentData);
-    const response = await apiClient.post<PaymentResponse>(
-      API_ENDPOINTS.PAYMENT.CREATE_SESSION,
-      paymentData
-    );
-    console.log('Stripe session response:', response.data);
+    console.log('Creating Razorpay order with data:', paymentData);
     
-    const stripe = await stripePromise;
-    if (!stripe) {
-      throw new Error('Stripe failed to load');
+    // Create order on backend
+    const response = await apiClient.post<RazorpayOrderResponse>(
+      '/create-order',
+      {
+        user_id: paymentData.user_uuid,
+        amount: parseFloat(paymentData.price) * 100, // Convert to paise
+        currency: 'INR'
+      }
+    );
+    
+    console.log('Razorpay order response:', response.data);
+
+    if (!response.data.id) {
+      throw new Error('Failed to create order');
     }
 
-    // Redirect to Stripe Checkout
-    const { error } = await stripe.redirectToCheckout({
-      sessionId: response.data.session_url.session_id
-    });
+    // Initialize Razorpay checkout
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: response.data.amount,
+      currency: response.data.currency,
+      name: 'imagine.bo',
+      description: `${paymentData.plan_name} Plan`,
+      order_id: response.data.id,
+      handler: async function (razorpayResponse: any) {
+        console.log('Payment response:', razorpayResponse);
 
-    if (error) {
-      console.error('Stripe redirect error:', error);
-      throw error;
-    }
+        try {
+          // Verify payment on backend
+          const verifyRes = await apiClient.post('/verify-payment', {
+            razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+            razorpay_order_id: razorpayResponse.razorpay_order_id,
+            razorpay_signature: razorpayResponse.razorpay_signature,
+            user_id: paymentData.user_uuid,
+            plan_name: paymentData.plan_name,
+            credits: paymentData.credits
+          });
+
+          console.log('Verification response:', verifyRes.data);
+          
+          // Redirect to success page
+          window.location.href = '/payment-success';
+        } catch (err) {
+          console.error('Verification failed:', err);
+          window.location.href = '/payment-failed';
+        }
+      },
+      prefill: {
+        name: '',
+        email: '',
+        contact: ''
+      },
+      theme: {
+        color: '#fb02a5'
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   } catch (error) {
-    console.error('Error creating Stripe session:', error);
+    console.error('Error creating Razorpay payment:', error);
     throw error;
   }
 };

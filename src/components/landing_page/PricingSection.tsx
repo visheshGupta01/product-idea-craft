@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useUser } from "@/context/UserContext";
-import { createStripeSession, getPaymentPlans } from "@/services/paymentService";
+import { createRazorpayPayment, getPaymentPlans } from "@/services/paymentService";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -60,7 +60,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
           plan_name: plan.name,
           credits: plan.credits || 0,
         };
-        await createStripeSession(paymentData);
+        await createRazorpayPayment(paymentData);
       } catch (error) {
         console.error('Payment error:', error);
         toast({

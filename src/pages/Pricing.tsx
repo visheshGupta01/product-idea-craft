@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Loader2 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
-import { createStripeSession, getPaymentPlans } from '@/services/paymentService';
+import { createRazorpayPayment, getPaymentPlans } from '@/services/paymentService';
 import { toast } from 'sonner';
 import Navbar from '@/components/landing_page/Navbar';
 
@@ -44,7 +44,7 @@ const Pricing = () => {
 
     try {
       const selectedPlan = plans.find(p => p.name === planName);
-      await createStripeSession({
+      await createRazorpayPayment({
         user_uuid: user?.id || '',
         price: price,
         plan_name: planName,
@@ -149,7 +149,7 @@ const Pricing = () => {
         </div>
 
         <div className="text-center mt-12 text-sm text-muted-foreground">
-          <p>All plans include secure payments via Stripe</p>
+          <p>All plans include secure payments via Razorpay</p>
         </div>
       </div>
     </div>
