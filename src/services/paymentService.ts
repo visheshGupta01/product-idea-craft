@@ -34,8 +34,8 @@ export const createRazorpayPayment = async (paymentData: PaymentRequest): Promis
       '/api/payment/create-order',
       {
         user_id: paymentData.user_uuid,
-        amount: parseFloat(paymentData.price) * 100, // Convert to paise
-        currency: 'INR',
+        amount: parseFloat(paymentData.price), 
+        currency: 'USD',
         credits: paymentData.credits,
         planid: paymentData.plan_id
       }
@@ -65,10 +65,11 @@ export const createRazorpayPayment = async (paymentData: PaymentRequest): Promis
             razorpay_order_id: razorpayResponse.razorpay_order_id,
             razorpay_signature: razorpayResponse.razorpay_signature,
             user_id: paymentData.user_uuid,
-            plan_name: paymentData.plan_name,
+            plan_id: paymentData.plan_id,
             credits: paymentData.credits
           });
-
+          
+          // alert(verifyRes.data)
           console.log('Verification response:', verifyRes.data);
           
           // Redirect to success page
