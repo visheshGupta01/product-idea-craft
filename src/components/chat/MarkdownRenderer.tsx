@@ -6,8 +6,8 @@ interface MarkdownRendererProps {
 }
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  if (!content) {
-    return <span>Loading...</span>;
+  if (!content || typeof content !== 'string') {
+    return <span className="text-muted-foreground text-sm">No content</span>;
   }
 
   // // Debug logging

@@ -5,6 +5,7 @@ import { Bot, User, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "@/types";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MessageBubbleProps {
   message: Message;
@@ -95,30 +96,46 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
       {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
       {!isWelcomeMessage && (
-        <div
-          className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ml-11 ${
-            isUser ? "justify-end mr-11 ml-0" : "justify-start"
-          }`}
-        >
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
-            onClick={() => copyToClipboard(message.content)}
+        <TooltipProvider>
+          <div
+            className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ml-11 ${
+              isUser ? "justify-end mr-11 ml-0" : "justify-start"
+            }`}
           >
-            <Copy className="h-3 w-3" />
-          </Button>
-          {!isUser && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
-              onClick={() => downloadAsText(message.content, message.id)}
-            >
-              <Download className="h-3 w-3" />
-            </Button>
-          )}
-        </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
+                  onClick={() => copyToClipboard(message.content)}
+                >
+                  <Copy className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Copy message</p>
+              </TooltipContent>
+            </Tooltip>
+            {!isUser && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
+                    onClick={() => downloadAsText(message.content, message.id)}
+                  >
+                    <Download className="h-3 w-3" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Download as text file</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </TooltipProvider>
       )}
     </div>
   );

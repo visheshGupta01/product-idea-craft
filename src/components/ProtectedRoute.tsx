@@ -93,6 +93,30 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
+  // Prevent admins from accessing user or developer dashboards
+  if (userRole === 'admin' && !requireAdmin) {
+    const isDashboardPath = location.pathname.startsWith('/chat/') || 
+                           location.pathname === '/projects' || 
+                           location.pathname === '/tasks' ||
+                           location.pathname === '/inbox';
+    const isDeveloperPath = location.pathname.startsWith('/developer');
+    
+    if (isDashboardPath || isDeveloperPath) {
+      return <Navigate to="/admin" replace />;
+    }
+  }
+
+  // Prevent developers from accessing user or admin dashboards
+  if (userRole === 'developer' && !requireDeveloper) {
+    const isDashboardPath = location.pathname.startsWith('/chat/') || 
+                           location.pathname === '/projects';
+    const isAdminPath = location.pathname.startsWith('/admin');
+    
+    if (isDashboardPath || isAdminPath) {
+      return <Navigate to="/developer" replace />;
+    }
+  }
+
   // For regular dashboard routes, allow direct session routes even without active chat
   if (!requireAdmin && !requireDeveloper) {
     const isSessionPath = location.pathname.startsWith('/chat/');

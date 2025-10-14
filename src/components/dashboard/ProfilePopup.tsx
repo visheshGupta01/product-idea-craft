@@ -166,8 +166,11 @@ interface ProfilePopupProps {
               </div>
               <div className="space-y-2">
                 <Label>Account Status</Label>
-                <Badge variant={userData?.status ? "default" : "secondary"}>
-                  {userData?.status ? 'Active' : 'Inactive'}
+                <Badge 
+                  variant="default"
+                  className="bg-green-100 text-green-800 border-green-200"
+                >
+                  Active
                 </Badge>
               </div>
               {userData?.user_type === 'developer' && (
@@ -287,16 +290,10 @@ interface ProfilePopupProps {
                         </div>
                       </div>
                       <Badge
-                        variant={
-                          userData?.is_plan_active ? "default" : "secondary"
-                        }
-                        className={
-                          userData?.is_plan_active
-                            ? "bg-green-100 text-green-800 border-green-200"
-                            : "bg-red-100 text-red-800 border-red-200"
-                        }
+                        variant="default"
+                        className="bg-green-100 text-green-800 border-green-200"
                       >
-                        {userData?.is_plan_active ? "Active" : "Inactive"}
+                        Active
                       </Badge>
                     </div>
                     <div className="pt-2 border-t">
