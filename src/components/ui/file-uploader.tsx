@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Upload, FileText, Loader2, X, Check, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import apiClient from "@/lib/apiClient";
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from "@/config/api";
 
 export interface UploadedFile {
   name: string;
@@ -42,13 +42,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       formData.append("file", file);
 
       // apiClient POST request
-      const response = await apiClient.post(API_ENDPOINTS.UPLOAD.PDF, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.post(
+        API_ENDPOINTS.UPLOAD.PDF,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       const result = response.data;
+
+      console.log(result);
 
       if (result.success) {
         const uploadedFile: UploadedFile = {
@@ -98,13 +104,13 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       <button
         onClick={handleClick}
         disabled={disabled || isUploading}
-        className="w-[36px] h-[36px] flex items-center justify-center bg-sidebar-accent/50 border border-sidebar-border rounded-md hover:bg-sidebar-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-[36px] h-[36px] flex items-center justify-center border border-sidebar-border rounded-md hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         title="Upload PDF file"
       >
         {isUploading ? (
-          <Loader2 className="w-4 h-4 text-chat-foreground animate-spin" />
+          <Loader2 className="w-4 h-4 text-sidebar-accent animate-spin" />
         ) : (
-          <Paperclip className="w-4 h-4 text-chat-foreground" />
+          <Paperclip className="w-4 h-4 text-sidebar-accent" />
         )}
       </button>
     </>

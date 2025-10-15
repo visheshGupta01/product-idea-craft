@@ -105,12 +105,12 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   const getButtonStyle = () => {
     if (isProcessing) return "bg-accent hover:bg-accent/90";
     if (isRecording) return "bg-destructive hover:bg-destructive/90 animate-pulse";
-    return "bg-sidebar-accent/50 hover:bg-sidebar-accent border border-sidebar-border";
+    return "bg-white hover:bg-white border border-sidebar-border";
   };
 
   const getIconColor = () => {
-    if (isProcessing || isRecording) return "text-white";
-    return "text-chat-foreground";
+    if (isProcessing || isRecording) return "text-black";
+    return "text-sidebar-accent";
   };
 
   return (
