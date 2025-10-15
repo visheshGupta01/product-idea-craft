@@ -4,7 +4,7 @@ import { fetchProjectDetails, ChatMessage } from '@/services/projectService';
 
 export interface ChatSession {
   sessionId: string;
-  messages: Message[];
+  apiMessages: ChatMessage[]; // Store in API format for consistency
   lastUpdated: number;
   projectUrl?: string;
   sitemap?: any;
@@ -27,7 +27,7 @@ export const useChatPersistence = (sessionId: string | null) => {
   const [title, setTitle] = useState<string>('');
   const [githubUrl, setGithubUrl] = useState<string>('');
 
-  // Load messages from localStorage or API on mount or when sessionId changes
+  // Load messages from sessionStorage or API on mount or when sessionId changes
   useEffect(() => {
     const loadMessages = async () => {
       if (!sessionId) {
@@ -58,20 +58,18 @@ export const useChatPersistence = (sessionId: string | null) => {
           try {
             const session: ChatSession = JSON.parse(savedSession);
             
-            // Validate message format - ensure timestamps are Date objects
-            const validatedMessages = (session.messages || []).map(msg => ({
-              ...msg,
-              timestamp: msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp)
-            }));
-            
-            console.log('📝 Loaded from sessionStorage:', validatedMessages.length, 'messages');
-            setMessages(validatedMessages);
-            setProjectUrl(session.projectUrl || '');
-            setSitemap(session.sitemap || null);
-            setTitle(session.title || '');
-            setGithubUrl(session.githubUrl || '');
-            setIsLoadingMessages(false);
-            return;
+            // Convert stored API messages to Message format
+            if (session.apiMessages && Array.isArray(session.apiMessages)) {
+              const convertedMessages = session.apiMessages.map(convertApiMessageToMessage);
+              console.log('📝 Loaded from sessionStorage:', convertedMessages.length, 'messages');
+              setMessages(convertedMessages);
+              setProjectUrl(session.projectUrl || '');
+              setSitemap(session.sitemap || null);
+              setTitle(session.title || '');
+              setGithubUrl(session.githubUrl || '');
+              setIsLoadingMessages(false);
+              return;
+            }
           } catch (error) {
             console.error('Error parsing chat session from storage:', error);
             sessionStorage.removeItem(`chat_session_${sessionId}`);
@@ -79,25 +77,26 @@ export const useChatPersistence = (sessionId: string | null) => {
           }
         }
 
-        // If not in sessionStorage, load from API with proper access validation
+        // If not in sessionStorage, load from API
         try {
           console.log('📝 Fetching from API for sessionId:', sessionId);
           const projectDetails = await fetchProjectDetails(sessionId);
           console.log('📝 API response:', projectDetails);
           
           if (projectDetails.success && projectDetails.response) {
-            const apiMessages = projectDetails.response.map(convertApiMessageToMessage);
-            console.log('📝 Loaded from API:', apiMessages.length, 'messages');
-            setMessages(apiMessages);
+            // Convert to Message format for display
+            const convertedMessages = projectDetails.response.map(convertApiMessageToMessage);
+            console.log('📝 Loaded from API:', convertedMessages.length, 'messages');
+            setMessages(convertedMessages);
             setProjectUrl(projectDetails.project_url || '');
             setSitemap(projectDetails.sitemap || null);
             setTitle(projectDetails.title || '');
             setGithubUrl(projectDetails.github_url || '');
             
-            // Only save to sessionStorage if we successfully loaded from API
+            // Save raw API format to sessionStorage for consistency
             const session: ChatSession = {
               sessionId,
-              messages: apiMessages,
+              apiMessages: projectDetails.response, // Store raw API format
               projectUrl: projectDetails.project_url || '',
               sitemap: projectDetails.sitemap || null,
               title: projectDetails.title || '',
@@ -105,16 +104,14 @@ export const useChatPersistence = (sessionId: string | null) => {
               lastUpdated: Date.now(),
             };
             sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
-            console.log('📝 Saved to sessionStorage');
+            console.log('📝 Saved to sessionStorage in API format');
           } else {
             console.log('📝 API returned unsuccessful or no response');
-            // If API returns unsuccessful, clear any stored session
             sessionStorage.removeItem(`chat_session_${sessionId}`);
             setMessages([]);
           }
         } catch (apiError) {
           console.error('📝 Error loading messages from API:', apiError);
-          // Clear any potentially unauthorized session data
           sessionStorage.removeItem(`chat_session_${sessionId}`);
           setMessages([]);
         }
@@ -122,7 +119,6 @@ export const useChatPersistence = (sessionId: string | null) => {
         console.error('📝 Error in loadMessages:', error);
         setMessages([]);
       } finally {
-        // ALWAYS set loading to false, no matter what
         setIsLoadingMessages(false);
       }
     };
@@ -134,9 +130,18 @@ export const useChatPersistence = (sessionId: string | null) => {
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
 
+    // Convert Message format back to API format for storage consistency
+    const apiMessages: ChatMessage[] = messages.map(msg => ({
+      id: parseInt(msg.id.replace('msg_', '').replace('api_', '')) || 0,
+      role: msg.type === 'user' ? 'user' : 'ai',
+      msg: msg.content,
+      session_id: sessionId,
+      created_at: msg.timestamp.toISOString(),
+    }));
+
     const session: ChatSession = {
       sessionId,
-      messages,
+      apiMessages, // Store in API format
       projectUrl,
       sitemap,
       title,
