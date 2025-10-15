@@ -77,11 +77,15 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
       console.log(result);
 
-      if (result.success && result.text) {
-        console.log("Transcribed text:", result.text);
-        onTranscript(result.text);
+      if (result.success) {
+        if (result.text && result.text.trim()) {
+          console.log("Transcribed text:", result.text);
+          onTranscript(result.text);
+        } else {
+          console.log("Empty transcription received");
+        }
       } else {
-        throw new Error("No transcript received");
+        throw new Error("Transcription failed");
       }
     } catch (error) {
       console.log("Audio upload error:", error);

@@ -13,12 +13,20 @@ const Index = () => {
     <div>
       <Navbar />
       <HeroSection />
-      <IdeaBox />
-      <VisionSection />
+      <div className="py-16">
+        <IdeaBox />
+      </div>
+      <div className="py-16">
+        <VisionSection />
+      </div>
       {/* <CommunitySection/> */}
       {/* <CommunityTestimonials /> */}
-      <PricingSection />
-      <FAQSection />
+      <div className="py-16">
+        <PricingSection />
+      </div>
+      <div className="py-16">
+        <FAQSection />
+      </div>
       <Footer />
     </div>
   );

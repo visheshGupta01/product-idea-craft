@@ -5,11 +5,17 @@ import { createRazorpayPayment, getPaymentPlans } from "@/services/paymentServic
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { SupportFeedbackDialog } from "./SupportFeedbackDialog";
+import { LoginModal } from "../auth/LoginModal";
+import { SignupModal } from "../auth/SignupModal";
 
   const PricingSection: React.FC = () => {
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [plans, setPlans] = useState<any[]>([]);
     const [isLoadingPlans, setIsLoadingPlans] = useState(true);
+    const [showSupportDialog, setShowSupportDialog] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showSignupModal, setShowSignupModal] = useState(false);
     const { user, isAuthenticated } = useUser();
 
     useEffect(() => {
@@ -71,8 +77,16 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
         });
       } finally {
         setLoadingPlan(null);
-      }
-    };
+    }
+  };
+
+  const handleTalkToUs = () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+    } else {
+      setShowSupportDialog(true);
+    }
+  };
 
   return (
     <section
@@ -155,11 +169,36 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
       </div>
       )}
       <p className="mt-12 text-sm text-gray-400">
-        Don’t find a plan that suits you?{" "}
-        <span className="text-pink-400 cursor-pointer hover:underline">
+        Don't find a plan that suits you?{" "}
+        <button 
+          onClick={handleTalkToUs}
+          className="text-pink-400 cursor-pointer hover:underline"
+        >
           Talk to Us
-        </span>
+        </button>
       </p>
+
+      {/* Support & Authentication Modals */}
+      <SupportFeedbackDialog
+        isOpen={showSupportDialog}
+        onClose={() => setShowSupportDialog(false)}
+      />
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSwitchToSignup={() => {
+          setShowLoginModal(false);
+          setShowSignupModal(true);
+        }}
+      />
+      <SignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onSwitchToLogin={() => {
+          setShowSignupModal(false);
+          setShowLoginModal(true);
+        }}
+      />
     </section>
   );
   };
