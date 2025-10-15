@@ -5,15 +5,15 @@ import { createRazorpayPayment, getPaymentPlans } from "@/services/paymentServic
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { SupportFeedbackDialog } from "./SupportFeedbackDialog";
 import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
+import ProfilePopup from "../dashboard/ProfilePopup";
 
   const PricingSection: React.FC = () => {
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [plans, setPlans] = useState<any[]>([]);
     const [isLoadingPlans, setIsLoadingPlans] = useState(true);
-    const [showSupportDialog, setShowSupportDialog] = useState(false);
+    const [showProfilePopup, setShowProfilePopup] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showSignupModal, setShowSignupModal] = useState(false);
     const { user, isAuthenticated } = useUser();
@@ -84,7 +84,7 @@ import { SignupModal } from "../auth/SignupModal";
     if (!isAuthenticated) {
       setShowLoginModal(true);
     } else {
-      setShowSupportDialog(true);
+      setShowProfilePopup(true);
     }
   };
 
@@ -179,9 +179,10 @@ import { SignupModal } from "../auth/SignupModal";
       </p>
 
       {/* Support & Authentication Modals */}
-      <SupportFeedbackDialog
-        isOpen={showSupportDialog}
-        onClose={() => setShowSupportDialog(false)}
+      <ProfilePopup
+        open={showProfilePopup}
+        onOpenChange={setShowProfilePopup}
+        initialSection="support"
       />
       <LoginModal
         isOpen={showLoginModal}
