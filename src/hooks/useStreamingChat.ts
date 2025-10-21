@@ -27,11 +27,13 @@ export interface StreamingChatActions {
   disconnect: () => void;
   stopGeneration: () => void;
   onFrontendGenerated?: (url: string) => void;
+  onInsufficientBalance?: () => void;
 }
 
 export const useStreamingChat = (
   sessionId: string,
-  onFrontendGenerated?: (url: string) => void
+  onFrontendGenerated?: (url: string) => void,
+  onInsufficientBalance?: () => void
 ): StreamingChatState & StreamingChatActions => {
   const {
     messages,
@@ -195,6 +197,14 @@ export const useStreamingChat = (
           onError: (error: Error) => {
             console.error("❌ Streaming error:", error);
 
+            // Check for insufficient balance error
+            if (error.message.toLowerCase().includes("insufficient balance")) {
+              onInsufficientBalance?.();
+              setIsStreaming(false);
+              setIsProcessingTools(false);
+              return;
+            }
+
             updateMessage(
               aiMessage.id,
               `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error.message}`
@@ -223,7 +233,7 @@ export const useStreamingChat = (
         setIsProcessingTools(false);
       }
     },
-    [addMessage, updateMessage, connect]
+    [addMessage, updateMessage, connect, onInsufficientBalance]
   );
 
   return {
@@ -241,6 +251,7 @@ export const useStreamingChat = (
     disconnect,
     stopGeneration,
     onFrontendGenerated,
+    onInsufficientBalance,
     projectUrl,
     sitemap,
     title,

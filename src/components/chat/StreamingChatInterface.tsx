@@ -5,6 +5,8 @@ import { ChatInput } from "./ChatInput";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { useNavigate } from "react-router-dom";
 
 interface StreamingChatInterfaceProps {
   userIdea?: string;
@@ -15,6 +17,9 @@ interface StreamingChatInterfaceProps {
 export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ userIdea, onFrontendGenerated, urlSessionId }) => {
   const { sessionId: contextSessionId, initialResponse, clearInitialResponse } = useUser();
   const activeSessionId = urlSessionId || contextSessionId;
+  const navigate = useNavigate();
+  const [showBalanceDialog, setShowBalanceDialog] = useState(false);
+
   const {
     messages,
     isLoadingMessages,
@@ -26,7 +31,11 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     scrollToBottom,
     connect,
     stopGeneration
-  } = useStreamingChat(activeSessionId || "", onFrontendGenerated);
+  } = useStreamingChat(
+    activeSessionId || "", 
+    onFrontendGenerated,
+    () => setShowBalanceDialog(true)
+  );
 
   const [isInitialized, setIsInitialized] = useState(false);
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -95,39 +104,57 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
   }, [messages, isStreaming, scrollToBottom]);
 
   return (
-    <div className="flex flex-col h-full bg-[#1E1E1E]">
-      {isLoadingMessages ? (
-        <div className="flex-1 flex items-center justify-center">
-          <LoadingSpinner size="lg" text="Loading chat history..." />
-        </div>
-      ) : (
-        <>
-          <ScrollArea className="flex-1 p-6">
-            <div className="space-y-6 max-w-5xl mx-auto">
-              {messages.map((message, index) => (
-                <div key={message.id} className="group">
-                  <MessageBubble
-                    message={message}
-                    isWelcomeMessage={index === 0 && message.type === "ai"}
-                  />
-                </div>
-              ))}
-
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-
-          <div className="bg-[#1E1E1E]">
-            <div className="max-w-4xl mx-auto">
-              <ChatInput 
-                onSendMessage={sendMessage} 
-                isLoading={isStreaming}
-                onStopGeneration={stopGeneration}
-              />
-            </div>
+    <>
+      <div className="flex flex-col h-full bg-[#1E1E1E]">
+        {isLoadingMessages ? (
+          <div className="flex-1 flex items-center justify-center">
+            <LoadingSpinner size="lg" text="Loading chat history..." />
           </div>
-        </>
-      )}
-    </div>
+        ) : (
+          <>
+            <ScrollArea className="flex-1 p-6">
+              <div className="space-y-6 max-w-5xl mx-auto">
+                {messages.map((message, index) => (
+                  <div key={message.id} className="group">
+                    <MessageBubble
+                      message={message}
+                      isWelcomeMessage={index === 0 && message.type === "ai"}
+                    />
+                  </div>
+                ))}
+
+                <div ref={messagesEndRef} />
+              </div>
+            </ScrollArea>
+
+            <div className="bg-[#1E1E1E]">
+              <div className="max-w-4xl mx-auto">
+                <ChatInput 
+                  onSendMessage={sendMessage} 
+                  isLoading={isStreaming}
+                  onStopGeneration={stopGeneration}
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      <AlertDialog open={showBalanceDialog} onOpenChange={setShowBalanceDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Balance Finished</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your balance has been exhausted. Please upgrade your plan to continue using the service.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => navigate("/pricing")}>
+              Go to Pricing
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
