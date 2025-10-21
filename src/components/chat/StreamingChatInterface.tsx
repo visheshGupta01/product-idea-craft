@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, Bot, Square } from "lucide-react";
+import { Square } from "lucide-react";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
@@ -97,9 +96,6 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     return () => clearTimeout(timer);
   }, [messages, isStreaming, scrollToBottom]);
 
-  const showLoadingIndicator = isStreaming && messages.length > 0;
-  const showToolsIndicator = isProcessingTools;
-
   return (
     <div className="flex flex-col h-full bg-[#1E1E1E]">
       {isLoadingMessages ? (
@@ -118,29 +114,6 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
                   />
                 </div>
               ))}
-
-              {/* Streaming indicator */}
-              {showLoadingIndicator && (
-                <div className="flex items-start space-x-3">
-                  <Avatar className="w-8 h-8 flex-shrink-0">
-                    <AvatarFallback className="bg-purple-500 text-white">
-                      <Bot className="w-4 h-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="bg-[#D9D9D9] rounded-2xl rounded-bl-sm px-4 py-3">
-                    <div className="flex items-center space-x-2">
-                      <LoadingSpinner size="sm" />
-                      {showToolsIndicator ? (
-                        <span className="text-sm text-black">Running Tools...</span>
-                      ) : (
-                        <span className="text-sm text-black">
-                          AI is thinking
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
 
               <div ref={messagesEndRef} />
             </div>
