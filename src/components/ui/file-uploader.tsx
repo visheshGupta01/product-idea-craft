@@ -104,7 +104,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       <button
         onClick={handleClick}
         disabled={disabled || isUploading}
-        className="w-[36px] h-[36px] flex items-center justify-center border border-sidebar-border rounded-md hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-[36px] h-[36px] flex items-center justify-center border border-sidebar-border rounded-md bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         title="Upload PDF file"
       >
         {isUploading ? (

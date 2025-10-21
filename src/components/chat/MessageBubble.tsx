@@ -5,7 +5,13 @@ import { Bot, User, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "@/types";
 import { MarkdownRenderer } from "./MarkdownRenderer";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 
 interface MessageBubbleProps {
   message: Message;
@@ -16,6 +22,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
   isWelcomeMessage = false,
 }) => {
+  console.log("Rendering MessageBubble for message:", message);
   const { toast } = useToast();
 
   const copyToClipboard = async (text: string) => {
@@ -95,13 +102,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       </div>
 
       {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
+      {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
       {!isWelcomeMessage && (
-        <TooltipProvider>
-          <div
-            className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ml-11 ${
-              isUser ? "justify-end mr-11 ml-0" : "justify-start"
-            }`}
-          >
+        <div
+          className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ml-11 ${
+            isUser ? "justify-end mr-11 ml-0" : "justify-start"
+          }`}
+        >
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -113,10 +121,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   <Copy className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Copy message</p>
+              <TooltipContent side="top" className="text-xs">
+                Copy text
               </TooltipContent>
             </Tooltip>
+
             {!isUser && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -129,13 +138,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     <Download className="h-3 w-3" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>Download as text file</p>
+                <TooltipContent side="top" className="text-xs">
+                  Download as text
                 </TooltipContent>
               </Tooltip>
             )}
-          </div>
-        </TooltipProvider>
+          </TooltipProvider>
+        </div>
       )}
     </div>
   );
