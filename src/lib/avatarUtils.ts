@@ -33,11 +33,11 @@ export const getInitialsFromNames = (firstName?: string | null, lastName?: strin
   }
   
   if (first) {
-    return first.substring(0, 2).toUpperCase();
+    return first[0].toUpperCase();
   }
   
   if (last) {
-    return last.substring(0, 2).toUpperCase();
+    return last[0].toUpperCase();
   }
   
   return '??';

@@ -25,6 +25,7 @@ export interface StreamingChatActions {
   scrollToBottom: () => void;
   connect: () => Promise<boolean>;
   disconnect: () => void;
+  stopGeneration: () => void;
   onFrontendGenerated?: (url: string) => void;
 }
 
@@ -106,6 +107,14 @@ export const useStreamingChat = (
   const disconnect = useCallback(() => {
     if (wsClientRef.current) {
       wsClientRef.current.disconnect();
+    }
+  }, []);
+
+  const stopGeneration = useCallback(() => {
+    if (wsClientRef.current) {
+      wsClientRef.current.stopGeneration();
+      setIsStreaming(false);
+      setIsProcessingTools(false);
     }
   }, []);
 
@@ -230,6 +239,7 @@ export const useStreamingChat = (
     scrollToBottom,
     connect,
     disconnect,
+    stopGeneration,
     onFrontendGenerated,
     projectUrl,
     sitemap,

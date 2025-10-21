@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, Bot } from "lucide-react";
+import { Loader2, Bot, Square } from "lucide-react";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/ui/button";
 
 interface StreamingChatInterfaceProps {
   userIdea?: string;
@@ -26,7 +27,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
     sendMessage,
     addMessage,
     scrollToBottom,
-    connect
+    connect,
+    stopGeneration
   } = useStreamingChat(activeSessionId || "", onFrontendGenerated);
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -146,6 +148,19 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({ 
 
           <div className="bg-[#1E1E1E]">
             <div className="max-w-4xl mx-auto">
+              {isStreaming && (
+                <div className="flex justify-center mb-2">
+                  <Button
+                    onClick={stopGeneration}
+                    variant="outline"
+                    size="sm"
+                    className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-destructive/50"
+                  >
+                    <Square className="h-3 w-3 mr-2 fill-current" />
+                    Stop Generating
+                  </Button>
+                </div>
+              )}
               <ChatInput onSendMessage={sendMessage} isLoading={isStreaming} />
             </div>
           </div>

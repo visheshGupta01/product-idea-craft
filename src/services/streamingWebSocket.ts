@@ -181,6 +181,13 @@ export class StreamingWebSocketClient {
     this.ws?.removeEventListener("message", messageHandler);
   }
 
+  stopGeneration() {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ message: "stop" }));
+      console.log("🛑 Stop signal sent to server");
+    }
+  }
+
   disconnect() {
     if (this.ws) {
       this.ws.close();
