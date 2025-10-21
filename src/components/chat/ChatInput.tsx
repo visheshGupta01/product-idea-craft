@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send, Loader2, Mic, X, FileText } from "lucide-react";
+import { Send, Square, Mic, X, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isLoading: boolean;
+  onStopGeneration?: () => void;
 }
 
 interface Tool {
@@ -54,6 +55,7 @@ const availableTools: Tool[] = [
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
+  onStopGeneration,
 }) => {
   const [message, setMessage] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]); // State for uploaded files
@@ -209,12 +211,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             <Button
               type="submit"
               size="icon"
-              onClick={handleSendMessage}
-              disabled={(!message.trim() && uploadedFiles.length === 0) || isLoading}
-              className="w-[36px] h-[36px] bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={isLoading ? onStopGeneration : handleSendMessage}
+              disabled={!isLoading && (!message.trim() && uploadedFiles.length === 0)}
+              className={cn(
+                "w-[36px] h-[36px]",
+                isLoading 
+                  ? "bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/50" 
+                  : "bg-primary hover:bg-primary/90 text-primary-foreground"
+              )}
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Square className="h-4 w-4 fill-current" />
               ) : (
                 <Send className="h-4 w-4" />
               )}
