@@ -238,8 +238,11 @@ export const useStreamingChat = (
     [addMessage, updateMessage, connect, onInsufficientBalance]
   );
 
+  // Filter out empty messages before returning
+  const filteredMessages = messages.filter(msg => msg.content.trim() !== '');
+
   return {
-    messages,
+    messages: filteredMessages,
     isLoadingMessages,
     isStreaming,
     isProcessingTools,

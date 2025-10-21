@@ -130,8 +130,13 @@ export const useChatPersistence = (sessionId: string | null) => {
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
 
+    // Filter out empty messages before saving
+    const nonEmptyMessages = messages.filter(msg => msg.content.trim() !== '');
+    
+    if (nonEmptyMessages.length === 0) return;
+
     // Convert Message format back to API format for storage consistency
-    const apiMessages: ChatMessage[] = messages.map(msg => ({
+    const apiMessages: ChatMessage[] = nonEmptyMessages.map(msg => ({
       id: parseInt(msg.id.replace('msg_', '').replace('api_', '')) || 0,
       role: msg.type === 'user' ? 'user' : 'ai',
       msg: msg.content,
