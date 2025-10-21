@@ -153,6 +153,16 @@ export const useStreamingChat = (
         const callbacks: StreamingCallbacks = {
           onContent: (text: string) => {
             streamingContent += text;
+            
+            // Check for insufficient balance in message content
+            if (streamingContent.toLowerCase().includes("insufficient balance")) {
+              console.log("⚠️ Insufficient balance detected in message");
+              onInsufficientBalance?.();
+              setIsStreaming(false);
+              setIsProcessingTools(false);
+              return;
+            }
+            
             updateMessage(aiMessage.id, streamingContent);
 
             // Check for frontend_code_generator tool output with ngrok URL
@@ -196,14 +206,6 @@ export const useStreamingChat = (
           },
           onError: (error: Error) => {
             console.error("❌ Streaming error:", error);
-
-            // Check for insufficient balance error
-            if (error.message.toLowerCase().includes("insufficient balance")) {
-              onInsufficientBalance?.();
-              setIsStreaming(false);
-              setIsProcessingTools(false);
-              return;
-            }
 
             updateMessage(
               aiMessage.id,
