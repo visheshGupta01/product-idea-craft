@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useUser } from '@/context/UserContext';
-import { Camera, User, Shield, CreditCard, MessageCircle, Settings, Eye, EyeOff, Plus } from 'lucide-react';
+import { Camera, User, Shield, CreditCard, MessageCircle, Settings, Eye, EyeOff, Plus, BarChart3 } from 'lucide-react';
 import { getInitialsFromNames } from '@/lib/avatarUtils';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -17,6 +17,11 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { submitFeedback, getFeedbackCategories, FeedbackSubmission } from '@/services/feedbackService';
 import { redirect, useNavigate } from 'react-router-dom';
+import { fetchUsageData, UsageData } from '@/services/usageService';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ProfilePopupProps {
   open: boolean;
@@ -89,6 +94,7 @@ interface ProfilePopupProps {
     // { id: 'integration', label: 'Integration', icon: Settings },
     // { id: 'security', label: 'Security', icon: Shield },
     { id: 'billing', label: 'Credits and Billing', icon: CreditCard },
+    { id: 'usage', label: 'Usage Stats', icon: BarChart3 },
     { id: 'support', label: 'Support and feedback', icon: MessageCircle },
   ];
 
@@ -333,6 +339,9 @@ interface ProfilePopupProps {
           </div>
         );
 
+      case 'usage':
+        return <UsageStats />;
+
       case 'support':
         return <FeedbackForm />;
 
@@ -426,6 +435,153 @@ interface ProfilePopupProps {
         />
       )}
     </Dialog>
+  );
+};
+
+// Usage Stats Component
+const UsageStats: React.FC = () => {
+  const [usageData, setUsageData] = useState<UsageData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState('October');
+
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  useEffect(() => {
+    const loadUsageData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchUsageData(selectedMonth);
+        setUsageData(data);
+      } catch (error) {
+        console.error('Failed to load usage data:', error);
+        toast.error('Failed to load usage data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUsageData();
+  }, [selectedMonth]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-xl font-semibold mb-2">Usage Statistics</h3>
+          <p className="text-muted-foreground text-sm">
+            Track your token usage and credit consumption
+          </p>
+        </div>
+        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {months.map((month) => (
+              <SelectItem key={month} value={month}>
+                {month}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {usageData && (
+        <>
+          {/* Summary Cards */}
+          <div className="grid grid-cols-3 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Total Tokens
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{usageData.total_tokens.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Avg: {Math.round(usageData.avg_tokens_per_day)}/day
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Total Credits
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{usageData.total_credits.toFixed(3)}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Avg: {usageData.avg_credits_per_day.toFixed(3)}/day
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Active Days
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{usageData.active_days}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  This month
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Daily Usage Table */}
+          <div>
+            <h4 className="font-medium mb-3">Daily Usage</h4>
+            <div className="border rounded-lg">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead className="text-right">Tokens</TableHead>
+                    <TableHead className="text-right">Credits Deducted</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {usageData.daily_usage.map((day, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">
+                        {new Date(day.created_at).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </TableCell>
+                      <TableCell className="text-right">{day.token.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{day.credits_deducted.toFixed(3)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
