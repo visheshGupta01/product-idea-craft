@@ -17,7 +17,8 @@ export interface UsageData {
 
 export const fetchUsageData = async (month: string): Promise<UsageData> => {
   try {
-    const response = await apiClient.get(`/usage?month=${month}`);
+    const response = await apiClient.get(`/api/usage?month=${month}`);
+    console.log(response.data[0]);
     return response.data[0];
   } catch (error) {
     console.error('Error fetching usage data:', error);
