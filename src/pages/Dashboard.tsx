@@ -12,7 +12,7 @@ const Dashboard = () => {
   const { userIdea, setSessionId } = useUser();
   const [projectTitle, setProjectTitle] = useState<string>("");
   const [isAccessValidated, setIsAccessValidated] = useState(false);
-  
+
   // Get deploy URL and preview flag from navigation state
   const deployUrl = location.state?.deployUrl;
   const shouldOpenPreview = location.state?.shouldOpenPreview;
@@ -24,9 +24,11 @@ const Dashboard = () => {
         // Load session details and set as active session
         const projectDetails = await fetchProjectDetails(sessionid);
         setSessionId(sessionid);
-        setProjectTitle(projectDetails.title || `Project ${sessionid.slice(0, 8)}`);
+        setProjectTitle(
+          projectDetails.title || `Project ${sessionid.slice(0, 8)}`
+        );
       } catch (error) {
-        console.error('Error loading project details:', error);
+        //console.error('Error loading project details:', error);
         setProjectTitle(`Project ${sessionid.slice(0, 8)}`);
       }
     }
@@ -35,7 +37,7 @@ const Dashboard = () => {
   // If no sessionid, render directly without validation
   if (!sessionid) {
     return (
-      <MainDashboard 
+      <MainDashboard
         userIdea={userIdea || "My App"}
         sessionId={undefined}
         deployUrl={deployUrl}
@@ -45,8 +47,11 @@ const Dashboard = () => {
   }
 
   return (
-    <SessionValidator sessionId={sessionid} onValidationComplete={handleValidationComplete}>
-      <MainDashboard 
+    <SessionValidator
+      sessionId={sessionid}
+      onValidationComplete={handleValidationComplete}
+    >
+      <MainDashboard
         userIdea={projectTitle || userIdea || "My App"}
         sessionId={isAccessValidated ? sessionid : undefined}
         deployUrl={deployUrl}

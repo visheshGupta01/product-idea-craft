@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { buildIntegrationUrl } from '@/config/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { 
+import React, { useState, useEffect } from "react";
+import { buildIntegrationUrl } from "@/config/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import {
   Github,
   ExternalLink,
   GitBranch,
   CheckCircle,
   AlertCircle,
-  Loader2
-} from 'lucide-react';
-import { useUser } from '@/context/UserContext';
+  Loader2,
+} from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 interface GitHubRepo {
   name: string;
@@ -25,20 +25,20 @@ const GitHubIntegration = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [repository, setRepository] = useState<GitHubRepo | null>(null);
-    const { sessionId } = useUser();
-
-
+  const { sessionId } = useUser();
 
   useEffect(() => {
     const checkGitHubConnection = () => {
       // Check if we have GitHub URL in the current chat session
       if (sessionId) {
-        const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+        const savedSession = sessionStorage.getItem(
+          `chat_session_${sessionId}`
+        );
         if (savedSession) {
           try {
             const session = JSON.parse(savedSession);
             const githubUrl = session.githubUrl;
-            
+
             if (githubUrl) {
               // Create repository object from URL
               const repoName = githubUrl.split("/").pop() || "Unknown";
@@ -53,7 +53,7 @@ const GitHubIntegration = () => {
               return;
             }
           } catch (error) {
-            console.error("Error parsing chat session:", error);
+            //console.error("Error parsing chat session:", error);
           }
         }
       }
@@ -66,24 +66,28 @@ const GitHubIntegration = () => {
           setRepository(repo);
           setIsConnected(true);
         } catch (error) {
-          console.error("Error parsing saved repository:", error);
+          //console.error("Error parsing saved repository:", error);
         }
       }
 
       // Only check for OAucallback if we don't already have GitHub URL
       if (!isConnected) {
-        console.log("Checking URL for OAuth parameters...");
+        //console.log("Checking URL for OAuth parameters...");
         const urlParams = new URLSearchParams(window.location.search);
-        console.log("URL Params:", urlParams.toString());
+        //console.log("URL Params:", urlParams.toString());
         const action = urlParams.get("action");
         const status = urlParams.get("status");
         const cloneUrl = urlParams.get("clone_url");
 
         if (action === "github-oauth" && status === "success" && cloneUrl) {
-          console.log("OAuth success! Clone URL:", cloneUrl);
+          //console.log("OAuth success! Clone URL:", cloneUrl);
           handleOAuthSuccess(cloneUrl);
           // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
         }
       }
     };
@@ -102,37 +106,41 @@ const GitHubIntegration = () => {
     return () => clearInterval(interval);
   }, [sessionId, isConnected]);
 
- const handleOAuthSuccess = (cloneUrl: string) => {
-   // Extract repository info from clone URL
-   const repoName = cloneUrl.split("/").pop()?.replace(".git", "") || "Unknown";
-   const htmlUrl = cloneUrl.replace(".git", "");
+  const handleOAuthSuccess = (cloneUrl: string) => {
+    // Extract repository info from clone URL
+    const repoName =
+      cloneUrl.split("/").pop()?.replace(".git", "") || "Unknown";
+    const htmlUrl = cloneUrl.replace(".git", "");
 
-   const repo: GitHubRepo = {
-     name: repoName,
-     clone_url: cloneUrl,
-     html_url: htmlUrl,
-     created_at: new Date().toISOString(),
-   };
+    const repo: GitHubRepo = {
+      name: repoName,
+      clone_url: cloneUrl,
+      html_url: htmlUrl,
+      created_at: new Date().toISOString(),
+    };
 
-   setRepository(repo);
-   setIsConnected(true);
-   
-   // Store in chat session
-   if (sessionId) {
-     const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
-     if (savedSession) {
-       try {
-         const session = JSON.parse(savedSession);
-         session.githubUrl = htmlUrl;
-         sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
-       } catch (error) {
-         console.error("Error updating chat session:", error);
-       }
-     }
-   }
-   
-   toast.success("Successfully connected to GitHub!");
- };
+    setRepository(repo);
+    setIsConnected(true);
+
+    // Store in chat session
+    if (sessionId) {
+      const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
+      if (savedSession) {
+        try {
+          const session = JSON.parse(savedSession);
+          session.githubUrl = htmlUrl;
+          sessionStorage.setItem(
+            `chat_session_${sessionId}`,
+            JSON.stringify(session)
+          );
+        } catch (error) {
+          //console.error("Error updating chat session:", error);
+        }
+      }
+    }
+
+    toast.success("Successfully connected to GitHub!");
+  };
 
   const handleConnectGitHub = async () => {
     if (!sessionId) {
@@ -143,11 +151,11 @@ const GitHubIntegration = () => {
     setIsConnecting(true);
     try {
       // Redirect to GitHub OAuth
-      const githubUrl = buildIntegrationUrl('github', sessionId);
+      const githubUrl = buildIntegrationUrl("github", sessionId);
       window.location.href = githubUrl;
     } catch (error) {
-      console.error('Error connecting to GitHub:', error);
-      toast.error('Failed to connect to GitHub');
+      //console.error("Error connecting to GitHub:", error);
+      toast.error("Failed to connect to GitHub");
       setIsConnecting(false);
     }
   };
@@ -155,15 +163,15 @@ const GitHubIntegration = () => {
   const handleDisconnect = () => {
     setIsConnected(false);
     setRepository(null);
-    sessionStorage.removeItem('github_repository');
-    toast.success('Disconnected from GitHub');
+    sessionStorage.removeItem("github_repository");
+    toast.success("Disconnected from GitHub");
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 

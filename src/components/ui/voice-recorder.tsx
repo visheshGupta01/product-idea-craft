@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Mic, Square, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import apiClient from "@/lib/apiClient";
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from "@/config/api";
 
 interface VoiceRecorderProps {
   onTranscript: (text: string) => void;
@@ -48,7 +48,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
-      console.error("Failed to start recording:", error);
+      //console.error("Failed to start recording:", error);
       alert("Failed to access microphone. Please check permissions.");
     }
   };
@@ -67,32 +67,34 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       formData.append("video", audioBlob, "recording.wav");
 
       // apiClient POST request
-      const response = await apiClient.post(API_ENDPOINTS.UPLOAD.AUDIO, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.post(
+        API_ENDPOINTS.UPLOAD.AUDIO,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       const result = response.data;
 
-      console.log(result);
+      //console.log(result);
 
       if (result.success) {
         if (result.text && result.text.trim()) {
-          console.log("Transcribed text:", result.text);
+          //console.log("Transcribed text:", result.text);
           onTranscript(result.text);
         } else {
-          console.log("Empty transcription received");
+          //console.log("Empty transcription received");
         }
       } else {
         throw new Error("Transcription failed");
       }
     } catch (error) {
-      console.log("Audio upload error:", error);
-      console.error("Failed to process audio:", error);
-      alert(
-        "Failed to transcribe audio."
-      );
+      //console.log("Audio upload error:", error);
+      //console.error("Failed to process audio:", error);
+      alert("Failed to transcribe audio.");
     } finally {
       setIsProcessing(false);
     }
@@ -108,7 +110,8 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
   const getButtonStyle = () => {
     if (isProcessing) return "bg-accent hover:bg-accent/90";
-    if (isRecording) return "bg-destructive hover:bg-destructive/90 animate-pulse";
+    if (isRecording)
+      return "bg-destructive hover:bg-destructive/90 animate-pulse";
     return "bg-white hover:bg-white border border-sidebar-border";
   };
 
@@ -136,9 +139,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       }
     >
       {isProcessing ? (
-        <Loader2
-          className={cn("w-4 h-4 animate-spin", getIconColor())}
-        />
+        <Loader2 className={cn("w-4 h-4 animate-spin", getIconColor())} />
       ) : isRecording ? (
         <Square className={cn("w-4 h-4", getIconColor())} />
       ) : (

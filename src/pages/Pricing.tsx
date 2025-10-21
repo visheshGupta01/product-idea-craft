@@ -1,13 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Check, Loader2 } from 'lucide-react';
-import { useUser } from '@/context/UserContext';
-import { createRazorpayPayment, getPaymentPlans } from '@/services/paymentService';
-import { toast } from 'sonner';
-import Navbar from '@/components/landing_page/Navbar';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Check, Loader2 } from "lucide-react";
+import { useUser } from "@/context/UserContext";
+import {
+  createRazorpayPayment,
+  getPaymentPlans,
+} from "@/services/paymentService";
+import { toast } from "sonner";
+import Navbar from "@/components/landing_page/Navbar";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -21,7 +31,7 @@ const Pricing = () => {
         const fetchedPlans = await getPaymentPlans();
         setPlans(fetchedPlans);
       } catch (error) {
-        toast.error('Failed to fetch pricing plans.');
+        toast.error("Failed to fetch pricing plans.");
       }
     };
 
@@ -30,30 +40,30 @@ const Pricing = () => {
 
   const handleSelectPlan = async (planName: string, price: string) => {
     if (!isAuthenticated) {
-      toast.error('Please sign in to continue');
-      navigate('/?action=login');
+      toast.error("Please sign in to continue");
+      navigate("/?action=login");
       return;
     }
 
-    if (planName === 'Free') {
-      toast.info('You are already on the Free plan');
+    if (planName === "Free") {
+      toast.info("You are already on the Free plan");
       return;
     }
 
     setLoadingPlan(planName);
 
     try {
-      const selectedPlan = plans.find(p => p.name === planName);
+      const selectedPlan = plans.find((p) => p.name === planName);
       await createRazorpayPayment({
-        user_uuid: user?.id || '',
+        user_uuid: user?.id || "",
         price: price,
         plan_name: planName,
         credits: selectedPlan?.credits || 0,
         plan_id: selectedPlan?.id || selectedPlan?.planid || 0,
       });
     } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Failed to process payment. Please try again.');
+      //console.error('Payment error:', error);
+      toast.error("Failed to process payment. Please try again.");
       setLoadingPlan(null);
     }
   };
@@ -69,7 +79,7 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-16 mt-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -86,8 +96,8 @@ const Pricing = () => {
               key={plan.name}
               className={`relative ${
                 plan.popular
-                  ? 'border-primary shadow-lg scale-105'
-                  : 'border-border'
+                  ? "border-primary shadow-lg scale-105"
+                  : "border-border"
               }`}
             >
               {plan.popular && (
@@ -128,20 +138,22 @@ const Pricing = () => {
               <CardFooter>
                 <Button
                   className="w-full"
-                  variant={plan.popular ? 'default' : 'outline'}
+                  variant={plan.popular ? "default" : "outline"}
                   size="lg"
-                  onClick={() => handleSelectPlan(plan.name, String(plan.price))}
-                  disabled={loadingPlan === plan.name || plan.name === 'Free'}
+                  onClick={() =>
+                    handleSelectPlan(plan.name, String(plan.price))
+                  }
+                  disabled={loadingPlan === plan.name || plan.name === "Free"}
                 >
                   {loadingPlan === plan.name ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Processing...
                     </>
-                  ) : plan.name === 'Free' ? (
-                    'Current Plan'
+                  ) : plan.name === "Free" ? (
+                    "Current Plan"
                   ) : (
-                    'Get Started'
+                    "Get Started"
                   )}
                 </Button>
               </CardFooter>

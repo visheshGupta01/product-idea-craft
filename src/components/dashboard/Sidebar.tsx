@@ -1,23 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { useUser } from '@/context/UserContext';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';  
-import { Separator } from '@/components/ui/separator';
-import { getInitialsFromNames } from '@/lib/avatarUtils';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { getInitialsFromNames } from "@/lib/avatarUtils";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import ProfilePopup from './ProfilePopup';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, User, Moon, Sun, Github, Settings, Users, CreditCard, Lightbulb, Home, Link, Shield, MessageCircle, FolderOpen, ChevronDown, Edit } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import SitemapSection from './SitemapSection';
-import { ProjectDetails, ProjectFromAPI, fetchProjects, renameProject } from '@/services/projectService';
-import { inboxService } from '@/services/inboxService';
-import { useNavigate } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import ProfilePopup from "./ProfilePopup";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Menu,
+  User,
+  Moon,
+  Sun,
+  Github,
+  Settings,
+  Users,
+  CreditCard,
+  Lightbulb,
+  Home,
+  Link,
+  Shield,
+  MessageCircle,
+  FolderOpen,
+  ChevronDown,
+  Edit,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import SitemapSection from "./SitemapSection";
+import {
+  ProjectDetails,
+  ProjectFromAPI,
+  fetchProjects,
+  renameProject,
+} from "@/services/projectService";
+import { inboxService } from "@/services/inboxService";
+import { useNavigate } from "react-router-dom";
 
-type ActiveView = 'main' | 'team' | 'my-projects';
+type ActiveView = "main" | "team" | "my-projects";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -38,25 +76,25 @@ const Sidebar = ({
   collapsed,
   onToggleCollapse,
   currentProject,
-  activeView = 'main',
+  activeView = "main",
   onViewChange,
   projectDetails,
   sessionId,
-  onProjectRenamed
+  onProjectRenamed,
 }: SidebarProps) => {
-  console.log("Sidebar: received projectDetails", projectDetails);
+  //console.log("Sidebar: received projectDetails", projectDetails);
   const { user, isAuthenticated } = useUser();
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [profileSection, setProfileSection] = useState('basic');
+  const [profileSection, setProfileSection] = useState("basic");
   const [isGitHubConnected, setIsGitHubConnected] = useState(false);
   const [isVercelConnected, setIsVercelConnected] = useState(false);
   const [projects, setProjects] = useState<ProjectFromAPI[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
-  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectName, setNewProjectName] = useState("");
   const { toast } = useToast();
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -64,13 +102,13 @@ const Sidebar = ({
   useEffect(() => {
     const loadProjects = async () => {
       if (!isAuthenticated) return;
-      
+
       try {
         setLoadingProjects(true);
         const userProjects = await fetchProjects();
         setProjects(userProjects);
       } catch (error) {
-        console.error('Failed to fetch projects:', error);
+        //console.error("Failed to fetch projects:", error);
       } finally {
         setLoadingProjects(false);
       }
@@ -85,10 +123,13 @@ const Sidebar = ({
 
       try {
         const inboxData = await inboxService.getUserInbox();
-        const count = inboxData.tasks.reduce((acc, task) => acc + task.assigner_unread_count, 0);
+        const count = inboxData.tasks.reduce(
+          (acc, task) => acc + task.assigner_unread_count,
+          0
+        );
         setUnreadCount(count);
       } catch (error) {
-        console.error('Failed to fetch inbox:', error);
+        //console.error("Failed to fetch inbox:", error);
       }
     };
 
@@ -101,20 +142,20 @@ const Sidebar = ({
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
     if (newDarkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   };
 
   const handleGitHubConnect = () => {
     // GitHub connection is now handled by GitHubIntegration component
-    console.log("GitHub connection should be handled by the GitHub integration component");
+    //console.log("GitHub connection should be handled by the GitHub integration component");
   };
 
   const handleVercelConnect = () => {
     // Vercel connection is now handled by VercelIntegration component
-    console.log("Vercel connection should be handled by the Vercel integration component");
+    //console.log("Vercel connection should be handled by the Vercel integration component");
   };
 
   const handleRenameClick = () => {
@@ -150,14 +191,20 @@ const Sidebar = ({
     }
   };
   if (collapsed) {
-    return <div className="w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
+    return (
+      <div className="w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
         {/* Home button at very top (only show when not on main) */}
-        {activeView !== 'main' && (
+        {activeView !== "main" && (
           <div className="flex justify-center pt-2 pb-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => onViewChange?.("main")}
+                  >
                     <Home className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
@@ -170,7 +217,7 @@ const Sidebar = ({
         )}
 
         {/* Header - show expand button on collapsed main dashboard */}
-        {activeView === 'main' && (
+        {activeView === "main" && (
           <div className="p-2 border-b border-sidebar-border bg-sidebar-background flex justify-center">
             <button
               onClick={onToggleCollapse}
@@ -195,7 +242,7 @@ const Sidebar = ({
         {/* Navigation icons - only show sitemap on main dashboard */}
         <div className="flex-1 flex flex-col bg-sidebar-background">
           {/* Sitemap Section - only show on main dashboard */}
-          {activeView === 'main' && (
+          {activeView === "main" && (
             <SitemapSection collapsed={true} projectDetails={projectDetails} />
           )}
         </div>
@@ -204,11 +251,7 @@ const Sidebar = ({
         <div className="mt-auto p-2 border-t border-sidebar-border bg-sidebar flex flex-col items-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 w-8 p-0"
-              >
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <Avatar className="h-6 w-6">
                   <AvatarFallback className="text-xs bg-sidebar-accent text-sidebar-foreground">
                     {getInitialsFromNames(user?.firstName, user?.lastName)}
@@ -216,76 +259,92 @@ const Sidebar = ({
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" side="right" className="w-56 bg-popover border border-border">
-              <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
+            <DropdownMenuContent
+              align="center"
+              side="right"
+              className="w-56 bg-popover border border-border"
+            >
+              <DropdownMenuItem onClick={() => onViewChange?.("my-projects")}>
                 <FolderOpen className="mr-2 h-4 w-4" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setProfileSection('basic');
-                setProfileOpen(true);
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setProfileSection("basic");
+                  setProfileOpen(true);
+                }}
+              >
                 <User className="mr-2 h-4 w-4" />
                 User Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setProfileSection('billing');
-                setProfileOpen(true);
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setProfileSection("billing");
+                  setProfileOpen(true);
+                }}
+              >
                 <CreditCard className="mr-2 h-4 w-4" />
                 Credits & Billing
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setProfileSection('support');
-                setProfileOpen(true);
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setProfileSection("support");
+                  setProfileOpen(true);
+                }}
+              >
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Support & Feedback
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
+
           <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Settings & Integrations</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-               <Button 
+                <Button
                   variant={isGitHubConnected ? "default" : "outline"}
                   className="w-full justify-start"
                   onClick={handleGitHubConnect}
                 >
                   <Github className="h-4 w-4 mr-2" />
-                  {isGitHubConnected ? 'Manage GitHub' : 'Connect GitHub'}
+                  {isGitHubConnected ? "Manage GitHub" : "Connect GitHub"}
                 </Button>
-                <Button 
+                <Button
                   variant={isVercelConnected ? "default" : "outline"}
                   className="w-full justify-start"
                   onClick={handleVercelConnect}
                 >
                   <Link className="h-4 w-4 mr-2" />
-                  {isVercelConnected ? 'Manage Vercel' : 'Connect Vercel'}
+                  {isVercelConnected ? "Manage Vercel" : "Connect Vercel"}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
-      </div>;
+      </div>
+    );
   }
   return (
     <div className="h-full w-full min-w-[240px] bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
       {/* Home button at very top (only show when not on main) */}
-      {activeView !== 'main' && (
+      {activeView !== "main" && (
         <div className="p-2 bg-sidebar-background flex justify-center border-b border-sidebar-border">
-          <Button variant="default" size="sm" className="h-8 w-8 p-0" onClick={() => onViewChange?.('main')}>
+          <Button
+            variant="default"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => onViewChange?.("main")}
+          >
             <Home className="h-4 w-4" />
           </Button>
         </div>
       )}
 
       {/* Header with Project Name */}
-      {activeView === 'main' && (
+      {activeView === "main" && (
         <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
           <div className="flex items-center space-x-3">
             {!collapsed && (
@@ -305,7 +364,7 @@ const Sidebar = ({
               </DropdownMenu>
             )}
           </div>
-          
+
           <button
             onClick={onToggleCollapse}
             className="p-2 hover:bg-sidebar-accent rounded-md transition-colors"
@@ -317,7 +376,9 @@ const Sidebar = ({
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              className={`transition-transform ${collapsed ? 'rotate-180' : ''}`}
+              className={`transition-transform ${
+                collapsed ? "rotate-180" : ""
+              }`}
             >
               <path d="m11 17-5-5 5-5" />
               <path d="m18 17-5-5 5-5" />
@@ -326,9 +387,8 @@ const Sidebar = ({
         </div>
       )}
 
-
       {/* Sitemap Section - only show on main dashboard */}
-      {activeView === 'main' && (
+      {activeView === "main" && (
         <div className="flex-1 min-h-0 overflow-y-auto bg-sidebar-background">
           <SitemapSection collapsed={false} projectDetails={projectDetails} />
         </div>
@@ -337,12 +397,10 @@ const Sidebar = ({
       {/* Bottom Section - Always Visible */}
       <div className="p-2 border-sidebar-border space-y-2 flex-shrink-0 bg-sidebar-background">
         <Separator className="bg-sidebar-border" />
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div 
-              className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50"
-            >
+            <div className="flex items-center space-x-3 cursor-pointer hover:bg-sidebar-accent rounded-lg p-2 transition-colors bg-sidebar-accent/50">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="text-xs bg-sidebar-background text-sidebar-foreground">
                   {getInitialsFromNames(user?.firstName, user?.lastName)}
@@ -350,47 +408,57 @@ const Sidebar = ({
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-sidebar-foreground truncate">
-                  {isAuthenticated 
-                    ? (user?.firstName && user?.lastName 
-                        ? `${user.firstName} ${user.lastName}` 
-                        : user?.firstName || 'User')
-                    : 'Guest'}
+                  {isAuthenticated
+                    ? user?.firstName && user?.lastName
+                      ? `${user.firstName} ${user.lastName}`
+                      : user?.firstName || "User"
+                    : "Guest"}
                 </p>
               </div>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="top" className="w-56 mb-2 bg-popover border border-border">
-            <DropdownMenuItem onClick={() => onViewChange?.('my-projects')}>
+          <DropdownMenuContent
+            align="start"
+            side="top"
+            className="w-56 mb-2 bg-popover border border-border"
+          >
+            <DropdownMenuItem onClick={() => onViewChange?.("my-projects")}>
               <FolderOpen className="mr-2 h-4 w-4" />
               My Projects
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              setProfileSection('basic');
-              setProfileOpen(true);
-            }}>
+            <DropdownMenuItem
+              onClick={() => {
+                setProfileSection("basic");
+                setProfileOpen(true);
+              }}
+            >
               <User className="mr-2 h-4 w-4" />
               Profile
             </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/inbox')}>
-                <FolderOpen className="mr-2 h-4 w-4" />
-                Inbox
-                {unreadCount > 0 && (
-                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
-              </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              setProfileSection('billing');
-              setProfileOpen(true);
-            }}>
+            <DropdownMenuItem onClick={() => navigate("/inbox")}>
+              <FolderOpen className="mr-2 h-4 w-4" />
+              Inbox
+              {unreadCount > 0 && (
+                <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setProfileSection("billing");
+                setProfileOpen(true);
+              }}
+            >
               <CreditCard className="mr-2 h-4 w-4" />
               Credits & Billing
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              setProfileSection('support');
-              setProfileOpen(true);
-            }}>
+            <DropdownMenuItem
+              onClick={() => {
+                setProfileSection("support");
+                setProfileOpen(true);
+              }}
+            >
               <MessageCircle className="mr-2 h-4 w-4" />
               Support & Feedback
             </DropdownMenuItem>
@@ -404,29 +472,29 @@ const Sidebar = ({
             <DialogTitle>Settings & Integrations</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <Button 
+            <Button
               variant={isGitHubConnected ? "default" : "outline"}
               className="w-full justify-start"
               onClick={handleGitHubConnect}
             >
               <Github className="h-4 w-4 mr-2" />
-              {isGitHubConnected ? 'Manage GitHub' : 'Connect GitHub'}
+              {isGitHubConnected ? "Manage GitHub" : "Connect GitHub"}
             </Button>
-            <Button 
+            <Button
               variant={isVercelConnected ? "default" : "outline"}
               className="w-full justify-start"
               onClick={handleVercelConnect}
             >
               <Link className="h-4 w-4 mr-2" />
-              {isVercelConnected ? 'Manage Vercel' : 'Connect Vercel'}
+              {isVercelConnected ? "Manage Vercel" : "Connect Vercel"}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      <ProfilePopup 
-        open={profileOpen} 
-        onOpenChange={setProfileOpen} 
+      <ProfilePopup
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
         initialSection={profileSection}
       />
 
@@ -443,16 +511,22 @@ const Sidebar = ({
               placeholder="Enter new project name"
               className="w-full"
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleRenameSubmit();
                 }
               }}
             />
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setRenameDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setRenameDialogOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleRenameSubmit} disabled={!newProjectName.trim()}>
+              <Button
+                onClick={handleRenameSubmit}
+                disabled={!newProjectName.trim()}
+              >
                 Rename
               </Button>
             </div>

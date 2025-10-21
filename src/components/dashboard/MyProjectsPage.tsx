@@ -1,29 +1,28 @@
-
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useToast } from '@/components/ui/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from '@/context/UserContext';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Clock, 
-  CheckCircle2, 
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreVertical,
+  Clock,
+  CheckCircle2,
   AlertCircle,
   Calendar,
   Users,
   Code,
   Globe,
-  ExternalLink
-} from 'lucide-react';
-import { fetchProjects, ProjectFromAPI } from '@/services/projectService';
+  ExternalLink,
+} from "lucide-react";
+import { fetchProjects, ProjectFromAPI } from "@/services/projectService";
 
 interface Project {
   session_id: string;
@@ -31,12 +30,12 @@ interface Project {
   project_url: string;
   deploy_url: string;
   created_at: string;
-  status: 'active' | 'completed' | 'paused' | 'draft';
+  status: "active" | "completed" | "paused" | "draft";
 }
 
 const MyProjectsPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -51,7 +50,7 @@ const MyProjectsPage = () => {
     if (user?.firstName && user?.lastName) {
       return `${user.firstName} ${user.lastName}`;
     }
-    return 'Your';
+    return "Your";
   };
 
   useEffect(() => {
@@ -61,24 +60,26 @@ const MyProjectsPage = () => {
   const loadProjects = async () => {
     try {
       setLoading(true);
-const apiProjects = (await fetchProjects()) || [];
-      
-      console.log('Fetched projects:', apiProjects);
+      const apiProjects = (await fetchProjects()) || [];
+
+      //console.log('Fetched projects:', apiProjects);
       if (!Array.isArray(apiProjects)) {
         setProjects([]);
         return;
       }
-      const formattedProjects: Project[] = apiProjects.map(project => ({
+      const formattedProjects: Project[] = apiProjects.map((project) => ({
         ...project,
-        status: project.title ? 'active' : 'draft' as 'active' | 'completed' | 'paused' | 'draft'
+        status: project.title
+          ? "active"
+          : ("draft" as "active" | "completed" | "paused" | "draft"),
       }));
       setProjects(formattedProjects);
     } catch (error) {
-      console.error('Error fetching projects:', error);
+      //console.error("Error fetching projects:", error);
       toast({
         title: "Error",
         description: "Failed to load projects. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -88,11 +89,11 @@ const apiProjects = (await fetchProjects()) || [];
   const handleProjectClick = (project: Project) => {
     // Navigate with state to pass correct URLs
     navigate(`/chat/${project.session_id}`, {
-      state: { 
+      state: {
         previewUrl: project.project_url, // Use project_url for preview
-        deployUrl: project.deploy_url,   // Use deploy_url for Vercel deployment
-        shouldOpenPreview: !!project.project_url 
-      } 
+        deployUrl: project.deploy_url, // Use deploy_url for Vercel deployment
+        shouldOpenPreview: !!project.project_url,
+      },
     });
   };
 
@@ -101,20 +102,20 @@ const apiProjects = (await fetchProjects()) || [];
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return 'Today';
-    if (diffDays === 2) return 'Yesterday';
+
+    if (diffDays === 1) return "Today";
+    if (diffDays === 2) return "Yesterday";
     if (diffDays <= 7) return `${diffDays} days ago`;
     return date.toLocaleDateString();
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Clock className="h-4 w-4 text-blue-500" />;
-      case 'completed':
+      case "completed":
         return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case 'paused':
+      case "paused":
         return <AlertCircle className="h-4 w-4 text-yellow-500" />;
       default:
         return <Code className="h-4 w-4 text-gray-500" />;
@@ -123,23 +124,28 @@ const apiProjects = (await fetchProjects()) || [];
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      active: 'bg-blue-100 text-blue-700',
-      completed: 'bg-green-100 text-green-700',
-      paused: 'bg-yellow-100 text-yellow-700',
-      draft: 'bg-gray-100 text-gray-700'
+      active: "bg-blue-100 text-blue-700",
+      completed: "bg-green-100 text-green-700",
+      paused: "bg-yellow-100 text-yellow-700",
+      draft: "bg-gray-100 text-gray-700",
     };
-    
+
     return (
-      <Badge className={`${variants[status as keyof typeof variants]} border-0`}>
+      <Badge
+        className={`${variants[status as keyof typeof variants]} border-0`}
+      >
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
   };
 
-  const filteredProjects = projects.filter(project => {
-    const searchableText = `${project.title || 'Untitled Project'} ${project.session_id}`.toLowerCase();
+  const filteredProjects = projects.filter((project) => {
+    const searchableText = `${project.title || "Untitled Project"} ${
+      project.session_id
+    }`.toLowerCase();
     const matchesSearch = searchableText.includes(searchTerm.toLowerCase());
-    const matchesFilter = activeFilter === 'all' || project.status === activeFilter;
+    const matchesFilter =
+      activeFilter === "all" || project.status === activeFilter;
     return matchesSearch && matchesFilter;
   });
 
@@ -328,7 +334,10 @@ const apiProjects = (await fetchProjects()) || [];
 
           {!loading && filteredProjects.length === 0 && (
             <div className="text-center py-12">
-              <img src='no-project.png' className="h-40 w-40 text-muted-foreground mx-auto mb-4" />
+              <img
+                src="no-project.png"
+                className="h-40 w-40 text-muted-foreground mx-auto mb-4"
+              />
               <h3 className="text-lg font-medium text-foreground mb-2">
                 No projects found
               </h3>

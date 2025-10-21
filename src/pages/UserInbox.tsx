@@ -30,7 +30,7 @@ const UserInbox: React.FC = () => {
       setRole(data.Role);
       setTotalPages(Math.ceil((data.total || 0) / 20));
     } catch (error) {
-      console.error("Failed to fetch inbox:", error);
+      //console.error("Failed to fetch inbox:", error);
       toast({
         title: "Error",
         description: "Failed to load inbox",
@@ -41,23 +41,26 @@ const UserInbox: React.FC = () => {
     }
   }, [currentPage, toast]);
 
-  const fetchMessages = useCallback(async (taskId: number) => {
-    try {
-      setIsLoadingMessages(true);
-      const data = await inboxService.getChatMessages(taskId);
-      console.log(data);
-      setMessages(data || []);
-    } catch (error) {
-      console.error("Failed to fetch messages:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load messages",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingMessages(false);
-    }
-  }, [toast]);
+  const fetchMessages = useCallback(
+    async (taskId: number) => {
+      try {
+        setIsLoadingMessages(true);
+        const data = await inboxService.getChatMessages(taskId);
+        //console.log(data);
+        setMessages(data || []);
+      } catch (error) {
+        //console.error("Failed to fetch messages:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load messages",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingMessages(false);
+      }
+    },
+    [toast]
+  );
 
   useEffect(() => {
     fetchInbox();
@@ -70,14 +73,18 @@ const UserInbox: React.FC = () => {
         wsService.setToken(token);
         await wsService.connect(token);
         wsService.onMessage((data) => {
-          if (data.task_id && selectedTask && data.task_id === selectedTask.ID) {
+          if (
+            data.task_id &&
+            selectedTask &&
+            data.task_id === selectedTask.ID
+          ) {
             setMessages((prev) => [...prev, data]);
           }
           // Refresh inbox to update unread counts
           fetchInbox();
         });
       } catch (error) {
-        console.error("Failed to connect WebSocket:", error);
+        //console.error("Failed to connect WebSocket:", error);
       }
     };
 
@@ -90,7 +97,7 @@ const UserInbox: React.FC = () => {
 
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
-    console.log("Selected task:", task);
+    //console.log("Selected task:", task);
     fetchMessages(task.ID);
   };
 
@@ -98,14 +105,15 @@ const UserInbox: React.FC = () => {
     if (!selectedTask || !user?.id) return;
 
     setIsSending(true);
-    console.log("Sending message:", content);
+    //console.log("Sending message:", content);
     try {
-      const receiverId = role === "user" || role === "admin" 
-        ? selectedTask.assignee_id 
-        : selectedTask.assigner_id;
-      console.log("Receiver ID:", receiverId);
-      console.log("Sender ID:", user.id);
-      console.log("Role:", role);
+      const receiverId =
+        role === "user" || role === "admin"
+          ? selectedTask.assignee_id
+          : selectedTask.assigner_id;
+      //console.log("Receiver ID:", receiverId);
+      //console.log("Sender ID:", user.id);
+      //console.log("Role:", role);
       wsService.sendMessage({
         content: content,
         task_id: selectedTask.ID,
@@ -126,7 +134,7 @@ const UserInbox: React.FC = () => {
       };
       setMessages((prev) => [...prev, newMessage]);
     } catch (error) {
-      console.error("Failed to send message:", error);
+      //console.error("Failed to send message:", error);
       toast({
         title: "Error",
         description: "Failed to send message",

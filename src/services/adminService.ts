@@ -1,5 +1,5 @@
-import apiClient from '@/lib/apiClient';
-import { API_ENDPOINTS } from '@/config/api';
+import apiClient from "@/lib/apiClient";
+import { API_ENDPOINTS } from "@/config/api";
 
 export interface DashboardData {
   success: boolean;
@@ -47,10 +47,10 @@ export interface DashboardData {
 export const fetchDashboardData = async (): Promise<DashboardData> => {
   try {
     const response = await apiClient.get(API_ENDPOINTS.ADMIN.DASHBOARD);
-    console.log(response.data);
+    //console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
+    //console.error("Error fetching dashboard data:", error);
     throw error;
   }
 };
@@ -72,30 +72,34 @@ export interface UsersData {
 
 export const fetchUsersData = async (page: number = 1): Promise<UsersData> => {
   try {
-    const response = await apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}?page=${page}`);
-    console.log(response.data);
+    const response = await apiClient.get(
+      `${API_ENDPOINTS.ADMIN.USERS}?page=${page}`
+    );
+    //console.log(response.data);
     if (response.data.success) {
       return {
         total_verified_users: response.data.total_verified_users,
-        users: response.data.users
+        users: response.data.users,
       };
     } else {
-      throw new Error(response.data.message || 'Failed to fetch users data');
+      throw new Error(response.data.message || "Failed to fetch users data");
     }
   } catch (error) {
-    console.error('Error fetching users data:', error);
+    //console.error("Error fetching users data:", error);
     throw error;
   }
 };
 
-export const cancelUserSubscription = async (userId: string): Promise<{ success: boolean; message: string }> => {
+export const cancelUserSubscription = async (
+  userId: string
+): Promise<{ success: boolean; message: string }> => {
   try {
     const response = await apiClient.post("/api/payment/cancel-plan", {
       id: userId,
     });
     return response.data;
   } catch (error) {
-    console.error('Error canceling subscription:', error);
+    //console.error("Error canceling subscription:", error);
     throw error;
   }
 };

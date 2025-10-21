@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { developerService } from '@/services/developerService';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { developerService } from "@/services/developerService";
+import { useToast } from "@/hooks/use-toast";
 
 interface ReviewDialogProps {
   isOpen: boolean;
@@ -16,11 +22,16 @@ interface ReviewDialogProps {
   developerName: string;
 }
 
-const ReviewDialog: React.FC<ReviewDialogProps> = ({ isOpen, onClose, developerId, developerName }) => {
+const ReviewDialog: React.FC<ReviewDialogProps> = ({
+  isOpen,
+  onClose,
+  developerId,
+  developerName,
+}) => {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [reviewerName, setReviewerName] = useState('');
-  const [comment, setComment] = useState('');
+  const [reviewerName, setReviewerName] = useState("");
+  const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -29,7 +40,7 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({ isOpen, onClose, developerI
       toast({
         title: "Missing Information",
         description: "Please provide your name, rating, and comment",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -40,21 +51,21 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({ isOpen, onClose, developerI
         developer_id: developerId,
         reviewer_name: reviewerName.trim(),
         rating,
-        comment: comment.trim()
+        comment: comment.trim(),
       });
-      
+
       toast({
         title: "Review Submitted",
         description: "Thank you for your feedback!",
       });
-      
+
       handleClose();
     } catch (error) {
-      console.error('Error submitting review:', error);
+      //console.error('Error submitting review:', error);
       toast({
         title: "Error",
         description: "Failed to submit review. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -64,8 +75,8 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({ isOpen, onClose, developerI
   const handleClose = () => {
     setRating(0);
     setHoveredRating(0);
-    setReviewerName('');
-    setComment('');
+    setReviewerName("");
+    setComment("");
     onClose();
   };
 
@@ -78,7 +89,7 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({ isOpen, onClose, developerI
             Share your experience working with this developer
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="reviewerName">Your Name *</Label>
@@ -131,11 +142,16 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({ isOpen, onClose, developerI
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleSubmit}
-            disabled={isSubmitting || !reviewerName.trim() || !comment.trim() || rating === 0}
+            disabled={
+              isSubmitting ||
+              !reviewerName.trim() ||
+              !comment.trim() ||
+              rating === 0
+            }
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Review'}
+            {isSubmitting ? "Submitting..." : "Submit Review"}
           </Button>
         </div>
       </DialogContent>

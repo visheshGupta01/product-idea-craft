@@ -49,7 +49,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
 
     try {
       const result = await signup(name, email, password);
-      console.log('Signup result:', result);
+      //console.log('Signup result:', result);
       if (result.success) {
         // Show verification modal instead of closing immediately
         setShowVerificationModal(true);
@@ -80,7 +80,10 @@ export const SignupModal: React.FC<SignupModalProps> = ({
 
   return (
     <>
-      <Dialog open={isOpen && !showVerificationModal} onOpenChange={handleClose}>
+      <Dialog
+        open={isOpen && !showVerificationModal}
+        onOpenChange={handleClose}
+      >
         <DialogContent className="sm:max-w-[400px] p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
           {/* Logo */}
           <div className="flex justify-center mb-4">
@@ -88,10 +91,12 @@ export const SignupModal: React.FC<SignupModalProps> = ({
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold text-white mb-4">Create your account</h1>
+          <h1 className="text-2xl font-bold text-white mb-4">
+            Create your account
+          </h1>
 
-        {/* Google Sign In Button */}
-        {/* <Button
+          {/* Google Sign In Button */}
+          {/* <Button
           variant="outline"
           className="w-full h-10 mb-3 bg-[#1A1A1A] border-[#2A2A2A] text-white hover:bg-[#2A2A2A]"
           disabled={isLoading}
@@ -105,8 +110,8 @@ export const SignupModal: React.FC<SignupModalProps> = ({
             Continue with Google
           </Button>
  */}
-        {/* Divider */}
-        {/* <div className="flex items-center my-4">
+          {/* Divider */}
+          {/* <div className="flex items-center my-4">
           <div className="flex-1 border-t border-[#2A2A2A]"></div>
           <span className="px-4 text-gray-400 text-sm">or</span>
           <div className="flex-1 border-t border-[#2A2A2A]"></div>
@@ -141,7 +146,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
             <div className="relative">
               <Input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -169,7 +174,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
             <div className="relative">
               <Input
                 id="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -193,26 +198,39 @@ export const SignupModal: React.FC<SignupModalProps> = ({
               </Button>
             </div>
 
-            {error && (
-              <div className="text-destructive text-sm">{error}</div>
-            )}
+            {error && <div className="text-destructive text-sm">{error}</div>}
 
             {/* Continue Button */}
-            <Button 
-              type="submit" 
-              disabled={isLoading || !name.trim() || !email.trim() || !password.trim() || password !== confirmPassword}
+            <Button
+              type="submit"
+              disabled={
+                isLoading ||
+                !name.trim() ||
+                !email.trim() ||
+                !password.trim() ||
+                password !== confirmPassword
+              }
               className="w-full h-10 bg-white text-black hover:bg-gray-200"
             >
-              {isLoading ? <LoadingSpinner size="sm" text="Creating account..." /> : "Continue"}
+              {isLoading ? (
+                <LoadingSpinner size="sm" text="Creating account..." />
+              ) : (
+                "Continue"
+              )}
             </Button>
           </form>
 
           {/* Terms and Privacy */}
           <p className="text-xs text-gray-400 mt-4">
             By continuing you agree to our{" "}
-            <a href="#" className="underline hover:text-white">Terms</a>{" "}
+            <a href="#" className="underline hover:text-white">
+              Terms
+            </a>{" "}
             and{" "}
-            <a href="#" className="underline hover:text-white">Privacy Policy</a>.
+            <a href="#" className="underline hover:text-white">
+              Privacy Policy
+            </a>
+            .
           </p>
 
           {/* Switch to Login */}

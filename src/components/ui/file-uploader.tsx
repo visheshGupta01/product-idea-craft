@@ -54,7 +54,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
       const result = response.data;
 
-      console.log(result);
+      //console.log(result);
 
       if (result.success) {
         const uploadedFile: UploadedFile = {
@@ -68,7 +68,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         toast.error(result.message || "Failed to extract text from PDF");
       }
     } catch (error) {
-      console.error("File upload error:", error);
+      //console.error("File upload error:", error);
       toast.error("Failed to upload file. Please try again.");
     } finally {
       setIsUploading(false);

@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
-import { Star, Github, Linkedin, Edit, Loader2 } from 'lucide-react';
-import { developerService, DeveloperInfo, DeveloperProfileResponse, Review } from '@/services/developerService';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
-import { Switch } from '@/components/ui/switch';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Star, Github, Linkedin, Edit, Loader2 } from "lucide-react";
+import {
+  developerService,
+  DeveloperInfo,
+  DeveloperProfileResponse,
+  Review,
+} from "@/services/developerService";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
+import { useNavigate } from "react-router-dom";
 
 interface Task {
   ID: number;
@@ -28,10 +33,19 @@ interface Task {
 }
 
 export const DeveloperOverview: React.FC = () => {
-  const [profileData, setProfileData] = useState<DeveloperProfileResponse | null>(null);
+  const [profileData, setProfileData] =
+    useState<DeveloperProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'tasks' | 'reviews'>('tasks');
-  const [taskFilter, setTaskFilter] = useState<'all' | 'awaiting' | 'pending' | 'done' | 'in_progress' | 'todo' | 'not_accepted'>('all');
+  const [activeTab, setActiveTab] = useState<"tasks" | "reviews">("tasks");
+  const [taskFilter, setTaskFilter] = useState<
+    | "all"
+    | "awaiting"
+    | "pending"
+    | "done"
+    | "in_progress"
+    | "todo"
+    | "not_accepted"
+  >("all");
   const [isAvailable, setIsAvailable] = useState(true);
   const [updatingTasks, setUpdatingTasks] = useState<Set<number>>(new Set());
   const [additionalTasks, setAdditionalTasks] = useState<Task[]>([]);
@@ -52,7 +66,7 @@ export const DeveloperOverview: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'reviews' && profileData) {
+    if (activeTab === "reviews" && profileData) {
       loadReviews();
     }
   }, [activeTab, profileData]);
@@ -61,14 +75,14 @@ export const DeveloperOverview: React.FC = () => {
     try {
       setLoading(true);
       const response = await developerService.getDeveloperProfile();
-      console.log(response);
+      //console.log(response);
       setProfileData(response);
       setIsAvailable(response.developer_info.status || false);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load profile data",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -76,10 +90,10 @@ export const DeveloperOverview: React.FC = () => {
   };
 
   const handleAcceptTask = async (taskId: number) => {
-    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    setUpdatingTasks((prev) => new Set(prev).add(taskId));
     try {
-      console.log('Accepting task', taskId);
-      await developerService.updateTaskStatus(taskId, 'todo');
+      //console.log('Accepting task', taskId);
+      await developerService.updateTaskStatus(taskId, "todo");
       toast({
         title: "Success",
         description: "Task accepted successfully",
@@ -89,10 +103,10 @@ export const DeveloperOverview: React.FC = () => {
       toast({
         title: "Error",
         description: "Failed to accept task",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
-      setUpdatingTasks(prev => {
+      setUpdatingTasks((prev) => {
         const newSet = new Set(prev);
         newSet.delete(taskId);
         return newSet;
@@ -101,7 +115,7 @@ export const DeveloperOverview: React.FC = () => {
   };
 
   const handleDenyTask = async (taskId: number) => {
-    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    setUpdatingTasks((prev) => new Set(prev).add(taskId));
     try {
       await developerService.denyTask(taskId);
       toast({
@@ -113,10 +127,10 @@ export const DeveloperOverview: React.FC = () => {
       toast({
         title: "Error",
         description: "Failed to decline task",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
-      setUpdatingTasks(prev => {
+      setUpdatingTasks((prev) => {
         const newSet = new Set(prev);
         newSet.delete(taskId);
         return newSet;
@@ -136,16 +150,16 @@ export const DeveloperOverview: React.FC = () => {
       toast({
         title: "Error",
         description: "Failed to update availability",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   const handleStartWorking = async (taskId: number) => {
-    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    setUpdatingTasks((prev) => new Set(prev).add(taskId));
     try {
-      console.log('Starting work on task', taskId);
-      await developerService.updateTaskStatus(taskId, 'in_progress');
+      //console.log('Starting work on task', taskId);
+      await developerService.updateTaskStatus(taskId, "in_progress");
       toast({
         title: "Success",
         description: "Task started successfully",
@@ -158,7 +172,7 @@ export const DeveloperOverview: React.FC = () => {
         variant: "destructive",
       });
     } finally {
-      setUpdatingTasks(prev => {
+      setUpdatingTasks((prev) => {
         const newSet = new Set(prev);
         newSet.delete(taskId);
         return newSet;
@@ -167,10 +181,10 @@ export const DeveloperOverview: React.FC = () => {
   };
 
   const handleMarkCompleted = async (taskId: number) => {
-    setUpdatingTasks(prev => new Set(prev).add(taskId));
+    setUpdatingTasks((prev) => new Set(prev).add(taskId));
     try {
-      console.log('Completing task', taskId);
-      await developerService.updateTaskStatus(taskId, 'done');
+      //console.log('Completing task', taskId);
+      await developerService.updateTaskStatus(taskId, "done");
       toast({
         title: "Success",
         description: "Task completed successfully",
@@ -183,7 +197,7 @@ export const DeveloperOverview: React.FC = () => {
         variant: "destructive",
       });
     } finally {
-      setUpdatingTasks(prev => {
+      setUpdatingTasks((prev) => {
         const newSet = new Set(prev);
         newSet.delete(taskId);
         return newSet;
@@ -191,12 +205,13 @@ export const DeveloperOverview: React.FC = () => {
     }
   };
 
-
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={`w-4 h-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+        className={`w-4 h-4 ${
+          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+        }`}
       />
     ));
   };
@@ -209,21 +224,24 @@ export const DeveloperOverview: React.FC = () => {
 
   const loadReviews = async () => {
     if (!profileData?.developer_info?.id) return;
-    
+
     try {
       setLoadingReviews(true);
-      const response = await developerService.getReviews(profileData.developer_info.id, reviewPage);
+      const response = await developerService.getReviews(
+        profileData.developer_info.id,
+        reviewPage
+      );
       if (reviewPage === 1) {
         setReviews(response.reviews || []);
       } else {
-        setReviews(prev => [...prev, ...(response.reviews || [])]);
+        setReviews((prev) => [...prev, ...(response.reviews || [])]);
       }
       setHasMoreReviews(reviewPage < (response.total_pages || 0));
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load reviews",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoadingReviews(false);
@@ -232,21 +250,24 @@ export const DeveloperOverview: React.FC = () => {
 
   const loadMoreTasks = async () => {
     if (!profileData?.developer_info?.id || loadingMoreTasks) return;
-    
+
     try {
       setLoadingMoreTasks(true);
       const nextPage = taskPage + 1;
-      const status = taskFilter === 'all' ? undefined : taskFilter;
-      const response = await developerService.getDeveloperTasks(nextPage, status);
-      
-      setAdditionalTasks(prev => [...prev, ...(response.tasks || [])]);
+      const status = taskFilter === "all" ? undefined : taskFilter;
+      const response = await developerService.getDeveloperTasks(
+        nextPage,
+        status
+      );
+
+      setAdditionalTasks((prev) => [...prev, ...(response.tasks || [])]);
       setTaskPage(nextPage);
       setHasMoreTasks(nextPage < (response.total_pages || 0));
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load more tasks",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoadingMoreTasks(false);
@@ -254,7 +275,7 @@ export const DeveloperOverview: React.FC = () => {
   };
 
   const loadMoreReviews = async () => {
-    setReviewPage(prev => prev + 1);
+    setReviewPage((prev) => prev + 1);
   };
 
   useEffect(() => {
@@ -265,27 +286,31 @@ export const DeveloperOverview: React.FC = () => {
 
   const getFilteredTasks = () => {
     if (!profileData) return [];
-    
-    const baseTasks = taskFilter === 'all' 
-      ? [...profileData.null_status_tasks, ...profileData.active_tasks]
-      : taskFilter === 'awaiting' 
+
+    const baseTasks =
+      taskFilter === "all"
+        ? [...profileData.null_status_tasks, ...profileData.active_tasks]
+        : taskFilter === "awaiting"
         ? profileData.null_status_tasks
-        : taskFilter === 'pending'
-          ? profileData.active_tasks
-          : [];
-    
+        : taskFilter === "pending"
+        ? profileData.active_tasks
+        : [];
+
     return [...baseTasks, ...additionalTasks];
   };
 
-  const getTaskFilterCount = (filter: 'all' | 'awaiting' | 'pending') => {
+  const getTaskFilterCount = (filter: "all" | "awaiting" | "pending") => {
     if (!profileData) return 0;
-    
-    if (filter === 'all') {
-      return (profileData.null_status_tasks?.length || 0) + 
-             (profileData.active_tasks?.length || 0);
+
+    if (filter === "all") {
+      return (
+        (profileData.null_status_tasks?.length || 0) +
+        (profileData.active_tasks?.length || 0)
+      );
     }
-    if (filter === 'awaiting') return profileData.null_status_tasks?.length || 0;
-    if (filter === 'pending') return profileData.active_tasks?.length || 0;
+    if (filter === "awaiting")
+      return profileData.null_status_tasks?.length || 0;
+    if (filter === "pending") return profileData.active_tasks?.length || 0;
     return 0;
   };
 
@@ -581,18 +606,21 @@ export const DeveloperOverview: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
-                    
-                    {!showAllNewTasks && (profileData.null_status_tasks?.length || 0) > 3 && (
-                      <div className="flex justify-center pt-2">
-                        <Button
-                          onClick={() => navigate('/developer/tasks')}
-                          variant="outline"
-                          className="w-full"
-                        >
-                          Show More ({(profileData.null_status_tasks?.length || 0) - 3} more)
-                        </Button>
-                      </div>
-                    )}
+
+                    {!showAllNewTasks &&
+                      (profileData.null_status_tasks?.length || 0) > 3 && (
+                        <div className="flex justify-center pt-2">
+                          <Button
+                            onClick={() => navigate("/developer/tasks")}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            Show More (
+                            {(profileData.null_status_tasks?.length || 0) - 3}{" "}
+                            more)
+                          </Button>
+                        </div>
+                      )}
                   </div>
                 </CardContent>
               </Card>
@@ -792,7 +820,7 @@ export const DeveloperOverview: React.FC = () => {
                     {!showAllMyTasks && getFilteredTasks().length > 3 && (
                       <div className="flex justify-center pt-2">
                         <Button
-                          onClick={() => navigate('/developer/tasks')}
+                          onClick={() => navigate("/developer/tasks")}
                           variant="outline"
                           className="w-full"
                         >

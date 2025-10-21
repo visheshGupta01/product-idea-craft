@@ -1,14 +1,17 @@
-
-import React, { useState, useEffect } from 'react';
-import Sidebar from './dashboard/Sidebar';
-import ChatPanel from './dashboard/ChatPanel';
-import PreviewCodePanel from './dashboard/PreviewCodePanel';
-import TeamPage from './dashboard/TeamPage';
-import MyProjectsPage from './dashboard/MyProjectsPage';
-import Navbar from './ui/navbar';
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { useUser } from '@/context/UserContext';
-import { fetchProjectDetails, ProjectDetails } from '@/services/projectService';
+import React, { useState, useEffect } from "react";
+import Sidebar from "./dashboard/Sidebar";
+import ChatPanel from "./dashboard/ChatPanel";
+import PreviewCodePanel from "./dashboard/PreviewCodePanel";
+import TeamPage from "./dashboard/TeamPage";
+import MyProjectsPage from "./dashboard/MyProjectsPage";
+import Navbar from "./ui/navbar";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
+import { useUser } from "@/context/UserContext";
+import { fetchProjectDetails, ProjectDetails } from "@/services/projectService";
 
 interface MainDashboardProps {
   userIdea: string;
@@ -17,52 +20,61 @@ interface MainDashboardProps {
   shouldOpenPreview?: boolean;
 }
 
-type ActiveView = 'main' | 'team' | 'my-projects';
+type ActiveView = "main" | "team" | "my-projects";
 
-const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: MainDashboardProps) => {
-  const [activeView, setActiveView] = useState<ActiveView>('main');
+const MainDashboard = ({
+  userIdea,
+  sessionId,
+  deployUrl,
+  shouldOpenPreview,
+}: MainDashboardProps) => {
+  const [activeView, setActiveView] = useState<ActiveView>("main");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentProject] = useState({
-    id: '1',
-    name: 'My App Idea',
+    id: "1",
+    name: "My App Idea",
     description: userIdea,
-    status: 'in-progress'
+    status: "in-progress",
   });
-  const [projectDetails, setProjectDetails] = useState<ProjectDetails | undefined>();
+  const [projectDetails, setProjectDetails] = useState<
+    ProjectDetails | undefined
+  >();
 
   const { initialResponse } = useUser();
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
-  const [isFrontendCreated, setIsFrontendCreated] = useState(shouldOpenPreview || false);
-  const [previewUrl, setPreviewUrl] = useState<string>(deployUrl || '');
+  const [isFrontendCreated, setIsFrontendCreated] = useState(
+    shouldOpenPreview || false
+  );
+  const [previewUrl, setPreviewUrl] = useState<string>(deployUrl || "");
 
   // Fetch project details when sessionId changes and check for stored project URL
   useEffect(() => {
     const loadProjectDetails = async () => {
       if (sessionId) {
         try {
-          console.log('📝 Fetching project details for sessionId:', sessionId);
+          //console.log('📝 Fetching project details for sessionId:', sessionId);
           const details = await fetchProjectDetails(sessionId);
-          console.log('📝 Project details fetched:', details);
+          //console.log('📝 Project details fetched:', details);
           setProjectDetails(details);
-          
+
           // Only show preview for current session if it has a project URL
           if (details.project_url) {
             setPreviewUrl(details.project_url);
             setIsFrontendCreated(true);
-            console.log('🚀 Auto-setting preview from project details:', details.project_url);
+            //console.log('🚀 Auto-setting preview from project details:', details.project_url);
           } else {
             // Clear preview when switching to a chat without project_url
-            setPreviewUrl('');
+            setPreviewUrl("");
             setIsFrontendCreated(false);
-            console.log('🚀 Clearing preview - no project URL for this session');
+            //console.log('🚀 Clearing preview - no project URL for this session');
           }
         } catch (error) {
-          console.error('📝 Failed to fetch project details:', error);
+          //console.error("📝 Failed to fetch project details:", error);
         }
       } else {
         setProjectDetails(undefined);
-        setPreviewUrl('');
+        setPreviewUrl("");
         setIsFrontendCreated(false);
       }
     };
@@ -72,7 +84,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
 
   // Auto-collapse sidebar on non-main screens and reset to main view when sessionId changes
   useEffect(() => {
-    if (activeView !== 'main') {
+    if (activeView !== "main") {
       setSidebarCollapsed(true);
     }
   }, [activeView]);
@@ -80,7 +92,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
   // Reset to main view when sessionId changes (coming from project selection)
   useEffect(() => {
     if (sessionId) {
-      setActiveView('main');
+      setActiveView("main");
     }
   }, [sessionId]);
 
@@ -89,31 +101,32 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
       setIsFrontendCreated(true);
     };
 
-    window.addEventListener('frontendComplete', handleFrontendComplete);
-    return () => window.removeEventListener('frontendComplete', handleFrontendComplete);
+    window.addEventListener("frontendComplete", handleFrontendComplete);
+    return () =>
+      window.removeEventListener("frontendComplete", handleFrontendComplete);
   }, []);
 
   const handleFrontendGenerated = (url: string) => {
     setPreviewUrl(url);
     setIsFrontendCreated(true);
-    console.log("🎯 Preview URL set:", url);
+    //console.log("🎯 Preview URL set:", url);
   };
 
   const handleLogout = () => {
     // Navigate back to the idea submission screen
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   const handlePublish = () => {
     // Handle publish functionality
-    console.log('Publishing app...');
+    //console.log('Publishing app...');
   };
 
   const renderActiveView = () => {
     switch (activeView) {
-      case 'team':
-       return <TeamPage />;
-      case 'my-projects':
+      case "team":
+        return <TeamPage />;
+      case "my-projects":
         return <MyProjectsPage />;
       default:
         // Show fullscreen chat if we have initial MCP response but frontend isn't created
@@ -122,11 +135,15 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
         if ((!isFrontendCreated || initialResponse) && !shouldOpenPreview) {
           return (
             <div className="h-full">
-              <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />
+              <ChatPanel
+                userIdea={userIdea}
+                onFrontendGenerated={handleFrontendGenerated}
+                sessionId={sessionId}
+              />
             </div>
           );
         }
-        
+
         // Show normal layout after frontend creation and initial response is processed
         return (
           <ResizablePanelGroup
@@ -141,7 +158,11 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
               className="hidden lg:block"
             >
               <div className="h-full border-r border-border">
-                <ChatPanel userIdea={userIdea} onFrontendGenerated={handleFrontendGenerated} sessionId={sessionId} />
+                <ChatPanel
+                  userIdea={userIdea}
+                  onFrontendGenerated={handleFrontendGenerated}
+                  sessionId={sessionId}
+                />
               </div>
             </ResizablePanel>
 
@@ -154,7 +175,10 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
               collapsible={true}
             >
               <div className="h-full bg-background">
-                <PreviewCodePanel previewUrl={previewUrl} sessionId={sessionId} />
+                <PreviewCodePanel
+                  previewUrl={previewUrl}
+                  sessionId={sessionId}
+                />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
@@ -165,7 +189,11 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
   return (
     <div className="h-screen bg-background overflow-hidden">
       {/* Fixed Navbar - only show on main dashboard */}
-      <Navbar onPublish={handlePublish} isFrontendCreated={isFrontendCreated} sessionId={sessionId} />
+      <Navbar
+        onPublish={handlePublish}
+        isFrontendCreated={isFrontendCreated}
+        sessionId={sessionId}
+      />
 
       {/* Main content with conditional top padding for navbar */}
       <div className="h-full pt-14 flex">
@@ -178,10 +206,10 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
           <Sidebar
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => {
-        // Only allow toggle on main dashboard, keep collapsed on other screens
-        if (activeView === "main") {
-          setSidebarCollapsed(!sidebarCollapsed);
-        }
+              // Only allow toggle on main dashboard, keep collapsed on other screens
+              if (activeView === "main") {
+                setSidebarCollapsed(!sidebarCollapsed);
+              }
             }}
             currentProject={currentProject}
             activeView={activeView}
@@ -199,7 +227,7 @@ const MainDashboard = ({ userIdea, sessionId, deployUrl, shouldOpenPreview }: Ma
                     setPreviewUrl(details.project_url);
                   }
                 } catch (error) {
-                  console.error('Failed to refresh project details:', error);
+                  //console.error("Failed to refresh project details:", error);
                 }
               }
             }}

@@ -36,7 +36,9 @@ interface SpeechRecognition extends EventTarget {
   onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onend: ((this: SpeechRecognition, ev: Event) => any) | null;
   onerror: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onresult:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any)
+    | null;
 }
 
 interface SpeechRecognitionConstructor {
@@ -63,7 +65,10 @@ interface TextToSpeechPanelProps {
   onInterimTranscript?: (text: string) => void;
 }
 
-const TextToSpeechPanelComponent = forwardRef<TextToSpeechPanelRef, TextToSpeechPanelProps>(
+const TextToSpeechPanelComponent = forwardRef<
+  TextToSpeechPanelRef,
+  TextToSpeechPanelProps
+>(
   (
     {
       isSimulationActive = false,
@@ -86,12 +91,15 @@ const TextToSpeechPanelComponent = forwardRef<TextToSpeechPanelRef, TextToSpeech
     }, [isSimulationActive]);
 
     const startListening = () => {
-      if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
-        console.error("Speech recognition not supported");
+      if (
+        !("webkitSpeechRecognition" in window || "SpeechRecognition" in window)
+      ) {
+        //console.error("Speech recognition not supported");
         return;
       }
 
-      const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognitionClass =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognitionClass();
 
       recognition.continuous = true;
@@ -128,7 +136,7 @@ const TextToSpeechPanelComponent = forwardRef<TextToSpeechPanelRef, TextToSpeech
       };
 
       recognition.onerror = (e) => {
-        console.error("Speech recognition error", e);
+        //console.error("Speech recognition error", e);
         setIsListening(false);
       };
 
@@ -159,12 +167,18 @@ const TextToSpeechPanelComponent = forwardRef<TextToSpeechPanelRef, TextToSpeech
         disabled={disabled}
         className={cn(
           "transition-all duration-200 hover:scale-105",
-          isListening ? "bg-red-500 hover:bg-red-600 text-white animate-pulse" : "",
+          isListening
+            ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
+            : "",
           className
         )}
         title={isListening ? "Stop recording" : "Start voice input"}
       >
-        {isListening ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+        {isListening ? (
+          <Square className="w-4 h-4" />
+        ) : (
+          <Mic className="w-4 h-4" />
+        )}
       </Button>
     );
   }

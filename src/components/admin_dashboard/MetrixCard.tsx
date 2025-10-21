@@ -23,12 +23,12 @@ interface MetricsCardsProps {
   droppingRate?: number;
 }
 
-const MetricsCards: React.FC<MetricsCardsProps> = ({ 
+const MetricsCards: React.FC<MetricsCardsProps> = ({
   conversionRate = 25.0,
   revenueData,
-droppingRate = 8.0
+  droppingRate = 8.0,
 }) => {
-  console.log('MetricsCards props:', { conversionRate, revenueData, droppingRate });
+  //console.log('MetricsCards props:', { conversionRate, revenueData, droppingRate });
   const totalRevenue = revenueData?.total_revenue || 90200;
   const proRevenue = revenueData?.pro_revenue || 45000;
   const teamRevenue = revenueData?.team_revenue ?? 25000;

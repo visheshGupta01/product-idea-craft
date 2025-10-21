@@ -1,27 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import CancelSubscriptionDialog from '@/components/ui/cancel-subscription-dialog';
-import { cancelUserSubscription } from '@/services/adminService';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useUser } from '@/context/UserContext';
-import { Camera, User, Shield, CreditCard, MessageCircle, Settings, Eye, EyeOff, Plus, BarChart3 } from 'lucide-react';
-import { getInitialsFromNames } from '@/lib/avatarUtils';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';  
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
-import { submitFeedback, getFeedbackCategories, FeedbackSubmission } from '@/services/feedbackService';
-import { redirect, useNavigate } from 'react-router-dom';
-import { fetchUsageData, UsageData } from '@/services/usageService';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import CancelSubscriptionDialog from "@/components/ui/cancel-subscription-dialog";
+import { cancelUserSubscription } from "@/services/adminService";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useUser } from "@/context/UserContext";
+import {
+  Camera,
+  User,
+  Shield,
+  CreditCard,
+  MessageCircle,
+  Settings,
+  Eye,
+  EyeOff,
+  Plus,
+  BarChart3,
+} from "lucide-react";
+import { getInitialsFromNames } from "@/lib/avatarUtils";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import {
+  submitFeedback,
+  getFeedbackCategories,
+  FeedbackSubmission,
+} from "@/services/feedbackService";
+import { redirect, useNavigate } from "react-router-dom";
+import { fetchUsageData, UsageData } from "@/services/usageService";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ProfilePopupProps {
   open: boolean;
@@ -29,13 +62,17 @@ interface ProfilePopupProps {
   initialSection?: string;
 }
 
-  const ProfilePopup = ({ open, onOpenChange, initialSection = 'basic' }: ProfilePopupProps) => {
+const ProfilePopup = ({
+  open,
+  onOpenChange,
+  initialSection = "basic",
+}: ProfilePopupProps) => {
   const { user, profile, updateProfile, fetchProfile } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
-    const [showCancelDialog, setShowCancelDialog] = useState(false);
-    const navigate = useNavigate();
-  
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const navigate = useNavigate();
+
   // Use actual profile data from API
   const userData = profile;
 
@@ -47,20 +84,20 @@ interface ProfilePopupProps {
   }, [open, fetchProfile]);
 
   const [formData, setFormData] = useState({
-    firstName: userData?.first_name || '',
-    lastName: userData?.last_name || '',
-    email: userData?.email || '',
-    password: '••••••••••'
+    firstName: userData?.first_name || "",
+    lastName: userData?.last_name || "",
+    email: userData?.email || "",
+    password: "••••••••••",
   });
 
   // Update form data when userData changes
   React.useEffect(() => {
     if (userData) {
       setFormData({
-        firstName: userData.first_name || '',
-        lastName: userData.last_name || '',
-        email: userData.email || '',
-        password: '••••••••••'
+        firstName: userData.first_name || "",
+        lastName: userData.last_name || "",
+        email: userData.email || "",
+        password: "••••••••••",
       });
     }
   }, [userData]);
@@ -72,7 +109,7 @@ interface ProfilePopupProps {
 
   const handleSave = async () => {
     // Save profile data
-    console.log('Saving profile data:', formData);
+    //console.log('Saving profile data:', formData);
     onOpenChange(false);
   };
 
@@ -80,42 +117,42 @@ interface ProfilePopupProps {
     // Reset form data
     if (userData) {
       setFormData({
-        firstName: userData.first_name || '',
-        lastName: userData.last_name || '',
-        email: userData.email || '',
-        password: '••••••••••'
+        firstName: userData.first_name || "",
+        lastName: userData.last_name || "",
+        email: userData.email || "",
+        password: "••••••••••",
       });
     }
     onOpenChange(false);
   };
 
   const menuItems = [
-    { id: 'basic', label: 'Basic Info', icon: User },
+    { id: "basic", label: "Basic Info", icon: User },
     // { id: 'integration', label: 'Integration', icon: Settings },
     // { id: 'security', label: 'Security', icon: Shield },
-    { id: 'billing', label: 'Credits and Billing', icon: CreditCard },
-    { id: 'usage', label: 'Usage Stats', icon: BarChart3 },
-    { id: 'support', label: 'Support and feedback', icon: MessageCircle },
+    { id: "billing", label: "Credits and Billing", icon: CreditCard },
+    { id: "usage", label: "Usage Stats", icon: BarChart3 },
+    { id: "support", label: "Support and feedback", icon: MessageCircle },
   ];
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'basic':
+      case "basic":
         return (
           <div className="space-y-6">
-              <h3 className="text-lg font-semibold">Basic Info</h3>
+            <h3 className="text-lg font-semibold">Basic Info</h3>
             {/* Form Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
                 <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
-                  {formData.firstName || 'Not provided'}
+                  {formData.firstName || "Not provided"}
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
                 <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
-                  {formData.lastName || 'Not provided'}
+                  {formData.lastName || "Not provided"}
                 </div>
               </div>
             </div>
@@ -124,7 +161,7 @@ interface ProfilePopupProps {
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm pr-10">
-                  {formData.email || 'Not provided'}
+                  {formData.email || "Not provided"}
                 </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <div className="h-2 w-2 bg-green-500 rounded-full"></div>
@@ -157,8 +194,17 @@ interface ProfilePopupProps {
             <div className="pt-4 border-t">
               <div className="space-y-2">
                 <Label>Account Plan</Label>
-                <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                  {userData?.plan_id === 1 ? 'Free Plan' : userData?.plan_id === 2 ? 'Pro Plan' : userData?.plan_id === 3 ? 'Enterprise Plan' : 'Free Plan'}
+                <Badge
+                  variant="secondary"
+                  className="bg-primary text-primary-foreground"
+                >
+                  {userData?.plan_id === 1
+                    ? "Free Plan"
+                    : userData?.plan_id === 2
+                    ? "Pro Plan"
+                    : userData?.plan_id === 3
+                    ? "Enterprise Plan"
+                    : "Free Plan"}
                 </Badge>
               </div>
             </div>
@@ -172,28 +218,34 @@ interface ProfilePopupProps {
               </div>
               <div className="space-y-2">
                 <Label>Account Status</Label>
-                <Badge 
+                <Badge
                   variant="default"
                   className="bg-green-100 text-green-800 border-green-200"
                 >
                   Active
                 </Badge>
               </div>
-              {userData?.user_type === 'developer' && (
+              {userData?.user_type === "developer" && (
                 <>
                   <div className="space-y-2">
                     <Label>Tasks Statistics</Label>
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div className="px-2 py-1 bg-muted/30 border rounded-md text-center">
-                        <div className="font-medium">{userData?.total_solved_tasks || 0}</div>
+                        <div className="font-medium">
+                          {userData?.total_solved_tasks || 0}
+                        </div>
                         <div className="text-muted-foreground">Solved</div>
                       </div>
                       <div className="px-2 py-1 bg-muted/30 border rounded-md text-center">
-                        <div className="font-medium">{userData?.total_in_progress_task || 0}</div>
+                        <div className="font-medium">
+                          {userData?.total_in_progress_task || 0}
+                        </div>
                         <div className="text-muted-foreground">In Progress</div>
                       </div>
                       <div className="px-2 py-1 bg-muted/30 border rounded-md text-center">
-                        <div className="font-medium">{userData?.total_pending_task || 0}</div>
+                        <div className="font-medium">
+                          {userData?.total_pending_task || 0}
+                        </div>
                         <div className="text-muted-foreground">Pending</div>
                       </div>
                     </div>
@@ -202,7 +254,8 @@ interface ProfilePopupProps {
                     <div className="space-y-2">
                       <Label>Rating</Label>
                       <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
-                        {userData?.avg_rating?.toFixed(2)} ⭐ ({userData?.rating_count} reviews)
+                        {userData?.avg_rating?.toFixed(2)} ⭐ (
+                        {userData?.rating_count} reviews)
                       </div>
                     </div>
                   )}
@@ -211,12 +264,14 @@ interface ProfilePopupProps {
             </div>
           </div>
         );
-      
-      case 'integration':
+
+      case "integration":
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Integrations</h3>
-            <p className="text-muted-foreground">Manage your connected services and integrations.</p>
+            <p className="text-muted-foreground">
+              Manage your connected services and integrations.
+            </p>
             <div className="space-y-2">
               <Button variant="outline" className="w-full justify-start">
                 Connect GitHub
@@ -228,11 +283,13 @@ interface ProfilePopupProps {
           </div>
         );
 
-      case 'security':
+      case "security":
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Security Settings</h3>
-            <p className="text-muted-foreground">Manage your account security and privacy settings.</p>
+            <p className="text-muted-foreground">
+              Manage your account security and privacy settings.
+            </p>
             <div className="space-y-2">
               <Button variant="outline" className="w-full justify-start">
                 Change Password
@@ -247,7 +304,7 @@ interface ProfilePopupProps {
           </div>
         );
 
-      case 'billing':
+      case "billing":
         return (
           <div className="space-y-6">
             <div>
@@ -339,10 +396,10 @@ interface ProfilePopupProps {
           </div>
         );
 
-      case 'usage':
+      case "usage":
         return <UsageStats />;
 
-      case 'support':
+      case "support":
         return <FeedbackForm />;
 
       default:
@@ -360,18 +417,25 @@ interface ProfilePopupProps {
               <div className="flex items-center space-x-3 p-2">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary/10 text-primary">
-                    {getInitialsFromNames(userData?.first_name, userData?.last_name)}
+                    {getInitialsFromNames(
+                      userData?.first_name,
+                      userData?.last_name
+                    )}
                   </AvatarFallback>
                 </Avatar>
-                  <div>
-                    <div className="font-medium">
-                      {userData?.first_name && userData?.last_name ? `${userData.first_name} ${userData.last_name}` : 'User'}
-                    </div>
-                    <div className="text-sm text-muted-foreground">{userData?.email || ''}</div>
+                <div>
+                  <div className="font-medium">
+                    {userData?.first_name && userData?.last_name
+                      ? `${userData.first_name} ${userData.last_name}`
+                      : "User"}
                   </div>
+                  <div className="text-sm text-muted-foreground">
+                    {userData?.email || ""}
+                  </div>
+                </div>
               </div>
             </div>
-            
+
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -390,12 +454,9 @@ interface ProfilePopupProps {
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col">
-            
-
             <div className="flex-1 mt-5 px-6 pb-4 overflow-y-auto">
               {renderContent()}
             </div>
-
           </div>
         </div>
       </DialogContent>
@@ -404,21 +465,33 @@ interface ProfilePopupProps {
         <CancelSubscriptionDialog
           isOpen={showCancelDialog}
           onClose={() => setShowCancelDialog(false)}
-          userId={userData?.id || ''}
-          userName={`${userData?.first_name || ''} ${userData?.last_name || ''}`.trim() || 'User'}
-          planName={userData?.plan_id === 1 ? 'Free Plan' : userData?.plan_id === 2 ? 'Pro Plan' : userData?.plan_id === 3 ? 'Enterprise Plan' : 'Free Plan'}
+          userId={userData?.id || ""}
+          userName={
+            `${userData?.first_name || ""} ${
+              userData?.last_name || ""
+            }`.trim() || "User"
+          }
+          planName={
+            userData?.plan_id === 1
+              ? "Free Plan"
+              : userData?.plan_id === 2
+              ? "Pro Plan"
+              : userData?.plan_id === 3
+              ? "Enterprise Plan"
+              : "Free Plan"
+          }
           onConfirm={async (userId: string) => {
             try {
               const response = await cancelUserSubscription(userId);
-              
+
               if (response?.success) {
-                toast.success('Subscription cancelled successfully');
+                toast.success("Subscription cancelled successfully");
               } else {
-                toast.error('Failed to cancel subscription');
+                toast.error("Failed to cancel subscription");
               }
             } catch (error: any) {
-              console.error('Error cancelling subscription:', error);
-              
+              //console.error("Error cancelling subscription:", error);
+
               // Show the actual error message from the API
               let errorMessage = "Error cancelling subscription";
               if (error?.response?.data?.error?.message) {
@@ -426,7 +499,7 @@ interface ProfilePopupProps {
               } else if (error?.message) {
                 errorMessage = error.message;
               }
-              
+
               toast.error(errorMessage);
             } finally {
               setShowCancelDialog(false);
@@ -443,11 +516,21 @@ const UsageStats: React.FC = () => {
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedMonth, setSelectedMonth] = useState('October');
+  const [selectedMonth, setSelectedMonth] = useState("October");
 
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   useEffect(() => {
@@ -457,14 +540,17 @@ const UsageStats: React.FC = () => {
       try {
         const data = await fetchUsageData(selectedMonth);
         if (!data) {
-          setError('No usage data available for this month');
+          setError("No usage data available for this month");
           setUsageData(null);
         } else {
           setUsageData(data);
         }
       } catch (error: any) {
-        console.error('Failed to load usage data:', error);
-        const errorMessage = error?.response?.data?.message || error?.message || 'Failed to load usage data';
+        //console.error("Failed to load usage data:", error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to load usage data";
         setError(errorMessage);
         setUsageData(null);
         toast.error(errorMessage);
@@ -563,10 +649,10 @@ const UsageStats: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{usageData.active_days || 0}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  This month
-                </p>
+                <div className="text-2xl font-bold">
+                  {usageData.active_days || 0}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">This month</p>
               </CardContent>
             </Card>
           </div>
@@ -589,18 +675,23 @@ const UsageStats: React.FC = () => {
                     <TableRow>
                       <TableHead>Date</TableHead>
                       <TableHead className="text-right">Tokens</TableHead>
-                      <TableHead className="text-right">Credits Deducted</TableHead>
+                      <TableHead className="text-right">
+                        Credits Deducted
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {usageData.daily_usage.map((day, index) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">
-                          {new Date(day.created_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
+                          {new Date(day.created_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
                           {(day.token || 0).toLocaleString()}
@@ -635,9 +726,9 @@ const UsageStats: React.FC = () => {
 const FeedbackForm: React.FC = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<FeedbackSubmission>({
-    content: '',
-    subject: '',
-    category: ''
+    content: "",
+    subject: "",
+    category: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -647,8 +738,8 @@ const FeedbackForm: React.FC = () => {
         const response = await getFeedbackCategories();
         setCategories(response.categories);
       } catch (error) {
-        console.error('Failed to load categories:', error);
-        toast.error('Failed to load feedback categories');
+        //console.error("Failed to load categories:", error);
+        toast.error("Failed to load feedback categories");
       }
     };
 
@@ -657,39 +748,47 @@ const FeedbackForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!formData.category || !formData.subject || !formData.content) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
 
     setIsSubmitting(true);
     try {
       await submitFeedback(formData);
-      toast.success('Feedback submitted successfully!');
-      setFormData({ content: '', subject: '', category: '' });
+      toast.success("Feedback submitted successfully!");
+      setFormData({ content: "", subject: "", category: "" });
     } catch (error) {
-      console.error('Failed to submit feedback:', error);
-      toast.error('Failed to submit feedback. Please try again.');
+      //console.error("Failed to submit feedback:", error);
+      toast.error("Failed to submit feedback. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: keyof FeedbackSubmission, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof FeedbackSubmission,
+    value: string
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-xl font-semibold mb-2">Support & Feedback</h3>
-        <p className="text-muted-foreground text-sm">Get help or share your thoughts with our team</p>
+        <p className="text-muted-foreground text-sm">
+          Get help or share your thoughts with our team
+        </p>
       </div>
-      
+
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+            <Select
+              value={formData.category}
+              onValueChange={(value) => handleInputChange("category", value)}
+            >
               <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -702,38 +801,38 @@ const FeedbackForm: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="subject">Subject</Label>
             <Input
               id="subject"
               value={formData.subject}
-              onChange={(e) => handleInputChange('subject', e.target.value)}
+              onChange={(e) => handleInputChange("subject", e.target.value)}
               placeholder="Brief description of your feedback"
               className="bg-background"
             />
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="message">Message</Label>
           <Textarea
             id="message"
             value={formData.content}
-            onChange={(e) => handleInputChange('content', e.target.value)}
+            onChange={(e) => handleInputChange("content", e.target.value)}
             placeholder="Tell us more about your feedback..."
             className="bg-background min-h-[120px] resize-none"
           />
         </div>
-        
+
         <div className="flex justify-end pt-4">
-          <Button 
+          <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
             className="bg-pink-500 hover:bg-pink-600 text-white px-6"
           >
             <MessageCircle className="h-4 w-4 mr-2" />
-            {isSubmitting ? 'Sending...' : 'Send Feedback'}
+            {isSubmitting ? "Sending..." : "Send Feedback"}
           </Button>
         </div>
       </div>

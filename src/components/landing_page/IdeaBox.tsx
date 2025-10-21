@@ -7,7 +7,7 @@ import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { FileUploader, UploadedFile } from "@/components/ui/file-uploader";
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface Tool {
   name: string;
@@ -15,14 +15,36 @@ interface Tool {
 }
 
 const availableTools: Tool[] = [
-  { name: '@analyse', description: 'Analyze the provided text or code for insights.' },
-  { name: '@research', description: 'Conduct a web search to gather information on a topic.' },
-  { name: '@icp', description: 'Identify Ideal Customer Profile based on project details.' },
-  { name: '@mvp', description: 'Generate a Minimum Viable Product plan.' },
-  { name: '@sitemap', description: 'Create a sitemap for a given website or application structure.' },
-  { name: '@scope of work', description: 'Define the scope of work for a project.' },
-  { name: '@frontend code making', description: 'Generate frontend code snippets or components.' },
-  { name: '@backend code', description: 'Generate backend code snippets or API logic.' },
+  {
+    name: "@analyse",
+    description: "Analyze the provided text or code for insights.",
+  },
+  {
+    name: "@research",
+    description: "Conduct a web search to gather information on a topic.",
+  },
+  {
+    name: "@icp",
+    description: "Identify Ideal Customer Profile based on project details.",
+  },
+  { name: "@mvp", description: "Generate a Minimum Viable Product plan." },
+  {
+    name: "@sitemap",
+    description:
+      "Create a sitemap for a given website or application structure.",
+  },
+  {
+    name: "@scope of work",
+    description: "Define the scope of work for a project.",
+  },
+  {
+    name: "@frontend code making",
+    description: "Generate frontend code snippets or components.",
+  },
+  {
+    name: "@backend code",
+    description: "Generate backend code snippets or API logic.",
+  },
 ];
 
 const IdeaBox: React.FC = () => {
@@ -32,57 +54,64 @@ const IdeaBox: React.FC = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showToolList, setShowToolList] = useState(false);
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
-  const [toolInput, setToolInput] = useState('');
+  const [toolInput, setToolInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { sendIdeaWithAuth, setUserIdea, isProcessingIdea, isAuthenticated } = useUser();
+  const { sendIdeaWithAuth, setUserIdea, isProcessingIdea, isAuthenticated } =
+    useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
     }
   }, [idea]);
 
   const handleVoiceTranscript = (transcript: string) => {
-    setIdea(prev => prev ? prev + " " + transcript : transcript);
+    setIdea((prev) => (prev ? prev + " " + transcript : transcript));
   };
 
   const handleFileUploaded = (file: UploadedFile) => {
-    setUploadedFiles(prev => [...prev, file]);
+    setUploadedFiles((prev) => [...prev, file]);
   };
 
   const handleRemoveFile = (fileName: string) => {
-    setUploadedFiles(prev => prev.filter(file => file.name !== fileName));
+    setUploadedFiles((prev) => prev.filter((file) => file.name !== fileName));
   };
 
   const handleIdeaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setIdea(value);
 
-    const atIndex = value.lastIndexOf('@');
-    if (atIndex !== -1 && (atIndex === 0 || value[atIndex - 1] === ' ' || value[atIndex - 1] === '\n')) {
+    const atIndex = value.lastIndexOf("@");
+    if (
+      atIndex !== -1 &&
+      (atIndex === 0 ||
+        value[atIndex - 1] === " " ||
+        value[atIndex - 1] === "\n")
+    ) {
       const currentToolInput = value.substring(atIndex + 1);
       setToolInput(currentToolInput);
-      const filtered = availableTools.filter(tool =>
+      const filtered = availableTools.filter((tool) =>
         tool.name.toLowerCase().includes(currentToolInput.toLowerCase())
       );
       setFilteredTools(filtered);
       setShowToolList(true);
     } else {
       setShowToolList(false);
-      setToolInput('');
+      setToolInput("");
     }
   };
 
   const handleToolSelect = (tool: Tool) => {
-    const atIndex = idea.lastIndexOf('@');
+    const atIndex = idea.lastIndexOf("@");
     if (atIndex !== -1) {
-      const newIdea = idea.substring(0, atIndex) + tool.name + ' ';
+      const newIdea = idea.substring(0, atIndex) + tool.name + " ";
       setIdea(newIdea);
       setShowToolList(false);
-      setToolInput('');
+      setToolInput("");
       if (textareaRef.current) {
         textareaRef.current.focus();
       }
@@ -100,19 +129,22 @@ const IdeaBox: React.FC = () => {
     // Combine idea with uploaded file content
     let combinedIdea = idea.trim();
     if (uploadedFiles.length > 0) {
-      const fileContents = uploadedFiles.map(file => 
-        `\n\n--- Content from ${file.name} ---\n${file.extractedText}`
-      ).join('\n');
+      const fileContents = uploadedFiles
+        .map(
+          (file) =>
+            `\n\n--- Content from ${file.name} ---\n${file.extractedText}`
+        )
+        .join("\n");
       combinedIdea += fileContents;
     }
 
     const result = await sendIdeaWithAuth(combinedIdea);
-    
+
     if (result.success && result.session_id) {
       navigate(`/chat/${result.session_id}`);
     } else {
       // Handle error
-      console.error("Failed to create session:", result.message);
+      //console.error("Failed to create session:", result.message);
       alert(result.message || "Failed to process your idea. Please try again.");
     }
   };

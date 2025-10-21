@@ -36,26 +36,21 @@ export class StreamingWebSocketClient {
           `/api/chat/ws?session_id=${this.sessionId}${
             token ? `&token=${token}` : ""
           }`;
-        console.log(wsUrl);
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log("StreamingWebSocket connected");
           this.reconnectAttempts = 0;
           resolve();
         };
 
         this.ws.onerror = (error) => {
-          console.error("StreamingWebSocket error:", error);
           reject(error);
         };
 
         this.ws.onclose = () => {
-          console.log("StreamingWebSocket disconnected");
           this.handleReconnect();
         };
       } catch (error) {
-        console.error("Error creating StreamingWebSocket:", error);
         reject(error);
       }
     });
@@ -64,12 +59,9 @@ export class StreamingWebSocketClient {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(
-        `StreamingWebSocket reconnecting... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
-      );
 
       setTimeout(() => {
-        this.connect().catch(console.error);
+        this.connect().catch();
       }, this.reconnectDelay);
     }
   }
@@ -89,16 +81,13 @@ export class StreamingWebSocketClient {
     const messageHandler = (event: MessageEvent) => {
       if (isComplete) return;
 
-      console.log("📨 Raw WebSocket message:", event.data);
 
       // Handle JSON messages (completion signals)
       try {
         const data: any = JSON.parse(event.data);
-        console.log(" Parsed JSON message:", data);
 
         // Handle completion signal from backend
         if (data.success) {
-          console.log(" Stream completed with done signal");
           if (!isComplete) {
             isComplete = true;
             if (isInToolMode) {
@@ -128,7 +117,6 @@ export class StreamingWebSocketClient {
 
           // Detect tool output by looking for tool output patterns
           if (content.includes("[Tool Use Started]:")) {
-            console.log("🔧 Tool execution started");
             isInToolMode = true;
             callbacks.onToolStart();
             fullContent += content;
@@ -137,7 +125,6 @@ export class StreamingWebSocketClient {
             content.includes("[Tool Output for") &&
             content.includes("]:")
           ) {
-            console.log("🔧 Tool output received");
             if (isInToolMode) {
               callbacks.onToolEnd();
               isInToolMode = false;
@@ -146,11 +133,6 @@ export class StreamingWebSocketClient {
             callbacks.onContent(content);
           } else {
             // Regular streaming text content
-            console.log(
-              "📝 Content chunk received:",
-              content.length,
-              "characters"
-            );
             fullContent += content;
             callbacks.onContent(content);
           }
@@ -184,7 +166,6 @@ export class StreamingWebSocketClient {
   stopGeneration() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ message: "stop" }));
-      console.log("🛑 Stop signal sent to server");
     }
   }
 

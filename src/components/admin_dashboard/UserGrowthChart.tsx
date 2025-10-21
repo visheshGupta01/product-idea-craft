@@ -94,7 +94,10 @@ const renderLegend = () => {
   );
 };
 
-const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData, userGrowthRate }) => {
+const UserGrowthChart: React.FC<UserGrowthChartProps> = ({
+  data: apiData,
+  userGrowthRate,
+}) => {
   // Initialize with actual data from API if available
   let currentYear = 2025;
   let currentMonth = "Aug";
@@ -111,15 +114,17 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData, userGr
 
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
-  console.log("UserGrowthChart props:", { apiData });
-  console.log("Selected Year and Month:", { selectedYear, selectedMonth });  const [selectedWeek, setSelectedWeek] = useState<number>(1);
-  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
+  //console.log("UserGrowthChart props:", { apiData });
+  //console.log("Selected Year and Month:", { selectedYear, selectedMonth });  const [selectedWeek, setSelectedWeek] = useState<number>(1);
+  const [selectedPeriod, setSelectedPeriod] = useState<
+    "week" | "month" | "year"
+  >("week");
 
   // Transform API data to chart format
   const getChartData = () => {
     if (!apiData || apiData.length === 0) {
       // Fallback data based on period
-      if (selectedPeriod === 'week') {
+      if (selectedPeriod === "week") {
         return [
           { date: "Mon", paid: 20, active: 45 },
           { date: "Tue", paid: 35, active: 60 },
@@ -149,39 +154,46 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData, userGr
     const yearData = apiData.find((y) => y.year === selectedYear);
     if (!yearData) return [];
 
-    if (selectedPeriod === 'year') {
+    if (selectedPeriod === "year") {
       // Show monthly data for the year
-      return yearData.months.map(month => ({
+      return yearData.months.map((month) => ({
         date: month.month,
         paid: month.total_verified_pro,
-        active: month.total_verified
+        active: month.total_verified,
       }));
     }
 
-    if (selectedPeriod === 'month') {
+    if (selectedPeriod === "month") {
       // Show daily data for the month
-      const monthData = yearData.months.find(m => m.month === selectedMonth);
+      const monthData = yearData.months.find((m) => m.month === selectedMonth);
       if (!monthData) return [];
 
-      return monthData.days.map(day => ({
-        date: new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      return monthData.days.map((day) => ({
+        date: new Date(day.date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
         paid: day.total_verified_pro,
-        active: day.total_verified
+        active: day.total_verified,
       }));
     }
 
-    if (selectedPeriod === 'week') {
+    if (selectedPeriod === "week") {
       // Show daily data for the selected week
-      const monthData = yearData.months.find(m => m.month === selectedMonth);
+      const monthData = yearData.months.find((m) => m.month === selectedMonth);
       if (!monthData) return [];
 
-      const weekData = monthData.weeks.find(w => w.week_number === selectedWeek);
+      const weekData = monthData.weeks.find(
+        (w) => w.week_number === selectedWeek
+      );
       if (!weekData) return [];
 
-      return weekData.days.map(day => ({
-        date: new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' }),
+      return weekData.days.map((day) => ({
+        date: new Date(day.date).toLocaleDateString("en-US", {
+          weekday: "short",
+        }),
         paid: day.total_verified_pro,
-        active: day.total_verified
+        active: day.total_verified,
       }));
     }
 
@@ -340,7 +352,7 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data: apiData, userGr
                         : "bg-[#d8cee8]"
                     }`}
                   >
-                      <div className="font-medium text-sm">{yearData.year}</div>
+                    <div className="font-medium text-sm">{yearData.year}</div>
                   </button>
                 ))
               : [2023, 2024, 2025].map((year) => (

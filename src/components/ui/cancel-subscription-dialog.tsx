@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface CancelSubscriptionDialogProps {
   isOpen: boolean;
@@ -21,9 +26,9 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
   userId,
   userName,
   planName,
-  onConfirm
+  onConfirm,
 }) => {
-  const [confirmUserId, setConfirmUserId] = useState('');
+  const [confirmUserId, setConfirmUserId] = useState("");
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -34,7 +39,7 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
       toast({
         title: "User ID Mismatch",
         description: "Please enter the correct User ID to confirm cancellation",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -47,8 +52,8 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
         handleClose();
       }, 2000);
     } catch (error: any) {
-      console.error('Error cancelling subscription:', error);
-      
+      //console.error('Error cancelling subscription:', error);
+
       // Check if error response has specific message structure
       let errorMessage = "Failed to cancel subscription. Please try again.";
       if (error?.response?.data?.error?.message) {
@@ -56,11 +61,11 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
       } else if (error?.message) {
         errorMessage = error.message;
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -68,7 +73,7 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
   };
 
   const handleClose = () => {
-    setConfirmUserId('');
+    setConfirmUserId("");
     setIsConfirmed(false);
     setShowSuccess(false);
     setIsLoading(false);
@@ -91,9 +96,12 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Subscription Cancelled</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                Subscription Cancelled
+              </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Subscription for {userName} ({planName}) has been cancelled successfully.
+                Subscription for {userName} ({planName}) has been cancelled
+                successfully.
               </p>
             </div>
             <Button onClick={handleClose} className="w-full">
@@ -114,7 +122,7 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
             Cancel Subscription
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
@@ -128,7 +136,9 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
           </div>
 
           <div className="bg-muted/30 p-3 rounded-lg">
-            <div className="text-sm font-medium text-muted-foreground mb-1">User ID:</div>
+            <div className="text-sm font-medium text-muted-foreground mb-1">
+              User ID:
+            </div>
             <div className="font-mono text-sm bg-background p-2 rounded border">
               {userId}
             </div>
@@ -157,13 +167,13 @@ const CancelSubscriptionDialog: React.FC<CancelSubscriptionDialogProps> = ({
             <Button variant="outline" onClick={handleClose} className="flex-1">
               Cancel
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={handleConfirm}
               disabled={!isConfirmed || isLoading}
               className="flex-1"
             >
-              {isLoading ? 'Cancelling...' : 'Confirm Cancellation'}
+              {isLoading ? "Cancelling..." : "Confirm Cancellation"}
             </Button>
           </div>
         </div>

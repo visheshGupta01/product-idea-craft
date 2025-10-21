@@ -12,7 +12,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-
 interface MessageBubbleProps {
   message: Message;
   isWelcomeMessage?: boolean;
@@ -22,7 +21,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
   isWelcomeMessage = false,
 }) => {
-  console.log("Rendering MessageBubble for message:", message);
+  //console.log("Rendering MessageBubble for message:", message);
   const { toast } = useToast();
 
   const copyToClipboard = async (text: string) => {

@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useUser } from '@/context/UserContext';
-import DeveloperSidebar from '@/components/developer/DeveloperSidebar';
-import FirstTimeSetup from '@/components/developer/FirstTimeSetup';
-import { DeveloperOverview } from '@/components/developer/DeveloperOverview';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { developerService } from '@/services/developerService';
-import TasksPage from '@/components/developer/TasksPage';
-import DeveloperInbox from './DeveloperInbox';
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
+import DeveloperSidebar from "@/components/developer/DeveloperSidebar";
+import FirstTimeSetup from "@/components/developer/FirstTimeSetup";
+import { DeveloperOverview } from "@/components/developer/DeveloperOverview";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { developerService } from "@/services/developerService";
+import TasksPage from "@/components/developer/TasksPage";
+import DeveloperInbox from "./DeveloperInbox";
 
 const DeveloperDashboard = () => {
   const { userRole, isAuthenticated } = useUser();
@@ -21,20 +27,20 @@ const DeveloperDashboard = () => {
 
   const checkSetupStatus = async () => {
     try {
-    const response = await developerService.getDeveloperProfile();
-    const profile = response.developer_info;
-      
+      const response = await developerService.getDeveloperProfile();
+      const profile = response.developer_info;
+
       // Check if GitHub and LinkedIn are set up
       setNeedsSetup(!profile.github_url || !profile.linkedin_url);
     } catch (error) {
-      console.error('Failed to check setup status:', error);
+      //console.error('Failed to check setup status:', error);
       setNeedsSetup(true);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isAuthenticated || userRole !== 'developer') {
+  if (!isAuthenticated || userRole !== "developer") {
     return <Navigate to="/" replace />;
   }
 

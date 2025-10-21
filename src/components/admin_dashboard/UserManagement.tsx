@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Search, Mic, ArrowUpDown, Download, UserPlus, MoreVertical, Edit3, Trash2, Eye } from "lucide-react";
+import {
+  Search,
+  Mic,
+  ArrowUpDown,
+  Download,
+  UserPlus,
+  MoreVertical,
+  Edit3,
+  Trash2,
+  Eye,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,9 +43,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { fetchUsersData, UsersData, User, cancelUserSubscription } from '@/services/adminService';
-import { toast } from 'sonner';
-import CancelSubscriptionDialog from '@/components/ui/cancel-subscription-dialog';
+import {
+  fetchUsersData,
+  UsersData,
+  User,
+  cancelUserSubscription,
+} from "@/services/adminService";
+import { toast } from "sonner";
+import CancelSubscriptionDialog from "@/components/ui/cancel-subscription-dialog";
 
 export default function UserManagement() {
   const [activeFilter, setActiveFilter] = useState<string>("All");
@@ -55,8 +70,8 @@ export default function UserManagement() {
         const data = await fetchUsersData(currentPage);
         setUsersData(data);
       } catch (error) {
-        console.error('Failed to load users data:', error);
-        toast.error('Failed to load users data');
+        //console.error('Failed to load users data:', error);
+        toast.error("Failed to load users data");
       } finally {
         setIsLoading(false);
       }
@@ -73,19 +88,30 @@ export default function UserManagement() {
   }, [searchQuery]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   const handleCancelSubscription = (userId: string, userName: string) => {
-    setSelectedUser({ id: userId, name: userName, email: '', created_at: '', last_login_at: '', no_of_projects: 0 });
+    setSelectedUser({
+      id: userId,
+      name: userName,
+      email: "",
+      created_at: "",
+      last_login_at: "",
+      no_of_projects: 0,
+    });
     setShowCancelDialog(true);
   };
 
@@ -93,18 +119,18 @@ export default function UserManagement() {
     try {
       setCancellingUser(userId);
       const response = await cancelUserSubscription(userId);
-      
+
       if (response.success) {
         toast.success(`Subscription cancelled successfully`);
         // Refresh the current page data
         const updatedData = await fetchUsersData(currentPage);
         setUsersData(updatedData);
       } else {
-        toast.error(response.message || 'Failed to cancel subscription');
+        toast.error(response.message || "Failed to cancel subscription");
       }
     } catch (error) {
-      console.error('Error canceling subscription:', error);
-      toast.error('Failed to cancel subscription');
+      //console.error('Error canceling subscription:', error);
+      toast.error("Failed to cancel subscription");
     } finally {
       setCancellingUser(null);
       setShowCancelDialog(false);
@@ -114,12 +140,13 @@ export default function UserManagement() {
 
   const totalUsers = usersData?.total_verified_users || 0;
   const displayedUsers = usersData?.users || [];
-  
+
   // Filter users based on search query (client-side for displayed results)
-  const filteredUsers = searchQuery 
-    ? displayedUsers.filter(user =>
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = searchQuery
+    ? displayedUsers.filter(
+        (user) =>
+          user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : displayedUsers;
 
@@ -336,9 +363,7 @@ export default function UserManagement() {
                 </PaginationItem>
 
                 <PaginationItem>
-                  <Button
-                    variant="outline"
-                  >
+                  <Button variant="outline">
                     <p className="text-white">{currentPage}</p>
                   </Button>
                 </PaginationItem>

@@ -21,27 +21,27 @@ export class SupportWebSocketService {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log("Support WebSocket connected");
+          //console.log("Support WebSocket connected");
           this.reconnectAttempts = 0;
           resolve();
         };
 
         this.ws.onerror = (error) => {
-          console.error("Support WebSocket error:", error);
+          //console.error("Support WebSocket error:", error);
           reject(error);
         };
 
         this.ws.onclose = () => {
-          console.log("Support WebSocket disconnected");
+          //console.log("Support WebSocket disconnected");
           this.handleReconnect();
         };
 
         this.ws.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            this.messageHandlers.forEach(handler => handler(data));
+            this.messageHandlers.forEach((handler) => handler(data));
           } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
+            //console.error("Error parsing WebSocket message:", error);
           }
         };
       } catch (error) {
@@ -55,9 +55,9 @@ export class SupportWebSocketService {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+      //console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
       setTimeout(() => {
-        this.connect(this.storedToken).catch(console.error);
+        this.connect(this.storedToken).catch(//console.error);
       }, 2000 * this.reconnectAttempts);
     }
   }
@@ -70,7 +70,7 @@ export class SupportWebSocketService {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.error("WebSocket is not connected");
+      //console.error("WebSocket is not connected");
     }
   }
 

@@ -26,12 +26,12 @@ const DeveloperInbox: React.FC = () => {
     try {
       setIsLoading(true);
       const data = await inboxService.getDeveloperInbox(currentPage);
-      console.log(data);
+      //console.log(data);
       setTasks(data.tasks || []);
       setRole(data.Role);
       setTotalPages(Math.ceil((data.total || 0) / 20));
     } catch (error) {
-      console.error("Failed to fetch inbox:", error);
+      //console.error("Failed to fetch inbox:", error);
       toast({
         title: "Error",
         description: "Failed to load inbox",
@@ -42,23 +42,26 @@ const DeveloperInbox: React.FC = () => {
     }
   }, [currentPage, toast]);
 
-  const fetchMessages = useCallback(async (taskId: number) => {
-    try {
-      setIsLoadingMessages(true);
-      const data = await inboxService.getChatMessages(taskId);
-      console.log(data);
-      setMessages(data || []);
-    } catch (error) {
-      console.error("Failed to fetch messages:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load messages",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingMessages(false);
-    }
-  }, [toast]);
+  const fetchMessages = useCallback(
+    async (taskId: number) => {
+      try {
+        setIsLoadingMessages(true);
+        const data = await inboxService.getChatMessages(taskId);
+        //console.log(data);
+        setMessages(data || []);
+      } catch (error) {
+        //console.error("Failed to fetch messages:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load messages",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingMessages(false);
+      }
+    },
+    [toast]
+  );
 
   useEffect(() => {
     fetchInbox();
@@ -71,15 +74,19 @@ const DeveloperInbox: React.FC = () => {
         wsService.setToken(token);
         await wsService.connect(token);
         wsService.onMessage((data) => {
-          console.log("Received WebSocket message:", data);
-          if (data.task_id && selectedTask && data.task_id === selectedTask.ID) {
+          //console.log("Received WebSocket message:", data);
+          if (
+            data.task_id &&
+            selectedTask &&
+            data.task_id === selectedTask.ID
+          ) {
             setMessages((prev) => [...prev, data]);
           }
           // Refresh inbox to update unread counts
           fetchInbox();
         });
       } catch (error) {
-        console.error("Failed to connect WebSocket:", error);
+        //console.error("Failed to connect WebSocket:", error);
       }
     };
 
@@ -100,9 +107,10 @@ const DeveloperInbox: React.FC = () => {
 
     setIsSending(true);
     try {
-      const receiverId = role === "developer"
-        ? selectedTask.assigner_id
-        : selectedTask.assignee_id;
+      const receiverId =
+        role === "developer"
+          ? selectedTask.assigner_id
+          : selectedTask.assignee_id;
 
       wsService.sendMessage({
         content: content,
@@ -124,7 +132,7 @@ const DeveloperInbox: React.FC = () => {
       };
       setMessages((prev) => [...prev, newMessage]);
     } catch (error) {
-      console.error("Failed to send message:", error);
+      //console.error("Failed to send message:", error);
       toast({
         title: "Error",
         description: "Failed to send message",
@@ -174,7 +182,9 @@ const DeveloperInbox: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next

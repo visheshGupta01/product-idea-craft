@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useUser } from '@/context/UserContext';
-import { toast } from '@/hooks/use-toast';
-import { Lock, Eye, EyeOff } from 'lucide-react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useUser } from "@/context/UserContext";
+import { toast } from "@/hooks/use-toast";
+import { Lock, Eye, EyeOff } from "lucide-react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 interface ResetPasswordModalProps {
   isOpen: boolean;
@@ -19,8 +24,8 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +33,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
   const navigate = useNavigate();
   const { resetPassword } = useUser();
 
-  const resetToken = searchParams.get('token');
+  const resetToken = searchParams.get("token");
 
   useEffect(() => {
     if (!resetToken && isOpen) {
@@ -43,7 +48,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newPassword.trim() || !confirmPassword.trim()) {
       toast({
         title: "Error",
@@ -82,15 +87,19 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
     setIsLoading(true);
     try {
-      console.log(newPassword, resetToken)
-      const result = await resetPassword(resetToken, newPassword, confirmPassword);
+      //console.log(newPassword, resetToken)
+      const result = await resetPassword(
+        resetToken,
+        newPassword,
+        confirmPassword
+      );
       if (result.success) {
         toast({
           title: "Success",
           description: result.message || "Password reset successfully!",
         });
         onSuccess();
-        navigate('/'); // Redirect to home page
+        navigate("/"); // Redirect to home page
       } else {
         toast({
           title: "Error",
@@ -110,8 +119,8 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
   };
 
   const handleClose = () => {
-    setNewPassword('');
-    setConfirmPassword('');
+    setNewPassword("");
+    setConfirmPassword("");
     setShowPassword(false);
     setShowConfirmPassword(false);
     onClose();
@@ -133,7 +142,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
             <div className="relative">
               <Input
                 id="newPassword"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
@@ -161,7 +170,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
             <div className="relative">
               <Input
                 id="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -188,12 +197,8 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
             Password must be at least 6 characters long.
           </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? 'Resetting Password...' : 'Reset Password'}
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading ? "Resetting Password..." : "Reset Password"}
           </Button>
         </form>
       </DialogContent>

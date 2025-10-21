@@ -1,11 +1,11 @@
-import apiClient from '@/lib/apiClient';
-import { API_ENDPOINTS } from '@/config/api';
+import apiClient from "@/lib/apiClient";
+import { API_ENDPOINTS } from "@/config/api";
 
 export interface ShareChatResponse {
   success: boolean;
   response: Array<{
     id: number;
-    role: 'user' | 'ai';
+    role: "user" | "ai";
     msg: string;
     session_id: string;
     created_at: string;
@@ -37,15 +37,17 @@ export interface ShareChatResponse {
   title: string;
 }
 
-export const fetchSharedChat = async (chatId: string): Promise<ShareChatResponse> => {
+export const fetchSharedChat = async (
+  chatId: string
+): Promise<ShareChatResponse> => {
   try {
     const response = await apiClient.get(
       `${API_ENDPOINTS.SHARE.CHAT}?chat=${chatId}`
     );
-    console.log(response.data);
+    //console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching shared chat:', error);
+    //console.error("Error fetching shared chat:", error);
     throw error;
   }
 };

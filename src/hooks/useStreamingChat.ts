@@ -55,7 +55,6 @@ export const useStreamingChat = (
   // Trigger onFrontendGenerated if projectUrl is available on load
   useEffect(() => {
     if (projectUrl && onFrontendGenerated && !isLoadingMessages) {
-      console.log("🚀 Auto-opening preview with stored URL:", projectUrl);
       onFrontendGenerated(projectUrl);
     }
   }, [projectUrl, onFrontendGenerated, isLoadingMessages]);
@@ -91,7 +90,6 @@ export const useStreamingChat = (
 
   const connect = useCallback(async (): Promise<boolean> => {
     if (!wsClientRef.current) {
-      console.error("WebSocket client not initialized");
       return false;
     }
 
@@ -101,7 +99,6 @@ export const useStreamingChat = (
       }
       return true;
     } catch (error) {
-      console.error("Failed to connect WebSocket:", error);
       return false;
     }
   }, []);
@@ -156,7 +153,6 @@ export const useStreamingChat = (
             
             // Check for insufficient balance in message content
             if (streamingContent.toLowerCase().includes("insufficient balance")) {
-              console.log("⚠️ Insufficient balance detected in message");
               onInsufficientBalance?.();
               setIsStreaming(false);
               setIsProcessingTools(false);
@@ -176,7 +172,6 @@ export const useStreamingChat = (
 
               if (urlMatch && onFrontendGenerated) {
                 const localUrl = urlMatch[0];
-                console.log("🚀 Frontend generated with URL:", localUrl);
                 setProjectUrl(localUrl); // Store in session storage
                 onFrontendGenerated(localUrl);
               }
@@ -184,11 +179,9 @@ export const useStreamingChat = (
           },
           onToolStart: () => {
             setIsProcessingTools(true);
-            console.log("🔧 Tool processing started");
           },
           onToolEnd: () => {
             setIsProcessingTools(false);
-            console.log("✅ Tool processing ended");
           },
           onComplete: (fullContent: string) => {
             // Use the accumulated streaming content if it's longer than fullContent
@@ -199,13 +192,8 @@ export const useStreamingChat = (
             updateMessage(aiMessage.id, finalContent);
             setIsStreaming(false);
             setIsProcessingTools(false);
-            console.log(
-              "🎉 Streaming completed with content length:",
-              finalContent.length
-            );
           },
           onError: (error: Error) => {
-            console.error("❌ Streaming error:", error);
 
             updateMessage(
               aiMessage.id,
@@ -219,7 +207,6 @@ export const useStreamingChat = (
 
         await wsClientRef.current.sendStreamingMessage(content, callbacks);
       } catch (error) {
-        console.error("Error in sendMessage:", error);
 
         // Add error message
         addMessage({

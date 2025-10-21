@@ -80,20 +80,17 @@ export class AuthService {
       try {
         this.user = JSON.parse(storedUser);
       } catch (error) {
-        console.error("Error parsing stored user data:", error);
         localStorage.removeItem("user_data");
       }
     }
     
-    console.log("AuthService initialized with token:", this.token);
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
       const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, { email, password });
       const data: LoginResponse = response.data;
-      console.log("Login response:", data);
-      console.log("Logined at", new Date().toISOString());
+   
 
       if (data.success && data.token) {
         this.token = data.token;
@@ -122,7 +119,6 @@ export class AuthService {
         message: data.message || "Login failed",
       };
     } catch (error: any) {
-      console.error("Login error:", error);
       
       // Check if error response contains error object with message
       if (error.response?.data?.error?.message) {
@@ -155,45 +151,22 @@ export class AuthService {
     try {
       const [first_name, ...rest] = name.trim().split(" ");
       const last_name = rest.join(" ");
-      console.log("First name:", first_name);
-      console.log("Last name:", last_name);
-
-      // 1. Get user IP/location info
-      // const ipRes = await fetch("http://ip-api.com/json/");
-      // const ipData = await ipRes.json();
-      // console.log("IP Data:", ipData);
-      // console.log({
-      //   first_name,
-      //   last_name,
-      //   email,
-      //   password,
-      //   country: ipData.country,
-      //   city: ipData.city,
-      //   lat: ipData.lat,
-      //   lon: ipData.lon,
-      // })
 
       // 3. Send signup + location to backend
       const response = await apiClient.post(API_ENDPOINTS.AUTH.SIGNUP, {
         first_name,
         last_name,
         email,
-        password,
-        // country: ipData.country,
-        // city: ipData.city,
-        // lat: ipData.lat,
-        // lon: ipData.lon,
+        password
       });
 
       const data: SignupResponse = response.data;
-      console.log("Signup response:", data);
 
       return {
         success: data.success,
         message: data.message,
       };
     } catch (error) {
-      console.error("Signup error:", error);
       return {
         success: false,
         message: "Network error. Please try again.",
@@ -205,13 +178,11 @@ export class AuthService {
     try {
       const response = await apiClient.get(`${API_ENDPOINTS.AUTH.VERIFY}?token=${token}`);
       const data: VerificationResponse = response.data;
-      console.log("Email verification response:", data);
       return {
         success: data.success,
         message: data.message,
       };
     } catch (error) {
-      console.error("Email verification error:", error);
       return {
         success: false,
         message: "Email verification failed",
@@ -231,7 +202,6 @@ export class AuthService {
         message: data.message,
       };
     } catch (error) {
-      console.error("Forgot password error:", error);
       return {
         success: false,
         message: "Network error. Please try again.",
@@ -244,13 +214,6 @@ export class AuthService {
     password: string,
     confirm_password: string
   ): Promise<AuthResponse> {
-    console.log("Resetting password with token:", token);
-    console.log("New password:", password);
-    console.log({
-      token,
-      password,
-      confirm_password,
-    });
     try {
       const response = await apiClient.post(
         `${API_ENDPOINTS.AUTH.RESET_PASSWORD}?token=${token}`,
@@ -262,13 +225,11 @@ export class AuthService {
       );
 
       const data: ResetPasswordResponse = response.data;
-      console.log("Reset password response:", data);
       return {
         success: data.success,
         message: data.message,
       };
     } catch (error) {
-      console.error("Reset password error:", error);
       return {
         success: false,
         message: "Network error. Please try again.",
@@ -311,7 +272,6 @@ export class AuthService {
         message: data.message || "token refresh failed",
       };
     } catch (error) {
-      console.error("token refresh error:", error);
       return {
         success: false,
         message: "Network error. Please try again.",
@@ -327,10 +287,8 @@ export class AuthService {
     }
 
     try {
-      console.log("Creating session with idea:", idea);
       const response = await apiClient.post(API_ENDPOINTS.CHAT.SESSION_CREATE, { "message":idea });
       const data = response.data;
-      console.log("Create session response:", data);
 
       if (data.success && data.session_id) {
         sessionStorage.setItem("session_id", data.session_id);
@@ -338,7 +296,6 @@ export class AuthService {
 
       return data;
     } catch (error) {
-      console.error("Session creation error:", error);
       return {
         success: false,
         session_id: "",
@@ -392,7 +349,6 @@ export class AuthService {
       try {
         return JSON.parse(storedUser);
       } catch (error) {
-        console.error("Error parsing stored user data:", error);
         return null;
       }
     }

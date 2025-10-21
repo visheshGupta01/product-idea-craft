@@ -1,33 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { buildIntegrationUrl } from '@/config/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { 
+import React, { useState, useEffect } from "react";
+import { buildIntegrationUrl } from "@/config/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import {
   ExternalLink,
   CheckCircle,
   AlertCircle,
   Loader2,
   Rocket,
   Globe,
-  Github
-} from 'lucide-react';
-import { useUser } from '@/context/UserContext';
+  Github,
+} from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 interface DeploymentInfo {
   url: string;
   deployedAt: string;
-  status: 'deployed' | 'deploying' | 'failed';
+  status: "deployed" | "deploying" | "failed";
 }
 
 const VercelIntegration = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployment, setDeployment] = useState<DeploymentInfo | null>(null);
   const [hasGitHubRepo, setHasGitHubRepo] = useState(false);
-    const { sessionId } = useUser();
-
-
+  const { sessionId } = useUser();
 
   useEffect(() => {
     // Check if GitHub repository exists in chat session
@@ -39,18 +37,18 @@ const VercelIntegration = () => {
           const githubUrl = session.githubUrl;
           const vercelUrl = session.vercelUrl; // Use separate vercelUrl
           setHasGitHubRepo(!!githubUrl);
-          
+
           // Check if we have a Vercel deployment URL
           if (vercelUrl) {
             const deploymentInfo: DeploymentInfo = {
               url: vercelUrl,
               deployedAt: session.vercelDeployedAt || new Date().toISOString(),
-              status: 'deployed'
+              status: "deployed",
             };
             setDeployment(deploymentInfo);
           }
         } catch (error) {
-          console.error("Error parsing chat session:", error);
+          //console.error("Error parsing chat session:", error);
           // Fallback to old format
           const savedRepo = sessionStorage.getItem("github_repository");
           setHasGitHubRepo(!!savedRepo);
@@ -85,11 +83,11 @@ const VercelIntegration = () => {
     const deploymentInfo: DeploymentInfo = {
       url: deployUrl,
       deployedAt: new Date().toISOString(),
-      status: 'deployed'
+      status: "deployed",
     };
     setDeployment(deploymentInfo);
     setIsDeploying(false);
-    
+
     // Store in chat session with separate vercelUrl
     if (sessionId) {
       const savedSession = sessionStorage.getItem(`chat_session_${sessionId}`);
@@ -98,14 +96,17 @@ const VercelIntegration = () => {
           const session = JSON.parse(savedSession);
           session.vercelUrl = deployUrl; // Store as separate vercelUrl
           session.vercelDeployedAt = new Date().toISOString();
-          sessionStorage.setItem(`chat_session_${sessionId}`, JSON.stringify(session));
+          sessionStorage.setItem(
+            `chat_session_${sessionId}`,
+            JSON.stringify(session)
+          );
         } catch (error) {
-          console.error("Error updating chat session:", error);
+          //console.error("Error updating chat session:", error);
         }
       }
     }
-    
-    toast.success('Successfully deployed to Vercel!');
+
+    toast.success("Successfully deployed to Vercel!");
   };
 
   const handleDeployToVercel = async () => {
@@ -122,10 +123,10 @@ const VercelIntegration = () => {
     setIsDeploying(true);
     try {
       // Redirect to Vercel OAuth with deployment flow
-      const vercelUrl = buildIntegrationUrl('vercel', sessionId);
+      const vercelUrl = buildIntegrationUrl("vercel", sessionId);
       window.location.href = vercelUrl;
     } catch (error) {
-      console.error("Error deploying to Vercel:", error);
+      //console.error("Error deploying to Vercel:", error);
       toast.error("Failed to deploy to Vercel");
       setIsDeploying(false);
     }
@@ -133,38 +134,44 @@ const VercelIntegration = () => {
 
   const handleRedeploy = () => {
     if (deployment) {
-      setDeployment({ ...deployment, status: 'deploying' });
+      setDeployment({ ...deployment, status: "deploying" });
       handleDeployToVercel();
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'deployed':
+      case "deployed":
         return (
-          <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+          <Badge
+            variant="default"
+            className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+          >
             <CheckCircle className="h-3 w-3 mr-1" />
             Deployed
           </Badge>
         );
-      case 'deploying':
+      case "deploying":
         return (
-          <Badge variant="default" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          <Badge
+            variant="default"
+            className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+          >
             <Loader2 className="h-3 w-3 mr-1 animate-spin" />
             Deploying
           </Badge>
         );
-      case 'failed':
+      case "failed":
         return (
           <Badge variant="destructive">
             <AlertCircle className="h-3 w-3 mr-1" />
@@ -208,7 +215,7 @@ const VercelIntegration = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.open(deployment.url, '_blank')}
+                  onClick={() => window.open(deployment.url, "_blank")}
                 >
                   <ExternalLink className="h-3 w-3 mr-2" />
                   View Live
@@ -218,9 +225,9 @@ const VercelIntegration = () => {
                     variant="outline"
                     size="sm"
                     onClick={handleRedeploy}
-                    disabled={deployment.status === 'deploying'}
+                    disabled={deployment.status === "deploying"}
                   >
-                    {deployment.status === 'deploying' ? (
+                    {deployment.status === "deploying" ? (
                       <Loader2 className="h-3 w-3 mr-2 animate-spin" />
                     ) : (
                       <Rocket className="h-3 w-3 mr-2" />
@@ -236,9 +243,9 @@ const VercelIntegration = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">URL:</span>
-                  <a 
-                    href={deployment.url} 
-                    target="_blank" 
+                  <a
+                    href={deployment.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
                   >
@@ -256,14 +263,16 @@ const VercelIntegration = () => {
               </div>
             </div>
 
-            {deployment.status === 'deployed' && (
+            {deployment.status === "deployed" && (
               <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                 <h4 className="font-medium mb-2 text-green-800 dark:text-green-200">
                   🚀 Your app is live!
                 </h4>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  Your application is successfully deployed and accessible worldwide.
-                  {hasGitHubRepo && " Any future pushes to your GitHub repository will automatically trigger new deployments."}
+                  Your application is successfully deployed and accessible
+                  worldwide.
+                  {hasGitHubRepo &&
+                    " Any future pushes to your GitHub repository will automatically trigger new deployments."}
                 </p>
               </div>
             )}
@@ -275,7 +284,8 @@ const VercelIntegration = () => {
                   Connect GitHub for Auto-Deploy
                 </h4>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  Connect your GitHub repository to enable automatic deployments on code changes.
+                  Connect your GitHub repository to enable automatic deployments
+                  on code changes.
                 </p>
               </div>
             )}
@@ -298,9 +308,10 @@ const VercelIntegration = () => {
               <Rocket className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">Deploy to Vercel</h3>
               <p className="text-muted-foreground mb-6">
-                Deploy your GitHub repository to Vercel for live hosting with automatic builds.
+                Deploy your GitHub repository to Vercel for live hosting with
+                automatic builds.
               </p>
-              <Button 
+              <Button
                 onClick={handleDeployToVercel}
                 disabled={isDeploying}
                 className="flex items-center space-x-2"
@@ -310,10 +321,10 @@ const VercelIntegration = () => {
                 ) : (
                   <Rocket className="h-4 w-4" />
                 )}
-                <span>{isDeploying ? 'Deploying...' : 'Deploy to Vercel'}</span>
+                <span>{isDeploying ? "Deploying..." : "Deploy to Vercel"}</span>
               </Button>
             </div>
-            
+
             <div className="bg-muted/50 rounded-lg p-4">
               <h4 className="font-medium mb-2 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-2 text-blue-600" />

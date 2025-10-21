@@ -1,7 +1,24 @@
-import React from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Home, User, ShoppingBag, Grid3X3, MessageSquare, FileText, Phone, CheckCircle, Clock, RefreshCw, Diamond } from 'lucide-react';
-import { ProjectDetails } from '@/services/projectService';
+import React from "react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  ChevronDown,
+  Home,
+  User,
+  ShoppingBag,
+  Grid3X3,
+  MessageSquare,
+  FileText,
+  Phone,
+  CheckCircle,
+  Clock,
+  RefreshCw,
+  Diamond,
+} from "lucide-react";
+import { ProjectDetails } from "@/services/projectService";
 
 interface SitemapSectionProps {
   projectDetails: ProjectDetails | undefined;
@@ -10,31 +27,32 @@ interface SitemapSectionProps {
 
 const getPageIcon = (pageName: string) => {
   const name = pageName.toLowerCase();
-  if (name.includes('home')) return Home;
-  if (name.includes('about')) return User;
-  if (name.includes('shop') || name.includes('store')) return ShoppingBag;
-  if (name.includes('feature') || name.includes('grid')) return Grid3X3;
-  if (name.includes('testimonial') || name.includes('review')) return MessageSquare;
-  if (name.includes('contact')) return Phone;
+  if (name.includes("home")) return Home;
+  if (name.includes("about")) return User;
+  if (name.includes("shop") || name.includes("store")) return ShoppingBag;
+  if (name.includes("feature") || name.includes("grid")) return Grid3X3;
+  if (name.includes("testimonial") || name.includes("review"))
+    return MessageSquare;
+  if (name.includes("contact")) return Phone;
   return FileText;
 };
 
 const getPageStatus = (index: number, total: number) => {
   // First page is always completed (home)
-  if (index === 0) return 'completed';
+  if (index === 0) return "completed";
   // Second and third pages are completed
-  if (index === 1 || index === 2) return 'completed';
+  if (index === 1 || index === 2) return "completed";
   // Fourth page is in progress
-  if (index === 3) return 'in-progress';
+  if (index === 3) return "in-progress";
   // Rest are pending
-  return 'pending';
+  return "pending";
 };
 
 const StatusIcon = ({ status }: { status: string }) => {
   switch (status) {
-    case 'completed':
+    case "completed":
       return <CheckCircle size={16} className="text-green-500" />;
-    case 'in-progress':
+    case "in-progress":
       return <RefreshCw size={16} className="text-blue-500" />;
     default:
       return <Clock size={16} className="text-muted-foreground" />;
@@ -47,10 +65,10 @@ export default function SitemapSection({
 }: SitemapSectionProps) {
   const pages = projectDetails?.sitemap?.pages ?? [];
 
-  console.log("Rendering SitemapSection, pages:", pages);
+  //console.log("Rendering SitemapSection, pages:", pages);
 
   if (pages.length === 0) {
-    console.log("No sitemap pages available.");
+    //console.log("No sitemap pages available.");
     return null;
   }
 
@@ -91,7 +109,10 @@ export default function SitemapSection({
                     key={compIndex}
                     className="flex items-center space-x-2 p-1 text-xs text-muted-foreground hover:text-sidebar-foreground transition-colors"
                   >
-<Diamond size={12} className="text-muted-foreground text-pink-400" />
+                    <Diamond
+                      size={12}
+                      className="text-muted-foreground text-pink-400"
+                    />
                     <span>{component}</span>
                   </div>
                 ))}

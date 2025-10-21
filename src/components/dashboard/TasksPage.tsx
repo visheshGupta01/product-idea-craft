@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, Calendar, Users, Clock, CheckCircle2, AlertCircle, ArrowUpDown } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import React, { useState, useEffect } from "react";
+import {
+  Search,
+  Filter,
+  Calendar,
+  Users,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  ArrowUpDown,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,14 +19,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -25,11 +34,11 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/ui/pagination';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
-import apiClient from '@/lib/apiClient';
-import { API_ENDPOINTS } from '@/config/api';
+} from "@/components/ui/pagination";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import apiClient from "@/lib/apiClient";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface Task {
   ID: number;
@@ -60,28 +69,34 @@ const UserTasksPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [sortOrder, setSortOrder] = useState<string>('DESC');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("DESC");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const loadTasks = async (page: number = 1, status: string = '', sort: string = 'DESC') => {
+  const loadTasks = async (
+    page: number = 1,
+    status: string = "",
+    sort: string = "DESC"
+  ) => {
     try {
       setIsLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
         ...(status && { status }),
-        sort
+        sort,
       });
-      
-      const response = await apiClient.get(`${API_ENDPOINTS.USER.TASKS}?${params.toString()}`);
+
+      const response = await apiClient.get(
+        `${API_ENDPOINTS.USER.TASKS}?${params.toString()}`
+      );
       const data = response.data;
-      console.log('Fetched tasks:', data);
+      //console.log('Fetched tasks:', data);
       setTasks(data || []);
       setTotalPages(data.total_pages || 1);
       setCurrentPage(page);
     } catch (error) {
-      console.error('Failed to load tasks:', error);
-      toast.error('Failed to load tasks');
+      //console.error("Failed to load tasks:", error);
+      toast.error("Failed to load tasks");
     } finally {
       setIsLoading(false);
     }
@@ -91,20 +106,20 @@ const UserTasksPage: React.FC = () => {
     loadTasks(1, statusFilter, sortOrder);
   }, [statusFilter, sortOrder]);
 
-const handleStatusChange = (status: string) => {
-  let apiStatus = "";
+  const handleStatusChange = (status: string) => {
+    let apiStatus = "";
 
-  if (status === "all") {
-    apiStatus = "";
-  } else if (status === "pending") {
-    apiStatus = "not_accepted"; // map pending to not_accepted
-  } else {
-    apiStatus = status;
-  }
+    if (status === "all") {
+      apiStatus = "";
+    } else if (status === "pending") {
+      apiStatus = "not_accepted"; // map pending to not_accepted
+    } else {
+      apiStatus = status;
+    }
 
-  setStatusFilter(apiStatus);
-  setCurrentPage(1);
-};
+    setStatusFilter(apiStatus);
+    setCurrentPage(1);
+  };
 
   const handleSortChange = (sort: string) => {
     setSortOrder(sort);
@@ -117,43 +132,61 @@ const handleStatusChange = (status: string) => {
 
   const getStatusBadge = (status: string | null) => {
     if (!status) return <Badge variant="secondary">Pending</Badge>;
-    
+
     switch (status) {
-      case 'todo':
-        return <Badge variant="outline" className="text-orange-600 border-orange-600">To Do</Badge>;
-      case 'in_progress':
-        return <Badge variant="outline" className="text-blue-600 border-blue-600">In Progress</Badge>;
-      case 'done':
-        return <Badge variant="outline" className="text-green-600 border-green-600">Done</Badge>;
+      case "todo":
+        return (
+          <Badge
+            variant="outline"
+            className="text-orange-600 border-orange-600"
+          >
+            To Do
+          </Badge>
+        );
+      case "in_progress":
+        return (
+          <Badge variant="outline" className="text-blue-600 border-blue-600">
+            In Progress
+          </Badge>
+        );
+      case "done":
+        return (
+          <Badge variant="outline" className="text-green-600 border-green-600">
+            Done
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">Unknown</Badge>;
     }
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'No due date';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    if (!dateString) return "No due date";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
-  const filteredTasks = searchQuery 
-    ? tasks.filter(task =>
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.assignee_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTasks = searchQuery
+    ? tasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task.assignee_name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : tasks;
 
   const getTaskStats = () => {
     const total = tasks.length;
-    const pending = tasks.filter(task => task.status === null).length;
-    const todo = tasks.filter(task => task.status === 'todo').length;
-    const inProgress = tasks.filter(task => task.status === 'in_progress').length;
-    const done = tasks.filter(task => task.status === 'done').length;
-    
+    const pending = tasks.filter((task) => task.status === null).length;
+    const todo = tasks.filter((task) => task.status === "todo").length;
+    const inProgress = tasks.filter(
+      (task) => task.status === "in_progress"
+    ).length;
+    const done = tasks.filter((task) => task.status === "done").length;
+
     return { total, pending, todo, inProgress, done };
   };
 
@@ -174,7 +207,9 @@ const handleStatusChange = (status: string) => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">My Tasks</h1>
-          <p className="text-muted-foreground">Track tasks assigned to developers</p>
+          <p className="text-muted-foreground">
+            Track tasks assigned to developers
+          </p>
         </div>
       </div>
       {/* Filters */}
@@ -238,8 +273,13 @@ const handleStatusChange = (status: string) => {
             <TableBody>
               {filteredTasks.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                    {searchQuery ? "No tasks found matching your search." : "No tasks created yet."}
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    {searchQuery
+                      ? "No tasks found matching your search."
+                      : "No tasks created yet."}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -249,8 +289,8 @@ const handleStatusChange = (status: string) => {
                       <div>
                         <div className="font-medium">{task.title}</div>
                         <div className="text-sm text-muted-foreground">
-                          {task.description.length > 100 
-                            ? `${task.description.substring(0, 100)}...` 
+                          {task.description.length > 100
+                            ? `${task.description.substring(0, 100)}...`
                             : task.description}
                         </div>
                       </div>
@@ -265,7 +305,9 @@ const handleStatusChange = (status: string) => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => window.open(task.share_chat, '_blank')}
+                            onClick={() =>
+                              window.open(task.share_chat, "_blank")
+                            }
                           >
                             View Chat
                           </Button>
@@ -292,10 +334,12 @@ const handleStatusChange = (status: string) => {
                     e.preventDefault();
                     if (currentPage > 1) handlePageChange(currentPage - 1);
                   }}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  className={
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                  }
                 />
               </PaginationItem>
-              
+
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 const page = i + 1;
                 return (
@@ -313,15 +357,20 @@ const handleStatusChange = (status: string) => {
                   </PaginationItem>
                 );
               })}
-              
+
               <PaginationItem>
                 <PaginationNext
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                    if (currentPage < totalPages)
+                      handlePageChange(currentPage + 1);
                   }}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
                 />
               </PaginationItem>
             </PaginationContent>

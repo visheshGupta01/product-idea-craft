@@ -1,20 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { MessageCircle, User, Calendar, Tag, Filter } from 'lucide-react';
-import { getAllFeedbacks, getFeedbackCategories, Feedback } from '@/services/feedbackService';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { MessageCircle, User, Calendar, Tag, Filter } from "lucide-react";
+import {
+  getAllFeedbacks,
+  getFeedbackCategories,
+  Feedback,
+} from "@/services/feedbackService";
+import { toast } from "sonner";
 
 const FeedbackManagement: React.FC = () => {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
@@ -23,7 +45,7 @@ const FeedbackManagement: React.FC = () => {
         const response = await getFeedbackCategories();
         setCategories(response.categories);
       } catch (error) {
-        console.error('Failed to load categories:', error);
+        //console.error("Failed to load categories:", error);
       }
     };
 
@@ -38,11 +60,13 @@ const FeedbackManagement: React.FC = () => {
           currentPage,
           selectedCategory === "all" ? undefined : selectedCategory
         );
-        console.log('Fetched feedbacks:', response);
-        setFeedbacks(Array.isArray(response) ? response : response?.feedbacks || []);
+        //console.log('Fetched feedbacks:', response);
+        setFeedbacks(
+          Array.isArray(response) ? response : response?.feedbacks || []
+        );
       } catch (error) {
-        console.error('Failed to load feedbacks:', error);
-        toast.error('Failed to load feedbacks');
+        //console.error("Failed to load feedbacks:", error);
+        toast.error("Failed to load feedbacks");
       } finally {
         setIsLoading(false);
       }
@@ -53,24 +77,26 @@ const FeedbackManagement: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'Bug Report': 'bg-red-100 text-red-800 border-red-200',
-      'Feature Request': 'bg-blue-100 text-blue-800 border-blue-200',
-      'UI/UX Feedback': 'bg-purple-100 text-purple-800 border-purple-200',
-      'Performance Issues': 'bg-orange-100 text-orange-800 border-orange-200',
-      'Tool Accuracy / Output Quality': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'Deployment & Integration': 'bg-green-100 text-green-800 border-green-200',
-      'General Feedback': 'bg-gray-100 text-gray-800 border-gray-200',
+      "Bug Report": "bg-red-100 text-red-800 border-red-200",
+      "Feature Request": "bg-blue-100 text-blue-800 border-blue-200",
+      "UI/UX Feedback": "bg-purple-100 text-purple-800 border-purple-200",
+      "Performance Issues": "bg-orange-100 text-orange-800 border-orange-200",
+      "Tool Accuracy / Output Quality":
+        "bg-yellow-100 text-yellow-800 border-yellow-200",
+      "Deployment & Integration":
+        "bg-green-100 text-green-800 border-green-200",
+      "General Feedback": "bg-gray-100 text-gray-800 border-gray-200",
     };
-    return colors[category] || 'bg-gray-100 text-gray-800 border-gray-200';
+    return colors[category] || "bg-gray-100 text-gray-800 border-gray-200";
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -88,14 +114,18 @@ const FeedbackManagement: React.FC = () => {
     <div className="flex-1 ml-16 p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl text-black font-bold tracking-tight">Feedback Management</h1>
+          <h1 className="text-3xl text-black font-bold tracking-tight">
+            Feedback Management
+          </h1>
           <p className="text-black">
             Review and manage user feedback submissions
           </p>
         </div>
         <div className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5 text-black" />
-          <span className="text-sm text-black font-medium">{feedbacks.length} Feedbacks</span>
+          <span className="text-sm text-black font-medium">
+            {feedbacks.length} Feedbacks
+          </span>
         </div>
       </div>
 
@@ -133,11 +163,16 @@ const FeedbackManagement: React.FC = () => {
           <ScrollArea className="h-[calc(100vh-300px)]">
             <div className="space-y-4">
               {feedbacks.map((feedback) => (
-                <Card key={feedback.ID} className="hover:shadow-lg transition-shadow">
+                <Card
+                  key={feedback.ID}
+                  className="hover:shadow-lg transition-shadow"
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
-                        <CardTitle className="text-lg">{feedback.subject}</CardTitle>
+                        <CardTitle className="text-lg">
+                          {feedback.subject}
+                        </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <User className="h-4 w-4" />
@@ -149,9 +184,11 @@ const FeedbackManagement: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className={`${getCategoryColor(feedback.category)} border`}
+                      <Badge
+                        variant="outline"
+                        className={`${getCategoryColor(
+                          feedback.category
+                        )} border`}
                       >
                         <Tag className="h-3 w-3 mr-1" />
                         {feedback.category}
@@ -161,7 +198,9 @@ const FeedbackManagement: React.FC = () => {
                   <Separator />
                   <CardContent className="pt-4">
                     <div className="space-y-3">
-                      <p className="text-sm leading-relaxed">{feedback.content}</p>
+                      <p className="text-sm leading-relaxed">
+                        {feedback.content}
+                      </p>
                       <div className="text-xs text-muted-foreground">
                         User ID: {feedback.user_id}
                       </div>

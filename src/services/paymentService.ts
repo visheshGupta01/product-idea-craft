@@ -1,8 +1,9 @@
-import apiClient from '@/lib/apiClient';
-import { API_ENDPOINTS } from '@/config/api';
+import apiClient from "@/lib/apiClient";
+import { API_ENDPOINTS } from "@/config/api";
 
 // Razorpay key
-const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_RReeLKTiqG0e3W";
+const RAZORPAY_KEY =
+  import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_RReeLKTiqG0e3W";
 
 export interface PaymentRequest {
   user_uuid: string;
@@ -25,26 +26,28 @@ declare global {
   }
 }
 
-export const createRazorpayPayment = async (paymentData: PaymentRequest): Promise<void> => {
+export const createRazorpayPayment = async (
+  paymentData: PaymentRequest
+): Promise<void> => {
   try {
-    console.log('Creating Razorpay order with data:', paymentData);
-    
+    //console.log('Creating Razorpay order with data:', paymentData);
+
     // Create order on backend
     const response = await apiClient.post<RazorpayOrderResponse>(
-      '/api/payment/create-order',
+      "/api/payment/create-order",
       {
         user_id: paymentData.user_uuid,
-        amount: parseFloat(paymentData.price), 
-        currency: 'USD',
+        amount: parseFloat(paymentData.price),
+        currency: "USD",
         credits: paymentData.credits,
-        planid: paymentData.plan_id
+        planid: paymentData.plan_id,
       }
     );
-    
-    console.log('Razorpay order response:', response.data);
+
+    //console.log('Razorpay order response:', response.data);
 
     if (!response.data.id) {
-      throw new Error('Failed to create order');
+      throw new Error("Failed to create order");
     }
 
     // Initialize Razorpay checkout
@@ -52,47 +55,50 @@ export const createRazorpayPayment = async (paymentData: PaymentRequest): Promis
       key: RAZORPAY_KEY,
       amount: response.data.amount,
       currency: response.data.currency,
-      name: 'imagine.bo',
+      name: "imagine.bo",
       description: `${paymentData.plan_name} Plan`,
       order_id: response.data.id,
       handler: async function (razorpayResponse: any) {
-        console.log('Payment response:', razorpayResponse);
+        //console.log('Payment response:', razorpayResponse);
 
         try {
           // Verify payment on backend
-          const verifyRes = await apiClient.post('/api/payment/verify-payment', {
-            razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-            razorpay_order_id: razorpayResponse.razorpay_order_id,
-            razorpay_signature: razorpayResponse.razorpay_signature,
-            user_id: paymentData.user_uuid,
-            plan_id: paymentData.plan_id,
-            credits: paymentData.credits
-          });
-          
+          const verifyRes = await apiClient.post(
+            "/api/payment/verify-payment",
+            {
+              razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+              razorpay_order_id: razorpayResponse.razorpay_order_id,
+              razorpay_signature: razorpayResponse.razorpay_signature,
+              user_id: paymentData.user_uuid,
+              plan_id: paymentData.plan_id,
+              credits: paymentData.credits,
+            }
+          );
+
           // alert(verifyRes.data)
-          console.log('Verification response:', verifyRes.data);
-          
+          //console.log('Verification response:', verifyRes.data);
+
           // Redirect to success page
-          window.location.href = '/payment-success';
+          window.location.href = "/payment-success";
         } catch (err) {
-          console.error('Verification failed:', err);
-          window.location.href = '/payment-failed';
+          //console.error("Verification failed:", err);
+          window.location.href = "/payment-failed";
         }
       },
       prefill: {
-        name: '',
-        email: '',
-        contact: ''
+        name: "",
+        email: "",
+        contact: "",
       },
       theme: {
-        color: '#fb02a5'
-      }
+        color: "#fb02a5",
+      },
     };
 
     const rzp = new window.Razorpay(options);
     rzp.open();
   } catch (error) {
-    console.error('Error creating Razorpay payment:', error);
+    //console.error("Error creating Razorpay payment:", error);
     throw error;
   }
 };
@@ -102,7 +108,7 @@ export const getPaymentPlans = async () => {
     const response = await apiClient.get(API_ENDPOINTS.PAYMENT.GET_PRICING);
     return response.data;
   } catch (error) {
-    console.error('Error fetching payment plans:', error);
+    //console.error("Error fetching payment plans:", error);
     throw error;
   }
 };

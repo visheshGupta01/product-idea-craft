@@ -16,26 +16,26 @@ export class WebSocketService {
       try {
         const token = localStorage.getItem('auth_token');
         const wsUrl = WS_BASE_URL + `/api/chat/ws?session_id=${this.sessionId}${token ? `&token=${token}` : ''}`;
-        console.log(wsUrl)
+        //console.log(wsUrl)
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log("WebSocket connected");
+          //console.log("WebSocket connected");
           this.reconnectAttempts = 0;
           resolve();
         };
 
         this.ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
+          //console.error("WebSocket error:", error);
           reject(error);
         };
 
         this.ws.onclose = () => {
-          console.log("WebSocket disconnected");
+          //console.log("WebSocket disconnected");
           this.handleReconnect();
         };
       } catch (error) {
-        console.error("Error creating WebSocket:", error);
+        //console.error("Error creating WebSocket:", error);
         reject(error);
       }
     });
@@ -44,12 +44,12 @@ export class WebSocketService {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(
+      //console.log(
         `Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
       );
 
       setTimeout(() => {
-        this.connect().catch(console.error);
+        this.connect().catch(//console.error);
       }, this.reconnectDelay);
     }
   }
@@ -95,15 +95,15 @@ export class WebSocketService {
         // Prevent processing after completion
         if (isComplete) return;
 
-        console.log("🔄 RAW WebSocket event.data:", event.data);
-        console.log("🔄 WebSocket event.data type:", typeof event.data);
+        //console.log("🔄 RAW WebSocket event.data:", event.data);
+        //console.log("🔄 WebSocket event.data type:", typeof event.data);
 
         try {
           const data = JSON.parse(event.data);
-          console.log("✅ PARSED WebSocket message:", data);
-          console.log("📊 Message type:", data.type);
-          console.log("📊 Message content:", data.content);
-          console.log("📊 Message text:", data.text);
+          //console.log("✅ PARSED WebSocket message:", data);
+          //console.log("📊 Message type:", data.type);
+          //console.log("📊 Message content:", data.content);
+          //console.log("📊 Message text:", data.text);
 
           // Handle different types of messages
           if (data.type === "content" && data.text) {
@@ -124,11 +124,11 @@ export class WebSocketService {
                 if (block.type === "text" && block.text) {
                   toolOutput += block.text;
                 }
-                console.log("🔧 Tool output block:", block);
+                //console.log("🔧 Tool output block:", block);
               });
             } else if (data.content && typeof data.content === "string") {
               toolOutput = data.content;
-              console.log("🔧 Tool output content:", toolOutput);
+              //console.log("🔧 Tool output content:", toolOutput);
             }
 
             if (toolOutput) {

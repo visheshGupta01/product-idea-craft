@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from "@/config/api";
 import {
   ChevronRight,
   ChevronDown,
@@ -38,26 +38,28 @@ interface FileExplorerProps {
 }
 
 // Build file tree from flat file list
-const buildFileTree = (files: Array<{ path: string; content: string }>): FileNode[] => {
+const buildFileTree = (
+  files: Array<{ path: string; content: string }>
+): FileNode[] => {
   const fileMap = new Map<string, FileNode>();
-  
+
   // First pass: create all file and folder nodes
-  files.forEach(file => {
-    const parts = file.path.split('/');
-    
+  files.forEach((file) => {
+    const parts = file.path.split("/");
+
     // Create all parent folders
     for (let i = 0; i < parts.length; i++) {
-      const currentPath = parts.slice(0, i + 1).join('/');
+      const currentPath = parts.slice(0, i + 1).join("/");
       const isFile = i === parts.length - 1;
-      
+
       if (!fileMap.has(currentPath)) {
         fileMap.set(currentPath, {
           name: parts[i],
-          type: isFile ? 'file' : 'folder',
+          type: isFile ? "file" : "folder",
           path: currentPath,
           children: isFile ? undefined : [],
           content: isFile ? file.content : undefined,
-          extension: isFile ? getFileExtension(parts[i]) : undefined
+          extension: isFile ? getFileExtension(parts[i]) : undefined,
         });
       } else if (isFile && fileMap.has(currentPath)) {
         // Update existing file node with content
@@ -66,15 +68,15 @@ const buildFileTree = (files: Array<{ path: string; content: string }>): FileNod
       }
     }
   });
-  
+
   // Second pass: build parent-child relationships
   const nodes = Array.from(fileMap.values());
   const rootNodes: FileNode[] = [];
-  
-  nodes.forEach(node => {
-    if (node.path.includes('/')) {
+
+  nodes.forEach((node) => {
+    if (node.path.includes("/")) {
       // Find parent
-      const parentPath = node.path.substring(0, node.path.lastIndexOf('/'));
+      const parentPath = node.path.substring(0, node.path.lastIndexOf("/"));
       const parent = fileMap.get(parentPath);
       if (parent && parent.children) {
         parent.children.push(node);
@@ -84,23 +86,23 @@ const buildFileTree = (files: Array<{ path: string; content: string }>): FileNod
       rootNodes.push(node);
     }
   });
-  
+
   // Sort children in each folder (folders first, then files)
   const sortChildren = (nodes: FileNode[]): FileNode[] => {
     return nodes.sort((a, b) => {
       if (a.type !== b.type) {
-        return a.type === 'folder' ? -1 : 1;
+        return a.type === "folder" ? -1 : 1;
       }
       return a.name.localeCompare(b.name);
     });
   };
-  
-  nodes.forEach(node => {
+
+  nodes.forEach((node) => {
     if (node.children) {
       node.children = sortChildren(node.children);
     }
   });
-  
+
   return sortChildren(rootNodes);
 };
 
@@ -187,9 +189,9 @@ const FileTreeItem: React.FC<{
   onFileSelect: (file: FileNode) => void;
   selectedFile: string | null;
 }> = ({ node, level, onFileSelect, selectedFile }) => {
-const [isExpanded, setIsExpanded] = useState(
-  level === 0 && node.type === "folder"
-);
+  const [isExpanded, setIsExpanded] = useState(
+    level === 0 && node.type === "folder"
+  );
 
   const handleClick = () => {
     if (node.type === "folder") {
@@ -264,7 +266,9 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
   sessionId,
 }) => {
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
-  const [files, setFiles] = useState<Array<{ path: string; content: string }>>([]);
+  const [files, setFiles] = useState<Array<{ path: string; content: string }>>(
+    []
+  );
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -278,19 +282,21 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
         const response = await apiClient.get(
           `${API_ENDPOINTS.PROJECT.CODE}?session_id=${sessionId}`
         );
-        
+
         if (response.data.files) {
-          const filesWithContent = response.data.files.map((file: { path: string; content: string }) => ({
-            path: file.path,
-            content: file.content
-          }));
-          
+          const filesWithContent = response.data.files.map(
+            (file: { path: string; content: string }) => ({
+              path: file.path,
+              content: file.content,
+            })
+          );
+
           setFiles(filesWithContent);
           const tree = buildFileTree(filesWithContent);
           setFileTree(tree);
         }
       } catch (error) {
-        console.error('Error fetching project files:', error);
+        //console.error('Error fetching project files:', error);
         setFileTree([]);
         setFiles([]);
       }
@@ -301,9 +307,9 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
 
   const handleFileSelect = (node: FileNode) => {
     if (node.type !== "file") return;
-    
+
     // Find the file content from our fetched files
-    const fileWithContent = files.find(f => f.path === node.path);
+    const fileWithContent = files.find((f) => f.path === node.path);
     if (fileWithContent) {
       onFileSelect({ ...node, content: fileWithContent.content });
     }

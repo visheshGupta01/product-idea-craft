@@ -9,10 +9,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
   // Process tool outputs and integrate seamlessly into content
   const processToolOutput = (text: string) => {
     // Remove tool output markers and integrate content seamlessly
-    const cleanedText = text.replace(
-      /\[Tool Output for lov-[^:]+\]:\s*/g,
-      ''
-    );
+    const cleanedText = text.replace(/\[Tool Output for lov-[^:]+\]:\s*/g, "");
     return cleanedText;
   };
 
@@ -20,41 +17,53 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
   const cleanedContent = processToolOutput(content);
 
   // Check for sitemap data
-  const sitemapMatch = cleanedContent.match(/__SITEMAP_DATA__\s*({[\s\S]*?})\s*__SITEMAP_DATA__/);
-  
+  const sitemapMatch = cleanedContent.match(
+    /__SITEMAP_DATA__\s*({[\s\S]*?})\s*__SITEMAP_DATA__/
+  );
+
   if (sitemapMatch) {
     try {
       const sitemapData = JSON.parse(sitemapMatch[1]);
-      const beforeSitemap = cleanedContent.substring(0, sitemapMatch.index).trim();
-      const afterSitemap = cleanedContent.substring(sitemapMatch.index! + sitemapMatch[0].length).trim();
+      const beforeSitemap = cleanedContent
+        .substring(0, sitemapMatch.index)
+        .trim();
+      const afterSitemap = cleanedContent
+        .substring(sitemapMatch.index! + sitemapMatch[0].length)
+        .trim();
 
       // Check if sitemap has meaningful content
       const hasPages = sitemapData.pages && sitemapData.pages.length > 0;
-      
+
       return (
         <div className="space-y-4">
           {beforeSitemap && (
             <div className="prose prose-sm max-w-none dark:prose-invert">
-              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{beforeSitemap}</ReactMarkdown>
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                {beforeSitemap}
+              </ReactMarkdown>
             </div>
           )}
           {hasPages && <SitemapRenderer data={sitemapData} />}
           {afterSitemap && (
             <div className="prose prose-sm max-w-none dark:prose-invert">
-              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{afterSitemap}</ReactMarkdown>
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                {afterSitemap}
+              </ReactMarkdown>
             </div>
           )}
         </div>
       );
     } catch (error) {
-      console.error('Error parsing sitemap data:', error);
+      //console.error('Error parsing sitemap data:', error);
     }
   }
 
   // Render all content as seamless markdown
   return (
     <div className="prose prose-sm max-w-none dark:prose-invert">
-      <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{cleanedContent}</ReactMarkdown>
+      <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+        {cleanedContent}
+      </ReactMarkdown>
     </div>
   );
 };

@@ -1,19 +1,25 @@
-
 import { ReactNode, useState, useEffect, useCallback } from "react";
 import { UserContext } from "./UserContext";
 import { User, InitialResponse } from "@/types";
 import { authService } from "@/services/authService";
-import { ProfileData, fetchProfile, updateProfile } from "@/services/profileService";
+import {
+  ProfileData,
+  fetchProfile,
+  updateProfile,
+} from "@/services/profileService";
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [userIdea, setUserIdea] = useState<string | null>(null);
-  const [initialResponse, setInitialResponse] = useState<InitialResponse | null>(null);
+  const [initialResponse, setInitialResponse] =
+    useState<InitialResponse | null>(null);
   const [isProcessingIdea, setIsProcessingIdea] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<'admin' | 'user' | 'developer' | null>(null);
+  const [userRole, setUserRole] = useState<
+    "admin" | "user" | "developer" | null
+  >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userPlan, setUserPlan] = useState<{
     planId: number;
@@ -31,11 +37,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const userData = authService.getUser();
         const storedSessionId = authService.getSessionId();
         const storedUserIdea = authService.getUserIdea();
-        
+
         if (token && role) {
           setIsAuthenticated(true);
           setUserRole(role);
-          
+
           // Set user data from localStorage if available
           if (userData) {
             const mappedUser: User = {
@@ -43,12 +49,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               firstName: userData.first_name,
               lastName: userData.last_name,
               email: userData.email,
-              avatar: '',
+              avatar: "",
               verified: true,
-              userType: userData.user_type
+              userType: userData.user_type,
             };
             setUser(mappedUser);
-            
+
             // Create profile data from user data with defaults
             setProfile({
               id: userData.id,
@@ -64,7 +70,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               lon: (userData as any).lon || 0,
               user_type: userData.user_type,
               plan_id: (userData as any).plan_id || 1,
-              price: (userData as any).price || { id: 0, name: "", price: 0, is_default: false },
+              price: (userData as any).price || {
+                id: 0,
+                name: "",
+                price: 0,
+                is_default: false,
+              },
               plan_started_at: (userData as any).plan_started_at || null,
               plan_expires_at: (userData as any).plan_expires_at || null,
               is_plan_active: (userData as any).is_plan_active || false,
@@ -72,15 +83,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               rating: (userData as any).rating || undefined,
               reset_token: (userData as any).reset_token || "",
               reset_token_expiry: (userData as any).reset_token_expiry || null,
-              github_access_token: (userData as any).github_access_token || undefined,
-              vercel_access_token: (userData as any).vercel_access_token || undefined,
+              github_access_token:
+                (userData as any).github_access_token || undefined,
+              vercel_access_token:
+                (userData as any).vercel_access_token || undefined,
               created_at: userData.created_at,
-              last_login_at: (userData as any).last_login_at || userData.created_at,
+              last_login_at:
+                (userData as any).last_login_at || userData.created_at,
               github_url: (userData as any).github_url || "",
               linkedin_url: (userData as any).linkedin_url || "",
               total_solved_tasks: (userData as any).total_solved_tasks || 0,
               total_pending_task: (userData as any).total_pending_task || 0,
-              total_in_progress_task: (userData as any).total_in_progress_task || 0,
+              total_in_progress_task:
+                (userData as any).total_in_progress_task || 0,
               company_name: (userData as any).company_name || "",
               experience: (userData as any).experience || "",
               skills: (userData as any).skills || null,
@@ -88,16 +103,22 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               hourpaid: (userData as any).hourpaid || 0,
               avg_rating: (userData as any).avg_rating || 0,
               rating_count: (userData as any).rating_count || 0,
-              status: (userData as any).status !== undefined ? (userData as any).status : true,
-              credits: (userData as any).credits || 5
+              status:
+                (userData as any).status !== undefined
+                  ? (userData as any).status
+                  : true,
+              credits: (userData as any).credits || 5,
             });
 
             // Update user plan information if available
             if ((userData as any).plan_id) {
-              const planNames = { 1: 'Free', 2: 'Pro', 3: 'Team' };
+              const planNames = { 1: "Free", 2: "Pro", 3: "Team" };
               setUserPlan({
                 planId: (userData as any).plan_id || 1,
-                planName: planNames[(userData as any).plan_id as keyof typeof planNames] || 'Free',
+                planName:
+                  planNames[
+                    (userData as any).plan_id as keyof typeof planNames
+                  ] || "Free",
                 isActive: (userData as any).is_plan_active || false,
                 expiresAt: (userData as any).plan_expires_at || null,
               });
@@ -106,7 +127,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             // Fallback: fetch profile data if not in localStorage
             await fetchUserProfile();
           }
-          
+
           if (storedSessionId) {
             setSessionId(storedSessionId);
           }
@@ -115,7 +136,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       } catch (error) {
-        console.error('Error during auth check:', error);
+        //console.error("Error during auth check:", error);
       } finally {
         setIsLoading(false);
       }
@@ -128,19 +149,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (result.success && result.user) {
       setIsAuthenticated(true);
       setUserRole(result.role || null);
-      
+
       // Map API user data to our User type
       const userData: User = {
         id: result.user.id,
         firstName: result.user.first_name,
         lastName: result.user.last_name,
         email: result.user.email,
-        avatar: '', // Default avatar
+        avatar: "", // Default avatar
         verified: true, // If they can login, they're verified
-        userType: result.user.user_type
+        userType: result.user.user_type,
       };
       setUser(userData);
-      
+
       // Set profile data from login response with defaults
       setProfile({
         id: result.user.id,
@@ -156,7 +177,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         lon: (result.user as any).lon || 0,
         user_type: result.user.user_type,
         plan_id: (result.user as any).plan_id || 1,
-        price: (result.user as any).price || { id: 0, name: "", price: 0, is_default: false },
+        price: (result.user as any).price || {
+          id: 0,
+          name: "",
+          price: 0,
+          is_default: false,
+        },
         plan_started_at: (result.user as any).plan_started_at || null,
         plan_expires_at: (result.user as any).plan_expires_at || null,
         is_plan_active: (result.user as any).is_plan_active || false,
@@ -164,15 +190,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         rating: (result.user as any).rating || undefined,
         reset_token: (result.user as any).reset_token || "",
         reset_token_expiry: (result.user as any).reset_token_expiry || null,
-        github_access_token: (result.user as any).github_access_token || undefined,
-        vercel_access_token: (result.user as any).vercel_access_token || undefined,
+        github_access_token:
+          (result.user as any).github_access_token || undefined,
+        vercel_access_token:
+          (result.user as any).vercel_access_token || undefined,
         created_at: result.user.created_at,
-        last_login_at: (result.user as any).last_login_at || result.user.created_at,
+        last_login_at:
+          (result.user as any).last_login_at || result.user.created_at,
         github_url: (result.user as any).github_url || "",
         linkedin_url: (result.user as any).linkedin_url || "",
         total_solved_tasks: (result.user as any).total_solved_tasks || 0,
         total_pending_task: (result.user as any).total_pending_task || 0,
-        total_in_progress_task: (result.user as any).total_in_progress_task || 0,
+        total_in_progress_task:
+          (result.user as any).total_in_progress_task || 0,
         company_name: (result.user as any).company_name || "",
         experience: (result.user as any).experience || "",
         skills: (result.user as any).skills || null,
@@ -180,27 +210,36 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         hourpaid: (result.user as any).hourpaid || 0,
         avg_rating: (result.user as any).avg_rating || 0,
         rating_count: (result.user as any).rating_count || 0,
-        status: (result.user as any).status !== undefined ? (result.user as any).status : true,
-        credits: (result.user as any).credits || 5
+        status:
+          (result.user as any).status !== undefined
+            ? (result.user as any).status
+            : true,
+        credits: (result.user as any).credits || 5,
       });
 
       // Update user plan information if available
       if ((result.user as any).plan_id) {
-        const planNames = { 1: 'Free', 2: 'Pro', 3: 'Team' };
+        const planNames = { 1: "Free", 2: "Pro", 3: "Team" };
         setUserPlan({
           planId: (result.user as any).plan_id || 1,
-          planName: planNames[(result.user as any).plan_id as keyof typeof planNames] || 'Free',
+          planName:
+            planNames[(result.user as any).plan_id as keyof typeof planNames] ||
+            "Free",
           isActive: (result.user as any).is_plan_active || false,
           expiresAt: (result.user as any).plan_expires_at || null,
         });
       }
 
       // Auto-redirect developers to developer dashboard
-      if (result.user.user_type === 'developer') {
-        window.location.href = '/developer';
+      if (result.user.user_type === "developer") {
+        window.location.href = "/developer";
       }
     }
-    return { success: result.success, message: result.message, role: result.role };
+    return {
+      success: result.success,
+      message: result.message,
+      role: result.role,
+    };
   };
 
   const logout = () => {
@@ -217,7 +256,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = async (name: string, email: string, password: string) => {
     const result = await authService.signup(name, email, password);
-    console.log('Signup result:', result); 
+    //console.log('Signup result:', result);
     return { success: result.success, message: result.message };
   };
 
@@ -231,8 +270,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return { success: result.success, message: result.message };
   };
 
-  const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
-    const result = await authService.resetPassword(token, newPassword, confirmPassword);
+  const resetPassword = async (
+    token: string,
+    newPassword: string,
+    confirmPassword: string
+  ) => {
+    const result = await authService.resetPassword(
+      token,
+      newPassword,
+      confirmPassword
+    );
     return { success: result.success, message: result.message };
   };
 
@@ -247,22 +294,22 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const sendIdeaWithAuth = async (idea: string) => {
     if (!isAuthenticated) {
-      console.log("User is not authenticated.");
+      //console.log("User is not authenticated.");
       return { success: false, message: "Please login first" };
     }
-console.log("Sending idea:", idea);
+    //console.log("Sending idea:", idea);
     setIsProcessingIdea(true);
-    
+
     try {
       // Create session with the idea
       const result = await authService.createSessionWithIdea(idea);
-      
+
       if (result.success && result.session_id) {
         setSessionId(result.session_id);
         setUserIdea(idea);
         // Persist the user idea to localStorage
         authService.setUserIdea(idea);
-        
+
         // Create initial response for display
         const initialResponse: InitialResponse = {
           userMessage: idea,
@@ -270,13 +317,13 @@ console.log("Sending idea:", idea);
           timestamp: new Date(),
         };
         setInitialResponse(initialResponse);
-        
+
         return { success: true, session_id: result.session_id };
       } else {
         return { success: false, message: result.message };
       }
     } catch (error) {
-      console.error("Error creating session with idea:", error);
+      //console.error("Error creating session with idea:", error);
       return { success: false, message: "Failed to process idea" };
     } finally {
       setIsProcessingIdea(false);
@@ -291,62 +338,69 @@ console.log("Sending idea:", idea);
     try {
       const profileData = await fetchProfile();
       setProfile(profileData);
-      
+
       // Update user plan information if available in profile
-      if (profileData && 'plan_id' in profileData) {
-        const planNames = { 1: 'Free', 2: 'Pro', 3: 'Team' };
+      if (profileData && "plan_id" in profileData) {
+        const planNames = { 1: "Free", 2: "Pro", 3: "Team" };
         setUserPlan({
           planId: (profileData as any).plan_id || 1,
-          planName: planNames[(profileData as any).plan_id as keyof typeof planNames] || 'Free',
+          planName:
+            planNames[(profileData as any).plan_id as keyof typeof planNames] ||
+            "Free",
           isActive: (profileData as any).is_plan_active || false,
           expiresAt: (profileData as any).plan_expires_at || null,
         });
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      //console.error("Error fetching profile:", error);
     }
   }, []);
 
-  const updateUserProfile = useCallback(async (data: Partial<ProfileData>) => {
-    try {
-      const result = await updateProfile(data);
-      if (result.success) {
-        // Refresh profile data
-        await fetchUserProfile();
+  const updateUserProfile = useCallback(
+    async (data: Partial<ProfileData>) => {
+      try {
+        const result = await updateProfile(data);
+        if (result.success) {
+          // Refresh profile data
+          await fetchUserProfile();
+        }
+        return result;
+      } catch (error) {
+        //console.error("Error updating profile:", error);
+        return { success: false, message: "Failed to update profile" };
       }
-      return result;
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return { success: false, message: 'Failed to update profile' };
-    }
-  }, [fetchUserProfile]);
+    },
+    [fetchUserProfile]
+  );
 
   return (
-    <UserContext.Provider value={{
-      user, 
-      profile,
-      userIdea, 
-      initialResponse,
-      isProcessingIdea,
-      isAuthenticated,
-      sessionId,
-      userRole,
-      isLoading,
-      userPlan,
-      login, 
-      logout, 
-      signup,
-      verifyEmail,
-      forgotPassword,
-      resetPassword,
-      refreshToken,
-      setUserIdea,
-      setSessionId,
-      sendIdeaWithAuth,
-      clearInitialResponse,
-      fetchProfile: fetchUserProfile,
-      updateProfile: updateUserProfile
-    }}>
+    <UserContext.Provider
+      value={{
+        user,
+        profile,
+        userIdea,
+        initialResponse,
+        isProcessingIdea,
+        isAuthenticated,
+        sessionId,
+        userRole,
+        isLoading,
+        userPlan,
+        login,
+        logout,
+        signup,
+        verifyEmail,
+        forgotPassword,
+        resetPassword,
+        refreshToken,
+        setUserIdea,
+        setSessionId,
+        sendIdeaWithAuth,
+        clearInitialResponse,
+        fetchProfile: fetchUserProfile,
+        updateProfile: updateUserProfile,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

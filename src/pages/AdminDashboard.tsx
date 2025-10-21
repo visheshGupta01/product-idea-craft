@@ -1,48 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { useUser } from '@/context/UserContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  AlertTriangle
-} from 'lucide-react';
-import { fetchDashboardData, DashboardData } from '@/services/adminService';
-import { toast } from 'sonner';
-import AdminSidebar from '@/components/admin_dashboard/AdminSidebar';
-import RevenueCard from '@/components/admin_dashboard/RevenueCard';
-import UserGrowthChart from '@/components/admin_dashboard/UserGrowthChart';
-import MetricsCards from '@/components/admin_dashboard/MetrixCard';
-import MapAnalytics from '@/components/admin_dashboard/MapAnalytics';
-import DropRateCard from '@/components/admin_dashboard/DropRateCard';
-import UserManagement from '@/components/admin_dashboard/UserManagement';
-import FeedbackManagement from '@/components/admin_dashboard/FeedbackManagement';
-
+import React, { useState, useEffect } from "react";
+import { useUser } from "@/context/UserContext";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AlertTriangle } from "lucide-react";
+import { fetchDashboardData, DashboardData } from "@/services/adminService";
+import { toast } from "sonner";
+import AdminSidebar from "@/components/admin_dashboard/AdminSidebar";
+import RevenueCard from "@/components/admin_dashboard/RevenueCard";
+import UserGrowthChart from "@/components/admin_dashboard/UserGrowthChart";
+import MetricsCards from "@/components/admin_dashboard/MetrixCard";
+import MapAnalytics from "@/components/admin_dashboard/MapAnalytics";
+import DropRateCard from "@/components/admin_dashboard/DropRateCard";
+import UserManagement from "@/components/admin_dashboard/UserManagement";
+import FeedbackManagement from "@/components/admin_dashboard/FeedbackManagement";
 
 const AdminDashboard: React.FC = () => {
   const { logout, userRole } = useUser();
-  const [activeView, setActiveView] = useState('dashboard');
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [activeView, setActiveView] = useState("dashboard");
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
         const data = await fetchDashboardData();
-        console.log('Dashboard data:', data);
+        //console.log('Dashboard data:', data);
         setDashboardData(data);
       } catch (error) {
-        console.error('Failed to load dashboard data:', error);
-        toast.error('Failed to load dashboard data');
+        //console.error("Failed to load dashboard data:", error);
+        toast.error("Failed to load dashboard data");
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (userRole === 'admin') {
+    if (userRole === "admin") {
       loadDashboardData();
     }
   }, [userRole]);
 
-  if (userRole !== 'admin') {
+  if (userRole !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Card className="w-full max-w-md">
@@ -56,7 +61,10 @@ const AdminDashboard: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => window.location.href = '/'} className="w-full">
+            <Button
+              onClick={() => (window.location.href = "/")}
+              className="w-full"
+            >
               Go to Home
             </Button>
           </CardContent>
@@ -67,11 +75,11 @@ const AdminDashboard: React.FC = () => {
 
   const renderContent = () => {
     switch (activeView) {
-      case 'users':
+      case "users":
         return <UserManagement />;
-      case 'feedback':
+      case "feedback":
         return <FeedbackManagement />;
-      case 'dashboard':
+      case "dashboard":
       default:
         return (
           <div className="flex-1 ml-16 p-6 space-y-6">
@@ -110,7 +118,7 @@ const AdminDashboard: React.FC = () => {
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <MapAnalytics
-                      // countryPercentages={dashboardData.country_percentages}
+                    // countryPercentages={dashboardData.country_percentages}
                     />
                     {/* <DropRateCard
                       droppingRate={dashboardData.dropping_rate_percent}

@@ -5,15 +5,17 @@ interface MarkdownRendererProps {
   content: string;
 }
 
-export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  if (!content || typeof content !== 'string') {
+export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
+  content,
+}) => {
+  if (!content || typeof content !== "string") {
     return <span className="text-muted-foreground text-sm">No content</span>;
   }
 
   // // Debug logging
-  // console.log("MarkdownRenderer received content:", content.substring(0, 500));
-  // console.log("Content contains tool output:", content.includes('[Tool Output'));
-  // console.log("Content length:", content.length);
+  // //console.log("MarkdownRenderer received content:", content.substring(0, 500));
+  // //console.log("Content contains tool output:", content.includes('[Tool Output'));
+  // //console.log("Content length:", content.length);
 
   const renderMarkdown = (text: string) => {
     const lines = text.split("\n");
@@ -183,60 +185,57 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         const headerRow = hasHeader ? rows[0] : null;
         const dataRows = hasHeader ? rows.slice(2) : rows;
 
-       elements.push(
-         <div
-           key={currentIndex++}
-           className="my-6 w-full max-w-full overflow-hidden"
-         >
-           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-             <table className="w-full text-sm text-left text-black border-collapse min-w-max">
-               {headerRow && (
-                 <thead className="bg-primary text-white">
-                   <tr>
-                     {headerRow.map((header, idx) => (
-                       <th
-                         key={idx}
-                         className="px-3 py-2 font-semibold text-xs uppercase tracking-wider border border-border whitespace-nowrap"
-                       >
-                         {processInlineFormatting(header)}
-                       </th>
-                     ))}
-                   </tr>
-                 </thead>
-               )}
-               <tbody className="bg-white divide-y divide-border">
-                 {dataRows.map((row, rowIdx) => (
-                   <tr
-                     key={rowIdx}
-                     className="hover:bg-accent/10 transition-colors duration-200"
-                   >
-                     {row.map((cell, cellIdx) => (
-                       <td
-                         key={cellIdx}
-                         className="px-3 py-2 border border-border text-xs max-w-[200px] overflow-hidden"
-                       >
-                         <div className="truncate" title={cell}>
-                           {processInlineFormatting(cell)}
-                         </div>
-                       </td>
-                     ))}
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
-           </div>
-         </div>
-       );
+        elements.push(
+          <div
+            key={currentIndex++}
+            className="my-6 w-full max-w-full overflow-hidden"
+          >
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+              <table className="w-full text-sm text-left text-black border-collapse min-w-max">
+                {headerRow && (
+                  <thead className="bg-primary text-white">
+                    <tr>
+                      {headerRow.map((header, idx) => (
+                        <th
+                          key={idx}
+                          className="px-3 py-2 font-semibold text-xs uppercase tracking-wider border border-border whitespace-nowrap"
+                        >
+                          {processInlineFormatting(header)}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                )}
+                <tbody className="bg-white divide-y divide-border">
+                  {dataRows.map((row, rowIdx) => (
+                    <tr
+                      key={rowIdx}
+                      className="hover:bg-accent/10 transition-colors duration-200"
+                    >
+                      {row.map((cell, cellIdx) => (
+                        <td
+                          key={cellIdx}
+                          className="px-3 py-2 border border-border text-xs max-w-[200px] overflow-hidden"
+                        >
+                          <div className="truncate" title={cell}>
+                            {processInlineFormatting(cell)}
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
 
         i = j - 1;
       }
       // Regular paragraphs
       else {
         elements.push(
-          <p
-            key={currentIndex++}
-            className="leading-relaxed text-black"
-          >
+          <p key={currentIndex++} className="leading-relaxed text-black">
             {processInlineFormatting(line)}
           </p>
         );
@@ -379,11 +378,10 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     );
 
     // Handle links
-text = text.replace(
-  /\[([^\]]+)\]\(([^)]+)\)/g,
-  '<a href="$2" class="underline" style="color: #2998E9;" target="_blank" rel="noopener noreferrer">$1</a>'
-);
-
+    text = text.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" class="underline" style="color: #2998E9;" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
 
     // Handle strikethrough
     text = text.replace(
@@ -395,67 +393,81 @@ text = text.replace(
   };
 
   // Process tool outputs and integrate seamlessly into content
-const processToolOutput = (text: string) => {
-  return text.replace(
-    /\[Tool Output for ([^\]]+)\]:\s*([\s\S]*?)(?=\n\S|\Z)/g,
-    (match, toolName, toolOutput) => {
-      try {
-        // If it looks like JSON and is a sitemap tool
-        if (toolName.startsWith("sitemap")) {
-          const json = JSON.parse(toolOutput);
-          return `\n__SITEMAP_DATA__${JSON.stringify(json)}__SITEMAP_DATA__\n`;
-        }
+  const processToolOutput = (text: string) => {
+    return text.replace(
+      /\[Tool Output for ([^\]]+)\]:\s*([\s\S]*?)(?=\n\S|\Z)/g,
+      (match, toolName, toolOutput) => {
+        try {
+          // If it looks like JSON and is a sitemap tool
+          if (toolName.startsWith("sitemap")) {
+            const json = JSON.parse(toolOutput);
+            return `\n__SITEMAP_DATA__${JSON.stringify(
+              json
+            )}__SITEMAP_DATA__\n`;
+          }
 
-        // If it's a quoted markdown string
-        if (toolOutput.trim().startsWith('"')) {
-          const markdown = JSON.parse(toolOutput);
-          return `\n${markdown}\n`;
-        }
+          // If it's a quoted markdown string
+          if (toolOutput.trim().startsWith('"')) {
+            const markdown = JSON.parse(toolOutput);
+            return `\n${markdown}\n`;
+          }
 
-        // If it's unquoted markdown
-        return `\n${toolOutput}\n`;
-      } catch (e) {
-        console.error(`Failed to parse tool output for "${toolName}":`, e);
-        return "";
+          // If it's unquoted markdown
+          return `\n${toolOutput}\n`;
+        } catch (e) {
+          //console.error(`Failed to parse tool output for "${toolName}":`, e);
+          return "";
+        }
       }
-    }
-  );
-};
-
-
+    );
+  };
 
   // Clean tool outputs and treat them as regular content
   const cleanedContent = processToolOutput(content);
 
   // Check for sitemap data
-  const sitemapMatch = cleanedContent.match(/__SITEMAP_DATA__(.*?)__SITEMAP_DATA__/s);
+  const sitemapMatch = cleanedContent.match(
+    /__SITEMAP_DATA__(.*?)__SITEMAP_DATA__/s
+  );
   if (sitemapMatch) {
     try {
       const sitemapData = JSON.parse(sitemapMatch[1]);
-      const beforeSitemap = cleanedContent.substring(0, cleanedContent.indexOf('__SITEMAP_DATA__'));
-      const afterSitemap = cleanedContent.substring(cleanedContent.lastIndexOf('__SITEMAP_DATA__') + '__SITEMAP_DATA__'.length);
-      
+      const beforeSitemap = cleanedContent.substring(
+        0,
+        cleanedContent.indexOf("__SITEMAP_DATA__")
+      );
+      const afterSitemap = cleanedContent.substring(
+        cleanedContent.lastIndexOf("__SITEMAP_DATA__") +
+          "__SITEMAP_DATA__".length
+      );
+
       // Check if sitemap has meaningful content
       const hasPages = sitemapData.pages && sitemapData.pages.length > 0;
-      
+
       return (
         <div className="space-y-6">
           {beforeSitemap.trim() && (
-            <div className="prose prose-sm max-w-none">{renderMarkdown(beforeSitemap.trim())}</div>
+            <div className="prose prose-sm max-w-none">
+              {renderMarkdown(beforeSitemap.trim())}
+            </div>
           )}
           {hasPages && <SitemapRenderer data={sitemapData} />}
           {afterSitemap.trim() && (
-            <div className="prose prose-sm max-w-none">{renderMarkdown(afterSitemap.trim())}</div>
+            <div className="prose prose-sm max-w-none">
+              {renderMarkdown(afterSitemap.trim())}
+            </div>
           )}
         </div>
       );
     } catch (error) {
-      console.error("Error parsing sitemap data:", error);
+      //console.error("Error parsing sitemap data:", error);
       // Fall back to regular markdown rendering
     }
   }
 
   return (
-    <div className="prose prose-sm max-w-none overflow-hidden break-words w-full">{renderMarkdown(cleanedContent)}</div>
+    <div className="prose prose-sm max-w-none overflow-hidden break-words w-full">
+      {renderMarkdown(cleanedContent)}
+    </div>
   );
 };

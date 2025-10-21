@@ -1,20 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Star, Github, Linkedin, User, ArrowLeft, CheckCircle2, MessageSquare } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { developerService, DeveloperInfo, CreateTaskData } from '@/services/developerService';
-import { useToast } from '@/hooks/use-toast';
-import ReviewDialog from './ReviewDialog';
+import React, { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  CalendarIcon,
+  Star,
+  Github,
+  Linkedin,
+  User,
+  ArrowLeft,
+  CheckCircle2,
+  MessageSquare,
+} from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import {
+  developerService,
+  DeveloperInfo,
+  CreateTaskData,
+} from "@/services/developerService";
+import { useToast } from "@/hooks/use-toast";
+import ReviewDialog from "./ReviewDialog";
 
 interface AssignToDeveloperProps {
   isOpen: boolean;
@@ -22,23 +44,28 @@ interface AssignToDeveloperProps {
   sessionId: string;
 }
 
-type ViewState = 'list' | 'profile' | 'assign' | 'success';
+type ViewState = "list" | "profile" | "assign" | "success";
 
-const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, sessionId }) => {
-  const [currentView, setCurrentView] = useState<ViewState>('list');
+const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
+  isOpen,
+  onClose,
+  sessionId,
+}) => {
+  const [currentView, setCurrentView] = useState<ViewState>("list");
   const [developers, setDevelopers] = useState<DeveloperInfo[]>([]);
-  const [selectedDeveloper, setSelectedDeveloper] = useState<DeveloperInfo | null>(null);
+  const [selectedDeveloper, setSelectedDeveloper] =
+    useState<DeveloperInfo | null>(null);
   const [developerDetails, setDeveloperDetails] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [taskTitle, setTaskTitle] = useState('');
-  const [taskDescription, setTaskDescription] = useState('');
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
   const [dueDate, setDueDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (isOpen && currentView === 'list') {
+    if (isOpen && currentView === "list") {
       fetchDevelopers();
     }
   }, [isOpen, currentView]);
@@ -47,7 +74,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
     setLoading(true);
     try {
       const response = await developerService.getAllDevelopers(currentPage);
-      console.log('Developer Service Response:', response);
+      //console.log('Developer Service Response:', response);
 
       const mapped = (
         Array.isArray(response) ? response : response?.data || []
@@ -61,28 +88,28 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
         bio: dev.bio,
         hourpaid: dev.hourpaid,
         skills: dev.skills || [],
-        linkedin_url: dev.linkedin_url || '',
-        github_url: dev.github_url || '',
-        status: dev.status || 'available',
+        linkedin_url: dev.linkedin_url || "",
+        github_url: dev.github_url || "",
+        status: dev.status || "available",
         total_tasks: dev.total_tasks || 0,
-        phone: dev.phone || '',
-        image: dev.image || '',
-        location: dev.location || '',
+        phone: dev.phone || "",
+        image: dev.image || "",
+        location: dev.location || "",
         created_at: dev.created_at || new Date().toISOString(),
         total_in_progress: dev.total_in_progress || 0,
         total_pending: dev.total_pending || 0,
-        experience: dev.experience || '',
+        experience: dev.experience || "",
         rating_count: dev.rating_count || 0,
-        email: dev.email || '',
+        email: dev.email || "",
       }));
       setDevelopers(mapped);
-      console.log('Fetched Developers:', Array.isArray(response) ? response : response?.data);
+      //console.log('Fetched Developers:', Array.isArray(response) ? response : response?.data);
     } catch (error) {
-      console.error('Error fetching developers:', error);
+      //console.error("Error fetching developers:", error);
       toast({
         title: "Error",
         description: "Failed to load developers",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -92,26 +119,26 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
   const fetchDeveloperDetails = async (developerId: string) => {
     try {
       const details = await developerService.getDeveloperById(developerId);
-      console.log('Fetched Developer Details:', details);
+      //console.log('Fetched Developer Details:', details);
       setDeveloperDetails(details);
     } catch (error) {
-      console.error('Error fetching developer details:', error);
+      //console.error("Error fetching developer details:", error);
       toast({
         title: "Error",
         description: "Failed to load developer details",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   const handleDeveloperSelect = async (developer: DeveloperInfo) => {
     setSelectedDeveloper(developer);
-    setCurrentView('profile');
+    setCurrentView("profile");
     await fetchDeveloperDetails(developer.id);
   };
 
   const handleAssignClick = () => {
-    setCurrentView('assign');
+    setCurrentView("assign");
   };
 
   const handleAssignTask = async () => {
@@ -119,7 +146,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -131,17 +158,17 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
         description: taskDescription.trim(),
         session_id: sessionId,
         assignee_id: selectedDeveloper.id,
-        due_date: dueDate ? dueDate.toISOString() : undefined
+        due_date: dueDate ? dueDate.toISOString() : undefined,
       };
 
       await developerService.createTask(taskData);
-      setCurrentView('success');
+      setCurrentView("success");
     } catch (error) {
-      console.error('Error creating task:', error);
+      //console.error("Error creating task:", error);
       toast({
         title: "Error",
         description: "Failed to assign task to developer",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -149,11 +176,11 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
   };
 
   const handleClose = () => {
-    setCurrentView('list');
+    setCurrentView("list");
     setSelectedDeveloper(null);
     setDeveloperDetails(null);
-    setTaskTitle('');
-    setTaskDescription('');
+    setTaskTitle("");
+    setTaskDescription("");
     setDueDate(undefined);
     setCurrentPage(1);
     onClose();
@@ -166,7 +193,9 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
         key={i}
         className={cn(
           "h-4 w-4",
-          i < rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"
+          i < rating
+            ? "fill-yellow-400 text-yellow-400"
+            : "text-muted-foreground"
         )}
       />
     ));
@@ -430,10 +459,10 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
     return (
       <div className="space-y-6 flex-1 overflow-y-auto">
         <div className="flex items-center gap-4 mb-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
-            onClick={() => setCurrentView('profile')}
+            onClick={() => setCurrentView("profile")}
             className="p-1"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -491,7 +520,6 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             onChange={(e) => setTaskDescription(e.target.value)}
           />
         </div>
-
       </div>
     );
   };
@@ -509,27 +537,29 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
             </span>
             <Avatar className="h-6 w-6 ml-2">
               <AvatarFallback className="text-xs">
-                {selectedDeveloper.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                {selectedDeveloper.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
         </div>
-        <Button onClick={handleClose}>
-          Close
-        </Button>
+        <Button onClick={handleClose}>Close</Button>
       </div>
     );
   };
 
   const renderCurrentView = () => {
     switch (currentView) {
-      case 'list':
+      case "list":
         return renderDeveloperList();
-      case 'profile':
+      case "profile":
         return renderDeveloperProfile();
-      case 'assign':
+      case "assign":
         return renderAssignForm();
-      case 'success':
+      case "success":
         return renderSuccess();
       default:
         return renderDeveloperList();
@@ -541,30 +571,34 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
       <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
-            {currentView === 'list' && 'Assign to Developer'}
-            {currentView === 'profile' && 'Developer Profile'}
-            {currentView === 'assign' && `Assign to ${selectedDeveloper?.name}`}
-            {currentView === 'success' && 'Task Assigned Successfully'}
+            {currentView === "list" && "Assign to Developer"}
+            {currentView === "profile" && "Developer Profile"}
+            {currentView === "assign" && `Assign to ${selectedDeveloper?.name}`}
+            {currentView === "success" && "Task Assigned Successfully"}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="flex-1 overflow-hidden flex flex-col">
-          {currentView === 'list' && renderDeveloperList()}
-          {currentView === 'profile' && renderDeveloperProfile()}
-          {currentView === 'assign' && renderAssignForm()}
-          {currentView === 'success' && renderSuccess()}
+          {currentView === "list" && renderDeveloperList()}
+          {currentView === "profile" && renderDeveloperProfile()}
+          {currentView === "assign" && renderAssignForm()}
+          {currentView === "success" && renderSuccess()}
         </div>
 
         {/* Fixed bottom buttons for profile and assign views */}
-        {(currentView === 'profile' || currentView === 'assign') && (
+        {(currentView === "profile" || currentView === "assign") && (
           <div className="border-t pt-4 mt-4 flex justify-between">
-            <Button 
-              variant="outline" 
-              onClick={() => currentView === 'profile' ? setCurrentView('list') : setCurrentView('profile')}
+            <Button
+              variant="outline"
+              onClick={() =>
+                currentView === "profile"
+                  ? setCurrentView("list")
+                  : setCurrentView("profile")
+              }
             >
-              {currentView === 'profile' ? 'Collapse' : 'Back'}
+              {currentView === "profile" ? "Collapse" : "Back"}
             </Button>
-            {currentView === 'profile' && (
+            {currentView === "profile" && (
               <Button
                 className="bg-black text-white hover:bg-black/90"
                 onClick={handleAssignClick}
@@ -573,14 +607,16 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({ isOpen, onClose, 
                 Assign
               </Button>
             )}
-            {currentView === 'assign' && (
-              <Button 
+            {currentView === "assign" && (
+              <Button
                 className="bg-black text-white hover:bg-black/90"
                 onClick={handleAssignTask}
-                disabled={loading || !taskTitle.trim() || !taskDescription.trim()}
+                disabled={
+                  loading || !taskTitle.trim() || !taskDescription.trim()
+                }
               >
                 <User className="h-4 w-4 mr-2" />
-                {loading ? 'Assigning Task...' : 'Assign Task'}
+                {loading ? "Assigning Task..." : "Assign Task"}
               </Button>
             )}
           </div>
