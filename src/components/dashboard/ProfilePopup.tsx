@@ -442,6 +442,7 @@ interface ProfilePopupProps {
 const UsageStats: React.FC = () => {
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState('October');
 
   const months = [
@@ -452,12 +453,21 @@ const UsageStats: React.FC = () => {
   useEffect(() => {
     const loadUsageData = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         const data = await fetchUsageData(selectedMonth);
-        setUsageData(data);
-      } catch (error) {
+        if (!data) {
+          setError('No usage data available for this month');
+          setUsageData(null);
+        } else {
+          setUsageData(data);
+        }
+      } catch (error: any) {
         console.error('Failed to load usage data:', error);
-        toast.error('Failed to load usage data');
+        const errorMessage = error?.response?.data?.message || error?.message || 'Failed to load usage data';
+        setError(errorMessage);
+        setUsageData(null);
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -502,7 +512,15 @@ const UsageStats: React.FC = () => {
         </Select>
       </div>
 
-      {usageData && (
+      {error && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardContent className="pt-6">
+            <p className="text-sm text-destructive text-center">{error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {!error && usageData && (
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-3 gap-4">
@@ -513,9 +531,11 @@ const UsageStats: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{usageData.total_tokens.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  {(usageData.total_tokens || 0).toLocaleString()}
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Avg: {Math.round(usageData.avg_tokens_per_day)}/day
+                  Avg: {Math.round(usageData.avg_tokens_per_day || 0)}/day
                 </p>
               </CardContent>
             </Card>
@@ -527,9 +547,11 @@ const UsageStats: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{usageData.total_credits.toFixed(3)}</div>
+                <div className="text-2xl font-bold">
+                  {(usageData.total_credits || 0).toFixed(3)}
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Avg: {usageData.avg_credits_per_day.toFixed(3)}/day
+                  Avg: {(usageData.avg_credits_per_day || 0).toFixed(3)}/day
                 </p>
               </CardContent>
             </Card>
@@ -541,7 +563,7 @@ const UsageStats: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{usageData.active_days}</div>
+                <div className="text-2xl font-bold">{usageData.active_days || 0}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   This month
                 </p>
@@ -552,34 +574,58 @@ const UsageStats: React.FC = () => {
           {/* Daily Usage Table */}
           <div>
             <h4 className="font-medium mb-3">Daily Usage</h4>
-            <div className="border rounded-lg">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Tokens</TableHead>
-                    <TableHead className="text-right">Credits Deducted</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {usageData.daily_usage.map((day, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">
-                        {new Date(day.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </TableCell>
-                      <TableCell className="text-right">{day.token.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">{day.credits_deducted.toFixed(3)}</TableCell>
+            {!usageData.daily_usage || usageData.daily_usage.length === 0 ? (
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-sm text-muted-foreground text-center">
+                    No daily usage data available for {selectedMonth}
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="border rounded-lg">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Tokens</TableHead>
+                      <TableHead className="text-right">Credits Deducted</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {usageData.daily_usage.map((day, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">
+                          {new Date(day.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {(day.token || 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {(day.credits_deducted || 0).toFixed(3)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </div>
         </>
+      )}
+
+      {!error && !usageData && (
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground text-center">
+              No usage data available for {selectedMonth}
+            </p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

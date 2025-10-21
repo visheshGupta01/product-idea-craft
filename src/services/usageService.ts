@@ -15,12 +15,32 @@ export interface UsageData {
   active_days: number;
 }
 
-export const fetchUsageData = async (month: string): Promise<UsageData> => {
+export const fetchUsageData = async (month: string): Promise<UsageData | null> => {
   try {
     const response = await apiClient.get(`/usage?month=${month}`);
+    
+    if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+      return null;
+    }
+    
     return response.data[0];
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching usage data:', error);
+    
+    // Provide more specific error messages
+    if (error.response) {
+      const status = error.response.status;
+      if (status === 404) {
+        throw new Error('Usage data not found for this month');
+      } else if (status === 401) {
+        throw new Error('Authentication required');
+      } else if (status === 500) {
+        throw new Error('Server error. Please try again later');
+      }
+    } else if (error.request) {
+      throw new Error('Network error. Please check your connection');
+    }
+    
     throw error;
   }
 };
