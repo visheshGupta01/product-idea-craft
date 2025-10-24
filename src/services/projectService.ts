@@ -50,13 +50,13 @@ export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
   try {
     const response = await apiClient.get(API_ENDPOINTS.PROJECT.LIST);
     if (response.data.success) {
-      return response.data?.projects || [];
-      return response.data.projects;
+      // Empty array is a valid response, not an error
+      return Array.isArray(response.data.projects) ? response.data.projects : [];
     } else {
       throw new Error(response.data.message || "Failed to fetch projects");
     }
   } catch (error) {
-    //console.error("Error fetching projects:", error);
+    console.error("Error fetching projects:", error);
     throw error;
   }
 };

@@ -23,9 +23,7 @@ const PreviewCodePanel = ({ previewUrl, sessionId }: PreviewCodePanelProps) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [originalContent, setOriginalContent] = useState<string>('');
   const [currentContent, setCurrentContent] = useState<string>('');
-  const [iframeSrc, setIframeSrc] = useState(
-    "https://app.imagine.bo"
-  );
+  const [iframeSrc, setIframeSrc] = useState(previewUrl || "");
 
   // Update iframe src when previewUrl changes
   useEffect(() => {
@@ -33,6 +31,8 @@ const PreviewCodePanel = ({ previewUrl, sessionId }: PreviewCodePanelProps) => {
       setIframeSrc(previewUrl);
     }
   }, [previewUrl]);
+
+  const hasValidPreview = iframeSrc && iframeSrc !== "";
 
   const handleFileSelect = (file: FileNode) => {
     setSelectedFile(file);
@@ -209,9 +209,21 @@ const handleReload = () => {
                 </ResizablePanel>
               </ResizablePanelGroup>
             </div>
-          ) : (
+          ) : hasValidPreview ? (
             <div className="h-full animate-fade-in bg-sidebar-background">
               <DevicePreview device={activeDevice} src={iframeSrc} />
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center bg-sidebar-background">
+              <div className="text-center space-y-4 max-w-md px-6">
+                <h2 className="text-3xl font-bold text-sidebar-foreground">
+                  Welcome to Imagine.bo
+                </h2>
+                <p className="text-sidebar-foreground/70">
+                  Start a conversation with our AI to begin building your project.
+                  Your preview will appear here once generated.
+                </p>
+              </div>
             </div>
           )}
         </div>
