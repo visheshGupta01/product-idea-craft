@@ -44,12 +44,10 @@ export class WebSocketService {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      //console.log(
-        `Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
-      );
+      // console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
 
       setTimeout(() => {
-        this.connect().catch(//console.error);
+        this.connect().catch((error) => console.error(error));
       }, this.reconnectDelay);
     }
   }

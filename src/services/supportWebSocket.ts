@@ -57,7 +57,7 @@ export class SupportWebSocketService {
       this.reconnectAttempts++;
       //console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
       setTimeout(() => {
-        this.connect(this.storedToken).catch(//console.error);
+        this.connect(this.storedToken).catch((error) => console.error(error));
       }, 2000 * this.reconnectAttempts);
     }
   }

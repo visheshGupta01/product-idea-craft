@@ -114,8 +114,7 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({
 
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
-  //console.log("UserGrowthChart props:", { apiData });
-  //console.log("Selected Year and Month:", { selectedYear, selectedMonth });  const [selectedWeek, setSelectedWeek] = useState<number>(1);
+  const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [selectedPeriod, setSelectedPeriod] = useState<
     "week" | "month" | "year"
   >("week");
