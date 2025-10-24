@@ -29,7 +29,7 @@ const MainDashboard = ({
   shouldOpenPreview,
 }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<ActiveView>("main");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [currentProject] = useState({
     id: "1",
     name: "My App Idea",
@@ -112,11 +112,6 @@ const MainDashboard = ({
     //console.log("🎯 Preview URL set:", url);
   };
 
-  const handleLogout = () => {
-    // Navigate back to the idea submission screen
-    window.location.href = "/";
-  };
-
   const handlePublish = () => {
     // Handle publish functionality
     //console.log('Publishing app...');
@@ -155,7 +150,7 @@ const MainDashboard = ({
 
             {/* Preview/Code Panel */}
             <ResizablePanel
-              defaultSize={sidebarCollapsed ? 60 : 65}
+              defaultSize={sidebarCollapsed ? 30 : 35}
               minSize={30}
             >
               <div className="h-full bg-background">
