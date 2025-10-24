@@ -150,24 +150,28 @@ export const useStreamingChat = (
         const callbacks: StreamingCallbacks = {
           onContent: (text: string) => {
             streamingContent += text;
-            
+
             // Check for insufficient balance in message content
-            if (streamingContent.toLowerCase().includes("insufficient balance")) {
+            if (
+              streamingContent.toLowerCase().includes("insufficient balance")
+            ) {
               onInsufficientBalance?.();
               setIsStreaming(false);
               setIsProcessingTools(false);
               return;
             }
-            
+
             updateMessage(aiMessage.id, streamingContent);
 
             // Check for frontend_code_generator tool output with ngrok URL
             if (
-              text.includes("[Tool Output for frontend_code_generator]:") &&
-              text.includes("preview.imagine.bo")
+              (text.includes("[Tool Output for frontend_code_generator]:") &&
+                text.includes("preview.imagine.bo")) ||
+              (text.includes("[Tool Output for frontend_code_generator]:") &&
+                text.includes("devpreview.imagine.bo"))
             ) {
               const urlMatch = text.match(
-                /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo)\/?/
+                /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo|\.devpreview\.imagine\.bo)\/?/
               );
 
               if (urlMatch && onFrontendGenerated) {
@@ -194,7 +198,6 @@ export const useStreamingChat = (
             setIsProcessingTools(false);
           },
           onError: (error: Error) => {
-
             updateMessage(
               aiMessage.id,
               `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error.message}`
@@ -207,7 +210,6 @@ export const useStreamingChat = (
 
         await wsClientRef.current.sendStreamingMessage(content, callbacks);
       } catch (error) {
-
         // Add error message
         addMessage({
           type: "ai",
@@ -226,7 +228,7 @@ export const useStreamingChat = (
   );
 
   // Filter out empty messages before returning
-  const filteredMessages = messages.filter(msg => msg.content.trim() !== '');
+  const filteredMessages = messages.filter((msg) => msg.content.trim() !== "");
 
   return {
     messages: filteredMessages,

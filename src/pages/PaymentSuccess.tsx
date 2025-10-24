@@ -31,9 +31,6 @@ const PaymentSuccess = () => {
             You will receive an email confirmation shortly with your payment details.
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={() => navigate('/dashboard')} className="w-full">
-              Go to Dashboard
-            </Button>
             <Button variant="outline" onClick={() => navigate('/')} className="w-full">
               Back to Home
             </Button>

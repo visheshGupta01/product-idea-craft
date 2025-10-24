@@ -99,6 +99,7 @@ const ProfilePopup = ({
         email: userData.email || "",
         password: "••••••••••",
       });
+      // console.log("User data loaded into form:", userData);
     }
   }, [userData]);
 
@@ -342,7 +343,7 @@ const ProfilePopup = ({
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="font-medium">
-                          {userData?.price?.name || "Free Plan"}
+                          {userData?.plan_name || "Free Plan"}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {userData?.plan_expires_at
