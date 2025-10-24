@@ -173,19 +173,15 @@ const SharedChat: React.FC = () => {
             </div>
           </ResizablePanel>
 
-          {chatData.project_url && (
-            <>
-              <ResizableHandle withHandle />
+          <ResizableHandle withHandle />
 
-              {/* Preview Panel */}
-              <ResizablePanel defaultSize={50} minSize={30}>
-                <PreviewCodePanel
-                  previewUrl={chatData.project_url}
-                  sessionId={undefined}
-                />
-              </ResizablePanel>
-            </>
-          )}
+          {/* Preview Panel - Always visible */}
+          <ResizablePanel defaultSize={50} minSize={30}>
+            <PreviewCodePanel
+              previewUrl={chatData.project_url}
+              sessionId={undefined}
+            />
+          </ResizablePanel>
         </ResizablePanelGroup>
       </div>
     </div>

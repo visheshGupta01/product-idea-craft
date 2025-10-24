@@ -56,12 +56,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             setUser(mappedUser);
 
             // Create profile data from user data with defaults
+            const planNames = { 1: "Free", 2: "Pro", 3: "Team" };
+            const planId = (userData as any).plan_id || 1;
             setProfile({
               id: userData.id,
               first_name: userData.first_name,
               last_name: userData.last_name,
               email: userData.email,
               password: "",
+              plan_name: planNames[planId as keyof typeof planNames] || "Free",
               verified: (userData as any).verified || false,
               token: (userData as any).token || "",
               country: (userData as any).country || "",
@@ -163,12 +166,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setUser(userData);
 
       // Set profile data from login response with defaults
+      const planNames = { 1: "Free", 2: "Pro", 3: "Team" };
+      const planId = (result.user as any).plan_id || 1;
       setProfile({
         id: result.user.id,
         first_name: result.user.first_name,
         last_name: result.user.last_name,
         email: result.user.email,
         password: "",
+        plan_name: planNames[planId as keyof typeof planNames] || "Free",
         verified: (result.user as any).verified || false,
         token: (result.user as any).token || "",
         country: (result.user as any).country || "",

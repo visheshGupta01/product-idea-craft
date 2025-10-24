@@ -171,8 +171,7 @@ const MainDashboard = ({
             {/* Preview/Code Panel */}
             <ResizablePanel
               defaultSize={sidebarCollapsed ? 60 : 65}
-              minSize={0}
-              collapsible={true}
+              minSize={30}
             >
               <div className="h-full bg-background">
                 <PreviewCodePanel
