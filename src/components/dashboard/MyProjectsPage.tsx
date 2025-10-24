@@ -60,13 +60,14 @@ const MyProjectsPage = () => {
   const loadProjects = async () => {
     try {
       setLoading(true);
-      const apiProjects = (await fetchProjects()) || [];
+      const apiProjects = await fetchProjects();
 
-      //console.log('Fetched projects:', apiProjects);
+      // Empty array is valid - no error needed
       if (!Array.isArray(apiProjects)) {
         setProjects([]);
         return;
       }
+      
       const formattedProjects: Project[] = apiProjects.map((project) => ({
         ...project,
         status: project.title
@@ -75,12 +76,14 @@ const MyProjectsPage = () => {
       }));
       setProjects(formattedProjects);
     } catch (error) {
-      //console.error("Error fetching projects:", error);
+      console.error("Error fetching projects:", error);
+      // Only show error toast on actual API failure
       toast({
         title: "Error",
         description: "Failed to load projects. Please try again.",
         variant: "destructive",
       });
+      setProjects([]); // Set empty array on error to prevent UI issues
     } finally {
       setLoading(false);
     }
