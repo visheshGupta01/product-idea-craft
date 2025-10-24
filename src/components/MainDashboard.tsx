@@ -129,22 +129,7 @@ const MainDashboard = ({
       case "my-projects":
         return <MyProjectsPage />;
       default:
-        // Show fullscreen chat if we have initial MCP response but frontend isn't created
-        // OR if we don't have initial response (fallback to original behavior)
-        // But skip if we should open preview (deployed project)
-        if ((!isFrontendCreated || initialResponse) && !shouldOpenPreview) {
-          return (
-            <div className="h-full">
-              <ChatPanel
-                userIdea={userIdea}
-                onFrontendGenerated={handleFrontendGenerated}
-                sessionId={sessionId}
-              />
-            </div>
-          );
-        }
-
-        // Show normal layout after frontend creation and initial response is processed
+        // Always show split view with chat and preview panels
         return (
           <ResizablePanelGroup
             direction="horizontal"
