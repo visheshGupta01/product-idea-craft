@@ -193,16 +193,15 @@ const IdeaBox: React.FC = () => {
         </div>
 
         {/* White Input Area */}
-        <div className="bg-white w-full h-[238px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
+        <div className="bg-white w-full h-[238px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative overflow-hidden">
           {/* Input area with floating buttons */}
-          {/* Input area with floating buttons */}
-          <div className="relative w-full mb-4 font-poppins text-gray-800">
+          <div className="relative w-full mb-4 font-poppins text-gray-800 flex-1 overflow-hidden">
             <textarea
               ref={textareaRef}
               value={idea}
               onChange={handleIdeaChange}
               placeholder="Type your idea or use '@' to call a tool, e.g., '@analyse', '@research'"
-              className="w-full px-4 py-3 pr-24 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none break-words overflow-wrap-anywhere"
+              className="w-full h-full px-4 py-3 pr-24 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none overflow-y-auto"
               style={{
                 border: "none",
                 boxShadow: "none",

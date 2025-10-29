@@ -659,7 +659,7 @@ const UsageStats: React.FC = () => {
           </div>
 
           {/* Daily Usage Table */}
-          <div>
+          <div className="max-w-full">
             <h4 className="font-medium mb-3">Daily Usage</h4>
             {!usageData.daily_usage || usageData.daily_usage.length === 0 ? (
               <Card>
@@ -670,8 +670,8 @@ const UsageStats: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="border rounded-lg overflow-x-auto">
-                <Table>
+              <div className="border rounded-lg overflow-x-auto max-w-full">
+                <Table className="min-w-full">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="whitespace-nowrap">Date</TableHead>
