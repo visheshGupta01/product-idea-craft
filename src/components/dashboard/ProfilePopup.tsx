@@ -670,13 +670,13 @@ const UsageStats: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="border rounded-lg">
+              <div className="border rounded-lg overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Tokens</TableHead>
-                      <TableHead className="text-right">
+                      <TableHead className="whitespace-nowrap">Date</TableHead>
+                      <TableHead className="text-right whitespace-nowrap">Tokens</TableHead>
+                      <TableHead className="text-right whitespace-nowrap">
                         Credits Deducted
                       </TableHead>
                     </TableRow>
@@ -684,7 +684,7 @@ const UsageStats: React.FC = () => {
                   <TableBody>
                     {usageData.daily_usage.map((day, index) => (
                       <TableRow key={index}>
-                        <TableCell className="font-medium">
+                        <TableCell className="font-medium whitespace-nowrap">
                           {new Date(day.created_at).toLocaleDateString(
                             "en-US",
                             {
@@ -694,10 +694,10 @@ const UsageStats: React.FC = () => {
                             }
                           )}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right whitespace-nowrap">
                           {(day.token || 0).toLocaleString()}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right whitespace-nowrap">
                           {(day.credits_deducted || 0).toFixed(3)}
                         </TableCell>
                       </TableRow>

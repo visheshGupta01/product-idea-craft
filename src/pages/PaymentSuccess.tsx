@@ -10,9 +10,21 @@ const PaymentSuccess = () => {
   const { fetchProfile } = useUser();
 
   useEffect(() => {
+    // Check if user came from payment flow
+    const paymentCompleted = sessionStorage.getItem('payment_completed');
+    
+    if (!paymentCompleted) {
+      // Redirect to home if accessed directly
+      navigate('/');
+      return;
+    }
+    
+    // Clear the flag
+    sessionStorage.removeItem('payment_completed');
+    
     // Refresh user profile to get updated plan information
     fetchProfile();
-  }, [fetchProfile]);
+  }, [fetchProfile, navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">

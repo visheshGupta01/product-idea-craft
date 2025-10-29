@@ -5,6 +5,7 @@ import { Bot, User, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "@/types";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -91,6 +92,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {isUser ? (
             <div className="whitespace-pre-wrap text-sm leading-relaxed">
               {message.content}
+            </div>
+          ) : message.content.trim() === "" ? (
+            <div className="flex items-center gap-2">
+              <LoadingSpinner size="sm" />
+              <span className="text-sm text-muted-foreground">Thinking...</span>
             </div>
           ) : (
             <div className="text-sm leading-relaxed">

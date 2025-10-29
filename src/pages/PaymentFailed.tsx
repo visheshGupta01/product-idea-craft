@@ -7,6 +7,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 const PaymentFailed = () => {
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    // Check if user came from payment flow
+    const paymentAttempted = sessionStorage.getItem('payment_attempted');
+    
+    if (!paymentAttempted) {
+      // Redirect to home if accessed directly
+      navigate('/');
+      return;
+    }
+    
+    // Clear the flag
+    sessionStorage.removeItem('payment_attempted');
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
