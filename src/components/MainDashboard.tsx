@@ -123,6 +123,24 @@ const MainDashboard = ({
     }
   };
 
+  const handleSitemapGenerated = (sitemap: any) => {
+    //console.log("🗺️ Sitemap generated, updating sidebar:", sitemap);
+    
+    // Update project details with the new sitemap
+    if (projectDetails) {
+      setProjectDetails({
+        ...projectDetails,
+        sitemap: sitemap,
+      });
+    } else {
+      // If no project details yet, create a minimal object
+      setProjectDetails({
+        title: sitemap.project_name || "Untitled Project",
+        sitemap: sitemap,
+      } as ProjectDetails);
+    }
+  };
+
   const handlePublish = () => {
     // Handle publish functionality
     //console.log('Publishing app...');
@@ -152,6 +170,7 @@ const MainDashboard = ({
                 <ChatPanel
                   userIdea={userIdea}
                   onFrontendGenerated={handleFrontendGenerated}
+                  onSitemapGenerated={handleSitemapGenerated}
                   sessionId={sessionId}
                 />
               </div>
