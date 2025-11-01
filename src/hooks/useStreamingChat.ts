@@ -27,12 +27,14 @@ export interface StreamingChatActions {
   disconnect: () => void;
   stopGeneration: () => void;
   onFrontendGenerated?: (url: string) => void;
+  onSitemapGenerated?: (sitemap: any) => void;
   onInsufficientBalance?: () => void;
 }
 
 export const useStreamingChat = (
   sessionId: string,
   onFrontendGenerated?: (url: string) => void,
+  onSitemapGenerated?: (sitemap: any) => void,
   onInsufficientBalance?: () => void
 ): StreamingChatState & StreamingChatActions => {
   const {
@@ -180,6 +182,21 @@ export const useStreamingChat = (
                 onFrontendGenerated(localUrl);
               }
             }
+
+            // Check for sitemap_user_idea tool output
+            if (streamingContent.includes("[Tool Output for sitemap_user_idea]:")) {
+              const sitemapMatch = streamingContent.match(
+                /\[Tool Output for sitemap_user_idea\]:\s*(\{[\s\S]*?\})\s*(?=\[Tool Output|\n\n|$)/
+              );
+              if (sitemapMatch && onSitemapGenerated) {
+                try {
+                  const sitemapData = JSON.parse(sitemapMatch[1]);
+                  onSitemapGenerated(sitemapData);
+                } catch (e) {
+                  //console.error("Failed to parse sitemap:", e);
+                }
+              }
+            }
           },
           onToolStart: () => {
             setIsProcessingTools(true);
@@ -224,7 +241,7 @@ export const useStreamingChat = (
         setIsProcessingTools(false);
       }
     },
-    [addMessage, updateMessage, connect, onInsufficientBalance]
+    [addMessage, updateMessage, connect, onFrontendGenerated, onSitemapGenerated, onInsufficientBalance, setProjectUrl]
   );
 
   // Filter out empty messages before returning
@@ -245,6 +262,7 @@ export const useStreamingChat = (
     disconnect,
     stopGeneration,
     onFrontendGenerated,
+    onSitemapGenerated,
     onInsufficientBalance,
     projectUrl,
     sitemap,

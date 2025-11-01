@@ -19,12 +19,14 @@ import { useNavigate } from "react-router-dom";
 interface StreamingChatInterfaceProps {
   userIdea?: string;
   onFrontendGenerated?: (url: string) => void;
+  onSitemapGenerated?: (sitemap: any) => void;
   urlSessionId?: string;
 }
 
 export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   userIdea,
   onFrontendGenerated,
+  onSitemapGenerated,
   urlSessionId,
 }) => {
   const {
@@ -47,8 +49,11 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     scrollToBottom,
     connect,
     stopGeneration,
-  } = useStreamingChat(activeSessionId || "", onFrontendGenerated, () =>
-    setShowBalanceDialog(true)
+  } = useStreamingChat(
+    activeSessionId || "", 
+    onFrontendGenerated, 
+    onSitemapGenerated,
+    () => setShowBalanceDialog(true)
   );
 
   const [isInitialized, setIsInitialized] = useState(false);
