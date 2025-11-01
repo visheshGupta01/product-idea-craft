@@ -106,10 +106,21 @@ const MainDashboard = ({
       window.removeEventListener("frontendComplete", handleFrontendComplete);
   }, []);
 
-  const handleFrontendGenerated = (url: string) => {
+  const handleFrontendGenerated = async (url: string) => {
     setPreviewUrl(url);
     setIsFrontendCreated(true);
     //console.log("🎯 Preview URL set:", url);
+    
+    // Refresh project details to update sitemap
+    if (sessionId) {
+      try {
+        const details = await fetchProjectDetails(sessionId);
+        setProjectDetails(details);
+        //console.log("🗺️ Sitemap refreshed:", details);
+      } catch (error) {
+        //console.error("Failed to refresh sitemap:", error);
+      }
+    }
   };
 
   const handlePublish = () => {

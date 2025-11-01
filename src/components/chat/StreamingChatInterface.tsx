@@ -161,6 +161,18 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                     />
                   </div>
                 ))}
+                
+                {/* Show tool processing indicator */}
+                {isProcessingTools && (
+                  <div className="flex items-start gap-3 animate-in fade-in duration-200">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm">🤖</span>
+                    </div>
+                    <div className="flex-1 bg-muted rounded-lg p-4">
+                      <LoadingSpinner size="sm" text="Processing tools..." />
+                    </div>
+                  </div>
+                )}
 
                 <div ref={messagesEndRef} />
               </div>
