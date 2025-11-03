@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,10 +19,13 @@ import {
   Diamond,
 } from "lucide-react";
 import { ProjectDetails } from "@/services/projectService";
+import { set } from "date-fns";
+import { FileNode } from "./FileExplorer";
 
 interface SitemapSectionProps {
   projectDetails: ProjectDetails | undefined;
   collapsed: boolean;
+  setSelectedPage?: (page: FileNode | null) => void;
 }
 
 const getPageIcon = (pageName: string) => {
@@ -62,10 +65,44 @@ const StatusIcon = ({ status }: { status: string }) => {
 export default function SitemapSection({
   projectDetails,
   collapsed,
+  setSelectedPage,
 }: SitemapSectionProps) {
   const pages = projectDetails?.sitemap?.pages ?? [];
+  console.log({ pages });
 
   //console.log("Rendering SitemapSection, pages:", pages);
+
+  const onPageSelect = (page: any) => {
+    const normalizedPath = String(page.frontend_path || "")
+      .replace(/^website/, "") // remove the extra prefix if present
+      .replace(/^[\/]+/, ""); // remove any leading slashes
+
+    // Convert the page object into a FileNode that matches the explorer paths
+    const fileNode: FileNode = {
+      name: page.name + ".jsx",
+      type: "file",
+      // use the normalized path so FileExplorer (which fetches files from the API)
+      // can match this path and return the existing file content instead of
+      // creating a new, empty file in the editor
+      path: normalizedPath,
+      extension: normalizedPath.split('.').pop(), // e.g. "jsx"
+      children: Array.isArray(page.components)
+        ? page.components.map((comp: string) => ({
+            name: comp,
+            type: "file",
+            path: `${normalizedPath.replace(/\/[^/]+$/, "")}/${comp}.jsx`,
+            extension: "jsx",
+          }))
+        : [],
+    };
+
+    // Debugging aid: log selected path so you can verify matching with FileExplorer
+    console.log('SitemapSection selecting page path:', fileNode.path);
+
+    setSelectedPage?.(fileNode);
+  };
+
+ 
 
   if (pages.length === 0) {
     //console.log("No sitemap pages available.");
@@ -93,7 +130,11 @@ export default function SitemapSection({
             <CollapsibleTrigger className="flex items-center justify-between w-full text-left text-sm font-medium text-sidebar-foreground hover:text-primary transition-colors p-2 hover:bg-sidebar-accent/50 rounded-md">
               <div className="flex items-center space-x-2">
                 <Icon size={16} className="text-pink-500" />
-                <span>{page.name}</span>
+                <span
+                  onClick={() => {onPageSelect(page )}}
+                >
+                  {page.name}
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <ChevronDown
@@ -113,7 +154,8 @@ export default function SitemapSection({
                       size={12}
                       className="text-muted-foreground text-pink-400"
                     />
-                    <span>{component}</span>
+                    <span className="cursor-pointer"
+                    >{component}</span>
                   </div>
                 ))}
               </CollapsibleContent>

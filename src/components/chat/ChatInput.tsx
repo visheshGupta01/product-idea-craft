@@ -66,7 +66,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const { sessionId } = useUser();
 
-  useEffect(() => {
+  useEffect(() => { 
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       const newHeight = Math.min(textareaRef.current.scrollHeight, 120); // Max height 120px
@@ -193,14 +193,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             className={cn(
               "min-h-[50px] max-h-[120px] pr-[150px] resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0",
               "text-chat-foreground placeholder:text-chat-foreground/50",
-              "scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent"
+              "custom-scroll"
             )}
             rows={1}
             disabled={isLoading}
           />
           
           {/* Action Buttons */}
-          <div className="absolute bottom-2 right-2 flex items-center space-x-2">
+          <div className="absolute bottom-2 right-2 flex items-center space-x-2 px-2">
             <FileUploader
               onFileUploaded={handleFileUploaded}
               uploadedFiles={uploadedFiles}

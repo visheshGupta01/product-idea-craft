@@ -162,6 +162,13 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                   </div>
                 ))}
 
+                {/* 👇 Show spinner only while current message is streaming */}
+                {isStreaming && (
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <LoadingSpinner size="sm" text="Generating" />
+                  </div>
+                )}
+
                 <div ref={messagesEndRef} />
               </div>
             </ScrollArea>

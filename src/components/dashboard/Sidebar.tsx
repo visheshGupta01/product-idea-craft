@@ -54,12 +54,14 @@ import {
 } from "@/services/projectService";
 import { inboxService } from "@/services/inboxService";
 import { useNavigate } from "react-router-dom";
+import { FileNode } from "./FileExplorer";
 
 type ActiveView = "main" | "team" | "my-projects";
 
 interface SidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
+  clickedFile?: string;
   currentProject: {
     id: string;
     name: string;
@@ -71,6 +73,7 @@ interface SidebarProps {
   projectDetails?: ProjectDetails;
   sessionId?: string;
   onProjectRenamed?: (newTitle: string) => void;
+  setSelectedPage?: (page: FileNode | null) => void;
 }
 const Sidebar = ({
   collapsed,
@@ -81,6 +84,7 @@ const Sidebar = ({
   projectDetails,
   sessionId,
   onProjectRenamed,
+  setSelectedPage
 }: SidebarProps) => {
   //console.log("Sidebar: received projectDetails", projectDetails);
   const { user, isAuthenticated } = useUser();
@@ -118,7 +122,7 @@ const Sidebar = ({
   }, [isAuthenticated]);
 
   useEffect(() => {
-    const fetchInbox = async () => {
+    const fetchInbox = async () => {  
       if (!isAuthenticated) return;
 
       try {
@@ -244,7 +248,7 @@ const Sidebar = ({
           <div className="flex-1 flex flex-col bg-sidebar-background">
             {/* Sitemap Section - only show on main dashboard */}
             {activeView === "main" && (
-              <SitemapSection collapsed={true} projectDetails={projectDetails} />
+              <SitemapSection collapsed={true} projectDetails={projectDetails} setSelectedPage={setSelectedPage}/>
             )}
           </div>
 
@@ -389,7 +393,7 @@ const Sidebar = ({
           {/* Sitemap Section - only show on main dashboard */}
           {activeView === "main" && (
             <div className="flex-1 min-h-0 overflow-y-auto bg-sidebar-background">
-              <SitemapSection collapsed={false} projectDetails={projectDetails} />
+              <SitemapSection collapsed={false} projectDetails={projectDetails} setSelectedPage={setSelectedPage}/>
             </div>
           )}
 

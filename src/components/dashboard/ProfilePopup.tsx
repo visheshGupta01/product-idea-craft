@@ -410,10 +410,10 @@ const ProfilePopup = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[500px] p-0">
-        <div className="flex h-full">
+      <DialogContent className="max-w-4xl h-[500px] p-0  overflow-y-auto">
+        <div className=" flex h-full">
           {/* Sidebar */}
-          <div className="w-[17rem] bg-muted/30 border-r p-4 space-y-1">
+          <div className=" w-[17rem] bg-muted/30 border-r p-4 space-y-1">
             <div className="mb-6">
               <div className="flex items-center space-x-3 p-2">
                 <Avatar className="h-10 w-10">
@@ -454,8 +454,8 @@ const ProfilePopup = ({
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col">
-            <div className="flex-1 mt-5 px-6 pb-4 overflow-y-auto">
+          <div className="flex-1 flex flex-col ">
+            <div className="flex-1 mt-5 px-6 pb-4 ">
               {renderContent()}
             </div>
           </div>
@@ -577,7 +577,7 @@ const UsageStats: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-xl font-semibold mb-2">Usage Statistics</h3>
@@ -705,7 +705,9 @@ const UsageStats: React.FC = () => {
                   </TableBody>
                 </Table>
               </div>
-            )}
+            )
+            
+              }
           </div>
         </>
       )}
