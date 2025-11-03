@@ -217,8 +217,22 @@ const handleReload = () => {
             <div className="h-full flex items-center justify-center bg-sidebar-background overflow-hidden relative">
               {/* Animated background elements */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-float animate-delay-200"></div>
+                {/* Large floating orbs */}
+                <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
+                <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl animate-float animate-delay-200" style={{ animationDuration: '4s' }}></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-float animate-delay-300" style={{ animationDuration: '5s' }}></div>
+                
+                {/* Smaller floating particles */}
+                <div className="absolute top-20 left-1/3 w-32 h-32 bg-accent/20 rounded-full blur-2xl animate-float animate-delay-100" style={{ animationDuration: '3s' }}></div>
+                <div className="absolute bottom-32 left-2/3 w-24 h-24 bg-primary/20 rounded-full blur-2xl animate-float animate-delay-400" style={{ animationDuration: '3.5s' }}></div>
+                <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-accent/15 rounded-full blur-2xl animate-float animate-delay-500" style={{ animationDuration: '4.5s' }}></div>
+                
+                {/* Animated grid overlay */}
+                <div className="absolute inset-0 opacity-5" style={{
+                  backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+                  backgroundSize: '50px 50px',
+                  animation: 'float 8s ease-in-out infinite'
+                }}></div>
               </div>
               
               <div className="text-center space-y-6 max-w-md px-6 relative z-10 animate-fade-up">
