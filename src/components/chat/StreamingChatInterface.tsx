@@ -169,12 +169,18 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                 
                 {/* Show tool processing indicator */}
                 {isProcessingTools && (
-                  <div className="flex items-start gap-3 animate-in fade-in duration-200">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm">🤖</span>
+                  <div className="flex items-start gap-3 animate-scale-in">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 animate-pulse">
+                      <span className="text-sm">🔧</span>
                     </div>
-                    <div className="flex-1 bg-muted rounded-lg p-4">
-                      <LoadingSpinner size="sm" text="Processing tools..." />
+                    <div className="flex-1 bg-gradient-to-r from-muted to-muted/50 rounded-lg p-4 border border-primary/20 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <LoadingSpinner size="sm" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-foreground">Processing tools</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">Executing operations...</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

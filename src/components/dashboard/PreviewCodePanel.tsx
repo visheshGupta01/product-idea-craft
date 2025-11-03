@@ -214,15 +214,28 @@ const handleReload = () => {
               <DevicePreview device={activeDevice} src={iframeSrc} />
             </div>
           ) : (
-            <div className="h-full flex items-center justify-center bg-sidebar-background">
-              <div className="text-center space-y-4 max-w-md px-6">
-                <h2 className="text-3xl font-bold text-sidebar-foreground">
+            <div className="h-full flex items-center justify-center bg-sidebar-background overflow-hidden relative">
+              {/* Animated background elements */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-float animate-delay-200"></div>
+              </div>
+              
+              <div className="text-center space-y-6 max-w-md px-6 relative z-10 animate-fade-up">
+                <div className="inline-flex p-4 bg-primary/10 rounded-2xl animate-pulse-glow">
+                  <Code className="w-12 h-12 text-primary animate-bounce-subtle" />
+                </div>
+                <h2 className="text-3xl font-bold text-sidebar-foreground animate-scale-in">
                   Welcome to Imagine.bo
                 </h2>
-                <p className="text-sidebar-foreground/70">
+                <p className="text-sidebar-foreground/70 text-lg animate-fade-in animate-delay-200">
                   Start a conversation with our AI to begin building your project.
                   Your preview will appear here once generated.
                 </p>
+                <div className="flex items-center justify-center gap-2 text-sm text-sidebar-foreground/50 animate-fade-in animate-delay-300">
+                  <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                  <span>Ready to create something amazing</span>
+                </div>
               </div>
             </div>
           )}
