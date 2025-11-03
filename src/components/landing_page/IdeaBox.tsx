@@ -193,23 +193,22 @@ const IdeaBox: React.FC = () => {
         </div>
 
         {/* White Input Area */}
-        <div className="bg-white w-full h-[238px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative overflow-hidden">
+        <div className="bg-white w-full  h-[238px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
           {/* Input area with floating buttons */}
-          <div className="relative w-full mb-4 font-poppins text-gray-800 flex-1 overflow-hidden">
+          {/* Input area with floating buttons */}
+          <div className="relative w-full  mb-4 font-poppins  text-gray-800">
             <textarea
               ref={textareaRef}
               value={idea}
               onChange={handleIdeaChange}
               placeholder="Type your idea or use '@' to call a tool, e.g., '@analyse', '@research'"
-              className="w-full h-full px-4 py-3 pr-24 rounded-md bg-white text-sm focus:outline-none font-poppins resize-none overflow-y-auto"
+              className="custom-scroll w-full px-4 py-3 max-h-32 pr-24 overflow-y-scroll rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
               style={{
                 border: "none",
                 boxShadow: "none",
                 outline: "none",
                 textAlign: "left",
                 minHeight: UI_CONFIG.IDEA_BOX_MAX_HEIGHT,
-                overflowWrap: "break-word",
-                wordBreak: "break-word",
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -251,7 +250,7 @@ const IdeaBox: React.FC = () => {
             )}
 
             {/* Floating buttons in top right */}
-            <div className="absolute top-3 right-3 flex gap-2">
+            <div className="absolute top-3 right-3 flex gap-2 px-2">
               <VoiceRecorder
                 onTranscript={handleVoiceTranscript}
                 disabled={isProcessingIdea}

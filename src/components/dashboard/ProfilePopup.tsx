@@ -410,10 +410,10 @@ const ProfilePopup = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[500px] p-0">
-        <div className="flex h-full">
+      <DialogContent className="max-w-4xl h-[500px] p-0  overflow-y-auto">
+        <div className=" flex h-full">
           {/* Sidebar */}
-          <div className="w-[17rem] bg-muted/30 border-r p-4 space-y-1">
+          <div className=" w-[17rem] bg-muted/30 border-r p-4 space-y-1">
             <div className="mb-6">
               <div className="flex items-center space-x-3 p-2">
                 <Avatar className="h-10 w-10">
@@ -454,10 +454,8 @@ const ProfilePopup = ({
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col">
-            <div className="flex-1 mt-5 px-6 pb-4 overflow-y-auto">
-              {renderContent()}
-            </div>
+          <div className="flex-1 flex flex-col ">
+            <div className="flex-1 mt-5 px-6 pb-4 ">{renderContent()}</div>
           </div>
         </div>
       </DialogContent>
@@ -577,7 +575,7 @@ const UsageStats: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-xl font-semibold mb-2">Usage Statistics</h3>
@@ -659,7 +657,7 @@ const UsageStats: React.FC = () => {
           </div>
 
           {/* Daily Usage Table */}
-          <div className="max-w-full">
+          <div>
             <h4 className="font-medium mb-3">Daily Usage</h4>
             {!usageData.daily_usage || usageData.daily_usage.length === 0 ? (
               <Card>
@@ -670,13 +668,13 @@ const UsageStats: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="border rounded-lg overflow-x-auto max-w-full">
-                <Table className="min-w-full">
+              <div className="border rounded-lg">
+                <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="whitespace-nowrap">Date</TableHead>
-                      <TableHead className="text-right whitespace-nowrap">Tokens</TableHead>
-                      <TableHead className="text-right whitespace-nowrap">
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Tokens</TableHead>
+                      <TableHead className="text-right">
                         Credits Deducted
                       </TableHead>
                     </TableRow>
@@ -684,7 +682,7 @@ const UsageStats: React.FC = () => {
                   <TableBody>
                     {usageData.daily_usage.map((day, index) => (
                       <TableRow key={index}>
-                        <TableCell className="font-medium whitespace-nowrap">
+                        <TableCell className="font-medium">
                           {new Date(day.created_at).toLocaleDateString(
                             "en-US",
                             {
@@ -694,10 +692,10 @@ const UsageStats: React.FC = () => {
                             }
                           )}
                         </TableCell>
-                        <TableCell className="text-right whitespace-nowrap">
+                        <TableCell className="text-right">
                           {(day.token || 0).toLocaleString()}
                         </TableCell>
-                        <TableCell className="text-right whitespace-nowrap">
+                        <TableCell className="text-right">
                           {(day.credits_deducted || 0).toFixed(3)}
                         </TableCell>
                       </TableRow>

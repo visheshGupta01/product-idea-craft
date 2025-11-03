@@ -283,3 +283,13 @@
   font-weight: bold;
   font-style: normal;
 }
+
+/* Hide scrollbar but allow scrolling */
+.custom-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
