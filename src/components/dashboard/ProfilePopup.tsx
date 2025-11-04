@@ -55,7 +55,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ProfilePopupProps {
   open: boolean;
@@ -456,11 +455,7 @@ const ProfilePopup = ({
 
           {/* Main Content - Scrollable */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex-1 mt-5 px-6 pb-4">
-              <ScrollArea className="h-full pr-2">
-                <div className="pb-2">{renderContent()}</div>
-              </ScrollArea>
-            </div>
+            <div className="flex-1 mt-5 px-6 pb-4 overflow-y-auto">{renderContent()}</div>
           </div>
         </div>
       </DialogContent>
