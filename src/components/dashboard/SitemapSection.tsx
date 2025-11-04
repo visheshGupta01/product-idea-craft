@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -62,6 +62,8 @@ const StatusIcon = ({ status }: { status: string }) => {
   }
 };
 
+
+
 export default function SitemapSection({
   projectDetails,
   collapsed,
@@ -70,8 +72,8 @@ export default function SitemapSection({
   const pages = projectDetails?.sitemap?.pages ?? [];
   console.log({ pages });
 
+  
   //console.log("Rendering SitemapSection, pages:", pages);
-
   const onPageSelect = (page: any) => {
     const normalizedPath = String(page.frontend_path || "")
       .replace(/^website/, "") // remove the extra prefix if present
@@ -119,6 +121,7 @@ export default function SitemapSection({
     );
   }
 
+
   return (
     <div className="px-4 py-2 space-y-2 overflow-y-auto">
       {pages.map((page, index) => {
@@ -126,8 +129,10 @@ export default function SitemapSection({
         const status = getPageStatus(index, pages.length);
 
         return (
-          <Collapsible key={page.name ?? index} defaultOpen={index === 0}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full text-left text-sm font-medium text-sidebar-foreground hover:text-primary transition-colors p-2 hover:bg-sidebar-accent/50 rounded-md">
+          <Collapsible key={page.name ?? index} defaultOpen={false}>
+            
+            <CollapsibleTrigger
+            className="flex items-center justify-between w-full text-left text-sm font-medium text-sidebar-foreground hover:text-primary transition-colors p-2 hover:bg-sidebar-accent/50 rounded-md">
               <div className="flex items-center space-x-2">
                 <Icon size={16} className="text-pink-500" />
                 <span
@@ -143,7 +148,7 @@ export default function SitemapSection({
                 />
               </div>
             </CollapsibleTrigger>
-            {Array.isArray(page.components) && page.components.length > 0 && (
+            {Array.isArray(page.components) && page.components.length > 0 &&  (
               <CollapsibleContent className="space-y-1 mt-2 ml-6">
                 {page.components.map((component: string, compIndex: number) => (
                   <div

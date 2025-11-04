@@ -94,10 +94,13 @@ const PreviewCodePanel = ({
     fetchFiles();
   }, [sessionId]);
 
+  
   useEffect(() => {
-    console.log("Use effect working");
+    console.log("Use effect working for selectedPage change");
+    
 
     if (selectedPage) {
+
       const fileWithContent = fileContent.find(
         (f) => f.path === selectedPage.path
       );
@@ -308,6 +311,7 @@ const PreviewCodePanel = ({
                     onFileSelect={handleFileSelect}
                     selectedFile={selectedFile?.path || null}
                     sessionId={sessionId}
+                    selectedPage={selectedPage}
                   />
                 </div>
               </ResizablePanel>
