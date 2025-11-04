@@ -409,106 +409,98 @@ const ProfilePopup = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[500px] p-0  overflow-y-auto">
-        <div className=" flex h-full">
-          {/* Sidebar */}
-          <div className=" w-[17rem] bg-muted/30 border-r p-4 space-y-1">
-            <div className="mb-6">
-              <div className="flex items-center space-x-3 p-2">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    {getInitialsFromNames(
-                      userData?.first_name,
-                      userData?.last_name
-                    )}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="font-medium">
-                    {userData?.first_name && userData?.last_name
-                      ? `${userData.first_name} ${userData.last_name}`
-                      : "User"}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {userData?.email || ""}
-                  </div>
-                </div>
+   <Dialog open={open} onOpenChange={onOpenChange}>
+  <DialogContent className="max-w-4xl h-[500px] p-0">
+    <div className="flex h-full overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-[17rem] bg-muted/30 border-r p-4 space-y-1 flex-shrink-0 overflow-hidden">
+        <div className="mb-6">
+          <div className="flex items-center space-x-3 p-2">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="bg-primary/10 text-primary">
+                {getInitialsFromNames(userData?.first_name, userData?.last_name)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-medium">
+                {userData?.first_name && userData?.last_name
+                  ? `${userData.first_name} ${userData.last_name}`
+                  : "User"}
               </div>
-            </div>
-
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Button
-                  key={item.id}
-                  variant={activeSection === item.id ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveSection(item.id)}
-                >
-                  <Icon className="h-4 w-4 mr-2" />
-                  {item.label}
-                </Button>
-              );
-            })}
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col ">
-            <div className="flex-1 mt-5 px-6 pb-4 ">
-              {renderContent()}
+              <div className="text-sm text-muted-foreground">
+                {userData?.email || ""}
+              </div>
             </div>
           </div>
         </div>
-      </DialogContent>
 
-      {showCancelDialog && (
-        <CancelSubscriptionDialog
-          isOpen={showCancelDialog}
-          onClose={() => setShowCancelDialog(false)}
-          userId={userData?.id || ""}
-          userName={
-            `${userData?.first_name || ""} ${
-              userData?.last_name || ""
-            }`.trim() || "User"
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Button
+              key={item.id}
+              variant={activeSection === item.id ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => setActiveSection(item.id)}
+            >
+              <Icon className="h-4 w-4 mr-2" />
+              {item.label}
+            </Button>
+          );
+        })}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto custom-scroll">
+        <div className="mt-5 px-6 pb-4">
+          {renderContent()}
+        </div>
+      </div>
+    </div>
+  </DialogContent>
+
+  {showCancelDialog && (
+    <CancelSubscriptionDialog
+      isOpen={showCancelDialog}
+      onClose={() => setShowCancelDialog(false)}
+      userId={userData?.id || ""}
+      userName={
+        `${userData?.first_name || ""} ${userData?.last_name || ""}`.trim() ||
+        "User"
+      }
+      planName={
+        userData?.plan_id === 1
+          ? "Free Plan"
+          : userData?.plan_id === 2
+          ? "Pro Plan"
+          : userData?.plan_id === 3
+          ? "Enterprise Plan"
+          : "Free Plan"
+      }
+      onConfirm={async (userId: string) => {
+        try {
+          const response = await cancelUserSubscription(userId);
+
+          if (response?.success) {
+            toast.success("Subscription cancelled successfully");
+          } else {
+            toast.error("Failed to cancel subscription");
           }
-          planName={
-            userData?.plan_id === 1
-              ? "Free Plan"
-              : userData?.plan_id === 2
-              ? "Pro Plan"
-              : userData?.plan_id === 3
-              ? "Enterprise Plan"
-              : "Free Plan"
+        } catch (error: any) {
+          let errorMessage = "Error cancelling subscription";
+          if (error?.response?.data?.error?.message) {
+            errorMessage = error.response.data.error.message;
+          } else if (error?.message) {
+            errorMessage = error.message;
           }
-          onConfirm={async (userId: string) => {
-            try {
-              const response = await cancelUserSubscription(userId);
-
-              if (response?.success) {
-                toast.success("Subscription cancelled successfully");
-              } else {
-                toast.error("Failed to cancel subscription");
-              }
-            } catch (error: any) {
-              //console.error("Error cancelling subscription:", error);
-
-              // Show the actual error message from the API
-              let errorMessage = "Error cancelling subscription";
-              if (error?.response?.data?.error?.message) {
-                errorMessage = error.response.data.error.message;
-              } else if (error?.message) {
-                errorMessage = error.message;
-              }
-
-              toast.error(errorMessage);
-            } finally {
-              setShowCancelDialog(false);
-            }
-          }}
-        />
-      )}
-    </Dialog>
+          toast.error(errorMessage);
+        } finally {
+          setShowCancelDialog(false);
+        }
+      }}
+    />
+  )}
+</Dialog>
   );
 };
 
