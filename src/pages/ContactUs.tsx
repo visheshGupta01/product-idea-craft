@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { z } from "zod";
 
 const contactSchema = z.object({
@@ -85,73 +86,131 @@ const ContactUs: React.FC = () => {
   return (
     <div className="min-h-screen pt-8 bg-background">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-6 py-16 font-poppins">
-        <h1 className="text-4xl font-bold text-foreground mb-4">Contact Us</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          Have questions or feedback? We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
-        </p>
+      <div className="max-w-7xl mx-auto px-6 py-16 font-poppins">
+        {/* Header Section */}
+        <div className="text-center mb-16 animate-fade-up">
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">Get In Touch</h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            Have questions or feedback? We'd love to hear from you. Fill out the form and we'll respond as soon as possible.
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-card p-8 rounded-lg border border-border">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Your name"
-              className={errors.name ? "border-destructive" : ""}
-            />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+        <div className="grid md:grid-cols-2 gap-12 items-start">
+          {/* Contact Information */}
+          <div className="space-y-8 animate-fade-up animation-delay-100">
+            <div className="bg-card p-8 rounded-xl border border-border hover:border-primary/50 transition-all duration-300">
+              <h2 className="text-2xl font-semibold text-foreground mb-6">Contact Information</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                    <Mail className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-foreground mb-1">Email</h3>
+                    <p className="text-muted-foreground">support@imaginebo.com</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                    <Phone className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-foreground mb-1">Phone</h3>
+                    <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                    <MapPin className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-foreground mb-1">Office</h3>
+                    <p className="text-muted-foreground">123 Innovation Street<br />Tech City, TC 12345</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 p-8 rounded-xl border border-primary/20">
+              <h3 className="text-xl font-semibold text-foreground mb-3">Quick Response</h3>
+              <p className="text-muted-foreground">
+                We typically respond within 24 hours during business days. For urgent matters, please call our support line.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="your.email@example.com"
-              className={errors.email ? "border-destructive" : ""}
-            />
-            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+          {/* Contact Form */}
+          <div className="animate-fade-up animation-delay-200">
+            <form onSubmit={handleSubmit} className="space-y-6 bg-card p-8 rounded-xl border border-border shadow-lg">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-foreground">Name *</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Your name"
+                  className={`transition-all duration-300 ${errors.name ? "border-destructive" : "focus:border-primary"}`}
+                />
+                {errors.name && <p className="text-sm text-destructive animate-fade-up">{errors.name}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground">Email *</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your.email@example.com"
+                  className={`transition-all duration-300 ${errors.email ? "border-destructive" : "focus:border-primary"}`}
+                />
+                {errors.email && <p className="text-sm text-destructive animate-fade-up">{errors.email}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="subject" className="text-foreground">Subject</Label>
+                <Input
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  placeholder="What is this regarding?"
+                  className={`transition-all duration-300 ${errors.subject ? "border-destructive" : "focus:border-primary"}`}
+                />
+                {errors.subject && <p className="text-sm text-destructive animate-fade-up">{errors.subject}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="message" className="text-foreground">Message *</Label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Your message..."
+                  rows={6}
+                  className={`transition-all duration-300 resize-none ${errors.message ? "border-destructive" : "focus:border-primary"}`}
+                />
+                {errors.message && <p className="text-sm text-destructive animate-fade-up">{errors.message}</p>}
+              </div>
+
+              <Button 
+                type="submit" 
+                disabled={isSubmitting} 
+                className="w-full h-12 text-base font-medium hover:scale-[1.02] transition-transform"
+              >
+                {isSubmitting ? "Sending..." : "Send Message"}
+              </Button>
+            </form>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="subject">Subject</Label>
-            <Input
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              placeholder="What is this regarding?"
-              className={errors.subject ? "border-destructive" : ""}
-            />
-            {errors.subject && <p className="text-sm text-destructive">{errors.subject}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="message">Message *</Label>
-            <Textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              placeholder="Your message..."
-              rows={6}
-              className={errors.message ? "border-destructive" : ""}
-            />
-            {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
-          </div>
-
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Sending..." : "Send Message"}
-          </Button>
-        </form>
-
-        <div className="mt-12 text-center text-sm text-muted-foreground">
+        <div className="mt-16 text-center text-sm text-muted-foreground">
           <p>Powered by synergyLabs</p>
         </div>
       </div>
