@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from "@/components/landing_page/Navbar";
+import Footer from "@/components/landing_page/Footer";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 const ContactUs: React.FC = () => {
@@ -61,10 +62,8 @@ const ContactUs: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-16 text-center text-sm text-muted-foreground">
-          <p>Powered by synergyLabs</p>
-        </div>
       </div>
+      <Footer />
     </div>
   );
 };
