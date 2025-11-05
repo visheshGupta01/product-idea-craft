@@ -44,6 +44,16 @@ const Footer: React.FC = () => {
           <span>imagine.bo</span>
         </div>
 
+        {/* Links */}
+        <div className="flex gap-6">
+          <a href="/terms" className="hover:text-white transition">
+            Terms of Use
+          </a>
+          <a href="/privacy" className="hover:text-white transition">
+            Privacy Policy
+          </a>
+        </div>
+
         {/* Copyright */}
         <div>© 2025 imagine.bo. All rights reserved.</div>
       </div>
