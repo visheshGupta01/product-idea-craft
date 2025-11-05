@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
           Take Your Brand <br /> Mobile.
         </p>
 
-        {/* Social Icons */}
+        {/* Social Icons
         <div className="flex gap-3">
           {socialIcons.map((Icon, index) => (
             <a
@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
               <Icon size={16} />
             </a>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* Divider */}

@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from "@/config/api";
 
 // Razorpay key
 const RAZORPAY_KEY =
-  import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_RReeLKTiqG0e3W";
+  import.meta.env.VITE_RAZORPAY_KEY
 
 export interface PaymentRequest {
   user_uuid: string;
