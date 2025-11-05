@@ -100,7 +100,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           {/* Password Input */}
           <div className="relative">
             <Input
-              id="password"
+              id="password" 
               type={showPassword ? "text" : "password"}
               placeholder="Enter password"
               value={password}
@@ -134,7 +134,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             className="w-full h-10 bg-white text-black hover:bg-gray-200"
           >
             {isLoading ? (
-              <LoadingSpinner size="sm" text="Logging in..." />
+              <LoadingSpinner size="sm" text="Logging in" />
             ) : (
               "Continue"
             )}

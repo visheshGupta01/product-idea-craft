@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { API_ENDPOINTS } from "@/config/api";
 import {
   ChevronRight,
@@ -35,6 +35,7 @@ interface FileExplorerProps {
   onFileSelect: (file: FileNode) => void;
   selectedFile: string | null;
   sessionId?: string;
+  selectedPage: FileNode | null;
 }
 
 // Build file tree from flat file list
@@ -188,29 +189,52 @@ const FileTreeItem: React.FC<{
   level: number;
   onFileSelect: (file: FileNode) => void;
   selectedFile: string | null;
-}> = ({ node, level, onFileSelect, selectedFile }) => {
+  selectedPage: FileNode | null;
+
+  }> = ({ node, level, onFileSelect, selectedFile, selectedPage }) => {
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [isExpanded, setIsExpanded] = useState(
     level === 0 && node.type === "folder"
   );
 
+  // Auto-expand when selectedPage is inside this folder
+  useEffect(() => {
+    if (
+      node.type === "folder" &&
+      selectedPage &&
+      selectedPage.path.startsWith(node.path + "/")
+    ) {
+      setIsExpanded(true);
+    }
+  }, [selectedPage, node.path, node.type]);
+
+  // compute selection: respect both selectedFile path and selectedPage
+  const isSelected =
+    selectedFile === node.path || selectedPage?.path === node.path;
+
+  // Auto-scroll selected item into view (nice UX)
+  useEffect(() => {
+    if (isSelected && containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [isSelected]);
+
   const handleClick = () => {
     if (node.type === "folder") {
-      setIsExpanded(!isExpanded);
+      setIsExpanded((prev) => !prev);
     } else {
       onFileSelect(node);
     }
   };
 
-  const isSelected = selectedFile === node.path;
-
-  // Get file icon and color based on extension
   const fileIconData =
     node.type === "file" ? getFileIcon(node.extension || "") : null;
   const FileIcon = fileIconData?.icon || File;
   const iconColor = fileIconData?.color || "text-sidebar-foreground/60";
 
   return (
-    <div>
+    <div ref={containerRef}>
       <div
         className={cn(
           "flex items-center py-1 px-2 cursor-pointer hover:bg-sidebar-accent rounded-sm transition-colors",
@@ -243,6 +267,7 @@ const FileTreeItem: React.FC<{
           {node.name}
         </span>
       </div>
+
       {node.type === "folder" && isExpanded && node.children && (
         <div>
           {node.children.map((child) => (
@@ -252,6 +277,7 @@ const FileTreeItem: React.FC<{
               level={level + 1}
               onFileSelect={onFileSelect}
               selectedFile={selectedFile}
+              selectedPage={selectedPage}
             />
           ))}
         </div>
@@ -264,6 +290,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
   onFileSelect,
   selectedFile,
   sessionId,
+  selectedPage,
 }) => {
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
   const [files, setFiles] = useState<Array<{ path: string; content: string }>>(
@@ -296,7 +323,6 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
           setFileTree(tree);
         }
       } catch (error) {
-        //console.error('Error fetching project files:', error);
         setFileTree([]);
         setFiles([]);
       }
@@ -330,6 +356,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
             level={0}
             onFileSelect={handleFileSelect}
             selectedFile={selectedFile}
+            selectedPage={selectedPage}
           />
         ))}
       </div>
