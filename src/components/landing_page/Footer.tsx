@@ -52,6 +52,9 @@ const Footer: React.FC = () => {
           <a href="/privacy" className="hover:text-white transition">
             Privacy Policy
           </a>
+          <a href="/contact" className="hover:text-white transition">
+            Contact Us
+          </a>
         </div>
 
         {/* Copyright */}
