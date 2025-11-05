@@ -141,7 +141,7 @@ const AnimatedCard = memo(function AnimatedCard({
             2
           )}px)`,
           opacity: Math.max(
-            0.7,
+            1,
             0.9 - (currentCardIndex - index - 1) * 0.08 - 200
           ),
           zIndex: totalCards - (currentCardIndex - index) - 1,

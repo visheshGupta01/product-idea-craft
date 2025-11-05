@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/resizable";
 import { useUser } from "@/context/UserContext";
 import { fetchProjectDetails, ProjectDetails } from "@/services/projectService";
+import { FileNode } from "./dashboard/FileExplorer";
 
 interface MainDashboardProps {
   userIdea: string;
   sessionId?: string;
   deployUrl?: string;
   shouldOpenPreview?: boolean;
+ 
 }
 
 type ActiveView = "main" | "team" | "my-projects";
@@ -47,6 +49,8 @@ const MainDashboard = ({
     shouldOpenPreview || false
   );
   const [previewUrl, setPreviewUrl] = useState<string>(deployUrl || "");
+
+  const [selectedPage, setSelectedPage] = useState<FileNode | null>(null);
 
   // Fetch project details when sessionId changes and check for stored project URL
   useEffect(() => {
@@ -187,6 +191,7 @@ const MainDashboard = ({
                 <PreviewCodePanel
                   previewUrl={previewUrl}
                   sessionId={sessionId}
+                  selectedPage={selectedPage}
                 />
               </div>
             </ResizablePanel>
@@ -214,12 +219,14 @@ const MainDashboard = ({
         >
           <Sidebar
             collapsed={sidebarCollapsed}
+            setSelectedPage={setSelectedPage}
             onToggleCollapse={() => {
               // Only allow toggle on main dashboard, keep collapsed on other screens
               if (activeView === "main") {
                 setSidebarCollapsed(!sidebarCollapsed);
               }
             }}
+           
             currentProject={currentProject}
             activeView={activeView}
             onViewChange={setActiveView}

@@ -2,7 +2,7 @@ import StackedCards from "./StackedCards";
 
 export default function VisionSection() {
   return (
-    <div className="relative bg-gradient-to-b from-[#d5e1e7] to-[#ffd9f2] pt-8 md:pt-16 mt-10">
+    <div className="relative bg-gradient-to-b from-[#d5e1e7] to-[#ffd9f2] pt-8 md:pt-16 mt-10 ">
       {/* Section Heading - Responsive */}
       <div className="p-4 sm:p-6 md:p-8 text-center bg-transparent">
         <p className="uppercase text-xs sm:text-sm md:text-l tracking-widest text-[#22282A] font-['Supply'] mb-4">

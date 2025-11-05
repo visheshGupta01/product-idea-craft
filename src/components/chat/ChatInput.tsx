@@ -66,7 +66,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const { sessionId } = useUser();
 
-  useEffect(() => {
+  useEffect(() => { 
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       const newHeight = Math.min(textareaRef.current.scrollHeight, 120); // Max height 120px

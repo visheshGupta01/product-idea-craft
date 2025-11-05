@@ -152,10 +152,10 @@ const IdeaBox: React.FC = () => {
   return (
     <section
       id="idea-box"
-      className="relative px-5 flex justify-center items-start bg-[#1B2123]"
+      className="relative max-h-96  px-5 flex justify-center items-start bg-[#1B2123]"
     >
       <div className="absolute bottom-0 w-full h-[220px] bg-[#d5e1e7] translate-y-[40%] z-0"></div>
-      <div className="relative bg-[#1b2123] w-full border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
+      <div className="relative  bg-[#1b2123] w-full border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
         {/* Header Text */}
         <div className="py-[40px] flex items-center justify-center">
           <h2 className="text-[48px] font-medium font-poppins text-center mb-0">
@@ -193,16 +193,16 @@ const IdeaBox: React.FC = () => {
         </div>
 
         {/* White Input Area */}
-        <div className="bg-white w-full  h-[238px] rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
+        <div className="bg-white w-full   rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
           {/* Input area with floating buttons */}
           {/* Input area with floating buttons */}
-          <div className="relative w-full  mb-4 font-poppins  text-gray-800">
+          <div className="relative w-full max-h-52 mb-4 font-poppins  text-gray-800">
             <textarea
               ref={textareaRef}
               value={idea}
               onChange={handleIdeaChange}
               placeholder="Type your idea or use '@' to call a tool, e.g., '@analyse', '@research'"
-              className="custom-scroll w-full px-4 py-3 max-h-32 pr-24 overflow-y-scroll rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
+              className="custom-scroll w-full px-4 py-3 max-h-52 pr-24 overflow-y-scroll rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
               style={{
                 border: "none",
                 boxShadow: "none",

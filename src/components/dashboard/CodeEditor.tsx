@@ -1,5 +1,5 @@
 import React from "react";
-import Editor from "@monaco-editor/react";
+  import Editor from "@monaco-editor/react";
 import type { FileNode } from "./FileExplorer";
 
 interface CodeEditorProps {
