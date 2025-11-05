@@ -68,7 +68,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
     if (isOpen && currentView === "list") {
       fetchDevelopers();
     }
-  }, [isOpen, currentView]);
+  }, [isOpen, currentView, currentPage]);
 
   const fetchDevelopers = async () => {
     setLoading(true);
