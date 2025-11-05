@@ -62,6 +62,9 @@ export const createRazorpayPayment = async (
         //console.log('Payment response:', razorpayResponse);
 
         try {
+          // Mark payment as attempted
+          sessionStorage.setItem('payment_attempted', 'true');
+          
           // Verify payment on backend
           const verifyRes = await apiClient.post(
             "/api/payment/verify-payment",
@@ -78,10 +81,15 @@ export const createRazorpayPayment = async (
           // alert(verifyRes.data)
           //console.log('Verification response:', verifyRes.data);
 
+          // Mark payment as completed
+          sessionStorage.setItem('payment_completed', 'true');
+          sessionStorage.removeItem('payment_attempted');
+          
           // Redirect to success page
           window.location.href = "/payment-success";
         } catch (err) {
           //console.error("Verification failed:", err);
+          sessionStorage.setItem('payment_attempted', 'true');
           window.location.href = "/payment-failed";
         }
       },

@@ -110,10 +110,39 @@ const MainDashboard = ({
       window.removeEventListener("frontendComplete", handleFrontendComplete);
   }, []);
 
-  const handleFrontendGenerated = (url: string) => {
+  const handleFrontendGenerated = async (url: string) => {
     setPreviewUrl(url);
     setIsFrontendCreated(true);
     //console.log("🎯 Preview URL set:", url);
+    
+    // Refresh project details to update sitemap
+    if (sessionId) {
+      try {
+        const details = await fetchProjectDetails(sessionId);
+        setProjectDetails(details);
+        //console.log("🗺️ Sitemap refreshed:", details);
+      } catch (error) {
+        //console.error("Failed to refresh sitemap:", error);
+      }
+    }
+  };
+
+  const handleSitemapGenerated = (sitemap: any) => {
+    //console.log("🗺️ Sitemap generated, updating sidebar:", sitemap);
+    
+    // Update project details with the new sitemap
+    if (projectDetails) {
+      setProjectDetails({
+        ...projectDetails,
+        sitemap: sitemap,
+      });
+    } else {
+      // If no project details yet, create a minimal object
+      setProjectDetails({
+        title: sitemap.project_name || "Untitled Project",
+        sitemap: sitemap,
+      } as ProjectDetails);
+    }
   };
 
   const handlePublish = () => {
@@ -145,6 +174,7 @@ const MainDashboard = ({
                 <ChatPanel
                   userIdea={userIdea}
                   onFrontendGenerated={handleFrontendGenerated}
+                  onSitemapGenerated={handleSitemapGenerated}
                   sessionId={sessionId}
                 />
               </div>

@@ -158,7 +158,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         {/* Uploaded Files Display */}
         {uploadedFiles.length > 0 && (
           <div className="mb-3 space-y-2">
-            <div className="text-xs text-chat-foreground/70 font-medium">Attached Files:</div>
+            <div className="text-xs text-chat-foreground/70 font-medium">
+              Attached Files:
+            </div>
             <div className="flex flex-wrap gap-2">
               {uploadedFiles.map((file) => (
                 <div
@@ -166,7 +168,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                   className="flex items-center gap-2 bg-sidebar-accent/50 border border-sidebar-border rounded-md px-3 py-2 text-sm"
                 >
                   <FileText className="w-4 h-4 text-primary" />
-                  <span className="text-chat-foreground truncate max-w-[200px]" title={file.name}>
+                  <span
+                    className="text-chat-foreground truncate max-w-[200px]"
+                    title={file.name}
+                  >
                     {file.name}
                   </span>
                   <button
@@ -198,7 +203,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             rows={1}
             disabled={isLoading}
           />
-          
+
           {/* Action Buttons */}
           <div className="absolute bottom-2 right-2 flex items-center space-x-2 px-2">
             <FileUploader
@@ -207,16 +212,21 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               onRemoveFile={handleRemoveFile}
               disabled={isLoading}
             />
-            <VoiceRecorder onTranscript={handleTranscript} disabled={isLoading} />
+            <VoiceRecorder
+              onTranscript={handleTranscript}
+              disabled={isLoading}
+            />
             <Button
               type="submit"
               size="icon"
               onClick={isLoading ? onStopGeneration : handleSendMessage}
-              disabled={!isLoading && (!message.trim() && uploadedFiles.length === 0)}
+              disabled={
+                !isLoading && !message.trim() && uploadedFiles.length === 0
+              }
               className={cn(
                 "w-[36px] h-[36px]",
-                isLoading 
-                  ? "bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/50" 
+                isLoading
+                  ? "bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/50"
                   : "bg-primary hover:bg-primary/90 text-primary-foreground"
               )}
             >
@@ -234,7 +244,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       {showToolList && filteredTools.length > 0 && (
         <div className="absolute bottom-full left-0 mb-2 w-full bg-chat-background border border-sidebar-border rounded-lg shadow-xl z-20">
           <div className="p-2 border-b border-sidebar-border">
-            <div className="text-xs text-chat-foreground/70 font-medium">Available Tools:</div>
+            <div className="text-xs text-chat-foreground/70 font-medium">
+              Available Tools:
+            </div>
           </div>
           <div className="max-h-[200px] overflow-y-auto">
             {filteredTools.map((tool) => (

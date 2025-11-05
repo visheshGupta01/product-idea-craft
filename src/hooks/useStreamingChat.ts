@@ -27,12 +27,14 @@ export interface StreamingChatActions {
   disconnect: () => void;
   stopGeneration: () => void;
   onFrontendGenerated?: (url: string) => void;
+  onSitemapGenerated?: (sitemap: any) => void;
   onInsufficientBalance?: () => void;
 }
 
 export const useStreamingChat = (
   sessionId: string,
   onFrontendGenerated?: (url: string) => void,
+  onSitemapGenerated?: (sitemap: any) => void,
   onInsufficientBalance?: () => void
 ): StreamingChatState & StreamingChatActions => {
   const {
@@ -170,14 +172,31 @@ export const useStreamingChat = (
               (text.includes("[Tool Output for frontend_code_generator]:") &&
                 text.includes("devpreview.imagine.bo"))
             ) {
+              console.log("Detected frontend code generator output");
               const urlMatch = text.match(
                 /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo|\.devpreview\.imagine\.bo)\/?/
               );
-
+console.log("Extracted URL:", urlMatch);
               if (urlMatch && onFrontendGenerated) {
+                console.log("Calling onFrontendGenerated with URL:", urlMatch[0]);
                 const localUrl = urlMatch[0];
                 setProjectUrl(localUrl); // Store in session storage
                 onFrontendGenerated(localUrl);
+              }
+            }
+
+            // Check for sitemap_user_idea tool output
+            if (streamingContent.includes("[Tool Output for sitemap_user_idea]:")) {
+              const sitemapMatch = streamingContent.match(
+                /\[Tool Output for sitemap_user_idea\]:\s*(\{[\s\S]*?\})\s*(?=\[Tool Output|\n\n|$)/
+              );
+              if (sitemapMatch && onSitemapGenerated) {
+                try {
+                  const sitemapData = JSON.parse(sitemapMatch[1]);
+                  onSitemapGenerated(sitemapData);
+                } catch (e) {
+                  //console.error("Failed to parse sitemap:", e);
+                }
               }
             }
           },
@@ -224,11 +243,13 @@ export const useStreamingChat = (
         setIsProcessingTools(false);
       }
     },
-    [addMessage, updateMessage, connect, onInsufficientBalance]
+    [addMessage, updateMessage, connect, onFrontendGenerated, onSitemapGenerated, onInsufficientBalance, setProjectUrl]
   );
 
-  // Filter out empty messages before returning
-  const filteredMessages = messages.filter((msg) => msg.content.trim() !== "");
+  // Filter out empty messages before returning, but keep them during streaming
+  const filteredMessages = isStreaming 
+    ? messages 
+    : messages.filter((msg) => msg.content.trim() !== "");
 
   return {
     messages: filteredMessages,
@@ -245,6 +266,7 @@ export const useStreamingChat = (
     disconnect,
     stopGeneration,
     onFrontendGenerated,
+    onSitemapGenerated,
     onInsufficientBalance,
     projectUrl,
     sitemap,

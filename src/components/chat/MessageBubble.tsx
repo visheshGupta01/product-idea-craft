@@ -5,6 +5,7 @@ import { Bot, User, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "@/types";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -15,11 +16,13 @@ import {
 interface MessageBubbleProps {
   message: Message;
   isWelcomeMessage?: boolean;
+  isStreaming?: boolean;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
   isWelcomeMessage = false,
+  isStreaming = false,
 }) => {
   //console.log("Rendering MessageBubble for message:", message);
   const { toast } = useToast();
@@ -58,6 +61,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   };
 
   const isUser = message.type === "user";
+  const showLoading = !isUser && isStreaming && message.content.trim() === "";
+
 
   return (
     <div className="mb-6 group">
@@ -75,6 +80,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           >
             {isUser ? (
               <User className="w-4 h-4" />
+            ) : showLoading ? (
+              <LoadingSpinner size="sm" className="text-white" />
             ) : (
               <Bot className="w-4 h-4" />
             )}
@@ -91,6 +98,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {isUser ? (
             <div className="whitespace-pre-wrap text-sm leading-relaxed">
               {message.content}
+            </div>
+          ) : showLoading ? (
+            <div className="flex items-center gap-2">
+              <LoadingSpinner size="sm" />
+              <span className="text-sm text-muted-foreground">Thinking...</span>
             </div>
           ) : (
             <div className="text-sm leading-relaxed">

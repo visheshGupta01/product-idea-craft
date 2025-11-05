@@ -19,12 +19,14 @@ import { useNavigate } from "react-router-dom";
 interface StreamingChatInterfaceProps {
   userIdea?: string;
   onFrontendGenerated?: (url: string) => void;
+  onSitemapGenerated?: (sitemap: any) => void;
   urlSessionId?: string;
 }
 
 export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   userIdea,
   onFrontendGenerated,
+  onSitemapGenerated,
   urlSessionId,
 }) => {
   const {
@@ -47,8 +49,11 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     scrollToBottom,
     connect,
     stopGeneration,
-  } = useStreamingChat(activeSessionId || "", onFrontendGenerated, () =>
-    setShowBalanceDialog(true)
+  } = useStreamingChat(
+    activeSessionId || "", 
+    onFrontendGenerated, 
+    onSitemapGenerated,
+    () => setShowBalanceDialog(true)
   );
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -158,9 +163,28 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                     <MessageBubble
                       message={message}
                       isWelcomeMessage={index === 0 && message.type === "ai"}
+                      isStreaming={isStreaming}
                     />
                   </div>
                 ))}
+                
+                {/* Show tool processing indicator */}
+                {isProcessingTools && (
+                  <div className="flex items-start gap-3 animate-scale-in">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 animate-pulse">
+                      <span className="text-sm">🔧</span>
+                    </div>
+                    <div className="flex-1 bg-gradient-to-r from-muted to-muted/50 rounded-lg p-4 border border-primary/20 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <LoadingSpinner size="sm" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-foreground">Processing tools</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">Executing operations...</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* 👇 Show spinner only while current message is streaming */}
                 {isStreaming && (
