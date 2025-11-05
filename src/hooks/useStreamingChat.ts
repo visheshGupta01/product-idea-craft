@@ -177,8 +177,10 @@ export const useStreamingChat = (
               );
               if (urlMatch && onFrontendGenerated) {
                 const localUrl = urlMatch[0];
-                setProjectUrl(localUrl); // Store in session storage
-                onFrontendGenerated(localUrl);
+                // Add timestamp to force reload
+                const urlWithTimestamp = `${localUrl}${localUrl.includes('?') ? '&' : '?'}_t=${Date.now()}`;
+                setProjectUrl(urlWithTimestamp); // Store in session storage
+                onFrontendGenerated(urlWithTimestamp);
               }
             }
 

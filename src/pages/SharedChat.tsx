@@ -180,6 +180,7 @@ const SharedChat: React.FC = () => {
             <PreviewCodePanel
               previewUrl={chatData.project_url}
               sessionId={undefined}
+              selectedPage={null}
             />
           </ResizablePanel>
         </ResizablePanelGroup>
