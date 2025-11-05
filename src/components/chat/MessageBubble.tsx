@@ -102,7 +102,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           ) : showLoading ? (
             <div className="flex items-center gap-2">
               <LoadingSpinner size="sm" />
-              <span className="text-sm text-muted-foreground">Thinking...</span>
+              <span className="text-sm text-black">Thinking...</span>
             </div>
           ) : (
             <div className="text-sm leading-relaxed">
