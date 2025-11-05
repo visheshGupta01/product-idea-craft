@@ -246,8 +246,10 @@ console.log("Extracted URL:", urlMatch);
     [addMessage, updateMessage, connect, onFrontendGenerated, onSitemapGenerated, onInsufficientBalance, setProjectUrl]
   );
 
-  // Filter out empty messages before returning
-  const filteredMessages = messages.filter((msg) => msg.content.trim() !== "");
+  // Filter out empty messages before returning, but keep them during streaming
+  const filteredMessages = isStreaming 
+    ? messages 
+    : messages.filter((msg) => msg.content.trim() !== "");
 
   return {
     messages: filteredMessages,
