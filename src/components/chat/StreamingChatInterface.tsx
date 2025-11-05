@@ -163,6 +163,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                     <MessageBubble
                       message={message}
                       isWelcomeMessage={index === 0 && message.type === "ai"}
+                      isStreaming={isStreaming}
                     />
                   </div>
                 ))}
