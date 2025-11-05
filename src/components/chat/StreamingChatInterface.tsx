@@ -58,8 +58,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
 
   const [isInitialized, setIsInitialized] = useState(false);
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize connection when sessionId is available
   useEffect(() => {
@@ -141,12 +141,24 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     clearInitialResponse,
   ]);
 
-  // Track if user is near bottom of scroll area
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const element = event.currentTarget;
-    const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
-    shouldAutoScrollRef.current = isNearBottom;
-  };
+  // Track scroll position to determine if user is at bottom
+  useEffect(() => {
+    const scrollViewport = document.querySelector('[data-radix-scroll-area-viewport]');
+    if (scrollViewport) {
+      scrollViewportRef.current = scrollViewport as HTMLDivElement;
+      
+      const handleScroll = () => {
+        const element = scrollViewportRef.current;
+        if (element) {
+          const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
+          shouldAutoScrollRef.current = isNearBottom;
+        }
+      };
+
+      scrollViewport.addEventListener('scroll', handleScroll);
+      return () => scrollViewport.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   // Auto-scroll on new messages only if user is already at bottom
   useEffect(() => {
@@ -167,7 +179,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="flex-1 p-6" onScrollCapture={handleScroll}>
+            <ScrollArea className="flex-1 p-6">
               <div className="space-y-6 max-w-5xl mx-auto">
                 {messages.map((message, index) => (
                   <div key={message.id} className="group">
