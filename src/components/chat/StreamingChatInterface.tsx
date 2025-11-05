@@ -58,6 +58,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
 
   const [isInitialized, setIsInitialized] = useState(false);
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+  const shouldAutoScrollRef = useRef(true);
 
   // Initialize connection when sessionId is available
   useEffect(() => {
@@ -139,12 +141,21 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     clearInitialResponse,
   ]);
 
-  // Auto-scroll on new messages
+  // Track if user is near bottom of scroll area
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const element = event.currentTarget;
+    const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
+    shouldAutoScrollRef.current = isNearBottom;
+  };
+
+  // Auto-scroll on new messages only if user is already at bottom
   useEffect(() => {
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-    return () => clearTimeout(timer);
+    if (shouldAutoScrollRef.current) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
   }, [messages, isStreaming, scrollToBottom]);
 
   return (
@@ -156,7 +167,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="flex-1 p-6">
+            <ScrollArea className="flex-1 p-6" onScrollCapture={handleScroll}>
               <div className="space-y-6 max-w-5xl mx-auto">
                 {messages.map((message, index) => (
                   <div key={message.id} className="group">
