@@ -172,13 +172,10 @@ export const useStreamingChat = (
               (text.includes("[Tool Output for frontend_code_generator]:") &&
                 text.includes("devpreview.imagine.bo"))
             ) {
-              console.log("Detected frontend code generator output");
               const urlMatch = text.match(
                 /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo|\.devpreview\.imagine\.bo)\/?/
               );
-console.log("Extracted URL:", urlMatch);
               if (urlMatch && onFrontendGenerated) {
-                console.log("Calling onFrontendGenerated with URL:", urlMatch[0]);
                 const localUrl = urlMatch[0];
                 setProjectUrl(localUrl); // Store in session storage
                 onFrontendGenerated(localUrl);
