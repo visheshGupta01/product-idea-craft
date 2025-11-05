@@ -68,10 +68,15 @@ export default function SitemapSection({
   collapsed,
   setSelectedPage,
 }: SitemapSectionProps) {
-  const pages = projectDetails?.sitemap?.pages ?? [];
-  console.log({ pages });
+  // near top of component
+  // const renderCountRef = React.useRef(0);
+  // renderCountRef.current += 1;
+  // console.log("SitemapSection render", renderCountRef.current);
+  // console.trace("render trace");
 
-  
+  const pages = projectDetails?.sitemap?.pages ?? [];
+  // console.log({ pages });
+
   //console.log("Rendering SitemapSection, pages:", pages);
   const onPageSelect = (page: any) => {
     const normalizedPath = String(page.frontend_path || "")
@@ -86,7 +91,7 @@ export default function SitemapSection({
       // can match this path and return the existing file content instead of
       // creating a new, empty file in the editor
       path: normalizedPath,
-      extension: normalizedPath.split('.').pop(), // e.g. "jsx"
+      extension: normalizedPath.split(".").pop(), // e.g. "jsx"
       children: Array.isArray(page.components)
         ? page.components.map((comp: string) => ({
             name: comp,
@@ -98,12 +103,10 @@ export default function SitemapSection({
     };
 
     // Debugging aid: log selected path so you can verify matching with FileExplorer
-    console.log('SitemapSection selecting page path:', fileNode.path);
+    // console.log("SitemapSection selecting page path:", fileNode.path);
 
     setSelectedPage?.(fileNode);
   };
-
- 
 
   if (pages.length === 0) {
     //console.log("No sitemap pages available.");
@@ -119,7 +122,6 @@ export default function SitemapSection({
       </div>
     );
   }
-
 
   return (
     <div className="px-4 py-2 space-y-2 overflow-y-auto">

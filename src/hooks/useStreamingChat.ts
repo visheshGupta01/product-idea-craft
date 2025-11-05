@@ -211,6 +211,7 @@ export const useStreamingChat = (
               streamingContent.length > fullContent.length
                 ? streamingContent
                 : fullContent;
+            // console.log("Final streamed content:", finalContent);
             updateMessage(aiMessage.id, finalContent);
             setIsStreaming(false);
             setIsProcessingTools(false);

@@ -60,7 +60,7 @@ const PreviewCodePanel = ({
   const hasValidPreview = iframeSrc && iframeSrc !== "";
 
   const handleFileSelect = (file: FileNode) => {
-    console.log({ fileFromExp: file });
+    // console.log({ fileFromExp: file });
     setSelectedFile(file);
     setOriginalContent(file.content || "");
     setCurrentContent(file.content || "");
@@ -90,7 +90,7 @@ const PreviewCodePanel = ({
   }, [sessionId]);
 
   useEffect(() => {
-    console.log("Use effect working for selectedPage change");
+    // console.log("Use effect working for selectedPage change");
 
     if (selectedPage) {
       const fileWithContent = fileContent.find(

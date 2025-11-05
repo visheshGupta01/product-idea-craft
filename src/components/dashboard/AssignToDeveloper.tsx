@@ -267,7 +267,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
                 <div className="flex flex-col items-end gap-2">
                   <div className="text-right">
                     <div className="font-semibold">
-                      ${developer.hourpaid || 50}/hr
+                      ${developer.hourpaid || 0}/hr
                     </div>
                     <div className="flex items-center gap-1 text-sm text-green-600">
                       <div className="h-2 w-2 rounded-full bg-green-500"></div>
