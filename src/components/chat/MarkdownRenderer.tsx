@@ -118,7 +118,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                 </div>
               )}
               <pre className="p-6 overflow-x-auto max-w-full">
-                <code className="text-sm font-mono text-black leading-relaxed break-words whitespace-pre-wrap">
+                <code className="text-sm font-mono text-gray-100 leading-relaxed break-words whitespace-pre-wrap">
                   {codeLines.join("\n")}
                 </code>
               </pre>
@@ -362,7 +362,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     // Handle inline code first
     text = text.replace(
       /`([^`]+)`/g,
-      '<code class="bg-muted text-black px-1 py-0.5 rounded font-mono text-sm">$1</code>'
+      '<code class="bg-muted text-gray-100 px-1 py-0.5 rounded font-mono text-sm">$1</code>'
     );
 
     // Handle bold

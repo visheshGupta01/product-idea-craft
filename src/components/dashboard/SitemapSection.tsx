@@ -19,7 +19,6 @@ import {
   Diamond,
 } from "lucide-react";
 import { ProjectDetails } from "@/services/projectService";
-import { set } from "date-fns";
 import { FileNode } from "./FileExplorer";
 
 interface SitemapSectionProps {
@@ -130,25 +129,30 @@ export default function SitemapSection({
 
         return (
           <Collapsible key={page.name ?? index} defaultOpen={false}>
-            
-            <CollapsibleTrigger
-            className="flex items-center justify-between w-full text-left text-sm font-medium text-sidebar-foreground hover:text-primary transition-colors p-2 hover:bg-sidebar-accent/50 rounded-md">
+            <CollapsibleTrigger className="group flex items-center justify-between w-full text-left text-sm font-medium text-sidebar-foreground hover:text-primary transition-colors p-2 hover:bg-sidebar-accent/50 rounded-md">
               <div className="flex items-center space-x-2">
                 <Icon size={16} className="text-pink-500" />
-                <span
-                  onClick={() => {onPageSelect(page )}}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPageSelect(page);
+                  }}
+                  className="text-left focus:outline-none"
+                  aria-label={`Open ${page.name} in editor`}
                 >
                   {page.name}
-                </span>
+                </button>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <ChevronDown
                   size={14}
-                  className="transition-transform data-[state=open]:rotate-180"
+                  className="transition-transform duration-200 group-data-[state=open]:rotate-90"
                 />
               </div>
             </CollapsibleTrigger>
-            {Array.isArray(page.components) && page.components.length > 0 &&  (
+
+            {Array.isArray(page.components) && page.components.length > 0 && (
               <CollapsibleContent className="space-y-1 mt-2 ml-6">
                 {page.components.map((component: string, compIndex: number) => (
                   <div
@@ -159,8 +163,7 @@ export default function SitemapSection({
                       size={12}
                       className="text-muted-foreground text-pink-400"
                     />
-                    <span className="cursor-pointer"
-                    >{component}</span>
+                    <span className="cursor-pointer">{component}</span>
                   </div>
                 ))}
               </CollapsibleContent>
