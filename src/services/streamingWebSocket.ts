@@ -116,17 +116,15 @@ export class StreamingWebSocketClient {
           const content = event.data;
 
           // Detect tool output by looking for tool output patterns
-          const hasToolStart = content.includes("[Tool Use Started]:") || 
-                               content.includes("[Calling Tool:") ||
-                               (content.includes("Tool:") && content.includes("Arguments:"));
-          const hasToolOutput = content.includes("[Tool Output for") && content.includes("]:");
-          
-          if (hasToolStart && !isInToolMode) {
+          if (content.includes("[Tool Use Started]:")) {
             isInToolMode = true;
             callbacks.onToolStart();
             fullContent += content;
             callbacks.onContent(content);
-          } else if (hasToolOutput) {
+          } else if (
+            content.includes("[Tool Output for") &&
+            content.includes("]:")
+          ) {
             if (isInToolMode) {
               callbacks.onToolEnd();
               isInToolMode = false;
