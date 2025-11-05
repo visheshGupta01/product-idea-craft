@@ -76,6 +76,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           >
             {isUser ? (
               <User className="w-4 h-4" />
+            ) : message.content.trim() === "" ? (
+              <LoadingSpinner size="sm" className="text-white" />
             ) : (
               <Bot className="w-4 h-4" />
             )}
