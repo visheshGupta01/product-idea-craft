@@ -4,7 +4,7 @@ import Footer from "@/components/landing_page/Footer";
 
 const TermsAndConditions: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen pt-8 bg-background">
       <Navbar />
       <div className="max-w-4xl mx-auto px-6 py-16 font-poppins">
         <h1 className="text-4xl font-bold text-foreground mb-4">Terms of Use</h1>
