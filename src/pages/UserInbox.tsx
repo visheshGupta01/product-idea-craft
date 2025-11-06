@@ -93,7 +93,7 @@ const UserInbox: React.FC = () => {
     return () => {
       wsService.disconnect();
     };
-  }, [wsService, selectedTask, fetchInbox]);
+  }, [wsService, selectedTask]);
 
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
