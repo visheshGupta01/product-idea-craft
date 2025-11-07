@@ -114,6 +114,17 @@ const MainDashboard = ({
     setPreviewUrl(url);
     setIsFrontendCreated(true);
     //console.log("🎯 Preview URL set:", url);
+    
+    // Refresh project details to update sitemap
+    if (sessionId) {
+      try {
+        const details = await fetchProjectDetails(sessionId);
+        setProjectDetails(details);
+        //console.log("🗺️ Sitemap refreshed:", details);
+      } catch (error) {
+        //console.error("Failed to refresh sitemap:", error);
+      }
+    }
   };
 
   const handleSitemapGenerated = (sitemap: any) => {
@@ -222,8 +233,18 @@ const MainDashboard = ({
             projectDetails={projectDetails}
             sessionId={sessionId}
             onProjectRenamed={async (newTitle) => {
-              if (projectDetails) {
+              if (projectDetails && sessionId) {
                 setProjectDetails({ ...projectDetails, title: newTitle });
+                // Refresh project details to get updated preview URL
+                try {
+                  const details = await fetchProjectDetails(sessionId);
+                  setProjectDetails(details);
+                  if (details.project_url) {
+                    setPreviewUrl(details.project_url);
+                  }
+                } catch (error) {
+                  //console.error("Failed to refresh project details:", error);
+                }
               }
             }}
           />
