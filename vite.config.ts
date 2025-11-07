@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   base: './', // Added for relative paths in production build
   server: {
     host: "0.0.0.0",
-    port: 8080,
+    port: 8081,
     cors: true
     // proxy: {
     //   '/api': {

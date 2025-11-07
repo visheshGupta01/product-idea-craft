@@ -19,7 +19,6 @@ interface MainDashboardProps {
   sessionId?: string;
   deployUrl?: string;
   shouldOpenPreview?: boolean;
- 
 }
 
 type ActiveView = "main" | "team" | "my-projects";
@@ -51,6 +50,19 @@ const MainDashboard = ({
   const [previewUrl, setPreviewUrl] = useState<string>(deployUrl || "");
 
   const [selectedPage, setSelectedPage] = useState<FileNode | null>(null);
+
+  const [isLargeScreen, setIsLargeScreen] = useState(
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : false
+  );
+
+  // detect screen resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Fetch project details when sessionId changes and check for stored project URL
   useEffect(() => {
@@ -114,7 +126,7 @@ const MainDashboard = ({
     setPreviewUrl(url);
     setIsFrontendCreated(true);
     //console.log("🎯 Preview URL set:", url);
-    
+
     // Refresh project details to update sitemap
     if (sessionId) {
       try {
@@ -129,7 +141,7 @@ const MainDashboard = ({
 
   const handleSitemapGenerated = (sitemap: any) => {
     //console.log("🗺️ Sitemap generated, updating sidebar:", sitemap);
-    
+
     // Update project details with the new sitemap
     if (projectDetails) {
       setProjectDetails({
@@ -160,7 +172,7 @@ const MainDashboard = ({
         // Always show split view with chat and preview panels
         return (
           <ResizablePanelGroup
-            direction="horizontal"
+            direction={isLargeScreen ? "horizontal" : "vertical"}
             className="flex-1 min-w-0"
           >
             {/* AI Chat Panel */}
@@ -168,7 +180,7 @@ const MainDashboard = ({
               defaultSize={sidebarCollapsed ? 40 : 35}
               minSize={25}
               maxSize={75}
-              className="hidden lg:block"
+              
             >
               <div className="h-full border-r border-border">
                 <ChatPanel
@@ -176,6 +188,7 @@ const MainDashboard = ({
                   onFrontendGenerated={handleFrontendGenerated}
                   onSitemapGenerated={handleSitemapGenerated}
                   sessionId={sessionId}
+                  isLargeScreen={isLargeScreen}
                 />
               </div>
             </ResizablePanel>
@@ -183,18 +196,20 @@ const MainDashboard = ({
             <ResizableHandle withHandle className="hidden lg:flex" />
 
             {/* Preview/Code Panel */}
-            <ResizablePanel
-              defaultSize={sidebarCollapsed ? 30 : 35}
-              minSize={30}
-            >
-              <div className="h-full bg-background">
-                <PreviewCodePanel
-                  previewUrl={previewUrl}
-                  sessionId={sessionId}
-                  selectedPage={selectedPage}
-                />
-              </div>
-            </ResizablePanel>
+            {isLargeScreen && (
+              <ResizablePanel
+                defaultSize={sidebarCollapsed ? 30 : 35}
+                minSize={30}
+              >
+                <div className=" h-full bg-background">
+                  <PreviewCodePanel
+                    previewUrl={previewUrl}
+                    sessionId={sessionId}
+                    selectedPage={selectedPage}
+                  />
+                </div>
+              </ResizablePanel>
+            )}
           </ResizablePanelGroup>
         );
     }
@@ -226,7 +241,6 @@ const MainDashboard = ({
                 setSidebarCollapsed(!sidebarCollapsed);
               }
             }}
-           
             currentProject={currentProject}
             activeView={activeView}
             onViewChange={setActiveView}

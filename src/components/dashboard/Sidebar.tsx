@@ -197,7 +197,7 @@ const Sidebar = ({
   return (
     <>
       {collapsed ? (
-        <div className="w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
+        <div className="w-8 sm:w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
           {/* Home button at very top (only show when not on main) */}
           {activeView !== "main" && (
             <div className="flex justify-center pt-2 pb-2">

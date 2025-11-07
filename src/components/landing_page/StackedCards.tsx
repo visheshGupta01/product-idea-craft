@@ -88,7 +88,8 @@ export default function StackedCards() {
     <div
       ref={containerRef}
       className="bg-gradient-bg relative"
-      style={{ height: `${cardData.length * 100}vh` }}
+     style={{ height: `${(cardData.length - 1) * 100 + 100}vh` }}
+
     >
       <div className="sticky top-16 h-screen flex items-center justify-center bg-gradient-bg">
         {cardData.map((card, index) => (
@@ -172,7 +173,7 @@ const AnimatedCard = memo(function AnimatedCard({
 
   return (
     <motion.div
-      className="bg-[#B1C5CE] absolute w-full max-w-4xl border-0 shadow-xl backdrop-blur-sm overflow-hidden rounded-3xl"
+      className="bg-[#B1C5CE] absolute w-full max-w-4xl border-0  shadow-xl backdrop-blur-sm overflow-hidden rounded-3xl"
       animate={{
         y: animation.y,
         scale: animation.scale,
@@ -211,12 +212,12 @@ const AnimatedCard = memo(function AnimatedCard({
           }`}
         >
           <div className="pt-6">
-            <h2 className="text-[28px] font-poppins font-semibold text-[#000000] mb-4 leading-tight">
+            <h2 className="text-[14px] md:text-[28px] font-poppins font-semibold text-[#000000] mb-4 leading-tight">
               {card.title}
             </h2>
           </div>
 
-          <p className="text-[#000000] font-medium text-[18px] font-poppins leading-relaxed text-base">
+          <p className="text-[#000000] font-medium text-[9px] md:text-[18px] font-poppins leading-relaxed text-base">
             {card.content}
           </p>
         </div>
