@@ -24,7 +24,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   isWelcomeMessage = false,
   isStreaming = false,
 }) => {
-  //console.log("Rendering MessageBubble for message:", message);
   const { toast } = useToast();
 
   const copyToClipboard = async (text: string) => {
@@ -63,20 +62,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.type === "user";
   const showLoading = !isUser && isStreaming && message.content.trim() === "";
 
-
   return (
-    <div className="mb-6 group">
+    <div className="mb-6 group px-2 sm:px-4">
       {/* Row 1: Avatar + Bubble */}
       <div
         className={`flex items-end ${
           isUser ? "flex-row-reverse space-x-reverse" : ""
         }`}
       >
-        <Avatar className="w-8 h-8 flex-shrink-0">
+        {/* Avatar */}
+        <Avatar className="w-4 h-4 sm:w-7 sm:h-7 sm:w-8 sm:h-8 flex-shrink-0">
           <AvatarFallback
-            className={
-              isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"
-            }
+            className={`text-white ${
+              isUser ? "bg-blue-500" : "bg-purple-500"
+            }`}
           >
             {isUser ? (
               <User className="w-4 h-4" />
@@ -88,45 +87,50 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           </AvatarFallback>
         </Avatar>
 
+        {/* Message Bubble */}
         <div
-          className={`ml-3 px-4 py-3 rounded-2xl shadow-sm overflow-hidden break-words max-w-[75%] min-w-0 ${
+          className={`ml-2 sm:ml-3 px-3 sm:px-4 py-2 sm:py-3 rounded-2xl shadow-sm overflow-hidden break-words 
+          max-w-[85%] sm:max-w-[75%] min-w-0 ${
             isUser
-              ? "bg-blue-300 text-black rounded-br-sm mr-2"
-              : "bg-[#D9D9D9] text-black rounded-bl-sm45"
+              ? "bg-blue-300 text-black rounded-br-sm mr-1 sm:mr-2"
+              : "bg-[#D9D9D9] text-black rounded-bl-sm"
           }`}
         >
           {isUser ? (
-            <div className="whitespace-pre-wrap text-sm leading-relaxed">
+            <div className="whitespace-pre-wrap text-sm sm:text-base leading-relaxed">
               {message.content}
             </div>
           ) : showLoading ? (
             <div className="flex items-center gap-2">
               <LoadingSpinner size="sm" />
-              <span className="text-sm text-black">Thinking...</span>
+              <span className="text-sm sm:text-base text-black">
+                Thinking...
+              </span>
             </div>
           ) : (
-            <div className="text-sm leading-relaxed">
+            <div className="text-sm sm:text-base leading-relaxed">
               <MarkdownRenderer content={message.content} />
             </div>
           )}
         </div>
       </div>
 
-      {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
-      {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
+      {/* Row 2: Buttons (Copy / Download) */}
       {!isWelcomeMessage && (
         <div
-          className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ml-11 ${
-            isUser ? "justify-end mr-11 ml-0" : "justify-start"
+          className={`flex gap-1 sm:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity mt-1 
+          ml-9 sm:ml-11 ${
+            isUser ? "justify-end mr-9 sm:mr-11 ml-0" : "justify-start"
           }`}
         >
-          <TooltipProvider>
+          <TooltipProvider delayDuration={150}>
+            {/* Copy Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
+                  size="icon"
+                  className="h-7 w-7 p-0 bg-gray-200 hover:bg-gray-400 text-black"
                   onClick={() => copyToClipboard(message.content)}
                 >
                   <Copy className="h-3 w-3" />
@@ -137,13 +141,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               </TooltipContent>
             </Tooltip>
 
+            {/* Download Button (only for bot) */}
             {!isUser && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
+                    size="icon"
+                    className="h-7 w-7 p-0 bg-gray-200 hover:bg-gray-400 text-black"
                     onClick={() => downloadAsText(message.content, message.id)}
                   >
                     <Download className="h-3 w-3" />

@@ -6,16 +6,18 @@ interface ChatPanelPropsExtended extends ChatPanelProps {
   onFrontendGenerated?: (url: string) => void;
   onSitemapGenerated?: (sitemap: any) => void;
   sessionId?: string;
+  isLargeScreen?: boolean;
 }
 
-const ChatPanel = ({ userIdea, onFrontendGenerated, onSitemapGenerated, sessionId }: ChatPanelPropsExtended) => {
+const ChatPanel = ({ userIdea, onFrontendGenerated, onSitemapGenerated, sessionId, isLargeScreen }: ChatPanelPropsExtended) => {
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full ">
       <StreamingChatInterface 
         userIdea={userIdea} 
         onFrontendGenerated={onFrontendGenerated} 
         onSitemapGenerated={onSitemapGenerated}
         urlSessionId={sessionId} 
+        isLargeScreen={isLargeScreen}
       />
     </div>
   );

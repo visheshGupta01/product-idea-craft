@@ -21,6 +21,7 @@ interface StreamingChatInterfaceProps {
   onFrontendGenerated?: (url: string) => void;
   onSitemapGenerated?: (sitemap: any) => void;
   urlSessionId?: string;
+  isLargeScreen?: boolean;
 }
 
 export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
@@ -28,6 +29,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   onFrontendGenerated,
   onSitemapGenerated,
   urlSessionId,
+  isLargeScreen,
 }) => {
   const {
     sessionId: contextSessionId,
@@ -50,8 +52,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     connect,
     stopGeneration,
   } = useStreamingChat(
-    activeSessionId || "", 
-    onFrontendGenerated, 
+    activeSessionId || "",
+    onFrontendGenerated,
     onSitemapGenerated,
     () => setShowBalanceDialog(true)
   );
@@ -143,20 +145,24 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
 
   // Track scroll position to determine if user is at bottom
   useEffect(() => {
-    const scrollViewport = document.querySelector('[data-radix-scroll-area-viewport]');
+    const scrollViewport = document.querySelector(
+      "[data-radix-scroll-area-viewport]"
+    );
     if (scrollViewport) {
       scrollViewportRef.current = scrollViewport as HTMLDivElement;
-      
+
       const handleScroll = () => {
         const element = scrollViewportRef.current;
         if (element) {
-          const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
+          const isNearBottom =
+            element.scrollHeight - element.scrollTop - element.clientHeight <
+            100;
           shouldAutoScrollRef.current = isNearBottom;
         }
       };
 
-      scrollViewport.addEventListener('scroll', handleScroll);
-      return () => scrollViewport.removeEventListener('scroll', handleScroll);
+      scrollViewport.addEventListener("scroll", handleScroll);
+      return () => scrollViewport.removeEventListener("scroll", handleScroll);
     }
   }, []);
 
@@ -172,15 +178,53 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
 
   return (
     <>
-      <div className="flex flex-col h-full bg-[#1E1E1E]">
+      <div className=" w-full flex flex-col h-full bg-[#1E1E1E]">
         {isLoadingMessages ? (
           <div className="flex-1 flex items-center justify-center">
             <LoadingSpinner size="lg" text="Loading chat history..." />
           </div>
         ) : (
           <>
-            <ScrollArea className="flex-1 p-6">
-              <div className="space-y-6 max-w-5xl mx-auto">
+            {isLargeScreen ? (
+              <ScrollArea className=" flex-1 p-4 sm:p-6">
+                <div className=" space-y-6  max-w-4xl mx-auto ">
+                  {messages.map((message, index) => (
+                    <div key={message.id} className="group">
+                      <MessageBubble
+                        message={message}
+                        isWelcomeMessage={index === 0 && message.type === "ai"}
+                        isStreaming={isStreaming}
+                      />
+                    </div>
+                  ))}
+
+                  {/* Show tool processing indicator */}
+                  {isProcessingTools && (
+                    <div className="flex items-start gap-3 animate-scale-in">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 animate-pulse">
+                        <span className="text-sm">🔧</span>
+                      </div>
+                      <div className="flex-1 bg-gradient-to-r from-muted to-muted/50 rounded-lg p-4 border border-primary/20 shadow-lg">
+                        <div className="flex items-center gap-3">
+                          <LoadingSpinner size="sm" />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-foreground">
+                              Processing tools
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              Executing operations...
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={messagesEndRef} />
+                </div>
+              </ScrollArea>
+            ) : (
+              <div className="overflow-y-scroll space-y-6  max-w-[72vw] sm:max-w-xl md:max-w-2xl mx-auto ">
                 {messages.map((message, index) => (
                   <div key={message.id} className="group">
                     <MessageBubble
@@ -190,7 +234,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                     />
                   </div>
                 ))}
-                
+
                 {/* Show tool processing indicator */}
                 {isProcessingTools && (
                   <div className="flex items-start gap-3 animate-scale-in">
@@ -201,8 +245,12 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                       <div className="flex items-center gap-3">
                         <LoadingSpinner size="sm" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-foreground">Processing tools</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">Executing operations...</p>
+                          <p className="text-sm font-medium text-foreground">
+                            Processing tools
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            Executing operations...
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -211,7 +259,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
 
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            )}
 
             <div className="bg-[#1E1E1E] pb-6">
               <div className="max-w-5xl mx-auto px-6">
