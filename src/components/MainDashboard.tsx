@@ -55,6 +55,10 @@ const MainDashboard = ({
   // Fetch project details when sessionId changes and check for stored project URL
   useEffect(() => {
     const loadProjectDetails = async () => {
+      // Clear preview immediately when switching sessions
+      setPreviewUrl("");
+      setIsFrontendCreated(false);
+      
       if (sessionId) {
         try {
           //console.log('📝 Fetching project details for sessionId:', sessionId);
@@ -67,19 +71,12 @@ const MainDashboard = ({
             setPreviewUrl(details.project_url);
             setIsFrontendCreated(true);
             //console.log('🚀 Auto-setting preview from project details:', details.project_url);
-          } else {
-            // Clear preview when switching to a chat without project_url
-            setPreviewUrl("");
-            setIsFrontendCreated(false);
-            //console.log('🚀 Clearing preview - no project URL for this session');
           }
         } catch (error) {
           //console.error("📝 Failed to fetch project details:", error);
         }
       } else {
         setProjectDetails(undefined);
-        setPreviewUrl("");
-        setIsFrontendCreated(false);
       }
     };
 
