@@ -59,7 +59,7 @@ export const useStreamingChat = (
     if (projectUrl && onFrontendGenerated && !isLoadingMessages) {
       onFrontendGenerated(projectUrl);
     }
-  }, [projectUrl, onFrontendGenerated, isLoadingMessages]);
+  }, [projectUrl, isLoadingMessages]);  //removed onFrontendGenerated from dependencies to avoid infinite loop
 
   // Initialize WebSocket client
   useEffect(() => {
