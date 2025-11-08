@@ -27,7 +27,8 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
-const OAuthCallback = lazy(() => import("./pages/OAuthCallback"));
+const GoogleCallback = lazy(() => import("./pages/GoogleCallback"));
+const GithubCallback = lazy(() => import("./pages/GithubCallback"));
 const AuthTestPanel = lazy(() => import("./components/auth/AuthTestPanel").then(m => ({ default: m.AuthTestPanel })));
 const ResetPasswordModal = lazy(() => import("./components/auth/ResetPasswordModal").then(m => ({ default: m.ResetPasswordModal })));
 const EmailVerificationModal = lazy(() => import("./components/auth/EmailVerificationModal").then(m => ({ default: m.EmailVerificationModal })));
@@ -70,7 +71,8 @@ const AppContent = () => {
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/contact" element={<ContactUs />} />
-          <Route path="/auth/callback" element={<OAuthCallback />} />
+          <Route path="/auth/google/callback" element={<GoogleCallback />} />
+          <Route path="/auth/github/callback" element={<GithubCallback />} />
         <Route path="/chat/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />
