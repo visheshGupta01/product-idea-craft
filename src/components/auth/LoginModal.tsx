@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import imagineboLogo from "@/assets/ImagineboIcon.svg";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import { initiateGoogleAuth, initiateGithubAuth } from "@/services/oauthService";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -84,6 +86,39 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             Welcome back
           </DialogTitle>
         </DialogHeader>
+
+        {/* OAuth Buttons */}
+        <div className="space-y-3 mb-4">
+          <Button
+            type="button"
+            onClick={initiateGoogleAuth}
+            disabled={isLoading}
+            className="w-full h-10 bg-white text-black hover:bg-gray-200 flex items-center justify-center gap-2"
+          >
+            <FaGoogle className="w-4 h-4" />
+            Continue with Google
+          </Button>
+          <Button
+            type="button"
+            onClick={initiateGithubAuth}
+            disabled={isLoading}
+            className="w-full h-10 bg-[#24292e] text-white hover:bg-[#1a1e22] flex items-center justify-center gap-2"
+          >
+            <FaGithub className="w-4 h-4" />
+            Continue with GitHub
+          </Button>
+        </div>
+
+        {/* Divider */}
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-[#2A2A2A]" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-[#0A0A0B] px-2 text-gray-400">Or</span>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email Input */}
           <Input

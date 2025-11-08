@@ -202,7 +202,7 @@ const IdeaBox: React.FC = () => {
               value={idea}
               onChange={handleIdeaChange}
               placeholder="Type your idea or use '@' to call a tool, e.g., '@analyse', '@research'"
-              className="custom-scroll w-full px-4 py-3 max-h-52 pr-24 overflow-y-scroll rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
+              className="custom-scroll w-full px-4 py-3 max-h-52 pr-24 overflow-y-scroll rounded-md bg-white text-sm focus:outline-none font-poppins resize-none break-words overflow-wrap-anywhere"
               style={{
                 border: "none",
                 boxShadow: "none",

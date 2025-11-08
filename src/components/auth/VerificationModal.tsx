@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Mail, CheckCircle } from "lucide-react";
+import { Mail, CheckCircle, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
+import apiClient from "@/lib/apiClient";
 
 interface VerificationModalProps {
   isOpen: boolean;
@@ -14,6 +17,27 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
   onClose,
   email,
 }) => {
+  const [isResending, setIsResending] = useState(false);
+
+  const handleResendVerification = async () => {
+    setIsResending(true);
+    try {
+      await apiClient.post(`${API_BASE_URL}/api/auth/resend-verification-link`, { email });
+      toast({
+        title: "Success",
+        description: "Verification link sent! Please check your email.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to resend verification link.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] text-center">
@@ -41,6 +65,21 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
         <div className="flex flex-col space-y-3 mt-6">
           <Button onClick={onClose} className="w-full">
             Got it, thanks!
+          </Button>
+          <Button 
+            onClick={handleResendVerification} 
+            variant="outline" 
+            className="w-full"
+            disabled={isResending}
+          >
+            {isResending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Resending...
+              </>
+            ) : (
+              "Resend Verification Link"
+            )}
           </Button>
           <p className="text-xs text-muted-foreground">
             You can close this window and return to complete the verification process.

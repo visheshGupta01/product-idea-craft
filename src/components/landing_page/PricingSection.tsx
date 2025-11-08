@@ -107,6 +107,13 @@ const PricingSection: React.FC = () => {
         <div className="flex justify-center items-center min-h-[400px]">
           <LoadingSpinner size="lg" text="Loading plans..." />
         </div>
+      ) : plans.length === 0 ? (
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-xl text-gray-400 mb-4">Unable to load pricing plans at the moment.</p>
+            <p className="text-sm text-gray-500">Please try again later or contact support.</p>
+          </div>
+        </div>
       ) : (
         <div className="flex flex-wrap justify-center gap-8 max-w-6xl min-h-[400px] mx-auto">
           {plans.map((plan, idx) => (
