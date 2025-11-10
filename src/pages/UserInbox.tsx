@@ -72,13 +72,16 @@ const UserInbox: React.FC = () => {
         const token = localStorage.getItem("auth_token") || "";
         wsService.setToken(token);
         await wsService.connect(token);
-        wsService.onMessage((data) => {
+        wsService.onMessage((data: any) => {
           if (
-            data.task_id &&
+            data &&
+            typeof data === "object" &&
+            "task_id" in data &&
+            "content" in data &&
             selectedTask &&
-            data.task_id === selectedTask.ID
+            data.task_id === selectedTask.id
           ) {
-            setMessages((prev) => [...prev, data]);
+            setMessages((prev) => [...prev, data as ChatMessage]);
           }
           // Refresh inbox to update unread counts
           fetchInbox();
@@ -98,7 +101,7 @@ const UserInbox: React.FC = () => {
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
     //console.log("Selected task:", task);
-    fetchMessages(task.ID);
+    fetchMessages(task.id);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -116,7 +119,7 @@ const UserInbox: React.FC = () => {
       //console.log("Role:", role);
       wsService.sendMessage({
         content: content,
-        task_id: selectedTask.ID,
+        task_id: selectedTask.id,
         sender_id: user.id,
         receiver_id: receiverId,
         role: role,
@@ -125,7 +128,7 @@ const UserInbox: React.FC = () => {
       // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
-        task_id: selectedTask.ID,
+        task_id: selectedTask.id,
         role: role,
         sender_id: user.id,
         receiver_id: receiverId,
@@ -162,7 +165,7 @@ const UserInbox: React.FC = () => {
           <div className="flex-1 overflow-auto">
             <InboxList
               tasks={tasks}
-              selectedTaskId={selectedTask?.ID || null}
+              selectedTaskId={selectedTask?.id || null}
               onSelectTask={handleSelectTask}
               role={role}
             />

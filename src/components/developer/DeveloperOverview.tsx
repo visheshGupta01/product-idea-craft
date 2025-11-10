@@ -17,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { useNavigate } from "react-router-dom";
 
 interface Task {
-  ID: number;
+  id: number;
   title: string;
   description: string;
   session_id: string;
@@ -287,31 +287,44 @@ export const DeveloperOverview: React.FC = () => {
   const getFilteredTasks = () => {
     if (!profileData) return [];
 
-    const baseTasks =
-      taskFilter === "all"
-        ? [...profileData.null_status_tasks, ...profileData.active_tasks]
-        : taskFilter === "awaiting"
-        ? profileData.null_status_tasks
-        : taskFilter === "pending"
-        ? profileData.active_tasks
-        : [];
+    let tasks: Task[] = [
+      ...profileData.null_status_tasks,
+      ...profileData.active_tasks,
+      ...additionalTasks,
+    ];
 
-    return [...baseTasks, ...additionalTasks];
+    if (taskFilter === "all") {
+      return tasks;
+    }
+    if (taskFilter === "awaiting") {
+      return profileData.null_status_tasks;
+    }
+    if (taskFilter === "pending") {
+      return profileData.active_tasks;
+    }
+    return tasks.filter((task) => task.status === taskFilter);
   };
 
-  const getTaskFilterCount = (filter: "all" | "awaiting" | "pending") => {
+  const getTaskFilterCount = (
+    filter: "all" | "awaiting" | "pending" | "done" | "in_progress" | "todo"
+  ) => {
     if (!profileData) return 0;
 
+    const allTasks = [
+      ...profileData.null_status_tasks,
+      ...profileData.active_tasks,
+    ];
+
     if (filter === "all") {
-      return (
-        (profileData.null_status_tasks?.length || 0) +
-        (profileData.active_tasks?.length || 0)
-      );
+      return allTasks.length;
     }
-    if (filter === "awaiting")
-      return profileData.null_status_tasks?.length || 0;
-    if (filter === "pending") return profileData.active_tasks?.length || 0;
-    return 0;
+    if (filter === "awaiting") {
+      return profileData.null_status_tasks.length;
+    }
+    if (filter === "pending") {
+      return profileData.active_tasks.length;
+    }
+    return allTasks.filter((task) => task.status === filter).length;
   };
 
   if (loading) {
@@ -564,7 +577,7 @@ export const DeveloperOverview: React.FC = () => {
                       ? profileData.null_status_tasks
                       : profileData.null_status_tasks?.slice(0, 3)
                     )?.map((task) => (
-                      <Card key={task.ID} className="border">
+                      <Card key={task.id} className="border">
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
@@ -583,10 +596,10 @@ export const DeveloperOverview: React.FC = () => {
                               <Button
                                 size="sm"
                                 className="bg-pink-500 hover:bg-pink-600 text-white px-4"
-                                onClick={() => handleAcceptTask(task.ID)}
-                                disabled={updatingTasks.has(task.ID)}
+                                onClick={() => handleAcceptTask(task.id)}
+                                disabled={updatingTasks.has(task.id)}
                               >
-                                {updatingTasks.has(task.ID)
+                                {updatingTasks.has(task.id)
                                   ? "Accepting..."
                                   : "Accept"}
                               </Button>
@@ -594,10 +607,10 @@ export const DeveloperOverview: React.FC = () => {
                                 size="sm"
                                 variant="outline"
                                 className="px-4"
-                                onClick={() => handleDenyTask(task.ID)}
-                                disabled={updatingTasks.has(task.ID)}
+                                onClick={() => handleDenyTask(task.id)}
+                                disabled={updatingTasks.has(task.id)}
                               >
-                                {updatingTasks.has(task.ID)
+                                {updatingTasks.has(task.id)
                                   ? "Declining..."
                                   : "Decline"}
                               </Button>
@@ -641,12 +654,7 @@ export const DeveloperOverview: React.FC = () => {
 
                   <div className="flex gap-4 mb-4 flex-wrap">
                     <button
-                      onClick={() => {
-                        setTaskFilter("all");
-                        setAdditionalTasks([]);
-                        setTaskPage(1);
-                        setShowAllMyTasks(false);
-                      }}
+                      onClick={() => setTaskFilter("all")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "all"
                           ? "bg-pink-500 text-white"
@@ -656,12 +664,7 @@ export const DeveloperOverview: React.FC = () => {
                       All {getTaskFilterCount("all")}
                     </button>
                     <button
-                      onClick={() => {
-                        setTaskFilter("awaiting");
-                        setAdditionalTasks([]);
-                        setTaskPage(1);
-                        setShowAllMyTasks(false);
-                      }}
+                      onClick={() => setTaskFilter("awaiting")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "awaiting"
                           ? "bg-pink-500 text-white"
@@ -671,12 +674,7 @@ export const DeveloperOverview: React.FC = () => {
                       Awaiting {getTaskFilterCount("awaiting")}
                     </button>
                     <button
-                      onClick={() => {
-                        setTaskFilter("pending");
-                        setAdditionalTasks([]);
-                        setTaskPage(1);
-                        setShowAllMyTasks(false);
-                      }}
+                      onClick={() => setTaskFilter("pending")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "pending"
                           ? "bg-pink-500 text-white"
@@ -686,64 +684,34 @@ export const DeveloperOverview: React.FC = () => {
                       Pending {getTaskFilterCount("pending")}
                     </button>
                     <button
-                      onClick={() => {
-                        setTaskFilter("done");
-                        setAdditionalTasks([]);
-                        setTaskPage(1);
-                        setShowAllMyTasks(false);
-                      }}
+                      onClick={() => setTaskFilter("done")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "done"
                           ? "bg-pink-500 text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      Done
+                      Done {getTaskFilterCount("done")}
                     </button>
                     <button
-                      onClick={() => {
-                        setTaskFilter("in_progress");
-                        setAdditionalTasks([]);
-                        setTaskPage(1);
-                        setShowAllMyTasks(false);
-                      }}
+                      onClick={() => setTaskFilter("in_progress")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "in_progress"
                           ? "bg-pink-500 text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      In Progress
+                      In Progress {getTaskFilterCount("in_progress")}
                     </button>
                     <button
-                      onClick={() => {
-                        setTaskFilter("todo");
-                        setAdditionalTasks([]);
-                        setTaskPage(1);
-                        setShowAllMyTasks(false);
-                      }}
+                      onClick={() => setTaskFilter("todo")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         taskFilter === "todo"
                           ? "bg-pink-500 text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      To Do
-                    </button>
-                    <button
-                      onClick={() => {
-                        setTaskFilter("not_accepted");
-                        setAdditionalTasks([]);
-                        setTaskPage(1);
-                        setShowAllMyTasks(false);
-                      }}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        taskFilter === "not_accepted"
-                          ? "bg-pink-500 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      Not Accepted
+                      To Do {getTaskFilterCount("todo")}
                     </button>
                   </div>
 
@@ -752,7 +720,7 @@ export const DeveloperOverview: React.FC = () => {
                       ? getFilteredTasks()
                       : getFilteredTasks().slice(0, 3)
                     ).map((task) => (
-                      <Card key={task.ID} className="border">
+                      <Card key={task.id} className="border">
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
@@ -771,10 +739,10 @@ export const DeveloperOverview: React.FC = () => {
                                   <Button
                                     size="sm"
                                     className="bg-black text-white hover:bg-gray-800"
-                                    onClick={() => handleStartWorking(task.ID)}
-                                    disabled={updatingTasks.has(task.ID)}
+                                    onClick={() => handleStartWorking(task.id)}
+                                    disabled={updatingTasks.has(task.id)}
                                   >
-                                    {updatingTasks.has(task.ID)
+                                    {updatingTasks.has(task.id)
                                       ? "Starting..."
                                       : "Start Working"}
                                   </Button>
@@ -791,10 +759,10 @@ export const DeveloperOverview: React.FC = () => {
                                   <Button
                                     size="sm"
                                     className="bg-black text-white hover:bg-gray-800"
-                                    onClick={() => handleMarkCompleted(task.ID)}
-                                    disabled={updatingTasks.has(task.ID)}
+                                    onClick={() => handleMarkCompleted(task.id)}
+                                    disabled={updatingTasks.has(task.id)}
                                   >
-                                    {updatingTasks.has(task.ID)
+                                    {updatingTasks.has(task.id)
                                       ? "Completing..."
                                       : "Mark Complete"}
                                   </Button>
@@ -930,3 +898,4 @@ export const DeveloperOverview: React.FC = () => {
     </div>
   );
 };
+

@@ -39,11 +39,11 @@ export const InboxList: React.FC<InboxListProps> = ({
       ) : (
         tasks.map((task) => {
           const unreadCount = getUnreadCount(task);
-          const isSelected = selectedTaskId === task.ID;
+          const isSelected = selectedTaskId === task.id;
 
           return (
             <Card
-              key={task.ID}
+              key={task.id}
               className={`cursor-pointer transition-all hover:shadow-md ${
                 isSelected ? "ring-2 ring-primary bg-accent" : "hover:bg-accent/50"
               }`}

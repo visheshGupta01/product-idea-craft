@@ -27,7 +27,7 @@ export interface DeveloperProfileResponse {
 }
 
 interface Task {
-  ID: number;
+  id: number;
   title: string;
   description: string;
   session_id: string;
@@ -258,18 +258,10 @@ class DeveloperService {
     developerData: CreateDeveloperData
   ): Promise<CreateDeveloperResponse> {
     try {
-      const response = await apiClient.post(API_ENDPOINTS.DEVELOPER.CREATE, {
-        email: developerData.email,
-        github_url: developerData.github_url,
-        linkedin_url: developerData.linkedin_url,
-        skills: developerData.skills,
-        company_name: developerData.company_name,
-        experience: developerData.experience,
-        bio: developerData.bio,
-        hourpaid: developerData.hourpaid,
-        first_name: developerData.first_name,
-        last_name: developerData.last_name,
-      });
+      const response = await apiClient.post(
+        API_ENDPOINTS.DEVELOPER.CREATE,
+        developerData
+      );
       return response.data;
     } catch (error) {
       //console.error('Error creating developer:', error);

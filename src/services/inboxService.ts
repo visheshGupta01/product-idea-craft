@@ -2,7 +2,7 @@ import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
 
 export interface InboxTask {
-  ID: number;
+  id: number;
   title: string;
   description: string;
   session_id: string;

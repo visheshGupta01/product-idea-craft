@@ -78,7 +78,7 @@ const DeveloperInbox: React.FC = () => {
           if (
             data.task_id &&
             selectedTask &&
-            data.task_id === selectedTask.ID
+            data.task_id === selectedTask.id
           ) {
             setMessages((prev) => [...prev, data]);
           }
@@ -99,7 +99,7 @@ const DeveloperInbox: React.FC = () => {
 
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
-    fetchMessages(task.ID);
+    fetchMessages(task.id);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -114,7 +114,7 @@ const DeveloperInbox: React.FC = () => {
 
       wsService.sendMessage({
         content: content,
-        task_id: selectedTask.ID,
+        task_id: selectedTask.id,
         sender_id: user.id,
         receiver_id: receiverId,
         role: role,
@@ -123,7 +123,7 @@ const DeveloperInbox: React.FC = () => {
       // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
-        task_id: selectedTask.ID,
+        task_id: selectedTask.id,
         role: role,
         sender_id: user.id,
         receiver_id: receiverId,
@@ -160,7 +160,7 @@ const DeveloperInbox: React.FC = () => {
           <div className="flex-1 overflow-auto">
             <InboxList
               tasks={tasks}
-              selectedTaskId={selectedTask?.ID || null}
+              selectedTaskId={selectedTask?.id || null}
               onSelectTask={handleSelectTask}
               role={role}
             />
