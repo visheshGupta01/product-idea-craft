@@ -36,13 +36,15 @@ const GithubCallback: React.FC = () => {
         }
 
         // Call backend to exchange code for tokens
-        const response = await fetch(`${API_BASE_URL}/api/auth/github/callback`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code, state }),
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/auth/github/callback?code=${code}&state=${state}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to authenticate with GitHub");
@@ -51,17 +53,10 @@ const GithubCallback: React.FC = () => {
         const data = await response.json();
 
         // Store authentication data
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("refreshToken", data.refresh_token);
-        localStorage.setItem("userRole", data.role);
-        localStorage.setItem("userData", JSON.stringify({
-          id: data.user.ID,
-          first_name: data.user.FirstName,
-          last_name: data.user.LastName,
-          email: data.user.Email,
-          user_type: data.user.UserType,
-          created_at: data.user.CreatedAt,
-        }));
+        localStorage.setItem("auth_token", data.token);
+        localStorage.setItem("refresh_token", data.refresh_token);
+        localStorage.setItem("user_role", data.role);
+        localStorage.setItem("user_data", JSON.stringify(data.user));
 
         toast({
           title: "Success",
@@ -69,7 +64,12 @@ const GithubCallback: React.FC = () => {
         });
 
         // Redirect based on role
-        window.location.href = data.role === "admin" ? "/admin" : "/";
+const roleRedirects = {
+  admin: "/admin",
+  developer: "/developer",
+  user: "/", // default role
+};
+window.location.href = roleRedirects[data.role] || "/";
       } catch (error) {
         console.error("GitHub OAuth callback error:", error);
         toast({

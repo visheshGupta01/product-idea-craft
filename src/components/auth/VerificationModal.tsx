@@ -22,7 +22,7 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
   const handleResendVerification = async () => {
     setIsResending(true);
     try {
-      await apiClient.post(`${API_BASE_URL}/api/auth/resend-verification-link`, { email });
+      await apiClient.post(`${API_BASE_URL}/api/auth/resent-verification-link`, { email });
       toast({
         title: "Success",
         description: "Verification link sent! Please check your email.",

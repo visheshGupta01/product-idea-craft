@@ -108,8 +108,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Prevent developers from accessing user or admin dashboards
   if (userRole === 'developer' && !requireDeveloper) {
-    const isDashboardPath = location.pathname.startsWith('/chat/') || 
-                           location.pathname === '/projects';
+    const isDashboardPath = location.pathname.startsWith('/chat/') ||
+      location.pathname === '/projects' ||
+      location.pathname === '/';
     const isAdminPath = location.pathname.startsWith('/admin');
     
     if (isDashboardPath || isAdminPath) {

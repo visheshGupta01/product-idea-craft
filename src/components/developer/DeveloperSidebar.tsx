@@ -48,7 +48,7 @@ export default function DeveloperSidebar({ activeView, onViewChange }: Developer
       {/* Top Section */}
       <div className="flex flex-col items-center space-y-6">
         {/* Logo */}
-        <a href="/">
+        <a href="/developer">
           <img
             src={myIcon}
             alt="Logo"
