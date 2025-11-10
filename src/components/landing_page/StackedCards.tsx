@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, memo } from "react";
 import { motion } from "framer-motion";
-import card1 from "@/assets/card-1.png";
-import card2 from "@/assets/card-2.png";
-import card3 from "@/assets/card-3.png";
+import card1 from "@/assets/card-1-fixed.png";
+import card2 from "@/assets/card-2-fixed.png";
+import card3 from "@/assets/card-3-fixed.png";
 
 interface CardData {
   id: number;
@@ -201,7 +201,11 @@ const AnimatedCard = memo(function AnimatedCard({
             index % 2 === 0 ? "rounded-l-3xl" : "rounded-r-3xl"
           }`}
         >
-          <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+          <img
+            src={card.image}
+            alt={card.title}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* Content Section */}
