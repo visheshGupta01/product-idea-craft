@@ -1,8 +1,11 @@
 import React from "react";
-import { FaFacebookF, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaYoutube, FaInstagram } from "react-icons/fa";
 import LogoIcon from "../../assets/ImagineboIcon.svg";
 
-const socialIcons = [FaTwitter, FaYoutube];
+const socialLinks = [
+  { icon: FaYoutube, url: "https://www.youtube.com/@imagine_bold", label: "YouTube" },
+  { icon: FaInstagram, url: "https://www.instagram.com/imagine.bold", label: "Instagram" }
+];
 
 const Footer: React.FC = () => {
   return (
@@ -14,19 +17,21 @@ const Footer: React.FC = () => {
           Take Your Brand <br /> Mobile.
         </p>
 
-        {/* Social Icons
+        {/* Social Icons */}
         <div className="flex gap-3">
-          {socialIcons.map((Icon, index) => (
+          {socialLinks.map((social, index) => (
             <a
               key={index}
-              href="#"
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-[#1a1d21] p-2 rounded-md hover:text-pink-400 transition"
-              aria-label={`Social link ${index}`}
+              aria-label={social.label}
             >
-              <Icon size={16} />
+              <social.icon size={20} />
             </a>
           ))}
-        </div> */}
+        </div>
       </div>
 
       {/* Divider */}

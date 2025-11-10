@@ -63,9 +63,21 @@ const IdeaBox: React.FC = () => {
 
   useEffect(() => {
     if (textareaRef.current) {
+      // reset height to allow scrollHeight to recalc
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height =
-        textareaRef.current.scrollHeight + "px";
+
+      // determine max height (px) from UI_CONFIG or fallback
+      const maxHeight =
+        typeof UI_CONFIG.IDEA_BOX_MAX_HEIGHT === "number"
+          ? UI_CONFIG.IDEA_BOX_MAX_HEIGHT
+          : 240; // fallback px
+
+      const newHeight = Math.min(textareaRef.current.scrollHeight, maxHeight);
+      textareaRef.current.style.height = `${newHeight}px`;
+
+      // show internal scrollbar only if content is larger than max
+      textareaRef.current.style.overflowY =
+        textareaRef.current.scrollHeight > maxHeight ? "auto" : "hidden";
     }
   }, [idea]);
 
@@ -126,7 +138,6 @@ const IdeaBox: React.FC = () => {
       return;
     }
 
-    // Combine idea with uploaded file content
     let combinedIdea = idea.trim();
     if (uploadedFiles.length > 0) {
       const fileContents = uploadedFiles
@@ -143,8 +154,6 @@ const IdeaBox: React.FC = () => {
     if (result.success && result.session_id) {
       navigate(`/chat/${result.session_id}`);
     } else {
-      // Handle error
-      //console.error("Failed to create session:", result.message);
       alert(result.message || "Failed to process your idea. Please try again.");
     }
   };
@@ -152,10 +161,10 @@ const IdeaBox: React.FC = () => {
   return (
     <section
       id="idea-box"
-      className="relative max-h-96  px-5 flex justify-center items-start bg-[#1B2123]"
+      className="relative px-5 flex justify-center items-start bg-[#1B2123]"
     >
       <div className="absolute bottom-0 w-full h-[220px] bg-[#d5e1e7] translate-y-[40%] z-0"></div>
-      <div className="relative  bg-[#1b2123] w-full border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
+      <div className="relative bg-[#1b2123] w-full border border-white max-w-[1000px] mx-auto rounded-[40px] shadow-xl flex flex-col items-center justify-start z-10">
         {/* Header Text */}
         <div className="py-[40px] flex items-center justify-center">
           <h2 className="text-[48px] font-medium font-poppins text-center mb-0">
@@ -193,22 +202,25 @@ const IdeaBox: React.FC = () => {
         </div>
 
         {/* White Input Area */}
-        <div className="bg-white w-full   rounded-[35px] p-6 flex flex-col border border-black items-center justify-between relative">
+        {/* Added bottom padding (pb) so floating absolute button doesn't overlap content */}
+        <div className="bg-white w-full rounded-[25px] p-4 pb-[80px] flex flex-col border border-black items-center justify-between relative">
           {/* Input area with floating buttons */}
-          {/* Input area with floating buttons */}
-          <div className="relative w-full max-h-52 mb-4 font-poppins  text-gray-800">
+          <div className="relative w-full mb-4 font-poppins text-gray-800">
             <textarea
               ref={textareaRef}
               value={idea}
               onChange={handleIdeaChange}
               placeholder="Type your idea or use '@' to call a tool, e.g., '@analyse', '@research'"
-              className="custom-scroll w-full px-4 py-3 max-h-52 pr-24 overflow-y-scroll rounded-md bg-white text-sm focus:outline-none font-poppins resize-none"
+              className="custom-scroll w-full px-3 pt-1 pr-20 rounded-md bg-white text-[13px] focus:outline-none font-poppins resize-none break-words whitespace-pre-wrap"
               style={{
                 border: "none",
                 boxShadow: "none",
                 outline: "none",
                 textAlign: "left",
-                minHeight: UI_CONFIG.IDEA_BOX_MAX_HEIGHT,
+                minHeight: "70px",
+                maxHeight: "180px",
+                wordBreak: "break-word",
+                overflowWrap: "anywhere",
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -221,12 +233,7 @@ const IdeaBox: React.FC = () => {
 
             {/* Tool list opens DOWN and floats */}
             {showToolList && filteredTools.length > 0 && (
-              <div
-                className="absolute top-full left-0 mt-2 w-full 
-        bg-white dark:bg-gray-900 
-        border border-gray-200 dark:border-gray-700 
-        rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto"
-              >
+              <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
                 {filteredTools.map((tool, index) => (
                   <div
                     key={tool.name}
@@ -268,7 +275,7 @@ const IdeaBox: React.FC = () => {
           <button
             onClick={handleSubmit}
             disabled={!idea.trim() || isProcessingIdea}
-            className="absolute bottom-1 left-1 right-1 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
+            className="absolute bottom-6 left-6 right-6 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"
           >
             {isProcessingIdea ? (
               <LoadingSpinner size="sm" text="Processing your idea" />

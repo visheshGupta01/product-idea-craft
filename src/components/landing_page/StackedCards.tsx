@@ -206,6 +206,11 @@ const AnimatedCard = memo(function AnimatedCard({
             alt={card.title}
             className="w-full h-full object-cover"
           />
+          <img
+            src={card.image}
+            alt={card.title}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* Content Section */}

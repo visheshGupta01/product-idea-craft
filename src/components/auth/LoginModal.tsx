@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import imagineboLogo from "@/assets/ImagineboIcon.svg";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import { initiateGoogleAuth, initiateGithubAuth } from "@/services/oauthService";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -72,19 +74,52 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[400px] p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
+      <DialogContent className="sm:max-w-[400px] w-[95vw] max-h-[90vh] overflow-y-auto custom-scroll p-4 sm:p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
         {/* Logo */}
-        <div className="flex justify-center mb-4">
-          <img src={imagineboLogo} alt="Imagine.bo" className="h-10 w-10" />
+        <div className="flex justify-center mb-3 sm:mb-4">
+          <img src={imagineboLogo} alt="Imagine.bo" className="h-8 w-8 sm:h-10 sm:w-10" />
         </div>
 
         {/* Title */}
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold text-white mb-2">
+          <DialogTitle className="text-center text-xl sm:text-2xl font-bold text-white mb-2">
             Welcome back
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        {/* OAuth Buttons */}
+        <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
+          <Button
+            type="button"
+            onClick={initiateGoogleAuth}
+            disabled={isLoading}
+            className="w-full h-10 bg-white text-black hover:bg-gray-200 flex items-center justify-center gap-2"
+          >
+            <FaGoogle className="w-4 h-4" />
+            Continue with Google
+          </Button>
+          <Button
+            type="button"
+            onClick={initiateGithubAuth}
+            disabled={isLoading}
+            className="w-full h-10 bg-[#24292e] text-white hover:bg-[#1a1e22] flex items-center justify-center gap-2"
+          >
+            <FaGithub className="w-4 h-4" />
+            Continue with GitHub
+          </Button>
+        </div>
+
+        {/* Divider */}
+        <div className="relative my-3 sm:my-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-[#2A2A2A]" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-[#0A0A0B] px-2 text-gray-400">Or</span>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* Email Input */}
           <Input
             id="email"
