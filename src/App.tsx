@@ -71,8 +71,8 @@ const AppContent = () => {
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/contact" element={<ContactUs />} />
-          <Route path="/api/auth/google/callback" element={<GoogleCallback />} />
-          <Route path="/api/auth/github/callback" element={<GithubCallback />} />
+          <Route path="/auth/google/callback" element={<GoogleCallback />} />
+          <Route path="/auth/github/callback" element={<GithubCallback />} />
         <Route path="/chat/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />

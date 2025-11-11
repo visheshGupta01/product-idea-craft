@@ -160,13 +160,6 @@ const GitHubIntegration = () => {
     }
   };
 
-  const handleDisconnect = () => {
-    setIsConnected(false);
-    setRepository(null);
-    sessionStorage.removeItem("github_repository");
-    toast.success("Disconnected from GitHub");
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
