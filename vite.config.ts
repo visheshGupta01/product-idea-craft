@@ -5,22 +5,11 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: './', // Added for relative paths in production build
+  base: '/', // Added for relative paths in production build
   server: {
     host: "0.0.0.0",
     port: 8080,
     cors: true
-    // proxy: {
-    //   '/api': {
-    //     target: 'https://713f60dd7948.ngrok-free.app',
-    //     changeOrigin: true,
-    //     secure: true,
-    //     rewrite: (path) => path.replace(/^\/api/, ''),
-    //     headers: {
-    //       // 'ngrok-skip-browser-warning': 'true'
-    //     }
-    //   }
-    // }
   },
   plugins: [
     react(),
