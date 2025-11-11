@@ -10,66 +10,75 @@ const GithubCallback: React.FC = () => {
 
   useEffect(() => {
     const handleCallback = async () => {
-      try {
-        const code = searchParams.get("code");
-        const state = searchParams.get("state");
-        const error = searchParams.get("error");
+      const code = searchParams.get("code");
+      const state = searchParams.get("state");
+      const error = searchParams.get("error");
 
-        if (error) {
-          toast({
-            title: "Authentication Failed",
-            description: error,
-            variant: "destructive",
-          });
-          navigate("/");
-          return;
-        }
-
-        if (!code) {
-          toast({
-            title: "Authentication Failed",
-            description: "Missing authorization code",
-            variant: "destructive",
-          });
-          navigate("/");
-          return;
-        }
-
-        // Call backend to exchange code for tokens
-        const response = await fetch(
-          `${API_BASE_URL}/api/auth/github/callback?code=${code}&state=${state}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to authenticate with GitHub");
-        }
-
-        const data = await response.json();
-
-        // Store authentication data
-        localStorage.setItem("auth_token", data.token);
-        localStorage.setItem("refresh_token", data.refresh_token);
-        localStorage.setItem("user_role", data.role);
-        localStorage.setItem("user_data", JSON.stringify(data.user));
-
+      if (error) {
         toast({
-          title: "Success",
-          description: "Successfully logged in with GitHub!",
+          title: "Authentication Failed",
+          description: error,
+          variant: "destructive",
         });
+        navigate("/");
+        return;
+      }
 
-        // Redirect based on role
-const roleRedirects = {
-  admin: "/admin",
-  developer: "/developer",
-  user: "/", // default role
-};
-window.location.href = roleRedirects[data.role] || "/";
+      if (!code || !state) {
+        toast({
+          title: "Authentication Failed",
+          description: "Missing authorization code or state",
+          variant: "destructive",
+        });
+        navigate("/");
+        return;
+      }
+
+      try {
+        // CASE 1: Normal GitHub login
+        if (state === "github-auth") {
+          const response = await fetch(
+            `${API_BASE_URL}/api/github/callback?code=${code}&state=${state}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to authenticate with GitHub");
+          }
+
+          const data = await response.json();
+
+          // Store tokens & user info
+          localStorage.setItem("auth_token", data.token);
+          localStorage.setItem("refresh_token", data.refresh_token);
+          localStorage.setItem("user_role", data.role);
+          localStorage.setItem("user_data", JSON.stringify(data.user));
+
+          toast({
+            title: "Success",
+            description: "Successfully logged in with GitHub!",
+          });
+
+          // Redirect based on user role
+          const roleRedirects: Record<string, string> = {
+            admin: "/admin",
+            developer: "/developer",
+            user: "/", // default
+          };
+          window.location.href = roleRedirects[data.role] || "/";
+        }
+
+        // CASE 2: Repository Authorization flow (sessionId or org)
+        else {
+          // Let backend handle HTML redirect and org selection
+          const redirectUrl = `${API_BASE_URL}/api/github/callback?code=${code}&state=${state}`;
+          window.location.href = redirectUrl;
+        }
       } catch (error) {
         console.error("GitHub OAuth callback error:", error);
         toast({
