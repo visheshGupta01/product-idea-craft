@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { useNavigate } from "react-router-dom";
+import { EditProfileModal } from "./EditProfileModal";
 
 interface Task {
   id: number;
@@ -58,6 +59,7 @@ export const DeveloperOverview: React.FC = () => {
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [showAllNewTasks, setShowAllNewTasks] = useState(false);
   const [showAllMyTasks, setShowAllMyTasks] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -455,13 +457,13 @@ export const DeveloperOverview: React.FC = () => {
                 </div>
               </div>
 
-              {/* <Button
-                className="w-full bg-black text-white hover:bg-gray-800"
-                onClick={() => navigate("/developer-dashboard/profile")}
+              <Button
+                className="w-full bg-pink-600 text-white hover:bg-pink-700"
+                onClick={() => setShowEditModal(true)}
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Edit Profile Info
-              </Button> */}
+                Edit Profile
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -895,6 +897,16 @@ export const DeveloperOverview: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <EditProfileModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          profile={profile}
+          onSuccess={loadProfile}
+        />
+      )}
     </div>
   );
 };

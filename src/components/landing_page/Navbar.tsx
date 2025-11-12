@@ -74,10 +74,17 @@ const Navbar: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => navigate("/projects")}>
-                <FolderOpen className="h-4 w-4 mr-2" />
-                My Projects
-              </DropdownMenuItem>
+              {user?.userType === "developer" ? (
+                <DropdownMenuItem onClick={() => navigate("/developer")}>
+                  <User className="h-4 w-4 mr-2" />
+                  My Profile
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={() => navigate("/projects")}>
+                  <FolderOpen className="h-4 w-4 mr-2" />
+                  My Projects
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => navigate("/inbox")}>
                 <Inbox className="h-4 w-4 mr-2" />
                 Inbox
@@ -86,15 +93,17 @@ const Navbar: React.FC = () => {
                 <CheckSquare className="h-4 w-4 mr-2" />
                 Tasks
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  setProfileSection("basic");
-                  setShowProfilePopup(true);
-                }}
-              >
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </DropdownMenuItem>
+              {user?.userType !== "developer" && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    setProfileSection("basic");
+                    setShowProfilePopup(true);
+                  }}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={() => {
                   setProfileSection("billing");
@@ -104,15 +113,6 @@ const Navbar: React.FC = () => {
                 <CreditCard className="h-4 w-4 mr-2" />
                 Subscription
               </DropdownMenuItem>
-              {/* <DropdownMenuItem
-                onClick={() => {
-                  setProfileSection("security");
-                  setShowProfilePopup(true);
-                }}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={logout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout

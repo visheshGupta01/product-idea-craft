@@ -45,9 +45,8 @@ export default function DeveloperSidebar({ activeView, onViewChange }: Developer
         height: "550px",
       }}
     >
-      {/* Top Section */}
-      <div className="flex flex-col items-center space-y-6">
-        {/* Logo */}
+      {/* Logo at top */}
+      <div className="flex flex-col items-center">
         <a href="/developer">
           <img
             src={myIcon}
@@ -60,27 +59,20 @@ export default function DeveloperSidebar({ activeView, onViewChange }: Developer
             }}
           />
         </a>
+      </div>
 
+      {/* Navigation Icons - Centered */}
+      <div className="flex flex-col items-center space-y-6">
         <SidebarIcon
           icon={<Home />}
           active={isActive("/developer")}
           onClick={() => handleNavigation("/developer")}
         />
-        {/* <SidebarIcon
-          icon={<User />}
-          active={isActive("/developer/profile")}
-          onClick={() => handleNavigation("/developer/profile")}
-        /> */}
         <SidebarIcon
           icon={<CheckSquare />}
           active={isActive("/developer/tasks")}
           onClick={() => handleNavigation("/developer/tasks")}
         />
-        {/* <SidebarIcon
-          icon={<BarChart3 />}
-          active={isActive("/developer/analytics")}
-          onClick={() => handleNavigation("/developer/analytics")}
-        /> */}
         <SidebarIcon
           icon={<Inbox />}
           active={isActive("/developer/inbox")}

@@ -35,11 +35,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { developerService } from "@/services/developerService";
+import { developerService, TasksResponse } from "@/services/developerService";
 import { toast } from "sonner";
 
 interface Task {
-  ID: number;
+  id: number;
   title: string;
   description: string;
   session_id: string;
@@ -52,14 +52,6 @@ interface Task {
   created_at: string;
   assigner_name: string;
   assignee_name: string;
-}
-
-interface TasksResponse {
-  tasks: Task[];
-  total: number;
-  page: number;
-  per_page: number;
-  total_pages: number;
 }
 
 const TasksPage: React.FC = () => {
@@ -251,7 +243,7 @@ const TasksPage: React.FC = () => {
                 </TableRow>
               ) : (
                 filteredTasks.map((task) => (
-                  <TableRow key={task.ID}>
+                  <TableRow key={task.id}>
                     <TableCell>
                       <div>
                         <div className="font-medium">{task.title}</div>
