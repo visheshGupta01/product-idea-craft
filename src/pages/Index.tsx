@@ -1,12 +1,14 @@
-import CommunitySection from "@/components/landing_page/CommunitySection";
-import CommunityTestimonials from "@/components/landing_page/CommunityTestimonials";
-import FAQSection from "@/components/landing_page/FAQSection";
+import { lazy, Suspense } from "react";
 import HeroSection from "@/components/landing_page/HeroSection";
 import IdeaBox from "@/components/landing_page/IdeaBox";
 import Navbar from "@/components/landing_page/Navbar";
-import PricingSection from "@/components/landing_page/PricingSection";
-import Footer from "@/components/landing_page/Footer";
-import VisionSection from "@/components/landing_page/VisionSection";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+
+// Lazy load below-the-fold components
+const VisionSection = lazy(() => import("@/components/landing_page/VisionSection"));
+const PricingSection = lazy(() => import("@/components/landing_page/PricingSection"));
+const FAQSection = lazy(() => import("@/components/landing_page/FAQSection"));
+const Footer = lazy(() => import("@/components/landing_page/Footer"));
 
 const Index = () => {
   return (
@@ -14,12 +16,12 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <IdeaBox />
-      <VisionSection />
-      {/* <CommunitySection/> */}
-      {/* <CommunityTestimonials /> */}
-      <PricingSection />
-      <FAQSection />
-      <Footer />
+      <Suspense fallback={<LoadingSpinner />}>
+        <VisionSection />
+        <PricingSection />
+        <FAQSection />
+        <Footer />
+      </Suspense>
     </div>
   );
 };
