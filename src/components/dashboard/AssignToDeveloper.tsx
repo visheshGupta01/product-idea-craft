@@ -591,9 +591,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
             <Button
               variant="outline"
               onClick={() =>
-                currentView === "profile"
-                  ? setCurrentView("list")
-                  : setCurrentView("profile")
+                setCurrentView("list")
               }
             >
               {currentView === "profile" ? "Collapse" : "Back"}

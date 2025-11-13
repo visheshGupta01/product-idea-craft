@@ -69,8 +69,8 @@ const TasksPage: React.FC = () => {
         page,
         status === "" ? undefined : status
       );
-      setTasks(response.tasks || []);
-      setTotalPages(response.total_pages || 1);
+      setTasks(response || []);
+      setTotalPages(response || 1);
       setCurrentPage(page);
     } catch (error) {
       //console.error('Failed to load tasks:', error);
@@ -208,6 +208,7 @@ const TasksPage: React.FC = () => {
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="todo">To Do</SelectItem>
+            <SelectItem value="not_accepted">Pending</SelectItem>
             <SelectItem value="in_progress">In Progress</SelectItem>
             <SelectItem value="done">Done</SelectItem>
           </SelectContent>

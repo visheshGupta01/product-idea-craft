@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Star, Github, Linkedin, Edit, Loader2 } from "lucide-react";
+import { Star, Github, Linkedin, Edit, Loader2, Pencil } from "lucide-react";
 import {
   developerService,
   DeveloperInfo,
@@ -458,11 +458,11 @@ export const DeveloperOverview: React.FC = () => {
               </div>
 
               <Button
-                className="w-full bg-pink-600 text-white hover:bg-pink-700"
+                className="w-full rounded-3xl bg-gray-600 text-white hover:bg-pink-700"
                 onClick={() => setShowEditModal(true)}
               >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Profile
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit Profile Info
               </Button>
             </div>
           </CardContent>
@@ -676,25 +676,16 @@ export const DeveloperOverview: React.FC = () => {
                       Awaiting {getTaskFilterCount("awaiting")}
                     </button>
                     <button
-                      onClick={() => setTaskFilter("pending")}
+                      onClick={() => setTaskFilter("todo")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        taskFilter === "pending"
+                        taskFilter === "todo"
                           ? "bg-pink-500 text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      Pending {getTaskFilterCount("pending")}
+                      To Do {getTaskFilterCount("todo")}
                     </button>
-                    <button
-                      onClick={() => setTaskFilter("done")}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        taskFilter === "done"
-                          ? "bg-pink-500 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      Done {getTaskFilterCount("done")}
-                    </button>
+
                     <button
                       onClick={() => setTaskFilter("in_progress")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -705,15 +696,16 @@ export const DeveloperOverview: React.FC = () => {
                     >
                       In Progress {getTaskFilterCount("in_progress")}
                     </button>
+
                     <button
-                      onClick={() => setTaskFilter("todo")}
+                      onClick={() => setTaskFilter("done")}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        taskFilter === "todo"
+                        taskFilter === "done"
                           ? "bg-pink-500 text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      To Do {getTaskFilterCount("todo")}
+                      Done {getTaskFilterCount("done")}
                     </button>
                   </div>
 

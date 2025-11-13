@@ -70,7 +70,6 @@ export default function UserManagement() {
         const data = await fetchUsersData(currentPage);
         setUsersData(data);
       } catch (error) {
-        //console.error('Failed to load users data:', error);
         toast.error("Failed to load users data");
       } finally {
         setIsLoading(false);
@@ -95,13 +94,19 @@ export default function UserManagement() {
     });
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
+const getInitials = (name?: string) => {
+  if (!name) return ""; // handles undefined, null, or empty strings
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return parts
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+};
+
+
 
   const handleCancelSubscription = (userId: string, userName: string) => {
     setSelectedUser({
