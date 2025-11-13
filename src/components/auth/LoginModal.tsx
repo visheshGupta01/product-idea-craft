@@ -6,11 +6,13 @@ import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import imagineboLogo from "@/assets/ImagineboIcon.svg";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { initiateGoogleAuth, initiateGithubAuth } from "@/services/oauthService";
+import { API_BASE_URL } from "@/config/api";
+import apiClient from "@/lib/apiClient";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -29,6 +31,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [showResendButton, setShowResendButton] = useState(false);
   const { login } = useUser();
   const navigate = useNavigate();
 
@@ -57,6 +61,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         }, 1000);
       } else {
         setError(result.message || "Login failed");
+        // Check if error is due to unverified email
+        if (result.message?.toLowerCase().includes("verify") || result.message?.toLowerCase().includes("not verified")) {
+          setShowResendButton(true);
+        }
       }
     } catch (error) {
       setError("An unexpected error occurred");
@@ -69,7 +77,26 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setEmail("");
     setPassword("");
     setError("");
+    setShowResendButton(false);
     onClose();
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      setError("Please enter your email address");
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      await apiClient.post(`${API_BASE_URL}/api/auth/resent-verification-link`, { email });
+      setError("Verification link sent! Please check your email.");
+      setShowResendButton(false);
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Failed to resend verification link.");
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -160,7 +187,31 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             </Button>
           </div>
 
-          {error && <div className="text-destructive text-sm">{error}</div>}
+          {error && (
+            <div className="space-y-2">
+              <div className={`text-sm ${error.includes("sent") ? "text-green-500" : "text-destructive"}`}>
+                {error}
+              </div>
+              {showResendButton && (
+                <Button
+                  type="button"
+                  onClick={handleResendVerification}
+                  variant="outline"
+                  className="w-full"
+                  disabled={isResending}
+                >
+                  {isResending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Resending...
+                    </>
+                  ) : (
+                    "Resend Verification Email"
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* Continue Button */}
           <Button
