@@ -5,11 +5,22 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/', // Added for relative paths in production build
+  base: '/',
   server: {
     host: "0.0.0.0",
     port: 8080,
     cors: true
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   },
   plugins: [
     react(),

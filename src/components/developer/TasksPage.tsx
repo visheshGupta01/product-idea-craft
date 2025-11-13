@@ -69,8 +69,8 @@ const TasksPage: React.FC = () => {
         page,
         status === "" ? undefined : status
       );
-      setTasks(response || []);
-      setTotalPages(response || 1);
+      setTasks(response?.tasks || []);
+      setTotalPages(response?.total_pages || 1);
       setCurrentPage(page);
     } catch (error) {
       //console.error('Failed to load tasks:', error);
