@@ -10,6 +10,8 @@ const HeroSection: React.FC = () => {
           src={LogoIcon}
           alt="Imagine.bo Logo"
           className="h-12 md:h-16 w-auto object-contain"
+          loading="eager"
+          fetchPriority="high"
         />
       </div>
 
