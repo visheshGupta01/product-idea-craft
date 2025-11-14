@@ -7,7 +7,8 @@ export const API_BASE_URLS = {
   DEV: "https://dev.imagine.bo",
 } as const;
 
-export const CURRENT_ENV = "PRODUCTION"; // or "PRODUCTION"
+// Current environment - change this to switch between environments
+export const CURRENT_ENV = "LOCAL"; // or "PRODUCTION"
 export const API_BASE_URL = API_BASE_URLS[CURRENT_ENV];
 
 // WebSocket URLs

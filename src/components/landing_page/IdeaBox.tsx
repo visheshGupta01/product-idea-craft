@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { UI_CONFIG } from "@/utils/constants";
-import { authService } from "@/services/authService";
 import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
@@ -49,7 +48,7 @@ const availableTools: Tool[] = [
 ];
 
 const IdeaBox: React.FC = () => {
-  const [idea, setIdea] = useState(authService.getUserIdea() || "");
+  const [idea, setIdea] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -58,7 +57,7 @@ const IdeaBox: React.FC = () => {
   const [toolInput, setToolInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { sendIdeaWithAuth, isProcessingIdea, isAuthenticated } =
+  const { sendIdeaWithAuth, setUserIdea, isProcessingIdea, isAuthenticated } =
     useUser();
   const navigate = useNavigate();
 
@@ -83,9 +82,7 @@ const IdeaBox: React.FC = () => {
   }, [idea]);
 
   const handleVoiceTranscript = (transcript: string) => {
-    const newIdea = idea ? idea + " " + transcript : transcript;
-    setIdea(newIdea);
-    authService.setUserIdea(newIdea);
+    setIdea((prev) => (prev ? prev + " " + transcript : transcript));
   };
 
   const handleFileUploaded = (file: UploadedFile) => {
@@ -99,7 +96,6 @@ const IdeaBox: React.FC = () => {
   const handleIdeaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setIdea(value);
-    authService.setUserIdea(value);
 
     const atIndex = value.lastIndexOf("@");
     if (
@@ -126,7 +122,6 @@ const IdeaBox: React.FC = () => {
     if (atIndex !== -1) {
       const newIdea = idea.substring(0, atIndex) + tool.name + " ";
       setIdea(newIdea);
-      authService.setUserIdea(newIdea);
       setShowToolList(false);
       setToolInput("");
       if (textareaRef.current) {
@@ -157,7 +152,6 @@ const IdeaBox: React.FC = () => {
     const result = await sendIdeaWithAuth(combinedIdea);
 
     if (result.success && result.session_id) {
-      authService.setUserIdea(""); // Clear idea after successful submission
       navigate(`/chat/${result.session_id}`);
     } else {
       alert(result.message || "Failed to process your idea. Please try again.");

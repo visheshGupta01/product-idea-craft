@@ -132,7 +132,7 @@ const ProfilePopup = ({
     { id: "basic", label: "Basic Info", icon: User },
     // { id: 'integration', label: 'Integration', icon: Settings },
     // { id: 'security', label: 'Security', icon: Shield },
-    // { id: "billing", label: "Credits and Billing", icon: CreditCard },
+    { id: "billing", label: "Credits and Billing", icon: CreditCard },
     { id: "usage", label: "Usage Stats", icon: BarChart3 },
     { id: "support", label: "Support and feedback", icon: MessageCircle },
   ];

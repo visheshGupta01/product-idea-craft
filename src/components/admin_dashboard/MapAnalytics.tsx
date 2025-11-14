@@ -187,7 +187,6 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
         {/* Leaflet Map */}
         <div className="flex-1 h-56 rounded-lg overflow-hidden">
           <MapContainer
-            // @ts-expect-error - react-leaflet prop types issue
             center={center}
             zoom={2}
             minZoom={2}
@@ -195,9 +194,8 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
             scrollWheelZoom
           >
             <TileLayer
-              // @ts-expect-error - react-leaflet prop types issue
-              attribution={'&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'}
-              url={"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
+              attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
             {/* Heatmap uses only valid points */}
@@ -219,7 +217,6 @@ const MapAnalytics: React.FC<MapAnalyticsProps> = ({
                 <CircleMarker
                   key={`${p.country}-${p.lat}-${p.lon}`}
                   center={[p.lat, p.lon]}
-                  // @ts-expect-error - react-leaflet prop types issue
                   radius={weight}
                   stroke={false}
                   fillOpacity={0.9}

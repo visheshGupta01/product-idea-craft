@@ -318,7 +318,7 @@ export class AuthService {
     
     // Clear session data
     sessionStorage.removeItem("session_id");
-    localStorage.removeItem("user_idea");
+    sessionStorage.removeItem("user_idea");
     
     // Clear all chat sessions
     const keys = Object.keys(sessionStorage);
@@ -365,11 +365,11 @@ export class AuthService {
   }
 
   setUserIdea(idea: string): void {
-    localStorage.setItem("user_idea", idea);
+    sessionStorage.setItem("user_idea", idea);
   }
 
   getUserIdea(): string | null {
-    return localStorage.getItem("user_idea");
+    return sessionStorage.getItem("user_idea");
   }
 
   isAuthenticated(): boolean {
