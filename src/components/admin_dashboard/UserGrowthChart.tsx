@@ -39,22 +39,6 @@ interface UserGrowthChartProps {
   userGrowthRate?: number;
 }
 
-interface DataPoint {
-  date: string;
-  paid: number;
-  active: number;
-}
-
-const data: DataPoint[] = [
-  { date: "09 Mar", paid: 2000, active: 3000 },
-  { date: "10 Mar", paid: 2800, active: 3400 },
-  { date: "11 Mar", paid: 1500, active: 2800 },
-  { date: "12 Mar", paid: 2600, active: 3000 },
-  { date: "13 Mar", paid: 1900, active: 3200 },
-  { date: "14 Mar", paid: 2400, active: 3100 },
-  { date: "15 Mar", paid: 3000, active: 3700 },
-];
-
 const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
   active,
   payload,
@@ -114,8 +98,40 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({
 
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
-  const [selectedWeek, setSelectedWeek] = useState<number>(1);
-  const [selectedPeriod, setSelectedPeriod] = useState<
+const computeInitialWeek = (): number => {
+  if (!apiData || apiData.length === 0) return 1;
+
+  // Prefer the selectedYear if it exists in apiData; otherwise fall back to last year entry.
+  const yearData =
+    apiData.find((y) => y.year === currentYear) || apiData[apiData.length - 1];
+  if (!yearData || !yearData.months) return 1;
+
+  // Prefer the selectedMonth if it exists; otherwise use last month in yearData.
+  const monthData =
+    yearData.months.find((m) => m.month === currentMonth) ||
+    yearData.months[yearData.months.length - 1];
+  if (!monthData || !monthData.weeks || monthData.weeks.length === 0) return 1;
+
+  const todayISO = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+
+  // Try to find a week that contains today's date
+  for (const w of monthData.weeks) {
+    if (
+      w.days &&
+      w.days.some(
+        (d) =>
+          !!d.date && new Date(d.date).toISOString().slice(0, 10) === todayISO
+      )
+    ) {
+      return w.week_number;
+    }
+  }
+
+  // If today's date wasn't found, fallback to the last available week number
+  return monthData.weeks[monthData.weeks.length - 1].week_number ?? 1;
+};
+
+const [selectedWeek, setSelectedWeek] = useState<number>(computeInitialWeek());  const [selectedPeriod, setSelectedPeriod] = useState<
     "week" | "month" | "year"
   >("week");
 

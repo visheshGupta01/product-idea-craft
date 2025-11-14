@@ -28,7 +28,7 @@ export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarP
       {/* Top Section */}
       <div className="flex flex-col items-center space-y-6">
         {/* Replace logo placeholder with image */}
-        <a href="/" className="mb-24">
+        <a href="/admin" className="mb-24">
           <img
             src={myIcon}
             alt="Logo"

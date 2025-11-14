@@ -105,7 +105,8 @@ const AdminDashboard: React.FC = () => {
                   {/* Metrics Cards (takes 1/3) */}
                   <div className="lg:col-span-1">
                     <MetricsCards
-                      conversionRate={dashboardData.conversion_rate_percent}
+                        conversionRate={dashboardData.conversion_rate_percent}
+                      droppingRate={dashboardData.dropping_rate_percent}
                       revenueData={dashboardData.revenue_data}
                     />
                   </div>
@@ -118,7 +119,8 @@ const AdminDashboard: React.FC = () => {
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <MapAnalytics
-                    // countryPercentages={dashboardData.country_percentages}
+                        countryPercentages={dashboardData.country_percentages}
+                        countryGeoData={dashboardData.country_geo_data}
                     />
                     {/* <DropRateCard
                       droppingRate={dashboardData.dropping_rate_percent}
