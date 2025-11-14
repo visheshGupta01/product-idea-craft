@@ -57,9 +57,17 @@ const IdeaBox: React.FC = () => {
   const [toolInput, setToolInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { sendIdeaWithAuth, setUserIdea, isProcessingIdea, isAuthenticated } =
+  const { sendIdeaWithAuth, setUserIdea, userIdea, isProcessingIdea, isAuthenticated } =
     useUser();
   const navigate = useNavigate();
+
+  // Restore saved idea after login
+  useEffect(() => {
+    if (isAuthenticated && userIdea) {
+      setIdea(userIdea);
+      setUserIdea(null); // Clear stored idea after restoring
+    }
+  }, [isAuthenticated, userIdea, setUserIdea]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -134,6 +142,7 @@ const IdeaBox: React.FC = () => {
     if (!idea.trim() || isProcessingIdea) return;
 
     if (!isAuthenticated) {
+      setUserIdea(idea); // Save idea before showing login modal
       setShowLoginModal(true);
       return;
     }
