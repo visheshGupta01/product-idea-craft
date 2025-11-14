@@ -192,7 +192,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <div className={`text-sm ${error.includes("sent") ? "text-green-500" : "text-destructive"}`}>
                 {error}
               </div>
-              {showResendButton && (
+              {/* {showResendButton && (
                 <Button
                   type="button"
                   onClick={handleResendVerification}
@@ -209,7 +209,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                     "Resend Verification Email"
                   )}
                 </Button>
-              )}
+              )} */}
             </div>
           )}
 
