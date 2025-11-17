@@ -24,6 +24,7 @@ const Pricing = () => {
   const { isAuthenticated, user } = useUser();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [plans, setPlans] = useState<any[]>([]);
+  const [isAnnually, setIsAnnually] = useState(false);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -81,67 +82,81 @@ const Pricing = () => {
       <Navbar />
 
       <div className="container mx-auto px-4 py-16 mt-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Choose Your Plan
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Start building for free, upgrade when you need more power
-          </p>
+          
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <span className={`text-sm ${!isAnnually ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+              Monthly
+            </span>
+            <button
+              onClick={() => setIsAnnually(!isAnnually)}
+              className="relative inline-flex h-6 w-11 items-center rounded-full bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-background shadow-lg transition-transform ${
+                  isAnnually ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+            <span className={`text-sm ${isAnnually ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+              Annually
+            </span>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative ${
+              className={`relative bg-card border-2 ${
                 plan.popular
-                  ? "border-primary shadow-lg scale-105"
+                  ? "border-primary"
                   : "border-border"
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-primary text-primary-foreground px-3 py-1">
                     Most Popular
                   </Badge>
                 </div>
               )}
 
-              <CardHeader className="text-center">
-                <div className="space-y-1">
-                  <CardTitle className="text-3xl">{plan.name}</CardTitle>
-                  <CardDescription className="text-sm">
-                    {plan.subtitle}
-                  </CardDescription>
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl font-bold mb-2">{plan.name}</CardTitle>
+                <div className="mt-2">
+                  <span className="text-4xl md:text-5xl font-bold">${isAnnually ? Math.floor(plan.price * 10) : plan.price}</span>
+                  <span className="text-muted-foreground text-sm">/month</span>
                 </div>
-                <div className="mt-4">
-                  <span className="text-5xl font-bold">${plan.price}</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-                <p className="text-sm font-medium text-primary mt-2">
+                <p className="text-sm font-medium mt-3" style={{ color: 'hsl(var(--primary))' }}>
                   {plan.credits} credits/month
                 </p>
               </CardHeader>
 
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  {plan.features.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                      <span className="text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
+              <CardContent className="space-y-3 px-6">
+                {plan.features.map((feature, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5" style={{ color: 'hsl(var(--primary))' }} />
+                    <span className="text-sm text-foreground">{feature}</span>
+                  </div>
+                ))}
               </CardContent>
 
-              <CardFooter>
+              <CardFooter className="px-6 pb-6 pt-4">
                 <Button
-                  className="w-full"
-                  variant={plan.popular ? "default" : "outline"}
+                  className={`w-full font-medium ${
+                    plan.name === "Free" 
+                      ? "bg-transparent border-2 border-border text-foreground hover:bg-muted" 
+                      : "text-white"
+                  }`}
+                  style={plan.name !== "Free" ? { backgroundColor: 'hsl(var(--primary))' } : {}}
                   size="lg"
                   onClick={() =>
-                    handleSelectPlan(plan.name, String(plan.price))
+                    handleSelectPlan(plan.name, String(isAnnually ? Math.floor(plan.price * 10) : plan.price))
                   }
                   disabled={loadingPlan === plan.name || plan.name === "Free"}
                 >
@@ -162,7 +177,7 @@ const Pricing = () => {
         </div>
 
         <div className="text-center mt-12 text-sm text-muted-foreground">
-          <p>All plans include secure payments via Razorpay</p>
+          <p>All plans include secure payments via Stripe</p>
         </div>
       </div>
     </div>
