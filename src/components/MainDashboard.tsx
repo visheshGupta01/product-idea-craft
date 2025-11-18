@@ -41,6 +41,8 @@ const MainDashboard = ({
   const [projectDetails, setProjectDetails] = useState<
     ProjectDetails | undefined
   >();
+  const [isAiStreaming, setIsAiStreaming] = useState(false);
+  const [isToolProcessing, setIsToolProcessing] = useState(false);
 
   const { initialResponse } = useUser();
 
@@ -173,6 +175,8 @@ const MainDashboard = ({
                   onFrontendGenerated={handleFrontendGenerated}
                   onSitemapGenerated={handleSitemapGenerated}
                   sessionId={sessionId}
+                  onStreamingStateChange={setIsAiStreaming}
+                  onToolProcessingChange={setIsToolProcessing}
                 />
               </div>
             </ResizablePanel>
@@ -189,6 +193,8 @@ const MainDashboard = ({
                   previewUrl={previewUrl}
                   sessionId={sessionId}
                   selectedPage={selectedPage}
+                  isAiResponding={isAiStreaming}
+                  isProcessingTools={isToolProcessing}
                 />
               </div>
             </ResizablePanel>

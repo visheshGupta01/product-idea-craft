@@ -7,6 +7,7 @@ import { useUser } from "@/context/UserContext";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { FileUploader, UploadedFile } from "@/components/ui/file-uploader";
 import { cn } from "@/lib/utils";
+import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -224,9 +225,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 !isLoading && !message.trim() && uploadedFiles.length === 0
               }
               className={cn(
-                "w-[36px] h-[36px]",
+                "w-[36px] h-[36px] transition-all",
                 isLoading
-                  ? "bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/50"
+                  ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground border-2 border-destructive shadow-lg shadow-destructive/50 animate-pulse"
                   : "bg-primary hover:bg-primary/90 text-primary-foreground"
               )}
             >

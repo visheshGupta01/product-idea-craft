@@ -32,7 +32,13 @@ const Pricing = () => {
       try {
         const fetchedPlans = await getPaymentPlans();
         console.log("Fetched plans:", fetchedPlans);
-        setPlans(fetchedPlans);
+        // Sort plans by id
+        const sortedPlans = fetchedPlans.sort((a: any, b: any) => {
+          const idA = a.id || a.planid || 0;
+          const idB = b.id || b.planid || 0;
+          return idA - idB;
+        });
+        setPlans(sortedPlans);
       } catch (error) {
         toast.error("Failed to fetch pricing plans.");
       }

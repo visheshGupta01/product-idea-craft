@@ -5,6 +5,7 @@ import { ChatInput } from "./ChatInput";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -21,6 +22,8 @@ interface StreamingChatInterfaceProps {
   onFrontendGenerated?: (url: string) => void;
   onSitemapGenerated?: (sitemap: any) => void;
   urlSessionId?: string;
+  onStreamingStateChange?: (isStreaming: boolean) => void;
+  onToolProcessingChange?: (isProcessingTools: boolean) => void;
 }
 
 export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
@@ -28,6 +31,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   onFrontendGenerated,
   onSitemapGenerated,
   urlSessionId,
+  onStreamingStateChange,
+  onToolProcessingChange,
 }) => {
   const {
     sessionId: contextSessionId,
@@ -60,6 +65,16 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const shouldAutoScrollRef = useRef(true);
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+
+  // Notify parent of streaming state changes
+  useEffect(() => {
+    onStreamingStateChange?.(isStreaming);
+  }, [isStreaming, onStreamingStateChange]);
+
+  // Notify parent of tool processing state changes
+  useEffect(() => {
+    onToolProcessingChange?.(isProcessingTools);
+  }, [isProcessingTools, onToolProcessingChange]);
 
   // Initialize connection when sessionId is available
   useEffect(() => {
@@ -191,20 +206,17 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                   </div>
                 ))}
                 
-                {/* Show tool processing indicator */}
-                {isProcessingTools && (
-                  <div className="flex items-start gap-3 animate-scale-in">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 animate-pulse">
-                      <span className="text-sm">🔧</span>
+                {/* Show AI responding indicator */}
+                {(isStreaming || isProcessingTools) && messages[messages.length - 1]?.type === "ai" && (
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm">🤖</span>
                     </div>
-                    <div className="flex-1 bg-gradient-to-r from-muted to-muted/50 rounded-lg p-4 border border-primary/20 shadow-lg">
-                      <div className="flex items-center gap-3">
-                        <LoadingSpinner size="sm" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-foreground">Processing tools</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">Executing operations...</p>
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-4 py-2 border border-pink-500/20">
+                      <PinkLoadingDots />
+                      <span className="text-sm text-muted-foreground">
+                        {isProcessingTools ? "Running tools..." : "AI is thinking..."}
+                      </span>
                     </div>
                   </div>
                 )}
