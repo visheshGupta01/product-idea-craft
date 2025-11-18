@@ -155,29 +155,29 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="relative w-full">
       {/* Chat Input Container */}
-      <div className="bg-chat-background border border-sidebar-border rounded-lg p-3 shadow-lg">
+      <div className="bg-[#FFB3E6] border border-pink-400/30 rounded-2xl p-3 shadow-lg">
         {/* Uploaded Files Display */}
         {uploadedFiles.length > 0 && (
           <div className="mb-3 space-y-2">
-            <div className="text-xs text-chat-foreground/70 font-medium">
+            <div className="text-xs text-gray-700 font-medium">
               Attached Files:
             </div>
             <div className="flex flex-wrap gap-2">
               {uploadedFiles.map((file) => (
                 <div
                   key={file.name}
-                  className="flex items-center gap-2 bg-sidebar-accent/50 border border-sidebar-border rounded-md px-3 py-2 text-sm"
+                  className="flex items-center gap-2 bg-white/50 border border-pink-400/30 rounded-md px-3 py-2 text-sm"
                 >
-                  <FileText className="w-4 h-4 text-primary" />
+                  <FileText className="w-4 h-4 text-pink-600" />
                   <span
-                    className="text-chat-foreground truncate max-w-[200px]"
+                    className="text-gray-800 truncate max-w-[200px]"
                     title={file.name}
                   >
                     {file.name}
                   </span>
                   <button
                     onClick={() => handleRemoveFile(file.name)}
-                    className="text-muted-foreground hover:text-destructive transition-colors ml-1"
+                    className="text-gray-600 hover:text-red-600 transition-colors ml-1"
                     title="Remove file"
                   >
                     <X className="w-3 h-3" />
@@ -197,8 +197,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             onKeyDown={handleKeyDown}
             placeholder="Type your message or use '@' to call a tool..."
             className={cn(
-              "min-h-[50px] max-h-[120px] pr-[150px] resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-              "text-chat-foreground placeholder:text-chat-foreground/50",
+              "min-h-[50px] max-h-[120px] pr-[150px] resize-none bg-white/70 border-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+              "text-gray-900 placeholder:text-gray-600",
               "custom-scroll"
             )}
             rows={1}
@@ -228,7 +228,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 "w-[36px] h-[36px] transition-all",
                 isLoading
                   ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground border-2 border-destructive shadow-lg shadow-destructive/50 animate-pulse"
-                  : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                  : "bg-[#FF00A9] hover:bg-[#E000A0] text-white"
               )}
             >
               {isLoading ? (
@@ -243,9 +243,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
       {/* Tool Suggestions */}
       {showToolList && filteredTools.length > 0 && (
-        <div className="absolute bottom-full left-0 mb-2 w-full bg-chat-background border border-sidebar-border rounded-lg shadow-xl z-20">
-          <div className="p-2 border-b border-sidebar-border">
-            <div className="text-xs text-chat-foreground/70 font-medium">
+        <div className="absolute bottom-full left-0 mb-2 w-full bg-[#2A2A2A] border border-gray-700 rounded-lg shadow-xl z-20">
+          <div className="p-2 border-b border-gray-700">
+            <div className="text-xs text-gray-400 font-medium">
               Available Tools:
             </div>
           </div>
@@ -253,13 +253,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             {filteredTools.map((tool) => (
               <div
                 key={tool.name}
-                className="px-4 py-3 cursor-pointer hover:bg-sidebar-accent/50 transition-colors flex flex-col items-start border-b border-sidebar-border/50 last:border-b-0"
+                className="px-4 py-3 cursor-pointer hover:bg-gray-800 transition-colors flex flex-col items-start border-b border-gray-700/50 last:border-b-0"
                 onClick={() => handleToolSelect(tool)}
               >
-                <span className="font-medium text-primary text-sm">
+                <span className="font-medium text-pink-400 text-sm">
                   {tool.name}
                 </span>
-                <span className="text-xs text-chat-foreground/70 mt-1">
+                <span className="text-xs text-gray-400 mt-1">
                   {tool.description}
                 </span>
               </div>

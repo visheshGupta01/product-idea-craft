@@ -28,6 +28,7 @@ import FullscreenPreview from "./FullscreenPreview";
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
 import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
+import { cn } from "@/lib/utils";
 
 interface PreviewCodePanelProps {
   previewUrl?: string;
@@ -339,62 +340,64 @@ const PreviewCodePanel = ({
             </ResizablePanelGroup>
           </div>
         ) : hasValidPreview ? (
-          <div className="h-full animate-fade-in bg-sidebar-background">
+          <div className="h-full animate-fade-in bg-white">
             <DevicePreview device={activeDevice} src={iframeSrc} />
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center bg-sidebar-background overflow-hidden relative">
-            {/* Animated background elements (kept from main branch — nicer empty state) */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-              <div
-                className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl animate-float animate-delay-200"
-                style={{ animationDuration: "4s" }}
-              ></div>
-              <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-float animate-delay-300"
-                style={{ animationDuration: "5s" }}
-              ></div>
-
-              <div
-                className="absolute top-20 left-1/3 w-32 h-32 bg-accent/20 rounded-full blur-2xl animate-float animate-delay-100"
-                style={{ animationDuration: "3s" }}
-              ></div>
-              <div
-                className="absolute bottom-32 left-2/3 w-24 h-24 bg-primary/20 rounded-full blur-2xl animate-float animate-delay-400"
-                style={{ animationDuration: "3.5s" }}
-              ></div>
-              <div
-                className="absolute top-1/3 right-1/4 w-40 h-40 bg-accent/15 rounded-full blur-2xl animate-float animate-delay-500"
-                style={{ animationDuration: "4.5s" }}
-              ></div>
-
-              <div
-                className="absolute inset-0 opacity-5"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
-                  backgroundSize: "50px 50px",
-                  animation: "float 8s ease-in-out infinite",
-                }}
-              ></div>
-            </div>
-
-            <div className="text-center space-y-6 max-w-md px-6 relative z-10 animate-fade-up">
-              <div className="inline-flex p-4 bg-primary/10 rounded-2xl animate-pulse-glow">
-                <Code className="w-12 h-12 text-primary animate-bounce-subtle" />
-              </div>
-              <h2 className="text-3xl font-bold text-sidebar-foreground animate-scale-in">
-                Welcome to Imagine.bo
+          <div className="h-full flex items-center justify-center overflow-hidden relative">
+            <div className="text-center space-y-6 max-w-2xl px-6 relative z-10">
+              <h2 className="text-4xl font-semibold text-white">
+                Welcome to imagine.bo
               </h2>
-              <p className="text-sidebar-foreground/70 text-lg animate-fade-in animate-delay-200">
-                Start a conversation with our AI to begin building your project.
-                Your preview will appear here once generated.
+              <p className="text-lg text-white/90 leading-relaxed">
+                Start a conversation with our AI to begin building<br />
+                your project. Your preview will appear here once<br />
+                generated.
               </p>
-              <div className="flex items-center justify-center gap-2 text-sm text-sidebar-foreground/50 animate-fade-in animate-delay-300">
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+              <div className="flex items-center justify-center gap-2 text-base text-white/80">
                 <span>Ready to create something amazing</span>
               </div>
+            </div>
+
+            {/* Device Toggle - Bottom Right */}
+            <div className="absolute bottom-6 right-6 flex items-center gap-3 bg-black/20 backdrop-blur-sm rounded-lg p-2">
+              <button
+                onClick={() => setActiveDevice("desktop")}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors",
+                  activeDevice === "desktop" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+                )}
+              >
+                <Monitor className="h-4 w-4" />
+                <span>Web</span>
+              </button>
+              <button
+                onClick={() => setActiveDevice("phone")}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors",
+                  activeDevice === "phone" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+                )}
+              >
+                <Smartphone className="h-4 w-4" />
+                <span>Mob</span>
+              </button>
+              <button
+                onClick={() => setActiveDevice("tablet")}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors",
+                  activeDevice === "tablet" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+                )}
+              >
+                <Tablet className="h-4 w-4" />
+                <span>Tab</span>
+              </button>
+              <button
+                onClick={() => setIsFullscreen(true)}
+                className="p-1.5 ml-2 text-white/70 hover:text-white transition-colors"
+                title="Fullscreen"
+              >
+                <Expand className="h-4 w-4" />
+              </button>
             </div>
           </div>
         )}
