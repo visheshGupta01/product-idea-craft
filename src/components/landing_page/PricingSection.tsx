@@ -187,7 +187,6 @@ const PricingSection: React.FC = () => {
           Talk to Us
         </button>
       </p>
-
       {/* Support & Authentication Modals */}
       <ProfilePopup
         open={showProfilePopup}

@@ -31,7 +31,7 @@ const cardData: CardData[] = [
   },
   {
     id: 3,
-    title: "Support That Stays With You Support That Stays With You",
+    title: "Support That Stays With You",
     description: "Crafting meaningful digital experiences",
     content:
       "As your project takes shape, our team supports you through critical development phases. Helps with custom code integration, backend logic, deployment pipelines, and even scaling strategies. And after you go live, we’re still here for updates, debugging, and improvements.",

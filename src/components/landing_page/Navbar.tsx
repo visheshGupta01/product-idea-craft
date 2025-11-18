@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
   return (
-    <nav className="bg-[#1B2123] shadow-[0_2px_24px_rgba(0,0,0,0.5)] fixed top-0 left-0 w-full z-50">
+    <nav className="bg-[#1B2123] border-b border-white rounded-lg fixed top-0 left-0 w-full z-50">
       <div className="max-w-[1732px] mx-auto h-[60px] px-4 md:px-6 flex items-center justify-between">
         {/* Logo */}
         <div>
@@ -129,7 +129,7 @@ const Navbar: React.FC = () => {
                 Enroll as Dev
               </button>
             </div> */}
-            <div className="w-[180px] md:w-[220px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#D5E1E7]">
+            <div className="w-[180px] md:w-[220px] h-[30px] flex items-center rounded-[7px] shadow-md overflow-hidden font-supply bg-[#B1C5CE]">
               <button
                 onClick={() => setShowLoginModal(true)}
                 className="w-1/2 h-full text-black text-xs md:text-sm font-medium hover:bg-gray-100 transition"

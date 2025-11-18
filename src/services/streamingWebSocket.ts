@@ -116,7 +116,8 @@ export class StreamingWebSocketClient {
           const content = event.data;
 
           // Detect tool output by looking for tool output patterns
-          if (content.includes("Executing:")) {
+          if (content.includes("[Tool Use Started]:")) {
+        //    console.log("Detected tool usage start");
             isInToolMode = true;
             callbacks.onToolStart();
             fullContent += content;

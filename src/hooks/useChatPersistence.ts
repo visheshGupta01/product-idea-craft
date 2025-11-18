@@ -4,7 +4,7 @@ import { fetchProjectDetails, ChatMessage } from "@/services/projectService";
 
 export interface ChatSession {
   sessionId: string;
-  apiMessages: ChatMessage[]; // Store in API format for consistency
+  apiMessages: ChatMessage[];
   lastUpdated: number;
   projectUrl?: string;
   sitemap?: any;
@@ -12,36 +12,64 @@ export interface ChatSession {
   githubUrl?: string;
 }
 
-const convertApiMessageToMessage = (apiMessage: ChatMessage): Message => ({
-  id: `api_${apiMessage.id}`,
+/* -------------------------------------------------------
+   Convert API → UI Message format (IDs always unique)
+------------------------------------------------------- */
+const convertApiMessageToMessage = (
+  apiMessage: ChatMessage,
+  index: number
+): Message => ({
+  id: `api_${apiMessage.id}_${apiMessage.created_at}_${index}`,
   type: apiMessage.role === "user" ? "user" : "ai",
   content: apiMessage.msg,
   timestamp: new Date(apiMessage.created_at),
 });
 
+/* -------------------------------------------------------
+   Convert UI → API Message format (reverse-safe)
+------------------------------------------------------- */
+const convertUiMessageToApi = (
+  msg: Message,
+  sessionId: string
+): ChatMessage => {
+  const parts = msg.id.split("_");
+  const numericId = Number(parts[1]) || Date.now();
+
+  return {
+    id: numericId,
+    role: msg.type === "user" ? "user" : "ai",
+    msg: msg.content,
+    session_id: sessionId,
+    created_at: msg.timestamp.toISOString(),
+  };
+};
+
+/* -------------------------------------------------------
+   Main Hook
+------------------------------------------------------- */
 export const useChatPersistence = (sessionId: string | null) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
-  const [projectUrl, setProjectUrl] = useState<string>("");
-  const [sitemap, setSitemap] = useState<any>(null);
-  const [title, setTitle] = useState<string>("");
-  const [githubUrl, setGithubUrl] = useState<string>("");
 
-  // Load messages from sessionStorage or API on mount or when sessionId changes
+  const [projectUrl, setProjectUrl] = useState("");
+  const [sitemap, setSitemap] = useState<any>(null);
+  const [title, setTitle] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+
+  /* -------------------------------------------------------
+     Load messages when sessionId changes
+  ------------------------------------------------------- */
   useEffect(() => {
     const loadMessages = async () => {
       if (!sessionId) {
-        //console.log('📝 No sessionId provided, clearing messages');
         setMessages([]);
-        setIsLoadingMessages(false);
         return;
       }
 
-      //console.log('📝 Loading messages for sessionId:', sessionId);
+      setIsLoadingMessages(true);
 
-      // Clear all previous chat sessions - only keep current one
-      const keys = Object.keys(sessionStorage);
-      keys.forEach((key) => {
+      // keep only current session in storage
+      Object.keys(sessionStorage).forEach((key) => {
         if (
           key.startsWith("chat_session_") &&
           key !== `chat_session_${sessionId}`
@@ -50,117 +78,90 @@ export const useChatPersistence = (sessionId: string | null) => {
         }
       });
 
-      setIsLoadingMessages(true);
-
-      try {
-        // First try to load from sessionStorage
-        const savedSession = sessionStorage.getItem(
-          `chat_session_${sessionId}`
-        );
-        //console.log('📝 Checking sessionStorage for:', `chat_session_${sessionId}`, savedSession ? 'Found' : 'Not found');
-
-        if (savedSession) {
-          try {
-            const session: ChatSession = JSON.parse(savedSession);
-
-            // Convert stored API messages to Message format
-            if (session.apiMessages && Array.isArray(session.apiMessages)) {
-              const convertedMessages = session.apiMessages.map(
-                convertApiMessageToMessage
-              );
-              //console.log('📝 Loaded from sessionStorage:', convertedMessages.length, 'messages');
-              setMessages(convertedMessages);
-              setProjectUrl(session.projectUrl || "");
-              setSitemap(session.sitemap || null);
-              setTitle(session.title || "");
-              setGithubUrl(session.githubUrl || "");
-              setIsLoadingMessages(false);
-              return;
-            }
-          } catch (error) {
-            //console.error("Error parsing chat session from storage:", error);
-            sessionStorage.removeItem(`chat_session_${sessionId}`);
-            // Continue to API fetch
-          }
-        }
-
-        // If not in sessionStorage, load from API
+      // attempt load from sessionStorage
+      const saved = sessionStorage.getItem(`chat_session_${sessionId}`);
+      if (saved) {
         try {
-          //console.log('📝 Fetching from API for sessionId:', sessionId);
-          const projectDetails = await fetchProjectDetails(sessionId);
-          //console.log('📝 API response:', projectDetails);
+          const session: ChatSession = JSON.parse(saved);
+          const converted = session.apiMessages.map((m, i) =>
+            convertApiMessageToMessage(m, i)
+          );
+          setMessages(converted);
 
-          if (projectDetails.success && projectDetails.response) {
-            // Convert to Message format for display
-            const convertedMessages = projectDetails.response.map(
-              convertApiMessageToMessage
-            );
-            //console.log('📝 Loaded from API:', convertedMessages.length, 'messages');
-            setMessages(convertedMessages);
-            setProjectUrl(projectDetails.project_url || "");
-            setSitemap(projectDetails.sitemap || null);
-            setTitle(projectDetails.title || "");
-            setGithubUrl(projectDetails.github_url || "");
+          setProjectUrl(session.projectUrl || "");
+          setSitemap(session.sitemap || null);
+          setTitle(session.title || "");
+          setGithubUrl(session.githubUrl || "");
 
-            // Save raw API format to sessionStorage for consistency
-            const session: ChatSession = {
-              sessionId,
-              apiMessages: projectDetails.response, // Store raw API format
-              projectUrl: projectDetails.project_url || "",
-              sitemap: projectDetails.sitemap || null,
-              title: projectDetails.title || "",
-              githubUrl: projectDetails.github_url || "",
-              lastUpdated: Date.now(),
-            };
-            sessionStorage.setItem(
-              `chat_session_${sessionId}`,
-              JSON.stringify(session)
-            );
-            //console.log('📝 Saved to sessionStorage in API format');
-          } else {
-            //console.log('📝 API returned unsuccessful or no response');
-            sessionStorage.removeItem(`chat_session_${sessionId}`);
-            setMessages([]);
-          }
-        } catch (apiError) {
-          //console.error("📝 Error loading messages from API:", apiError);
+          setIsLoadingMessages(false);
+          return;
+        } catch {
           sessionStorage.removeItem(`chat_session_${sessionId}`);
-          setMessages([]);
         }
-      } catch (error) {
-        //console.error("📝 Error in loadMessages:", error);
-        setMessages([]);
-      } finally {
-        setIsLoadingMessages(false);
       }
+
+      // fetch from API if not in storage
+      try {
+        const data = await fetchProjectDetails(sessionId);
+
+        if (!data.success || !data.response) {
+          setMessages([]);
+          setIsLoadingMessages(false);
+          return;
+        }
+
+        const converted = data.response.map((m: ChatMessage, i: number) =>
+          convertApiMessageToMessage(m, i)
+        );
+
+        setMessages(converted);
+        setProjectUrl(data.project_url || "");
+        setSitemap(data.sitemap || null);
+        setTitle(data.title || "");
+        setGithubUrl(data.github_url || "");
+
+        // save normalized API messages
+        const session: ChatSession = {
+          sessionId,
+          apiMessages: data.response,
+          projectUrl: data.project_url,
+          sitemap: data.sitemap,
+          title: data.title,
+          githubUrl: data.github_url,
+          lastUpdated: Date.now(),
+        };
+
+        sessionStorage.setItem(
+          `chat_session_${sessionId}`,
+          JSON.stringify(session)
+        );
+      } catch (err) {
+        console.error(err);
+        setMessages([]);
+      }
+
+      setIsLoadingMessages(false);
     };
 
     loadMessages();
   }, [sessionId]);
 
-  // Save messages to sessionStorage whenever they change
+  /* -------------------------------------------------------
+     Persist messages to sessionStorage
+  ------------------------------------------------------- */
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
 
-    // Filter out empty messages before saving
-    const nonEmptyMessages = messages.filter(
-      (msg) => msg.content.trim() !== ""
+    const nonEmpty = messages.filter((m) => m.content.trim() !== "");
+    if (nonEmpty.length === 0) return;
+
+    const apiMessages = nonEmpty.map((m) =>
+      convertUiMessageToApi(m, sessionId)
     );
-
-    if (nonEmptyMessages.length === 0) return;
-
-    // Convert Message format back to API format for storage consistency
-    const apiMessages: ChatMessage[] = nonEmptyMessages.map((msg) => ({
-      id: parseInt(msg.id.replace("msg_", "").replace("api_", "")) || 0,
-      role: msg.type === "user" ? "user" : "ai",
-      msg: msg.content,
-      session_id: sessionId,
-      created_at: msg.timestamp.toISOString(),
-    }));
 
     const session: ChatSession = {
       sessionId,
-      apiMessages, // Store in API format
+      apiMessages,
       projectUrl,
       sitemap,
       title,
@@ -174,10 +175,13 @@ export const useChatPersistence = (sessionId: string | null) => {
     );
   }, [sessionId, messages, projectUrl, sitemap, title, githubUrl]);
 
-  const addMessage = (message: Omit<Message, "id">): Message => {
+  /* -------------------------------------------------------
+     Helpers
+  ------------------------------------------------------- */
+  const addMessage = (msg: Omit<Message, "id">): Message => {
     const newMessage: Message = {
-      ...message,
-      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      ...msg,
+      id: `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`,
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -186,24 +190,18 @@ export const useChatPersistence = (sessionId: string | null) => {
 
   const updateMessage = (messageId: string, content: string) => {
     setMessages((prev) =>
-      prev.map((msg) => (msg.id === messageId ? { ...msg, content } : msg))
+      prev.map((m) => (m.id === messageId ? { ...m, content } : m))
     );
   };
 
   const clearMessages = () => {
     setMessages([]);
-    if (sessionId) {
-      sessionStorage.removeItem(`chat_session_${sessionId}`);
-    }
+    if (sessionId) sessionStorage.removeItem(`chat_session_${sessionId}`);
   };
 
   const clearAllSessions = () => {
-    // Clear all chat sessions from sessionStorage
-    const keys = Object.keys(sessionStorage);
-    keys.forEach((key) => {
-      if (key.startsWith("chat_session_")) {
-        sessionStorage.removeItem(key);
-      }
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith("chat_session_")) sessionStorage.removeItem(key);
     });
     setMessages([]);
   };
@@ -216,6 +214,7 @@ export const useChatPersistence = (sessionId: string | null) => {
     clearMessages,
     clearAllSessions,
     setMessages,
+
     projectUrl,
     sitemap,
     title,

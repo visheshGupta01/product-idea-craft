@@ -2,8 +2,7 @@ import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
 
 // Razorpay key
-const RAZORPAY_KEY =
-  import.meta.env.VITE_RAZORPAY_KEY
+const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY;
 
 export interface PaymentRequest {
   user_uuid: string;
@@ -58,13 +57,12 @@ export const createRazorpayPayment = async (
       name: "imagine.bo",
       description: `${paymentData.plan_name} Plan`,
       order_id: response.data.id,
+      // inside createRazorpayPayment -> options.handler
       handler: async function (razorpayResponse: any) {
-        //console.log('Payment response:', razorpayResponse);
-
         try {
           // Mark payment as attempted
-          sessionStorage.setItem('payment_attempted', 'true');
-          
+          sessionStorage.setItem("payment_attempted", "true");
+
           // Verify payment on backend
           const verifyRes = await apiClient.post(
             "/api/payment/verify-payment",
@@ -78,18 +76,30 @@ export const createRazorpayPayment = async (
             }
           );
 
-          // alert(verifyRes.data)
-          //console.log('Verification response:', verifyRes.data);
+          // If verification OK, track Purchase with Facebook Pixel (if available)
+          try {
+            if (typeof window !== "undefined" && (window as any).fbq) {
+              // price is a string in your flow — convert to number if needed
+              const numericValue = parseFloat(String(paymentData.price)) || 0;
+              (window as any).fbq("track", "Purchase", {
+                value: numericValue,
+                currency: "USD",
+              });
+            }
+          } catch (fbErr) {
+            // don't block flow if fb tracking fails
+            /* optional: console.warn('fbq track failed', fbErr); */
+          }
 
           // Mark payment as completed
-          sessionStorage.setItem('payment_completed', 'true');
-          sessionStorage.removeItem('payment_attempted');
-          
+          sessionStorage.setItem("payment_completed", "true");
+          sessionStorage.removeItem("payment_attempted");
+
           // Redirect to success page
           window.location.href = "/payment-success";
         } catch (err) {
-          //console.error("Verification failed:", err);
-          sessionStorage.setItem('payment_attempted', 'true');
+          // Verification failed
+          sessionStorage.setItem("payment_attempted", "true");
           window.location.href = "/payment-failed";
         }
       },
