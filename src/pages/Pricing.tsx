@@ -22,7 +22,7 @@ import FacebookPixel from "@/lib/FacebookPixel";
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useUser();
+  const { isAuthenticated, user, profile } = useUser();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [plans, setPlans] = useState<any[]>([]);
   const [isAnnually, setIsAnnually] = useState(false);
@@ -41,6 +41,11 @@ const Pricing = () => {
     fetchPlans();
   }, []);
 
+  const isCurrentPlan = (planName: string) => {
+    if (!isAuthenticated || !profile) return false;
+    return profile.plan_name === planName;
+  };
+
   const handleSelectPlan = async (planName: string, price: string) => {
     if (!isAuthenticated) {
       toast.error("Please sign in to continue");
@@ -48,8 +53,8 @@ const Pricing = () => {
       return;
     }
 
-    if (planName === "Free") {
-      toast.info("You are already on the Free plan");
+    if (isCurrentPlan(planName)) {
+      toast.info(`You are already on the ${planName} plan`);
       return;
     }
 
@@ -58,7 +63,7 @@ const Pricing = () => {
     try {
       const selectedPlan = plans.find((p) => p.name === planName);
       await createRazorpayPayment({
-        user_uuid: user?.id || "",
+        user_uuid: profile?.id || user?.id || "",
         price: price,
         plan_name: planName,
         credits: selectedPlan?.credits || 0,
@@ -166,12 +171,12 @@ const Pricing = () => {
               <CardFooter className="px-6 pb-6 pt-4 mt-auto">
                 <Button
                   className={`w-full font-semibold font-poppins ${
-                    plan.name === "Free"
+                    isCurrentPlan(plan.name)
                       ? "bg-transparent border-2 border-border text-foreground hover:bg-muted"
                       : "text-white"
                   }`}
                   style={
-                    plan.name !== "Free"
+                    !isCurrentPlan(plan.name)
                       ? { backgroundColor: "hsl(var(--primary))" }
                       : {}
                   }
@@ -184,14 +189,14 @@ const Pricing = () => {
                       )
                     )
                   }
-                  disabled={loadingPlan === plan.name || plan.name === "Free"}
+                  disabled={loadingPlan === plan.name || isCurrentPlan(plan.name)}
                 >
                   {loadingPlan === plan.name ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Processing...
                     </>
-                  ) : plan.name === "Free" ? (
+                  ) : isCurrentPlan(plan.name) ? (
                     "Current Plan"
                   ) : (
                     "Get Started"
