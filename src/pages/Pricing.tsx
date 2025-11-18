@@ -45,7 +45,7 @@ const Pricing = () => {
     if (!isAuthenticated) return false;
     
     try {
-      const userData = localStorage.getItem("userData");
+      const userData = localStorage.getItem("user_data");
       if (!userData) return false;
       
       const parsedUserData = JSON.parse(userData);
