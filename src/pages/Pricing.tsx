@@ -42,8 +42,24 @@ const Pricing = () => {
   }, []);
 
   const isCurrentPlan = (planName: string) => {
-    if (!isAuthenticated || !profile) return false;
-    return profile.plan_name === planName;
+    if (!isAuthenticated) return false;
+    
+    try {
+      const userData = localStorage.getItem("userData");
+      if (!userData) return false;
+      
+      const parsedUserData = JSON.parse(userData);
+      const userPlanId = parsedUserData?.plan_id;
+      
+      if (!userPlanId) return false;
+      
+      const currentPlan = plans.find((p) => p.name === planName);
+      const currentPlanId = currentPlan?.id || currentPlan?.planid;
+      
+      return userPlanId === currentPlanId;
+    } catch (error) {
+      return false;
+    }
   };
 
   const handleSelectPlan = async (planName: string, price: string) => {
