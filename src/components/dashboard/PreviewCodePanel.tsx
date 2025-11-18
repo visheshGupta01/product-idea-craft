@@ -27,17 +27,22 @@ import DevicePreview, { DeviceType } from "./DevicePreview";
 import FullscreenPreview from "./FullscreenPreview";
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
+import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
 
 interface PreviewCodePanelProps {
   previewUrl?: string;
   sessionId?: string;
   selectedPage: FileNode | null;
+  isAiResponding?: boolean;
+  isProcessingTools?: boolean;
 }
 
 const PreviewCodePanel = ({
   previewUrl,
   sessionId,
   selectedPage,
+  isAiResponding = false,
+  isProcessingTools = false,
 }: PreviewCodePanelProps) => {
   const [activeDevice, setActiveDevice] = useState<DeviceType>("desktop");
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
@@ -180,6 +185,16 @@ const PreviewCodePanel = ({
       <div className="px-3 py-2 border-b border-sidebar-border flex items-center justify-between bg-sidebar-background">
         {/* Left Side Buttons */}
         <div className="flex items-center space-x-2">
+          {/* AI Responding Indicator */}
+          {(isAiResponding || isProcessingTools) && (
+            <div className="flex items-center gap-2 bg-pink-500/10 border border-pink-500/30 rounded-md px-3 py-1.5 mr-2">
+              <PinkLoadingDots />
+              <span className="text-xs text-pink-500 font-medium">
+                {isProcessingTools ? "Running tools..." : "AI responding..."}
+              </span>
+            </div>
+          )}
+          
           {/* Toggle Code View */}
           <Tooltip>
             <TooltipTrigger asChild>
