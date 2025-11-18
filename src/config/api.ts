@@ -64,6 +64,10 @@ export const API_ENDPOINTS = {
   ADMIN: {
     DASHBOARD: "/api/admin/dashboard",
     USERS: "/api/admin/users",
+    DEVELOPERS: "/api/admin/developers",
+    ADMINS: "/api/admin/admins",
+    UPDATE_CREDITS: "/api/admin/update/credits",
+    CREATE_ADMIN: "/api/admin/create/admin",
   },
 
   // Developer

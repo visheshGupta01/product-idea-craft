@@ -1,6 +1,6 @@
 import React from "react";
 import myIcon from "../../assets/ImagineboIcon.svg"; // Adjust the path as necessary
-import { Menu, LayoutGrid, Users, Settings, User, MessageCircle, LogOut } from "lucide-react";
+import { Menu, LayoutGrid, Users, Settings, User, MessageCircle, LogOut, Code, Shield } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useNavigate } from "react-router-dom";
 
@@ -52,6 +52,16 @@ export default function AdminSidebar({ activeView, onViewChange }: AdminSidebarP
           icon={<Users />}
           active={activeView === "users"}
           onClick={() => onViewChange("users")}
+        />
+        <SidebarIcon
+          icon={<Code />}
+          active={activeView === "developers"}
+          onClick={() => onViewChange("developers")}
+        />
+        <SidebarIcon
+          icon={<Shield />}
+          active={activeView === "admins"}
+          onClick={() => onViewChange("admins")}
         />
         <SidebarIcon
           icon={<MessageCircle />}

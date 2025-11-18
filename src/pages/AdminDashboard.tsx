@@ -19,6 +19,8 @@ import MapAnalytics from "@/components/admin_dashboard/MapAnalytics";
 import DropRateCard from "@/components/admin_dashboard/DropRateCard";
 import UserManagement from "@/components/admin_dashboard/UserManagement";
 import FeedbackManagement from "@/components/admin_dashboard/FeedbackManagement";
+import DeveloperManagement from "@/components/admin_dashboard/DeveloperManagement";
+import AdminManagement from "@/components/admin_dashboard/AdminManagement";
 
 const AdminDashboard: React.FC = () => {
   const { logout, userRole } = useUser();
@@ -77,6 +79,10 @@ const AdminDashboard: React.FC = () => {
     switch (activeView) {
       case "users":
         return <UserManagement />;
+      case "developers":
+        return <DeveloperManagement />;
+      case "admins":
+        return <AdminManagement />;
       case "feedback":
         return <FeedbackManagement />;
       case "dashboard":
