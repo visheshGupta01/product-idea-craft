@@ -225,7 +225,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
               </div>
             </ScrollArea>
 
-            <div className="bg-[#1E1E1E] pb-6">
+            <div className="bg-[#1E1E1E] pb-6 border-t border-gray-800">
               <div className="max-w-5xl mx-auto px-6">
                 <ChatInput
                   onSendMessage={sendMessage}
