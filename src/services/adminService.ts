@@ -103,3 +103,112 @@ export const cancelUserSubscription = async (
     throw error;
   }
 };
+
+export interface Developer {
+  id: string;
+  name: string;
+  email: string;
+  verified: boolean;
+  created_at: string;
+  last_login_at: string;
+  user_type: string;
+  github_url?: string;
+  rating_count: number;
+  average_rating: number;
+  hour_paid: number;
+  bio?: string;
+  skills?: string;
+  experience?: string;
+  total_in_progress_task: number;
+  company_name?: string;
+  total_pending_task: number;
+  linked_in_url?: string;
+  total_solved_tasks: number;
+}
+
+export interface DevelopersData {
+  total_developers: number;
+  developers: Developer[];
+}
+
+export const fetchDevelopersData = async (page: number = 1): Promise<DevelopersData> => {
+  try {
+    const response = await apiClient.get(
+      `${API_ENDPOINTS.ADMIN.DEVELOPERS}?page=${page}`
+    );
+    if (response.data.success) {
+      return {
+        total_developers: response.data.total_developers,
+        developers: response.data.developers,
+      };
+    } else {
+      throw new Error(response.data.message || "Failed to fetch developers data");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export interface Admin {
+  id: string;
+  name: string;
+  email: string;
+  verified: boolean;
+  plan_name?: string;
+  plan_id?: string;
+  credits: number;
+  user_type: string;
+  created_at: string;
+  last_login_at: string;
+}
+
+export interface AdminsData {
+  total_admins: number;
+  admins: Admin[];
+}
+
+export const fetchAdminsData = async (page: number = 1): Promise<AdminsData> => {
+  try {
+    const response = await apiClient.get(
+      `${API_ENDPOINTS.ADMIN.ADMINS}?page=${page}`
+    );
+    if (response.data.success) {
+      return {
+        total_admins: response.data.total_admins,
+        admins: response.data.admins,
+      };
+    } else {
+      throw new Error(response.data.message || "Failed to fetch admins data");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateUserCredits = async (
+  userId: string,
+  credits: number
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await apiClient.post(API_ENDPOINTS.ADMIN.UPDATE_CREDITS, {
+      id: userId,
+      credits: credits,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createAdmin = async (
+  email: string
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await apiClient.post(API_ENDPOINTS.ADMIN.CREATE_ADMIN, {
+      email: email,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
