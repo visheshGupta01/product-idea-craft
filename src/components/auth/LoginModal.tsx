@@ -42,11 +42,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
     setIsLoading(true);
     setError("");
+    setShowResendButton(false);
 
     try {
       const result = await login(email, password);
       if (result.success) {
        
+        // Check if user is not verified
+        if (result.verified === false) {
+          setError("Your email is not verified. You can browse but cannot create new projects until verified.");
+          setShowResendButton(true);
+        }
+        
         onClose();
         setEmail("");
         setPassword("");
@@ -55,6 +62,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         setTimeout(() => {
           if (result.role === 'admin') {
             navigate('/admin');
+          } else if (result.role === 'developer') {
+            navigate('/developer');
           } else {
             navigate('/');
           }
