@@ -245,6 +245,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       success: result.success,
       message: result.message,
       role: result.role,
+      verified: result.verified,
     };
   };
 

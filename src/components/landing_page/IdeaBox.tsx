@@ -160,7 +160,12 @@ const IdeaBox: React.FC = () => {
       authService.setUserIdea(""); // Clear idea after successful submission
       navigate(`/chat/${result.session_id}`);
     } else {
-      alert(result.message || "Failed to process your idea. Please try again.");
+      // Show appropriate message based on verification status
+      if (result.message?.includes("verify")) {
+        alert("Please verify your email address to create a new project. Check your inbox for the verification link.");
+      } else {
+        alert(result.message || "Failed to process your idea. Please try again.");
+      }
     }
   };
 

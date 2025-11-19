@@ -19,7 +19,7 @@ interface UserContextType {
     isActive: boolean;
     expiresAt: string | null;
   } | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: 'admin' | 'user' | 'developer' }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: 'admin' | 'user' | 'developer'; verified?: boolean }>;
   logout: () => void;
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   verifyEmail: (token: string) => Promise<{ success: boolean; message?: string }>;
