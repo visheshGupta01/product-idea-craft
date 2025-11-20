@@ -49,8 +49,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               firstName: userData.first_name,
               lastName: userData.last_name,
               email: userData.email,
-              avatar: "",
-              verified: true,
+              avatar: "",  
+              verified: userData.verified,
               userType: userData.user_type,
             };
             setUser(mappedUser);
@@ -160,7 +160,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         lastName: result.user.last_name,
         email: result.user.email,
         avatar: "", // Default avatar
-        verified: true, // If they can login, they're verified
+        verified: result.user.verified, // If they can login, they're verified
         userType: result.user.user_type,
       };
       setUser(userData);

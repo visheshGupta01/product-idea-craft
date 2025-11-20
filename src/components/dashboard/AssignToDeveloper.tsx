@@ -86,7 +86,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
         avg_rating: dev.avg_rating,
         total_done: dev.total_solved_tasks,
         bio: dev.bio,
-        hourpaid: dev.hourpaid,
+        hourpaid: dev.hour_paid,
         skills: dev.skills || [],
         linkedin_url: dev.linkedin_url || "",
         github_url: dev.github_url || "",

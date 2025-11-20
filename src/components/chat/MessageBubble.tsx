@@ -92,7 +92,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           className={`ml-3 px-4 py-3 rounded-2xl shadow-sm overflow-hidden break-words max-w-[75%] min-w-0 ${
             isUser
               ? "bg-[#FFB3E6] text-gray-900 rounded-br-sm mr-2"
-              : "bg-[#2A2A2A] text-white rounded-bl-sm"
+              : "bg-[#bfdbff] text-black rounded-bl-sm"
           }`}
         >
           {isUser ? (

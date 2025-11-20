@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import GitHubIntegration from '../dashboard/GitHubIntegration';
 import VercelIntegration from '../dashboard/VercelIntegration';
 import AssignToDeveloper from '../dashboard/AssignToDeveloper';
-import ImagineboDarkBackground from "../../assets/ImagineboDarkBackground.svg";
+import ImagineboIcon from "../../assets/ImagineboIcon.svg";
 
 interface NavbarProps {
   onPublish?: () => void;
@@ -59,7 +59,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false, sessionId }: NavbarProps
             <Link to="/">
               <img
                 alt="Imagine.bo Logo"
-                src={ImagineboDarkBackground}
+                src={ImagineboIcon}
                 className="text-white w-full h-full object-contain"
               />
             </Link>
