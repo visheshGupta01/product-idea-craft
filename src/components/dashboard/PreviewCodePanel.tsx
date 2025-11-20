@@ -9,6 +9,9 @@ import {
   Save,
   ExternalLink,
   RefreshCw,
+  Github,
+  Rocket,
+  User,
 } from "lucide-react";
 import {
   Tooltip,
@@ -182,134 +185,54 @@ const PreviewCodePanel = ({
 
   return (
     <div className="h-full flex flex-col bg-sidebar-background">
-      {/* Header Bar */}
-      <div className="px-3 py-2 border-b border-sidebar-border flex items-center justify-between bg-sidebar-background">
-        {/* Left Side Buttons */}
-        <div className="flex items-center space-x-2">
-          {/* AI Responding Indicator */}
-          {(isAiResponding || isProcessingTools) && (
-            <div className="flex items-center gap-2 bg-pink-500/10 border border-pink-500/30 rounded-md px-3 py-1.5 mr-2">
-              <PinkLoadingDots />
-              <span className="text-xs text-pink-500 font-medium">
-                {isProcessingTools ? "Running tools..." : "AI responding..."}
-              </span>
-            </div>
+      {/* Preview Navbar */}
+      <div className="h-14 px-4 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525]">
+        <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          <span className="text-sm">Preview</span>
+        </button>
+
+        <div className="flex items-center space-x-3">
+          {sessionId && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 h-9 px-4 text-sm bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+            >
+              <User className="h-4 w-4" />
+              Assign to Dev
+            </Button>
           )}
-          
-          {/* Toggle Code View */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleCodeToggle(!showCode)}
-                className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              >
-                <Code className="w-4 h-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>Toggle Code View / Preview</p>
-            </TooltipContent>
-          </Tooltip>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 h-9 px-4 text-sm bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            <Github className="h-4 w-4" />
+            Github
+          </Button>
 
-          {/* Save Button */}
-          {showCode && hasUnsavedChanges && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSave}
-                  className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-                >
-                  <Save className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Save Changes</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-
-        {/* Right Side Buttons */}
-        <div className="flex items-center space-x-2">
-          {/* Open in New Tab */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleOpenInNewTab}
-                className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>Open in New Tab</p>
-            </TooltipContent>
-          </Tooltip>
-
-          {/* Reload */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleReload}
-                className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>Reload Preview</p>
-            </TooltipContent>
-          </Tooltip>
-
-          {/* Device Toggle */}
-          {!showCode && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={toggleDevice}
-                  className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-                >
-                  {getDeviceIcon()}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Change Device View</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
-
-          {/* Fullscreen */}
-          {!showCode && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsFullscreen(true)}
-                  className="flex items-center justify-center h-8 w-8 p-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-                >
-                  <Expand className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Fullscreen Preview</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
+          <Button
+            size="sm"
+            className="flex items-center gap-2 h-9 px-5 bg-[#FF00A9] text-white hover:bg-[#E000A0] font-medium rounded-md"
+          >
+            <Rocket className="h-4 w-4" />
+            Publish
+          </Button>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div
         className={`flex-1 overflow-hidden transition-opacity duration-300 ${
           isTransitioning ? "opacity-0" : "opacity-100"
