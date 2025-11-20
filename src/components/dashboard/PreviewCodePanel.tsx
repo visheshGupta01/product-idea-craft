@@ -227,75 +227,104 @@ const PreviewCodePanel = ({
 
       <div className="h-full flex flex-col bg-sidebar-background">
         {/* Preview Navbar */}
-        <div className="h-14 px-2 sm:px-4 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525]">
-          <div className="flex items-center gap-1 sm:space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleOpenInNewTab}
-              disabled={!hasValidPreview}
-              className="flex items-center gap-1 sm:gap-2 h-8 px-2 sm:px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline text-xs">Preview</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleCodeToggle(!showCode)}
-              className="flex items-center gap-1 sm:gap-2 h-8 px-2 sm:px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
-            >
-              <Code className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Code</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleReload}
-              disabled={!hasValidPreview}
-              className="flex items-center gap-1 sm:gap-2 h-8 px-2 sm:px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Refresh</span>
-            </Button>
-          </div>
+        <div className="h-14 px-2 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525] flex-shrink-0">
+          <TooltipProvider>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleOpenInNewTab}
+                    disabled={!hasValidPreview}
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Open Preview in New Tab</TooltipContent>
+              </Tooltip>
 
-          <div className="flex items-center gap-1 sm:space-x-2">
-            {sessionId && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAssignModal(true)}
-                className="flex items-center gap-1 sm:gap-1.5 h-8 px-2 sm:px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
-              >
-                <User className="h-3.5 w-3.5" />
-                <span className="hidden md:inline">Assign to Dev</span>
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowGithubModal(true)}
-              className="flex items-center gap-1 sm:gap-1.5 h-8 px-2 sm:px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
-            >
-              <Github className="h-3.5 w-3.5" />
-              <span className="hidden md:inline">Github</span>
-            </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCodeToggle(!showCode)}
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
+                  >
+                    <Code className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Toggle Code View</TooltipContent>
+              </Tooltip>
 
-            <Button
-              size="sm"
-              onClick={() => setShowPublishModal(true)}
-              className="flex items-center gap-1 sm:gap-1.5 h-8 px-2 sm:px-4 bg-[#FF00A9] text-white hover:bg-[#E000A0] text-xs font-medium rounded-md"
-            >
-              <Rocket className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Publish</span>
-            </Button>
-          </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleReload}
+                    disabled={!hasValidPreview}
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Refresh Preview</TooltipContent>
+              </Tooltip>
+            </div>
+
+            <div className="flex items-center gap-1">
+              {sessionId && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAssignModal(true)}
+                      className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                    >
+                      <User className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Assign to Developer</TooltipContent>
+                </Tooltip>
+              )}
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowGithubModal(true)}
+                    className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                  >
+                    <Github className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>GitHub Integration</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    onClick={() => setShowPublishModal(true)}
+                    className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-md"
+                  >
+                    <Rocket className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Publish to Vercel</TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
 
       {/* Main Content Area */}
       <div
-        className={`flex-1 overflow-hidden transition-opacity duration-300 ${
+        className={`flex-1 min-h-0 overflow-hidden transition-opacity duration-300 ${
           isTransitioning ? "opacity-0" : "opacity-100"
         }`}
       >
