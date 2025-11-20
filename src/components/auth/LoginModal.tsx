@@ -61,7 +61,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           } else if (result.role === 'developer') {
             navigate('/developer');
           }
-        }, 100);
+        }, 300);
         // For regular users, no navigation needed if already on home page
       } else {
         setError(result.message || "Login failed");
