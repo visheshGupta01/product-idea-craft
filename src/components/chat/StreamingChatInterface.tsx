@@ -24,6 +24,7 @@ interface StreamingChatInterfaceProps {
   urlSessionId?: string;
   onStreamingStateChange?: (isStreaming: boolean) => void;
   onToolProcessingChange?: (isProcessingTools: boolean) => void;
+  projectDetails?: any;
 }
 
 export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
@@ -33,6 +34,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   urlSessionId,
   onStreamingStateChange,
   onToolProcessingChange,
+  projectDetails,
 }) => {
   const {
     sessionId: contextSessionId,
@@ -161,8 +163,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
         <div className="h-14 flex items-center justify-center border-b border-[#2A2A2A] bg-[#1E1E1E] relative">
           <button className="absolute left-4 text-gray-400 hover:text-white transition-colors">
             <svg
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -172,7 +174,9 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
               <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
           </button>
-          <span className="text-white text-base font-medium">Project Name</span>
+          <span className="text-white text-sm font-medium">
+            {projectDetails?.title || "Untitled Project"}
+          </span>
         </div>
 
         {isLoadingMessages ? (

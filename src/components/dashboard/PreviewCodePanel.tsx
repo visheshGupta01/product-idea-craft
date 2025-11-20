@@ -187,46 +187,57 @@ const PreviewCodePanel = ({
     <div className="h-full flex flex-col bg-sidebar-background">
       {/* Preview Navbar */}
       <div className="h-14 px-4 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525]">
-        <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        <div className="flex items-center space-x-2">
+          <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <span className="text-xs">Preview</span>
+          </button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleCodeToggle(!showCode)}
+            className="flex items-center gap-2 h-8 px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
           >
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-          </svg>
-          <span className="text-sm">Preview</span>
-        </button>
+            <Code className="h-3.5 w-3.5" />
+            Code
+          </Button>
+        </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
           {sessionId && (
             <Button
               variant="outline"
               size="sm"
-              className="flex items-center gap-2 h-9 px-4 text-sm bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              className="flex items-center gap-1.5 h-8 px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
             >
-              <User className="h-4 w-4" />
+              <User className="h-3.5 w-3.5" />
               Assign to Dev
             </Button>
           )}
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 h-9 px-4 text-sm bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="flex items-center gap-1.5 h-8 px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
           >
-            <Github className="h-4 w-4" />
+            <Github className="h-3.5 w-3.5" />
             Github
           </Button>
 
           <Button
             size="sm"
-            className="flex items-center gap-2 h-9 px-5 bg-[#FF00A9] text-white hover:bg-[#E000A0] font-medium rounded-md"
+            className="flex items-center gap-1.5 h-8 px-4 bg-[#FF00A9] text-white hover:bg-[#E000A0] text-xs font-medium rounded-md"
           >
-            <Rocket className="h-4 w-4" />
+            <Rocket className="h-3.5 w-3.5" />
             Publish
           </Button>
         </div>
@@ -263,8 +274,51 @@ const PreviewCodePanel = ({
             </ResizablePanelGroup>
           </div>
         ) : hasValidPreview ? (
-          <div className="h-full animate-fade-in bg-white">
+          <div className="h-full animate-fade-in bg-white relative">
             <DevicePreview device={activeDevice} src={iframeSrc} />
+            
+            {/* Device Toggle - Center Bottom */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-1.5 z-10">
+              <button
+                onClick={() => setActiveDevice("desktop")}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                  activeDevice === "desktop" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+                )}
+              >
+                <Monitor className="h-3.5 w-3.5" />
+                <span>Web</span>
+              </button>
+              <button
+                onClick={() => setActiveDevice("phone")}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                  activeDevice === "phone" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+                )}
+              >
+                <Smartphone className="h-3.5 w-3.5" />
+                <span>Mob</span>
+              </button>
+              <button
+                onClick={() => setActiveDevice("tablet")}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                  activeDevice === "tablet" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+                )}
+              >
+                <Tablet className="h-3.5 w-3.5" />
+                <span>Tab</span>
+              </button>
+            </div>
+
+            {/* Fullscreen Button - Bottom Right */}
+            <button
+              onClick={() => setIsFullscreen(true)}
+              className="absolute bottom-6 right-6 p-2 bg-black/30 backdrop-blur-sm rounded-lg text-white/70 hover:text-white transition-colors z-10"
+              title="Fullscreen"
+            >
+              <Expand className="h-4 w-4" />
+            </button>
           </div>
         ) : (
           <div className="h-full flex items-center justify-center overflow-hidden relative">
@@ -282,46 +336,48 @@ const PreviewCodePanel = ({
               </div>
             </div>
 
-            {/* Device Toggle - Bottom Right */}
-            <div className="absolute bottom-6 right-6 flex items-center gap-3 bg-black/20 backdrop-blur-sm rounded-lg p-2">
+            {/* Device Toggle - Center Bottom */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-1.5">
               <button
                 onClick={() => setActiveDevice("desktop")}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors",
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                   activeDevice === "desktop" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
                 )}
               >
-                <Monitor className="h-4 w-4" />
+                <Monitor className="h-3.5 w-3.5" />
                 <span>Web</span>
               </button>
               <button
                 onClick={() => setActiveDevice("phone")}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors",
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                   activeDevice === "phone" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
                 )}
               >
-                <Smartphone className="h-4 w-4" />
+                <Smartphone className="h-3.5 w-3.5" />
                 <span>Mob</span>
               </button>
               <button
                 onClick={() => setActiveDevice("tablet")}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors",
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                   activeDevice === "tablet" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
                 )}
               >
-                <Tablet className="h-4 w-4" />
+                <Tablet className="h-3.5 w-3.5" />
                 <span>Tab</span>
               </button>
-              <button
-                onClick={() => setIsFullscreen(true)}
-                className="p-1.5 ml-2 text-white/70 hover:text-white transition-colors"
-                title="Fullscreen"
-              >
-                <Expand className="h-4 w-4" />
-              </button>
             </div>
+
+            {/* Fullscreen Button - Bottom Right */}
+            <button
+              onClick={() => setIsFullscreen(true)}
+              className="absolute bottom-6 right-6 p-2 bg-black/30 backdrop-blur-sm rounded-lg text-white/70 hover:text-white transition-colors"
+              title="Fullscreen"
+            >
+              <Expand className="h-4 w-4" />
+            </button>
           </div>
         )}
       </div>
