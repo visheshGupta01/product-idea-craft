@@ -126,12 +126,6 @@ const PreviewCodePanel = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPage]); // we intentionally keep dependency to selectedPage only
 
-  const toggleDevice = () => {
-    const devices: DeviceType[] = ["desktop", "tablet", "phone"];
-    const currentIndex = devices.indexOf(activeDevice);
-    const nextIndex = (currentIndex + 1) % devices.length;
-    setActiveDevice(devices[nextIndex]);
-  };
 
   const handleCodeToggle = (checked: boolean) => {
     setShowCode(checked);
@@ -143,14 +137,6 @@ const PreviewCodePanel = ({
 
   const handleContentChange = (newContent: string) => {
     setCurrentContent(newContent);
-  };
-
-  const hasUnsavedChanges =
-    originalContent !== currentContent && currentContent.trim() !== "";
-
-  const handleSave = () => {
-    setOriginalContent(currentContent);
-    // TODO: implement actual save logic
   };
 
   const handleOpenInNewTab = () => {
@@ -165,17 +151,6 @@ const PreviewCodePanel = ({
     } catch (e) {
       // fallback if iframeSrc isn't a valid URL
       setIframeSrc(previewUrl || iframeSrc);
-    }
-  };
-
-  const getDeviceIcon = () => {
-    switch (activeDevice) {
-      case "desktop":
-        return <Monitor className="w-4 h-4" />;
-      case "tablet":
-        return <Tablet className="w-4 h-4" />;
-      case "phone":
-        return <Smartphone className="w-4 h-4" />;
     }
   };
 
@@ -235,6 +210,19 @@ const PreviewCodePanel = ({
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => handleCodeToggle(!showCode)}
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
+                  >
+                    <Code className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Toggle Code View</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleOpenInNewTab}
                     disabled={!hasValidPreview}
                     className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
@@ -243,20 +231,6 @@ const PreviewCodePanel = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Open Preview in New Tab</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleCodeToggle(!showCode)}
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
-                  >
-                    <Code className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Toggle Code View</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -286,6 +260,7 @@ const PreviewCodePanel = ({
                       className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
                     >
                       <User className="h-3.5 w-3.5" />
+                      Assign to Dev
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Assign to Developer</TooltipContent>
@@ -301,6 +276,7 @@ const PreviewCodePanel = ({
                     className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
                   >
                     <Github className="h-3.5 w-3.5" />
+                    Github
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>GitHub Integration</TooltipContent>
@@ -314,6 +290,7 @@ const PreviewCodePanel = ({
                     className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-md"
                   >
                     <Rocket className="h-3.5 w-3.5" />
+                    Publish
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Publish to Vercel</TooltipContent>
@@ -322,145 +299,159 @@ const PreviewCodePanel = ({
           </TooltipProvider>
         </div>
 
-      {/* Main Content Area */}
-      <div
-        className={`flex-1 overflow-hidden transition-opacity duration-300 ${
-          isTransitioning ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        {showCode ? (
-          <div className="h-full animate-fade-in bg-sidebar-background">
-            <ResizablePanelGroup direction="horizontal" className="h-full">
-              <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
-                <div className="h-full bg-sidebar-background">
-                  <FileExplorer
-                    onFileSelect={handleFileSelect}
-                    selectedFile={selectedFile?.path || null}
-                    sessionId={sessionId}
-                    selectedPage={selectedPage}
-                  />
-                </div>
-              </ResizablePanel>
-              <ResizableHandle withHandle className="bg-sidebar-border" />
-              <ResizablePanel defaultSize={75} minSize={60}>
-                <div className="h-full bg-sidebar-background">
-                  <CodeEditor
-                    file={selectedFile}
-                    onContentChange={handleContentChange}
-                  />
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </div>
-        ) : hasValidPreview ? (
-          <div className="h-full animate-fade-in bg-white relative">
-            <DevicePreview device={activeDevice} src={iframeSrc} />
-            
-            {/* Device Toggle - Center Bottom */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-1.5 z-10">
-              <button
-                onClick={() => setActiveDevice("desktop")}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
-                  activeDevice === "desktop" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
-                )}
-              >
-                <Monitor className="h-3.5 w-3.5" />
-                <span>Web</span>
-              </button>
-              <button
-                onClick={() => setActiveDevice("phone")}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
-                  activeDevice === "phone" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
-                )}
-              >
-                <Smartphone className="h-3.5 w-3.5" />
-                <span>Mob</span>
-              </button>
-              <button
-                onClick={() => setActiveDevice("tablet")}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
-                  activeDevice === "tablet" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
-                )}
-              >
-                <Tablet className="h-3.5 w-3.5" />
-                <span>Tab</span>
-              </button>
+        {/* Main Content Area */}
+        <div
+          className={`flex-1 overflow-hidden transition-opacity duration-300 ${
+            isTransitioning ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {showCode ? (
+            <div className="h-full animate-fade-in bg-sidebar-background">
+              <ResizablePanelGroup direction="horizontal" className="h-full">
+                <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
+                  <div className="h-full bg-sidebar-background">
+                    <FileExplorer
+                      onFileSelect={handleFileSelect}
+                      selectedFile={selectedFile?.path || null}
+                      sessionId={sessionId}
+                      selectedPage={selectedPage}
+                    />
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle withHandle className="bg-sidebar-border" />
+                <ResizablePanel defaultSize={75} minSize={60}>
+                  <div className="h-full bg-sidebar-background">
+                    <CodeEditor
+                      file={selectedFile}
+                      onContentChange={handleContentChange}
+                    />
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </div>
+          ) : hasValidPreview ? (
+            <div className="h-full animate-fade-in bg-white relative pt-14 md:pt-0">
+              <DevicePreview device={activeDevice} src={iframeSrc} />
 
-            {/* Fullscreen Button - Bottom Right */}
-            <button
-              onClick={() => setIsFullscreen(true)}
-              className="absolute bottom-6 right-6 p-2 bg-black/30 backdrop-blur-sm rounded-lg text-white/70 hover:text-white transition-colors z-10"
-              title="Fullscreen"
-            >
-              <Expand className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="h-full flex items-center justify-center overflow-hidden relative">
-            <div className="text-center space-y-6 max-w-2xl px-6 relative z-10">
-              <h2 className="text-4xl font-semibold text-white">
-                Welcome to imagine.bo
-              </h2>
-              <p className="text-lg text-white/90 leading-relaxed">
-                Start a conversation with our AI to begin building<br />
-                your project. Your preview will appear here once<br />
-                generated.
-              </p>
-              <div className="flex items-center justify-center gap-2 text-base text-white/80">
-                <span>Ready to create something amazing</span>
+              {/* Device Toggle - Center Bottom */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-1.5 z-10">
+                <button
+                  onClick={() => setActiveDevice("desktop")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                    activeDevice === "desktop"
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:text-white"
+                  )}
+                >
+                  <Monitor className="h-3.5 w-3.5" />
+                  <span>Web</span>
+                </button>
+                <button
+                  onClick={() => setActiveDevice("phone")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                    activeDevice === "phone"
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:text-white"
+                  )}
+                >
+                  <Smartphone className="h-3.5 w-3.5" />
+                  <span>Mob</span>
+                </button>
+                <button
+                  onClick={() => setActiveDevice("tablet")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                    activeDevice === "tablet"
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:text-white"
+                  )}
+                >
+                  <Tablet className="h-3.5 w-3.5" />
+                  <span>Tab</span>
+                </button>
               </div>
-            </div>
 
-            {/* Device Toggle - Center Bottom */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-1.5">
+              {/* Fullscreen Button - Bottom Right */}
               <button
-                onClick={() => setActiveDevice("desktop")}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
-                  activeDevice === "desktop" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
-                )}
+                onClick={() => setIsFullscreen(true)}
+                className="absolute bottom-6 right-6 p-2 bg-black/30 backdrop-blur-sm rounded-lg text-white/70 hover:text-white transition-colors z-10"
+                title="Fullscreen"
               >
-                <Monitor className="h-3.5 w-3.5" />
-                <span>Web</span>
-              </button>
-              <button
-                onClick={() => setActiveDevice("phone")}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
-                  activeDevice === "phone" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
-                )}
-              >
-                <Smartphone className="h-3.5 w-3.5" />
-                <span>Mob</span>
-              </button>
-              <button
-                onClick={() => setActiveDevice("tablet")}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
-                  activeDevice === "tablet" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
-                )}
-              >
-                <Tablet className="h-3.5 w-3.5" />
-                <span>Tab</span>
+                <Expand className="h-4 w-4" />
               </button>
             </div>
+          ) : (
+            <div className="neon-bg h-full flex items-center justify-center overflow-hidden relative">
+              <div className="text-center space-y-6 max-w-2xl px-6 relative z-10">
+                <h2 className="text-4xl font-semibold text-white">
+                  Welcome to imagine.bo
+                </h2>
+                <p className="text-lg text-white/90 leading-relaxed">
+                  Start a conversation with our AI to begin building
+                  <br />
+                  your project. Your preview will appear here once
+                  <br />
+                  generated.
+                </p>
+                <div className="flex items-center justify-center gap-2 text-base text-white/80">
+                  <span>Ready to create something amazing</span>
+                </div>
+              </div>
 
-            {/* Fullscreen Button - Bottom Right */}
-            <button
-              onClick={() => setIsFullscreen(true)}
-              className="absolute bottom-6 right-6 p-2 bg-black/30 backdrop-blur-sm rounded-lg text-white/70 hover:text-white transition-colors"
-              title="Fullscreen"
-            >
-              <Expand className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+              {/* Device Toggle - Center Bottom */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-1.5">
+                <button
+                  onClick={() => setActiveDevice("desktop")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                    activeDevice === "desktop"
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:text-white"
+                  )}
+                >
+                  <Monitor className="h-3.5 w-3.5" />
+                  <span>Web</span>
+                </button>
+                <button
+                  onClick={() => setActiveDevice("phone")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                    activeDevice === "phone"
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:text-white"
+                  )}
+                >
+                  <Smartphone className="h-3.5 w-3.5" />
+                  <span>Mob</span>
+                </button>
+                <button
+                  onClick={() => setActiveDevice("tablet")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
+                    activeDevice === "tablet"
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:text-white"
+                  )}
+                >
+                  <Tablet className="h-3.5 w-3.5" />
+                  <span>Tab</span>
+                </button>
+              </div>
+
+              {/* Fullscreen Button - Bottom Right */}
+              <button
+                onClick={() => setIsFullscreen(true)}
+                className="absolute bottom-6 right-6 p-2 bg-black/30 backdrop-blur-sm rounded-lg text-white/70 hover:text-white transition-colors"
+                title="Fullscreen"
+              >
+                <Expand className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 };

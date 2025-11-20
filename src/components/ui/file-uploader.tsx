@@ -104,13 +104,13 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       <button
         onClick={handleClick}
         disabled={disabled || isUploading}
-        className="w-[36px] h-[36px] flex items-center justify-center border border-sidebar-border rounded-md bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className=" mr-4 pr-2 flex items-center justify-center rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         title="Upload PDF file"
       >
         {isUploading ? (
-          <Loader2 className="w-4 h-4 text-sidebar-accent animate-spin" />
+          <Loader2 className="w-4 h-4 text-sidebar-accent animate-spin text-white" />
         ) : (
-          <Paperclip className="w-4 h-4 text-sidebar-accent" />
+          <Paperclip className="w-4 h-4 text-sidebar-accent text-white" />
         )}
       </button>
     </>

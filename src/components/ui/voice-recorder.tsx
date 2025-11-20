@@ -112,12 +112,12 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     if (isProcessing) return "bg-accent hover:bg-accent/90";
     if (isRecording)
       return "bg-destructive hover:bg-destructive/90 animate-pulse";
-    return "bg-white hover:bg-white border border-sidebar-border";
+    return "bg-transparent";
   };
 
   const getIconColor = () => {
     if (isProcessing || isRecording) return "text-black";
-    return "text-sidebar-accent";
+    return "text-white";
   };
 
   return (
@@ -126,7 +126,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       onClick={handleClick}
       disabled={disabled || isProcessing}
       className={cn(
-        "w-[36px] h-[36px] flex items-center justify-center rounded-md transition-colors",
+        "w-9 h-9 flex items-center justify-center rounded-md transition-colors",
         getButtonStyle(),
         className
       )}

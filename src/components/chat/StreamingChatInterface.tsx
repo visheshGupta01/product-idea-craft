@@ -161,20 +161,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
       <div className="flex flex-col h-full bg-[#1E1E1E]">
         {/* Chat Navbar */}
         <div className="h-14 flex items-center justify-center border-b border-[#2A2A2A] bg-[#1E1E1E] relative">
-          <button className="absolute left-4 text-gray-400 hover:text-white transition-colors">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="16 18 22 12 16 6"></polyline>
-              <polyline points="8 6 2 12 8 18"></polyline>
-            </svg>
-          </button>
-          <span className="text-white text-sm font-medium">
+          <span className="text-white text-lg font-poppins font-medium">
             {projectDetails?.title || "Untitled Project"}
           </span>
         </div>
@@ -217,7 +204,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
             </ScrollArea>
 
             <div className="bg-[#1E1E1E] pb-6 border-t border-gray-800">
-              <div className="max-w-5xl mx-auto px-6">
+              <div className="max-w-5xl mx-auto mt-3 px-6">
                 <ChatInput
                   onSendMessage={sendMessage}
                   isLoading={isStreaming}

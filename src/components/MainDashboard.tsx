@@ -163,7 +163,7 @@ const MainDashboard = ({
           >
             {/* AI Chat Panel */}
             <ResizablePanel
-              defaultSize={sidebarCollapsed ? 40 : 35}
+              defaultSize={sidebarCollapsed ? 30 : 35}
               minSize={25}
               maxSize={75}
               className="hidden lg:block"
@@ -185,8 +185,8 @@ const MainDashboard = ({
 
             {/* Preview/Code Panel */}
             <ResizablePanel
-              defaultSize={sidebarCollapsed ? 30 : 35}
-              minSize={30}
+              defaultSize={sidebarCollapsed ? 60 : 35}
+              minSize={40}
             >
               <div className="h-full bg-background">
                 <PreviewCodePanel
