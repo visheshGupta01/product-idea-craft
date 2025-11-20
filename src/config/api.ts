@@ -30,6 +30,7 @@ export const API_ENDPOINTS = {
     FORGOT_PASSWORD: "/api/auth/forget-password",
     RESET_PASSWORD: "/api/auth/reset-password",
     REFRESH_TOKEN: "/api/auth/refresh-token",
+    RESEND_VERIFICATION: "/api/auth/resent-verification-link",
   },
 
   // Chat & Sessions
