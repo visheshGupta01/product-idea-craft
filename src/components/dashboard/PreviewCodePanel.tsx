@@ -227,68 +227,68 @@ const PreviewCodePanel = ({
 
       <div className="h-full flex flex-col bg-sidebar-background">
         {/* Preview Navbar */}
-        <div className="h-14 px-4 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525]">
-          <div className="flex items-center space-x-2">
+        <div className="h-14 px-2 sm:px-4 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525]">
+          <div className="flex items-center gap-1 sm:space-x-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleOpenInNewTab}
               disabled={!hasValidPreview}
-              className="flex items-center gap-2 h-8 px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+              className="flex items-center gap-1 sm:gap-2 h-8 px-2 sm:px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-              </svg>
-              <span className="text-xs">Preview</span>
+              <ExternalLink className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline text-xs">Preview</span>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => handleCodeToggle(!showCode)}
-              className="flex items-center gap-2 h-8 px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
+              className="flex items-center gap-1 sm:gap-2 h-8 px-2 sm:px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
             >
               <Code className="h-3.5 w-3.5" />
-              Code
+              <span className="hidden sm:inline">Code</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleReload}
+              disabled={!hasValidPreview}
+              className="flex items-center gap-1 sm:gap-2 h-8 px-2 sm:px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-1 sm:space-x-2">
             {sessionId && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAssignModal(true)}
-                className="flex items-center gap-1.5 h-8 px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                className="flex items-center gap-1 sm:gap-1.5 h-8 px-2 sm:px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
               >
                 <User className="h-3.5 w-3.5" />
-                Assign to Dev
+                <span className="hidden md:inline">Assign to Dev</span>
               </Button>
             )}
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowGithubModal(true)}
-              className="flex items-center gap-1.5 h-8 px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              className="flex items-center gap-1 sm:gap-1.5 h-8 px-2 sm:px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
             >
               <Github className="h-3.5 w-3.5" />
-              Github
+              <span className="hidden md:inline">Github</span>
             </Button>
 
             <Button
               size="sm"
               onClick={() => setShowPublishModal(true)}
-              className="flex items-center gap-1.5 h-8 px-4 bg-[#FF00A9] text-white hover:bg-[#E000A0] text-xs font-medium rounded-md"
+              className="flex items-center gap-1 sm:gap-1.5 h-8 px-2 sm:px-4 bg-[#FF00A9] text-white hover:bg-[#E000A0] text-xs font-medium rounded-md"
             >
               <Rocket className="h-3.5 w-3.5" />
-              Publish
+              <span className="hidden sm:inline">Publish</span>
             </Button>
           </div>
         </div>
