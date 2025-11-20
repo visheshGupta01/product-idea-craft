@@ -303,6 +303,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       //console.log("User is not authenticated.");
       return { success: false, message: "Please login first" };
     }
+
+    // Check if user email is verified
+    const userData = authService.getUser();
+    if (userData && !userData.verified) {
+      return { success: false, message: "Email not verified", requiresVerification: true };
+    }
+
     //console.log("Sending idea:", idea);
     setIsProcessingIdea(true);
 
