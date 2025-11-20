@@ -28,7 +28,7 @@ interface UserContextType {
   refreshToken: () => Promise<{ success: boolean; message?: string }>;
   setUserIdea: (idea: string) => void;
   setSessionId: (sessionId: string) => void;
-  sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string }>;
+  sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string; needsVerification?: boolean }>;
   clearInitialResponse: () => void;
   fetchProfile: () => Promise<void>;
   updateProfile: (data: Partial<ProfileData>) => Promise<{ success: boolean; message?: string }>;

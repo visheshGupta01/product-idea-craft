@@ -47,18 +47,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     try {
       const result = await login(email, password);
       if (result.success) {
-       
-        // Check if user is not verified
-        if (result.verified === false) {
-          setError("Your email is not verified. You can browse but cannot create new projects until verified.");
-          setShowResendButton(true);
-        }
-        
         onClose();
         setEmail("");
         setPassword("");
         
-        // Role-based redirect
+        // Role-based redirect - allow navigation even if not verified
         setTimeout(() => {
           if (result.role === 'admin') {
             navigate('/admin');
@@ -68,6 +61,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             navigate('/');
           }
         }, 1000);
+        
+        // Show warning if not verified but still allow login
+        if (!result.verified) {
+          setError("Your email is not verified. You can browse but cannot create new sessions until verified.");
+          setShowResendButton(true);
+        }
       } else {
         setError(result.message || "Login failed");
         // Check if error is due to unverified email

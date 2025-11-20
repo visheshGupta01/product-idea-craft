@@ -327,7 +327,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
         return { success: true, session_id: result.session_id };
       } else {
-        return { success: false, message: result.message };
+        return { 
+          success: false, 
+          message: result.message,
+          needsVerification: result.needsVerification 
+        };
       }
     } catch (error) {
       //console.error("Error creating session with idea:", error);

@@ -102,21 +102,21 @@ export class AuthService {
         this.userrole = data.role as "admin" | "user";
         this.user = data.user;
 
+        // Get verified status from user object
+        const verified = data.user?.verified || false;
+
         // Save to localStorage
         localStorage.setItem("auth_token", data.token);
         localStorage.setItem("refresh_token", data.refreshToken);
         localStorage.setItem("user_role", data.role);
         localStorage.setItem("user_data", JSON.stringify(data.user));
-        localStorage.setItem("user_verified", data.verified ? "true" : "false");
+        localStorage.setItem("user_verified", String(verified));
 
         return {
           success: true,
-          token: data.token,
-          refreshToken: data.refreshToken,
-          role: data.role as "admin" | "user",
           message: data.message,
-          user: data.user,
-          verified: data.verified,
+          verified: verified,
+          role: data.role as "admin" | "user",
         };
       }
 
@@ -287,7 +287,7 @@ export class AuthService {
 
   async createSessionWithIdea(
     idea: string
-  ): Promise<{ session_id: string; success: boolean; message?: string }> {
+  ): Promise<{ session_id: string; success: boolean; message?: string; needsVerification?: boolean }> {
     if (!this.token) {
       return { success: false, session_id: "", message: "Not authenticated" };
     }
@@ -298,6 +298,7 @@ export class AuthService {
       return { 
         success: false, 
         session_id: "", 
+        needsVerification: true,
         message: "Please verify your email to create a new project" 
       };
     }
