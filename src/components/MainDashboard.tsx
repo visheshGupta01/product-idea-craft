@@ -204,9 +204,9 @@ const MainDashboard = ({
   };
 
   return (
-    <div className="h-screen bg-background overflow-hidden">
+    <div className="h-screen bg-background overflow-hidden supports-[height:100dvh]:h-[100dvh]">
       {/* Main content */}
-      <div className="h-full flex">
+      <div className="h-full flex overflow-hidden">
         {/* Sidebar */}
         <div
           className={`transition-all duration-300 ${

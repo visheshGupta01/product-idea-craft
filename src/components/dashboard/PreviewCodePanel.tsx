@@ -13,6 +13,7 @@ import {
   Rocket,
   User,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -32,6 +33,9 @@ import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
 import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
 import { cn } from "@/lib/utils";
+import AssignToDeveloper from "./AssignToDeveloper";
+import GitHubIntegration from "./GitHubIntegration";
+import VercelIntegration from "./VercelIntegration";
 
 interface PreviewCodePanelProps {
   previewUrl?: string;
@@ -59,6 +63,9 @@ const PreviewCodePanel = ({
   const [fileContent, setFileContent] = useState<
     { path: string; content: string }[]
   >([]);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showGithubModal, setShowGithubModal] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   useEffect(() => {
     if (previewUrl) {
@@ -184,64 +191,107 @@ const PreviewCodePanel = ({
   }
 
   return (
-    <div className="h-full flex flex-col bg-sidebar-background">
-      {/* Preview Navbar */}
-      <div className="h-14 px-4 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525]">
-        <div className="flex items-center space-x-2">
-          <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-            <span className="text-xs">Preview</span>
-          </button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleCodeToggle(!showCode)}
-            className="flex items-center gap-2 h-8 px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
-          >
-            <Code className="h-3.5 w-3.5" />
-            Code
-          </Button>
-        </div>
+    <>
+      {/* Dialogs */}
+      {sessionId && (
+        <AssignToDeveloper
+          isOpen={showAssignModal}
+          onClose={() => setShowAssignModal(false)}
+          sessionId={sessionId}
+        />
+      )}
 
-        <div className="flex items-center space-x-2">
-          {sessionId && (
+      <Dialog open={showGithubModal} onOpenChange={setShowGithubModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Github className="h-5 w-5" />
+              GitHub Integration
+            </DialogTitle>
+          </DialogHeader>
+          <GitHubIntegration />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPublishModal} onOpenChange={setShowPublishModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Rocket className="h-5 w-5" />
+              Deploy to Vercel
+            </DialogTitle>
+          </DialogHeader>
+          <VercelIntegration />
+        </DialogContent>
+      </Dialog>
+
+      <div className="h-full flex flex-col bg-sidebar-background">
+        {/* Preview Navbar */}
+        <div className="h-14 px-4 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525]">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleOpenInNewTab}
+              disabled={!hasValidPreview}
+              className="flex items-center gap-2 h-8 px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <span className="text-xs">Preview</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleCodeToggle(!showCode)}
+              className="flex items-center gap-2 h-8 px-3 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
+            >
+              <Code className="h-3.5 w-3.5" />
+              Code
+            </Button>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {sessionId && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAssignModal(true)}
+                className="flex items-center gap-1.5 h-8 px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              >
+                <User className="h-3.5 w-3.5" />
+                Assign to Dev
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowGithubModal(true)}
               className="flex items-center gap-1.5 h-8 px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
             >
-              <User className="h-3.5 w-3.5" />
-              Assign to Dev
+              <Github className="h-3.5 w-3.5" />
+              Github
             </Button>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1.5 h-8 px-3 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
-          >
-            <Github className="h-3.5 w-3.5" />
-            Github
-          </Button>
 
-          <Button
-            size="sm"
-            className="flex items-center gap-1.5 h-8 px-4 bg-[#FF00A9] text-white hover:bg-[#E000A0] text-xs font-medium rounded-md"
-          >
-            <Rocket className="h-3.5 w-3.5" />
-            Publish
-          </Button>
+            <Button
+              size="sm"
+              onClick={() => setShowPublishModal(true)}
+              className="flex items-center gap-1.5 h-8 px-4 bg-[#FF00A9] text-white hover:bg-[#E000A0] text-xs font-medium rounded-md"
+            >
+              <Rocket className="h-3.5 w-3.5" />
+              Publish
+            </Button>
+          </div>
         </div>
-      </div>
 
       {/* Main Content Area */}
       <div
@@ -382,6 +432,7 @@ const PreviewCodePanel = ({
         )}
       </div>
     </div>
+    </>
   );
 };
 
