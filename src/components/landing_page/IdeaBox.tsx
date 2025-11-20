@@ -6,6 +6,7 @@ import { UI_CONFIG } from "@/utils/constants";
 import { authService } from "@/services/authService";
 import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
+import { EmailVerificationRequiredModal } from "../auth/EmailVerificationRequiredModal";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { FileUploader, UploadedFile } from "@/components/ui/file-uploader";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,8 @@ const IdeaBox: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const [showToolList, setShowToolList] = useState(false);
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [toolInput, setToolInput] = useState("");
@@ -159,10 +162,17 @@ const IdeaBox: React.FC = () => {
     if (result.success && result.session_id) {
       authService.setUserIdea(""); // Clear idea after successful submission
       navigate(`/chat/${result.session_id}`);
+    } else if (result.needsVerification) {
+      // Show verification modal
+      const user = authService.getUser();
+      setUserEmail(user?.email || "");
+      setShowVerificationModal(true);
     } else {
       // Show appropriate message based on verification status
       if (result.message?.includes("verify")) {
-        alert("Please verify your email address to create a new project. Check your inbox for the verification link.");
+        const user = authService.getUser();
+        setUserEmail(user?.email || "");
+        setShowVerificationModal(true);
       } else {
         alert(result.message || "Failed to process your idea. Please try again.");
       }
@@ -313,6 +323,11 @@ const IdeaBox: React.FC = () => {
           setShowSignupModal(false);
           setShowLoginModal(true);
         }}
+      />
+      <EmailVerificationRequiredModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        email={userEmail}
       />
     </section>
   );
