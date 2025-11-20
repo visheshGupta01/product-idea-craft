@@ -8,7 +8,6 @@ export interface AuthResponse {
   token?: string;
   refreshToken?: string;
   role?: 'admin' | 'user';
-  verified?: boolean;
   user?: {
     id: string;
     first_name: string;
@@ -16,7 +15,6 @@ export interface AuthResponse {
     email: string;
     user_type: string;
     created_at: string;
-    verified?: boolean;
   };
 }
 
@@ -26,7 +24,6 @@ export interface LoginResponse {
   token: string;
   refreshToken: string;
   role: string;
-  verified: boolean;
   user: {
     id: string;
     first_name: string;
@@ -34,7 +31,6 @@ export interface LoginResponse {
     email: string;
     user_type: string;
     created_at: string;
-    verified: boolean;
   };
 }
 
@@ -102,21 +98,19 @@ export class AuthService {
         this.userrole = data.role as "admin" | "user";
         this.user = data.user;
 
-        // Get verified status from user object
-        const verified = data.user?.verified || false;
-
         // Save to localStorage
         localStorage.setItem("auth_token", data.token);
         localStorage.setItem("refresh_token", data.refreshToken);
         localStorage.setItem("user_role", data.role);
         localStorage.setItem("user_data", JSON.stringify(data.user));
-        localStorage.setItem("user_verified", String(verified));
 
         return {
           success: true,
-          message: data.message,
-          verified: verified,
+          token: data.token,
+          refreshToken: data.refreshToken,
           role: data.role as "admin" | "user",
+          message: data.message,
+          user: data.user,
         };
       }
 
@@ -287,20 +281,9 @@ export class AuthService {
 
   async createSessionWithIdea(
     idea: string
-  ): Promise<{ session_id: string; success: boolean; message?: string; needsVerification?: boolean }> {
+  ): Promise<{ session_id: string; success: boolean; message?: string }> {
     if (!this.token) {
       return { success: false, session_id: "", message: "Not authenticated" };
-    }
-
-    // Check if user is verified
-    const isVerified = localStorage.getItem("user_verified") === "true";
-    if (!isVerified) {
-      return { 
-        success: false, 
-        session_id: "", 
-        needsVerification: true,
-        message: "Please verify your email to create a new project" 
-      };
     }
 
     try {
@@ -332,7 +315,6 @@ export class AuthService {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user_role");
     localStorage.removeItem("user_data");
-    localStorage.removeItem("user_verified");
     
     // Clear session data
     sessionStorage.removeItem("session_id");
@@ -392,10 +374,6 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!(this.token || localStorage.getItem("auth_token"));
-  }
-
-  isVerified(): boolean {
-    return localStorage.getItem("user_verified") === "true";
   }
 
   isAdmin(): boolean {

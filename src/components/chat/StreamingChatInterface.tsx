@@ -63,6 +63,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
 
   const [isInitialized, setIsInitialized] = useState(false);
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const shouldAutoScrollRef = useRef(true);
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
 
   // Notify parent of streaming state changes
   useEffect(() => {
@@ -154,7 +156,34 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     clearInitialResponse,
   ]);
 
-  // Auto-scroll disabled per user request
+  // Track scroll position to determine if user is at bottom
+  useEffect(() => {
+    const scrollViewport = document.querySelector('[data-radix-scroll-area-viewport]');
+    if (scrollViewport) {
+      scrollViewportRef.current = scrollViewport as HTMLDivElement;
+      
+      const handleScroll = () => {
+        const element = scrollViewportRef.current;
+        if (element) {
+          const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
+          shouldAutoScrollRef.current = isNearBottom;
+        }
+      };
+
+      scrollViewport.addEventListener('scroll', handleScroll);
+      return () => scrollViewport.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Auto-scroll on new messages only if user is already at bottom
+  useEffect(() => {
+    if (shouldAutoScrollRef.current) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [messages, isStreaming, scrollToBottom]);
 
   return (
     <>

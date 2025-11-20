@@ -32,7 +32,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const [messageInput, setMessageInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll disabled per user request
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleSend = () => {
     if (messageInput.trim()) {

@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect, useCallback, useMemo } from "react";
+import { ReactNode, useState, useEffect, useCallback } from "react";
 import { UserContext } from "./UserContext";
 import { User, InitialResponse } from "@/types";
 import { authService } from "@/services/authService";
@@ -50,7 +50,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               lastName: userData.last_name,
               email: userData.email,
               avatar: "",
-              verified: userData.verified,
+              verified: true,
               userType: userData.user_type,
             };
             setUser(mappedUser);
@@ -149,7 +149,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const result = await authService.login(email, password);
-    console.log("Login result:", result);
     if (result.success && result.user) {
       setIsAuthenticated(true);
       setUserRole(result.role || null);
@@ -161,7 +160,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         lastName: result.user.last_name,
         email: result.user.email,
         avatar: "", // Default avatar
-        verified: result.user.verified, // If they can login, they're verified
+        verified: true, // If they can login, they're verified
         userType: result.user.user_type,
       };
       setUser(userData);
@@ -246,7 +245,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       success: result.success,
       message: result.message,
       role: result.role,
-      verified: result.verified,
     };
   };
 
@@ -328,11 +326,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
         return { success: true, session_id: result.session_id };
       } else {
-        return { 
-          success: false, 
-          message: result.message,
-          needsVerification: result.needsVerification 
-        };
+        return { success: false, message: result.message };
       }
     } catch (error) {
       //console.error("Error creating session with idea:", error);
@@ -385,61 +379,34 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     [fetchUserProfile]
   );
 
-  const contextValue = useMemo(
-    () => ({
-      user,
-      profile,
-      userIdea,
-      initialResponse,
-      isProcessingIdea,
-      isAuthenticated,
-      sessionId,
-      userRole,
-      isLoading,
-      userPlan,
-      login,
-      logout,
-      signup,
-      verifyEmail,
-      forgotPassword,
-      resetPassword,
-      refreshToken,
-      setUserIdea,
-      setSessionId,
-      sendIdeaWithAuth,
-      clearInitialResponse,
-      fetchProfile: fetchUserProfile,
-      updateProfile: updateUserProfile,
-    }),
-    [
-      user,
-      profile,
-      userIdea,
-      initialResponse,
-      isProcessingIdea,
-      isAuthenticated,
-      sessionId,
-      userRole,
-      isLoading,
-      userPlan,
-      login,
-      logout,
-      signup,
-      verifyEmail,
-      forgotPassword,
-      resetPassword,
-      refreshToken,
-      setUserIdea,
-      setSessionId,
-      sendIdeaWithAuth,
-      clearInitialResponse,
-      fetchUserProfile,
-      updateUserProfile,
-    ]
-  );
-
   return (
-    <UserContext.Provider value={contextValue}>
+    <UserContext.Provider
+      value={{
+        user,
+        profile,
+        userIdea,
+        initialResponse,
+        isProcessingIdea,
+        isAuthenticated,
+        sessionId,
+        userRole,
+        isLoading,
+        userPlan,
+        login,
+        logout,
+        signup,
+        verifyEmail,
+        forgotPassword,
+        resetPassword,
+        refreshToken,
+        setUserIdea,
+        setSessionId,
+        sendIdeaWithAuth,
+        clearInitialResponse,
+        fetchProfile: fetchUserProfile,
+        updateProfile: updateUserProfile,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

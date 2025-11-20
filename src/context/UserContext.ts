@@ -19,7 +19,7 @@ interface UserContextType {
     isActive: boolean;
     expiresAt: string | null;
   } | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: 'admin' | 'user' | 'developer'; verified?: boolean }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: 'admin' | 'user' | 'developer' }>;
   logout: () => void;
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   verifyEmail: (token: string) => Promise<{ success: boolean; message?: string }>;
@@ -28,7 +28,7 @@ interface UserContextType {
   refreshToken: () => Promise<{ success: boolean; message?: string }>;
   setUserIdea: (idea: string) => void;
   setSessionId: (sessionId: string) => void;
-  sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string; needsVerification?: boolean }>;
+  sendIdeaWithAuth: (idea: string) => Promise<{ success: boolean; session_id?: string; message?: string }>;
   clearInitialResponse: () => void;
   fetchProfile: () => Promise<void>;
   updateProfile: (data: Partial<ProfileData>) => Promise<{ success: boolean; message?: string }>;

@@ -8,7 +8,7 @@ export const API_BASE_URLS = {
 } as const;
 
 // Current environment - change this to switch between environments
-export const CURRENT_ENV = "DEV"; // or "PRODUCTION"
+export const CURRENT_ENV = "LOCAL"; // or "PRODUCTION"
 export const API_BASE_URL = API_BASE_URLS[CURRENT_ENV];
 
 // WebSocket URLs
@@ -30,7 +30,6 @@ export const API_ENDPOINTS = {
     FORGOT_PASSWORD: "/api/auth/forget-password",
     RESET_PASSWORD: "/api/auth/reset-password",
     REFRESH_TOKEN: "/api/auth/refresh-token",
-    RESEND_VERIFICATION: "/api/auth/resent-verification-link",
   },
 
   // Chat & Sessions
