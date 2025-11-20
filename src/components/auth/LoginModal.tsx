@@ -47,17 +47,21 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     try {
       const result = await login(email, password);
       if (result.success) {
-        // Close modal and clear form
+        // Clear form
         setEmail("");
         setPassword("");
-        onClose();
         
-        // Role-based redirect - only navigate if not already on the correct page
-        if (result.role === 'admin') {
-          navigate('/admin');
-        } else if (result.role === 'developer') {
-          navigate('/developer');
-        }
+        // Wait for context state to propagate before closing modal
+        setTimeout(() => {
+          onClose();
+          
+          // Role-based redirect - only navigate if not already on the correct page
+          if (result.role === 'admin') {
+            navigate('/admin');
+          } else if (result.role === 'developer') {
+            navigate('/developer');
+          }
+        }, 100);
         // For regular users, no navigation needed if already on home page
       } else {
         setError(result.message || "Login failed");
