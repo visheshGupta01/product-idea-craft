@@ -155,29 +155,29 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="relative w-full">
       {/* Chat Input Container */}
-      <div className="bg-[#FFB3E6] border border-pink-400/30 rounded-2xl p-3 shadow-lg">
+      <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl p-3 shadow-lg">
         {/* Uploaded Files Display */}
         {uploadedFiles.length > 0 && (
           <div className="mb-3 space-y-2">
-            <div className="text-xs text-gray-700 font-medium">
+            <div className="text-xs text-gray-400 font-medium">
               Attached Files:
             </div>
             <div className="flex flex-wrap gap-2">
               {uploadedFiles.map((file) => (
                 <div
                   key={file.name}
-                  className="flex items-center gap-2 bg-white/50 border border-pink-400/30 rounded-md px-3 py-2 text-sm"
+                  className="flex items-center gap-2 bg-[#3A3A3A] border border-[#4A4A4A] rounded-md px-3 py-2 text-sm"
                 >
-                  <FileText className="w-4 h-4 text-pink-600" />
+                  <FileText className="w-4 h-4 text-pink-400" />
                   <span
-                    className="text-gray-800 truncate max-w-[200px]"
+                    className="text-gray-200 truncate max-w-[200px]"
                     title={file.name}
                   >
                     {file.name}
                   </span>
                   <button
                     onClick={() => handleRemoveFile(file.name)}
-                    className="text-gray-600 hover:text-red-600 transition-colors ml-1"
+                    className="text-gray-400 hover:text-red-400 transition-colors ml-1"
                     title="Remove file"
                   >
                     <X className="w-3 h-3" />
@@ -197,8 +197,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             onKeyDown={handleKeyDown}
             placeholder="Type your message or use '@' to call a tool..."
             className={cn(
-              "min-h-[50px] max-h-[120px] pr-[150px] resize-none bg-white/70 border-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-              "text-gray-900 placeholder:text-gray-600",
+              "min-h-[50px] max-h-[120px] pr-[150px] resize-none bg-[#1E1E1E] border-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+              "text-white placeholder:text-gray-500",
               "custom-scroll"
             )}
             rows={1}
@@ -225,10 +225,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 !isLoading && !message.trim() && uploadedFiles.length === 0
               }
               className={cn(
-                "w-[36px] h-[36px] transition-all",
+                "w-[36px] h-[36px] transition-all rounded-lg",
                 isLoading
-                  ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground border-2 border-destructive shadow-lg shadow-destructive/50 animate-pulse"
-                  : "bg-[#FF00A9] hover:bg-[#E000A0] text-white"
+                  ? "bg-[#4A4A4A] hover:bg-[#5A5A5A] text-white border border-[#5A5A5A]"
+                  : "bg-[#FF00A9] hover:bg-[#E000A0] text-white disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >
               {isLoading ? (
