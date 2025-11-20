@@ -225,9 +225,9 @@ const PreviewCodePanel = ({
         </DialogContent>
       </Dialog>
 
-      <div className="h-full flex flex-col bg-sidebar-background">
+      <div className="h-full flex flex-col bg-sidebar-background overflow-hidden">
         {/* Preview Navbar */}
-        <div className="h-14 px-2 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525] flex-shrink-0">
+        <div className="h-14 min-h-[3.5rem] px-2 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525] flex-shrink-0">
           <TooltipProvider>
             <div className="flex items-center gap-1">
               <Tooltip>
@@ -324,7 +324,7 @@ const PreviewCodePanel = ({
 
       {/* Main Content Area */}
       <div
-        className={`flex-1 min-h-0 overflow-hidden transition-opacity duration-300 ${
+        className={`flex-1 overflow-hidden transition-opacity duration-300 ${
           isTransitioning ? "opacity-0" : "opacity-100"
         }`}
       >
