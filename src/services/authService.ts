@@ -15,6 +15,7 @@ export interface AuthResponse {
     email: string;
     user_type: string;
     created_at: string;
+    verified?: boolean;
   };
 }
 
@@ -31,6 +32,7 @@ export interface LoginResponse {
     email: string;
     user_type: string;
     created_at: string;
+    verified?: boolean;
   };
 }
 

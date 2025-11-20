@@ -54,7 +54,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false, sessionId }: NavbarProps
       )}
       <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-[#1E1E1E] border-b border-[#2A2A2A] flex items-center">
         {/* Sidebar Section - Logo */}
-        <div className="w-64 flex items-center px-4 border-r border-[#2A2A2A]">
+        <div className="w-64 h-full flex items-center px-4 bg-[#1A1A1A] border-r border-[#2A2A2A]">
           <Link to="/">
             <img
               alt="Imagine.bo Logo"
@@ -65,8 +65,8 @@ const Navbar = ({ onPublish, isFrontendCreated = false, sessionId }: NavbarProps
         </div>
 
         {/* Chat Section - Project Name and Code View */}
-        <div className="flex-1 flex items-center justify-center border-r border-[#2A2A2A]">
-          <button className="absolute left-[280px] text-gray-400 hover:text-white transition-colors">
+        <div className="flex-1 h-full flex items-center justify-center bg-[#1E1E1E] border-r border-[#2A2A2A] relative">
+          <button className="absolute left-4 text-gray-400 hover:text-white transition-colors">
             <svg
               width="20"
               height="20"
@@ -83,7 +83,7 @@ const Navbar = ({ onPublish, isFrontendCreated = false, sessionId }: NavbarProps
         </div>
 
         {/* Preview Section - Preview Button and Actions */}
-        <div className="flex-1 flex items-center justify-between px-4">
+        <div className="flex-1 h-full flex items-center justify-between px-4 bg-[#252525]">
           <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
             <svg
               width="16"
