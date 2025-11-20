@@ -52,69 +52,84 @@ const Navbar = ({ onPublish, isFrontendCreated = false, sessionId }: NavbarProps
           sessionId={sessionId}
         />
       )}
-      <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-[#1E1E1E] border-b border-[#2A2A2A] flex items-center justify-between px-4">
-        {/* Logo and Project Name */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center justify-center w-8 h-8">
-            <Link to="/">
-              <img
-                alt="Imagine.bo Logo"
-                src={ImagineboIcon}
-                className="text-white w-full h-full object-contain"
-              />
-            </Link>
-          </div>
-          <span className="text-white text-base font-medium">Project Name</span>
+      <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-[#1E1E1E] border-b border-[#2A2A2A] flex items-center">
+        {/* Sidebar Section - Logo */}
+        <div className="w-64 flex items-center px-4 border-r border-[#2A2A2A]">
+          <Link to="/">
+            <img
+              alt="Imagine.bo Logo"
+              src={ImagineboIcon}
+              className="w-8 h-8 object-contain"
+            />
+          </Link>
         </div>
 
-        {/* Center: Code Icon and Preview */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-6">
-          <button className="text-gray-400 hover:text-white transition-colors">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        {/* Chat Section - Project Name and Code View */}
+        <div className="flex-1 flex items-center justify-center border-r border-[#2A2A2A]">
+          <button className="absolute left-[280px] text-gray-400 hover:text-white transition-colors">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <polyline points="16 18 22 12 16 6"></polyline>
               <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
           </button>
+          <span className="text-white text-base font-medium">Project Name</span>
+        </div>
+
+        {/* Preview Section - Preview Button and Actions */}
+        <div className="flex-1 flex items-center justify-between px-4">
           <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
             </svg>
             <span className="text-sm">Preview</span>
           </button>
-        </div>
 
-        {/* Right: Action Buttons */}
-        <div className="flex items-center space-x-3">
-          {sessionId && (
+          <div className="flex items-center space-x-3">
+            {sessionId && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAssignModal(true)}
+                className="flex items-center gap-2 h-9 px-4 text-sm bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              >
+                <User className="h-4 w-4" />
+                Assign to Dev
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowAssignModal(true)}
+              onClick={() => setShowGitHubModal(true)}
               className="flex items-center gap-2 h-9 px-4 text-sm bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
             >
-              <User className="h-4 w-4" />
-              Assign to Dev
+              <Github className="h-4 w-4" />
+              Github
             </Button>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowGitHubModal(true)}
-            className="flex items-center gap-2 h-9 px-4 text-sm bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
-          >
-            <Github className="h-4 w-4" />
-            Github
-          </Button>
 
-          <Button
-            onClick={() => setShowVercelModal(true)}
-            size="sm"
-            className="flex items-center gap-2 h-9 px-5 bg-[#FF00A9] text-white hover:bg-[#E000A0] font-medium rounded-md"
-          >
-            <Rocket className="h-4 w-4" />
-            Publish
-          </Button>
+            <Button
+              onClick={() => setShowVercelModal(true)}
+              size="sm"
+              className="flex items-center gap-2 h-9 px-5 bg-[#FF00A9] text-white hover:bg-[#E000A0] font-medium rounded-md"
+            >
+              <Rocket className="h-4 w-4" />
+              Publish
+            </Button>
+          </div>
         </div>
       </div>
     </>
