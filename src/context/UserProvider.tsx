@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect, useCallback } from "react";
+import { ReactNode, useState, useEffect, useCallback, useMemo } from "react";
 import { UserContext } from "./UserContext";
 import { User, InitialResponse } from "@/types";
 import { authService } from "@/services/authService";
@@ -385,34 +385,61 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     [fetchUserProfile]
   );
 
+  const contextValue = useMemo(
+    () => ({
+      user,
+      profile,
+      userIdea,
+      initialResponse,
+      isProcessingIdea,
+      isAuthenticated,
+      sessionId,
+      userRole,
+      isLoading,
+      userPlan,
+      login,
+      logout,
+      signup,
+      verifyEmail,
+      forgotPassword,
+      resetPassword,
+      refreshToken,
+      setUserIdea,
+      setSessionId,
+      sendIdeaWithAuth,
+      clearInitialResponse,
+      fetchProfile: fetchUserProfile,
+      updateProfile: updateUserProfile,
+    }),
+    [
+      user,
+      profile,
+      userIdea,
+      initialResponse,
+      isProcessingIdea,
+      isAuthenticated,
+      sessionId,
+      userRole,
+      isLoading,
+      userPlan,
+      login,
+      logout,
+      signup,
+      verifyEmail,
+      forgotPassword,
+      resetPassword,
+      refreshToken,
+      setUserIdea,
+      setSessionId,
+      sendIdeaWithAuth,
+      clearInitialResponse,
+      fetchUserProfile,
+      updateUserProfile,
+    ]
+  );
+
   return (
-    <UserContext.Provider
-      value={{
-        user,
-        profile,
-        userIdea,
-        initialResponse,
-        isProcessingIdea,
-        isAuthenticated,
-        sessionId,
-        userRole,
-        isLoading,
-        userPlan,
-        login,
-        logout,
-        signup,
-        verifyEmail,
-        forgotPassword,
-        resetPassword,
-        refreshToken,
-        setUserIdea,
-        setSessionId,
-        sendIdeaWithAuth,
-        clearInitialResponse,
-        fetchProfile: fetchUserProfile,
-        updateProfile: updateUserProfile,
-      }}
-    >
+    <UserContext.Provider value={contextValue}>
       {children}
     </UserContext.Provider>
   );
