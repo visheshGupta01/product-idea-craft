@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { getInitialsFromNames } from "@/lib/avatarUtils";
 import { Link as RouterLink } from "react-router-dom";
 import ImagineboIcon from "../../assets/ImagineboIcon.svg";
+import ImagineboDarkBackground from "../../assets/ImagineboDarkBackground.svg";
 
 import {
   Dialog,
@@ -345,7 +346,37 @@ const Sidebar = ({
         </div>
       ) : (
         <div className="h-full w-full min-w-[240px] bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
-          {/* Home button at very top (only show when not on main) */}
+          {/* Logo Navbar */}
+          <div className="h-14 flex items-center justify-between px-4 border-b border-[#2A2A2A] bg-[#1A1A1A]">
+            <RouterLink to="/">
+              <img
+                alt="Imagine.bo Logo"
+                src={ImagineboDarkBackground}
+                className="h-8 object-contain"
+              />
+            </RouterLink>
+            <button
+              onClick={onToggleCollapse}
+              className="p-2 hover:bg-sidebar-accent rounded-md transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className={`transition-transform ${
+                  collapsed ? "rotate-180" : ""
+                }`}
+              >
+                <path d="m11 17-5-5 5-5" />
+                <path d="m18 17-5-5 5-5" />
+              </svg>
+            </button>
+          </div>
+          
+          {/* Home button (only show when not on main) */}
           {activeView !== "main" && (
             <div className="p-2 bg-sidebar-background flex justify-center border-b border-sidebar-border">
               <Button
@@ -356,50 +387,6 @@ const Sidebar = ({
               >
                 <Home className="h-4 w-4" />
               </Button>
-            </div>
-          )}
-
-          {/* Header with Project Name */}
-          {activeView === "main" && (
-            <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
-              <div className="flex items-center space-x-3">
-                {!collapsed && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <span className="text-lg font-semibold text-sidebar-foreground cursor-pointer hover:text-sidebar-foreground/80 transition-colors flex items-center gap-2">
-                        {projectDetails?.title || currentProject.name}
-                        <ChevronDown className="h-4 w-4" />
-                      </span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-48">
-                      <DropdownMenuItem onClick={handleRenameClick}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Rename Project
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-
-              <button
-                onClick={onToggleCollapse}
-                className="p-2 hover:bg-sidebar-accent rounded-md transition-colors"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className={`transition-transform ${
-                    collapsed ? "rotate-180" : ""
-                  }`}
-                >
-                  <path d="m11 17-5-5 5-5" />
-                  <path d="m18 17-5-5 5-5" />
-                </svg>
-              </button>
             </div>
           )}
 

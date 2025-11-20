@@ -176,6 +176,7 @@ const MainDashboard = ({
                   sessionId={sessionId}
                   onStreamingStateChange={setIsAiStreaming}
                   onToolProcessingChange={setIsToolProcessing}
+                  projectDetails={projectDetails}
                 />
               </div>
             </ResizablePanel>
