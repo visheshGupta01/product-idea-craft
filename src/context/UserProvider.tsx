@@ -50,7 +50,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               lastName: userData.last_name,
               email: userData.email,
               avatar: "",
-              verified: true,
+              verified: userData.verified,
               userType: userData.user_type,
             };
             setUser(mappedUser);
@@ -149,6 +149,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const result = await authService.login(email, password);
+    console.log("Login result:", result);
     if (result.success && result.user) {
       setIsAuthenticated(true);
       setUserRole(result.role || null);
@@ -160,7 +161,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         lastName: result.user.last_name,
         email: result.user.email,
         avatar: "", // Default avatar
-        verified: true, // If they can login, they're verified
+        verified: result.user.verified, // If they can login, they're verified
         userType: result.user.user_type,
       };
       setUser(userData);
