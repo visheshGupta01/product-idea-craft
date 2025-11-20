@@ -4,7 +4,6 @@ import ChatPanel from "./dashboard/ChatPanel";
 import PreviewCodePanel from "./dashboard/PreviewCodePanel";
 import TeamPage from "./dashboard/TeamPage";
 import MyProjectsPage from "./dashboard/MyProjectsPage";
-import Navbar from "./ui/navbar";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -205,15 +204,8 @@ const MainDashboard = ({
 
   return (
     <div className="h-screen bg-background overflow-hidden">
-      {/* Fixed Navbar - only show on main dashboard */}
-      <Navbar
-        onPublish={handlePublish}
-        isFrontendCreated={isFrontendCreated}
-        sessionId={sessionId}
-      />
-
-      {/* Main content with conditional top padding for navbar */}
-      <div className="h-full pt-14 flex">
+      {/* Main content */}
+      <div className="h-full flex">
         {/* Sidebar */}
         <div
           className={`transition-all duration-300 ${

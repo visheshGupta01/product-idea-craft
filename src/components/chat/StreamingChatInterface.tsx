@@ -157,6 +157,24 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   return (
     <>
       <div className="flex flex-col h-full bg-[#1E1E1E]">
+        {/* Chat Navbar */}
+        <div className="h-14 flex items-center justify-center border-b border-[#2A2A2A] bg-[#1E1E1E] relative">
+          <button className="absolute left-4 text-gray-400 hover:text-white transition-colors">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </button>
+          <span className="text-white text-base font-medium">Project Name</span>
+        </div>
+
         {isLoadingMessages ? (
           <div className="flex-1 flex items-center justify-center">
             <LoadingSpinner size="lg" text="Loading chat history..." />

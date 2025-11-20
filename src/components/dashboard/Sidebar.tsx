@@ -4,6 +4,8 @@ import { useUser } from "@/context/UserContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { getInitialsFromNames } from "@/lib/avatarUtils";
+import { Link as RouterLink } from "react-router-dom";
+import ImagineboIcon from "../../assets/ImagineboIcon.svg";
 
 import {
   Dialog,
@@ -198,6 +200,17 @@ const Sidebar = ({
     <>
       {collapsed ? (
         <div className="w-16 h-full bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col">
+          {/* Logo Navbar */}
+          <div className="h-14 flex items-center justify-center border-b border-[#2A2A2A] bg-[#1A1A1A]">
+            <RouterLink to="/">
+              <img
+                alt="Imagine.bo Logo"
+                src={ImagineboIcon}
+                className="w-8 h-8 object-contain"
+              />
+            </RouterLink>
+          </div>
+          
           {/* Home button at very top (only show when not on main) */}
           {activeView !== "main" && (
             <div className="flex justify-center pt-2 pb-2">
