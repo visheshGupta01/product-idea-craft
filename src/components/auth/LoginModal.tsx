@@ -47,26 +47,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     try {
       const result = await login(email, password);
       if (result.success) {
-        onClose();
+        // Close modal and clear form
         setEmail("");
         setPassword("");
+        onClose();
         
-        // Role-based redirect - allow navigation even if not verified
-        setTimeout(() => {
-          if (result.role === 'admin') {
-            navigate('/admin');
-          } else if (result.role === 'developer') {
-            navigate('/developer');
-          } else {
-            navigate('/');
-          }
-        }, 1000);
-        
-        // Show warning if not verified but still allow login
-        if (!result.verified) {
-          setError("Your email is not verified. You can browse but cannot create new sessions until verified.");
-          setShowResendButton(true);
+        // Role-based redirect - only navigate if not already on the correct page
+        if (result.role === 'admin') {
+          navigate('/admin');
+        } else if (result.role === 'developer') {
+          navigate('/developer');
         }
+        // For regular users, no navigation needed if already on home page
       } else {
         setError(result.message || "Login failed");
         // Check if error is due to unverified email
