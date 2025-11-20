@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Mail, CheckCircle, Loader2 } from "lucide-react";
+import { Mail, AlertCircle, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { API_BASE_URL } from "@/config/api";
+import { API_ENDPOINTS } from "@/config/api";
 import apiClient from "@/lib/apiClient";
 
 interface VerificationModalProps {
@@ -18,11 +18,14 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
   email,
 }) => {
   const [isResending, setIsResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleResendVerification = async () => {
     setIsResending(true);
+    setResendSuccess(false);
     try {
-      await apiClient.post(`${API_BASE_URL}/api/auth/resent-verification-link`, { email });
+      await apiClient.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, { email });
+      setResendSuccess(true);
       toast({
         title: "Success",
         description: "Verification link sent! Please check your email.",
@@ -40,50 +43,54 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90vh] overflow-y-auto custom-scroll p-4 sm:p-6 text-center">
+      <DialogContent className="sm:max-w-md text-center">
         <DialogHeader>
-          <div className="flex justify-center mb-3 sm:mb-4">
-            <div className="relative">
-              <Mail className="h-12 w-12 sm:h-16 sm:w-16 text-primary" />
-              <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-500 absolute -top-1 -right-1 bg-background rounded-full" />
-            </div>
+          <div className="flex justify-center mb-4">
+            <AlertCircle className="h-16 w-16 text-yellow-500" />
           </div>
-          <DialogTitle className="text-xl sm:text-2xl text-center">Check Your Email</DialogTitle>
+          <DialogTitle className="text-2xl text-center">
+            Email Not Verified
+          </DialogTitle>
+          <DialogDescription className="text-center">
+            Your email address has not been verified. Please verify your email to create new sessions.
+          </DialogDescription>
         </DialogHeader>
-        
-        <div className="space-y-3 sm:space-y-4">
-          <p className="text-muted-foreground">
-            We've sent a verification link to:
-          </p>
-          <p className="font-semibold text-primary">{email}</p>
-          <p className="text-sm text-muted-foreground">
-            Please check your email and click the verification link to activate your account. 
-            Don't forget to check your spam folder if you don't see it in your inbox.
-          </p>
-        </div>
 
-        <div className="flex flex-col space-y-2 sm:space-y-3 mt-4 sm:mt-6">
-          <Button onClick={onClose} className="w-full">
-            Got it, thanks!
-          </Button>
-          <Button 
-            onClick={handleResendVerification} 
-            variant="outline" 
-            className="w-full"
-            disabled={isResending}
-          >
-            {isResending ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Resending...
-              </>
-            ) : (
-              "Resend Verification Link"
-            )}
-          </Button>
-          <p className="text-xs text-muted-foreground">
-            You can close this window and return to complete the verification process.
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Check your inbox for a verification link or click the button below to resend it.
           </p>
+
+          {resendSuccess && (
+            <div className="flex items-center justify-center gap-2 text-green-600 text-sm">
+              <CheckCircle className="h-4 w-4" />
+              <span>Verification email sent successfully!</span>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3 pt-2">
+            <Button
+              onClick={handleResendVerification}
+              disabled={isResending || resendSuccess}
+              className="w-full"
+            >
+              {isResending ? (
+                <>
+                  <Mail className="mr-2 h-4 w-4 animate-pulse" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Resend Verification Email
+                </>
+              )}
+            </Button>
+
+            <Button onClick={onClose} variant="outline" className="w-full">
+              Close
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

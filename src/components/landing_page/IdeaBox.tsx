@@ -6,6 +6,7 @@ import { UI_CONFIG } from "@/utils/constants";
 import { authService } from "@/services/authService";
 import { LoginModal } from "../auth/LoginModal";
 import { SignupModal } from "../auth/SignupModal";
+import { VerificationModal } from "../auth/VerificationModal";
 import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { FileUploader, UploadedFile } from "@/components/ui/file-uploader";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,7 @@ const IdeaBox: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showToolList, setShowToolList] = useState(false);
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [toolInput, setToolInput] = useState("");
@@ -159,6 +161,8 @@ const IdeaBox: React.FC = () => {
     if (result.success && result.session_id) {
       authService.setUserIdea(""); // Clear idea after successful submission
       navigate(`/chat/${result.session_id}`);
+    } else if ((result as any).requiresVerification) {
+      setShowVerificationModal(true);
     } else {
       alert(result.message || "Failed to process your idea. Please try again.");
     }
@@ -308,6 +312,11 @@ const IdeaBox: React.FC = () => {
           setShowSignupModal(false);
           setShowLoginModal(true);
         }}
+      />
+      <VerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        email={authService.getUser()?.email || ""}
       />
     </section>
   );
