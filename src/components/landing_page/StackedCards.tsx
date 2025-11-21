@@ -76,7 +76,7 @@ function SmoothCard({ card, index, totalCards, scrollYProgress }: any) {
       className="
         absolute 
         w-full 
-        max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl lg:max-w-5xl
+        max-w-[90vw] sm:max-w-[85vw] md:max-w-3xl lg:max-w-4xl
         shadow-xl 
         rounded-2xl md:rounded-3xl
         overflow-hidden 
@@ -84,7 +84,7 @@ function SmoothCard({ card, index, totalCards, scrollYProgress }: any) {
         border border-white/10
       "
     >
-      <div className={`flex flex-col md:flex-row min-h-[400px] md:h-[420px] lg:h-[520px] ${index % 2 ? "md:flex-row-reverse" : ""}`}>
+      <div className={`flex flex-col md:flex-row min-h-[350px] md:h-[380px] lg:h-[450px] ${index % 2 ? "md:flex-row-reverse" : ""}`}>
         {/* Image */}
         <div className="w-full md:w-1/2 h-[200px] md:h-auto relative">
           <img
@@ -96,9 +96,9 @@ function SmoothCard({ card, index, totalCards, scrollYProgress }: any) {
         </div>
 
         {/* Text */}
-        <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-12 lg:p-14 xl:p-20 flex flex-col justify-center">
-          <h2 className="text-xl sm:text-2xl md:text-[28px] lg:text-[32px] font-semibold mb-3 md:mb-4 text-black font-poppins">{card.title}</h2>
-          <p className="text-sm sm:text-base md:text-[17px] lg:text-[18px] leading-relaxed text-black font-poppins">{card.content}</p>
+        <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-center">
+          <h2 className="text-xl sm:text-2xl md:text-[26px] lg:text-[28px] font-semibold mb-3 md:mb-4 text-black font-poppins">{card.title}</h2>
+          <p className="text-sm sm:text-base md:text-[16px] lg:text-[17px] leading-relaxed text-black font-poppins">{card.content}</p>
         </div>
       </div>
     </motion.div>
