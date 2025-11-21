@@ -9,21 +9,21 @@ const cardData = [
     id: 1,
     title: "Start with Your Vision",
     content:
-      "Tell us what you’re dreaming of—your product idea, the problem it solves...",
+      "Tell us what you’re dreaming of—your product idea, the problem it solves, and the audience it serves. We’ll work with you to refine your concept and align on the goals, features, and direction before anything gets built with the power of AI.",
     image: card2,
   },
   {
     id: 2,
     title: "Plans with Purpose",
     content:
-      "Imagine.bo doesn’t just generate—it thinks. Every response is backed...",
+      "Imagine.bo doesn’t just generate—it thinks. Every response is backed by deep AI analysis and pattern recognition to shape your layout, structure, and content with clarity. The result: a website that makes sense for your audience and your goals.",
     image: card3,
   },
   {
     id: 3,
     title: "Support That Stays With You",
     content:
-      "As your project takes shape, our team supports you through development...",
+      "As your project takes shape, our team supports you through critical development phases. Helps with custom code integration, backend logic, deployment pipelines, and even scaling strategies. And after you go live, we’re still here for updates, debugging, and improvements.",
     image: card1,
   },
 ];
@@ -31,7 +31,6 @@ const cardData = [
 export default function StackedCards() {
   const wrapperRef = useRef(null);
 
-  // Track scroll inside section
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
     offset: ["start start", "end end"],
@@ -39,7 +38,7 @@ export default function StackedCards() {
 
   return (
     <div ref={wrapperRef} className="relative h-[300vh] bg-gradient-bg">
-      <div className="sticky top-20 h-screen flex items-center justify-center">
+      <div className="sticky top-8 h-screen flex items-center justify-center">
         {[...cardData].reverse().map((card, i) => {
           const realIndex = cardData.length - 1 - i;
 
@@ -48,6 +47,7 @@ export default function StackedCards() {
               key={card.id}
               card={card}
               index={realIndex}
+              totalCards={cardData.length}
               scrollYProgress={scrollYProgress}
             />
           );
@@ -57,29 +57,34 @@ export default function StackedCards() {
   );
 }
 
-function SmoothCard({ card, index, scrollYProgress }: any) {
+function SmoothCard({ card, index, totalCards, scrollYProgress }: any) {
   const start = index * 0.33;
   const end = start + 0.33;
 
-  const top = useTransform(scrollYProgress, [start, end], [300, 0]);
-  const scale = useTransform(scrollYProgress, [start, end], [0.8, 1]);
+  const y = useTransform(scrollYProgress, [start, end], [300, 0]);
+  const scale = useTransform(scrollYProgress, [start, end], [0.85, 1]);
   const opacity = useTransform(scrollYProgress, [start, end], [0, 1]);
 
   return (
     <motion.div
       style={{
-        top,
+        y,
         scale,
         opacity,
-        zIndex: index, // later cards stack on top
-        position: "absolute",
-        left: 0,
-        right: 0,
-        margin: "0 auto",
+        zIndex: index, // correct stacking
       }}
-      className="w-full max-w-4xl shadow-xl rounded-3xl overflow-hidden bg-[#B1C5CE]"
+      className="
+        absolute 
+        w-full 
+        max-w-5xl                  /* Bigger width */
+        shadow-xl 
+        rounded-3xl 
+        overflow-hidden 
+        bg-[#B1C5CE]
+        border border-white/10
+      "
     >
-      <div className={`flex h-[420px] ${index % 2 ? "flex-row-reverse" : ""}`}>
+      <div className={`flex h-[520px] ${index % 2 ? "flex-row-reverse" : ""}`}>
         {/* Image */}
         <div className="w-1/2 relative">
           <img
@@ -91,9 +96,9 @@ function SmoothCard({ card, index, scrollYProgress }: any) {
         </div>
 
         {/* Text */}
-        <div className="w-1/2 p-10 flex flex-col justify-center">
-          <h2 className="text-[28px] font-semibold mb-4">{card.title}</h2>
-          <p className="text-[17px] leading-relaxed">{card.content}</p>
+        <div className="w-1/2 p-14 md:p-20 flex flex-col justify-center">
+          <h2 className="text-[32px] font-semibold mb-4 text-black font-poppins">{card.title}</h2>
+          <p className="text-[18px] leading-relaxed text-black font-poppins">{card.content}</p>
         </div>
       </div>
     </motion.div>
