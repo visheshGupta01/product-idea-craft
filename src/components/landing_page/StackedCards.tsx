@@ -71,7 +71,7 @@ function SmoothCard({ card, index, scrollYProgress }: any) {
         top,
         scale,
         opacity,
-        zIndex: 100 - index, // now stacking works
+        zIndex: index, // later cards stack on top
         position: "absolute",
         left: 0,
         right: 0,
