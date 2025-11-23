@@ -44,8 +44,8 @@ const MyProjectsPage = () => {
 
   // Get user's display name
   const getUserName = () => {
-    if (profile?.first_name && profile?.last_name) {
-      return `${profile.first_name} ${profile.last_name}`;
+    if (profile?.name) {
+      return profile.name;
     }
     if (user?.firstName && user?.lastName) {
       return `${user.firstName} ${user.lastName}`;

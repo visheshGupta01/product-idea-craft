@@ -60,8 +60,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             const planId = (userData as any).plan_id || 1;
             setProfile({
               id: userData.id,
-              first_name: userData.first_name,
-              last_name: userData.last_name,
+              name: (userData as any).name || `${userData.first_name} ${userData.last_name}`,
               email: userData.email,
               password: "",
               plan_name: planNames[planId as keyof typeof planNames] || "Free",
@@ -170,8 +169,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const planId = (result.user as any).plan_id || 1;
       setProfile({
         id: result.user.id,
-        first_name: result.user.first_name,
-        last_name: result.user.last_name,
+        name: (result.user as any).name || `${result.user.first_name} ${result.user.last_name}`,
         email: result.user.email,
         password: "",
         plan_name: planNames[planId as keyof typeof planNames] || "Free",

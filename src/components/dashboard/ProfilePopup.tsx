@@ -85,8 +85,7 @@ const ProfilePopup = ({
   }, [open, fetchProfile]);
 
   const [formData, setFormData] = useState({
-    firstName: userData?.first_name || "",
-    lastName: userData?.last_name || "",
+    name: userData?.name || "",
     email: userData?.email || "",
     password: "••••••••••",
   });
@@ -95,8 +94,7 @@ const ProfilePopup = ({
   React.useEffect(() => {
     if (userData) {
       setFormData({
-        firstName: userData.first_name || "",
-        lastName: userData.last_name || "",
+        name: userData.name || "",
         email: userData.email || "",
         password: "••••••••••",
       });
@@ -119,8 +117,7 @@ const ProfilePopup = ({
     // Reset form data
     if (userData) {
       setFormData({
-        firstName: userData.first_name || "",
-        lastName: userData.last_name || "",
+        name: userData.name || "",
         email: userData.email || "",
         password: "••••••••••",
       });
@@ -144,18 +141,10 @@ const ProfilePopup = ({
           <div className="space-y-6">
             <h3 className="text-lg font-semibold">Basic Info</h3>
             {/* Form Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
-                  {formData.firstName || "Not provided"}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
-                  {formData.lastName || "Not provided"}
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <div className="px-3 py-2 bg-muted/30 border rounded-md text-sm">
+                {formData.name || "Not provided"}
               </div>
             </div>
 
@@ -419,14 +408,12 @@ const ProfilePopup = ({
           <div className="flex items-center space-x-3 p-2">
             <Avatar className="h-10 w-10">
               <AvatarFallback className="bg-primary/10 text-primary">
-                {getInitialsFromNames(userData?.first_name, userData?.last_name)}
+                {userData?.name ? userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
               </AvatarFallback>
             </Avatar>
             <div>
               <div className="font-medium">
-                {userData?.first_name && userData?.last_name
-                  ? `${userData.first_name} ${userData.last_name}`
-                  : "User"}
+                {userData?.name || "User"}
               </div>
               <div className="text-sm text-muted-foreground">
                 {userData?.email || ""}
@@ -465,10 +452,7 @@ const ProfilePopup = ({
       isOpen={showCancelDialog}
       onClose={() => setShowCancelDialog(false)}
       userId={userData?.id || ""}
-      userName={
-        `${userData?.first_name || ""} ${userData?.last_name || ""}`.trim() ||
-        "User"
-      }
+      userName={userData?.name || "User"}
       planName={
         userData?.plan_id === 1
           ? "Free Plan"

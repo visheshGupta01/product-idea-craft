@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { API_BASE_URL } from "@/config/api";
+import { toast } from "sonner";
 
 // Create axios instance
 const apiClient = axios.create({
@@ -84,6 +85,7 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         } else {
           // Refresh failed, redirect to login
+          toast.error("Session expired. Please login again.");
           localStorage.clear();
           sessionStorage.clear();
           window.location.href = "/";
@@ -92,6 +94,7 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         // Refresh request failed, redirect to login
         //console.error("Token refresh failed:", refreshError);
+        toast.error("Session expired. Please login again.");
         localStorage.clear();
         sessionStorage.clear();
         window.location.href = "/";
