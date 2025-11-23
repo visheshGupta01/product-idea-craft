@@ -4,8 +4,7 @@ import { API_ENDPOINTS } from "@/config/api";
 export interface ProfileData {
   plan_name: string;
   id: string;
-  first_name: string;
-  last_name: string;
+  name: string;
   email: string;
   password: string;
   verified: boolean;
