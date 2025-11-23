@@ -18,7 +18,6 @@ import {
 import { toast } from "sonner";
 import Navbar from "@/components/landing_page/Navbar";
 import Footer from "@/components/landing_page/Footer";
-import FacebookPixel from "@/lib/FacebookPixel";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -108,7 +107,6 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen bg-[#0f1116]">
-      <FacebookPixel />
       <Navbar />
 
       <div className="container mx-auto px-4 py-16 pt-32">

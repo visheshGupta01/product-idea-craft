@@ -1,4 +1,3 @@
-import React from "react";
 import { ChatPanelProps } from "@/types";
 import { StreamingChatInterface } from "@/components/chat/StreamingChatInterface";
 import { ProjectDetails } from "@/services/projectService";

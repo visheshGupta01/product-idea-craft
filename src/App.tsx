@@ -10,6 +10,7 @@ import UserProvider from "@/context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { LoadingSpinner } from "./components/ui/loading-spinner";
 import Navbar from "./components/landing_page/Navbar";
+import RouteTracker from "./utils/routeTracker";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -149,6 +150,7 @@ const App = () => {
           <Sonner />
           <UserProvider>
             <BrowserRouter>
+              <RouteTracker />
               <AppContent />
             </BrowserRouter>
           </UserProvider>

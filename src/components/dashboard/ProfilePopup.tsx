@@ -672,10 +672,10 @@ const UsageStats: React.FC = () => {
                           )}
                         </TableCell>
                         <TableCell className="text-right">
-                          {(day.token || 0).toLocaleString()}
+                          {(day.tokens || 0).toLocaleString()}
                         </TableCell>
                         <TableCell className="text-right">
-                          {(day.credits_deducted || 0).toFixed(3)}
+                          {(day.credits || 0).toFixed(3)}
                         </TableCell>
                       </TableRow>
                     ))}

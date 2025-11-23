@@ -83,7 +83,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
         name:
           [dev.first_name, dev.last_name].filter(Boolean).join(" ") ||
           dev.email.split("@")[0],
-        avg_rating: dev.avg_rating,
+        avg_rating: dev.average_rating,
         total_done: dev.total_solved_tasks,
         bio: dev.bio,
         hourpaid: dev.hour_paid,
@@ -588,12 +588,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
         {/* Fixed bottom buttons for profile and assign views */}
         {(currentView === "profile" || currentView === "assign") && (
           <div className="border-t pt-4 mt-4 flex justify-between">
-            <Button
-              variant="outline"
-              onClick={() =>
-                setCurrentView("list")
-              }
-            >
+            <Button variant="outline" onClick={() => setCurrentView("list")}>
               {currentView === "profile" ? "Collapse" : "Back"}
             </Button>
             {currentView === "profile" && (
