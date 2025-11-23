@@ -1,5 +1,6 @@
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
+import { trackEvent } from "@/utils/metaPixel";
 
 // Razorpay key
 const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY;
@@ -76,19 +77,21 @@ export const createRazorpayPayment = async (
             }
           );
 
-          // If verification OK, track Purchase with Facebook Pixel (if available)
+          // Track Purchase and Subscribe events after successful payment
           try {
-            if (typeof window !== "undefined" && (window as any).fbq) {
-              // price is a string in your flow — convert to number if needed
-              const numericValue = parseFloat(String(paymentData.price)) || 0;
-              (window as any).fbq("track", "Purchase", {
-                value: numericValue,
-                currency: "USD",
-              });
-            }
+            const numericValue = parseFloat(String(paymentData.price)) || 0;
+            trackEvent("Purchase", {
+              content_name: paymentData.plan_name,
+              value: numericValue,
+              currency: "USD",
+            });
+            trackEvent("Subscribe", {
+              content_name: paymentData.plan_name,
+              value: numericValue,
+              currency: "USD",
+            });
           } catch (fbErr) {
             // don't block flow if fb tracking fails
-            /* optional: console.warn('fbq track failed', fbErr); */
           }
 
           // Mark payment as completed
