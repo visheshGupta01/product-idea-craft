@@ -2,31 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico" />
     <title>imagine.bo</title>
+
+    <!-- Preconnect for faster Google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Load fonts async to not block rendering -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Satoshi:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Satoshi:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
       media="print"
       onload="this.media='all'"
     />
-    <noscript
-      ><link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Satoshi:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet"
-    /></noscript>
+
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-    <!-- Meta Pixel Code -->
+
+    <!-- Meta Pixel Code (optimized) -->
     <script>
       !(function (f, b, e, v, n, t, s) {
         if (f.fbq) return;
         n = f.fbq = function () {
-          n.callMethod
-            ? n.callMethod.apply(n, arguments)
-            : n.queue.push(arguments);
+          (n.callMethod ? n.callMethod : n.queue.push).apply(n, arguments);
         };
         if (!f._fbq) f._fbq = n;
         n.push = n;
@@ -38,25 +37,33 @@
         t.src = v;
         s = b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t, s);
-      })(
-        window,
-        document,
-        "script",
-        "https://connect.facebook.net/en_US/fbevents.js"
-      );
+      })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+
       fbq("init", "25373752758899975");
       fbq("track", "PageView");
     </script>
-    <noscript
-      ><img
+    <!-- End Meta Pixel Code -->
+  </head>
+
+  <body>
+    <!-- Noscript fallback for fonts (must be inside body) -->
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Satoshi:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
+      />
+    </noscript>
+
+    <!-- Meta Pixel noscript fallback -->
+    <noscript>
+      <img
         height="1"
         width="1"
-        style="display: none"
+        style="display:none"
         src="https://www.facebook.com/tr?id=25373752758899975&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
-  </head>
-  <body>
+      />
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
