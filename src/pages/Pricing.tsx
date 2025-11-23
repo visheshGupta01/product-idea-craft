@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import Navbar from "@/components/landing_page/Navbar";
 import Footer from "@/components/landing_page/Footer";
+import { trackEvent } from "@/utils/metaPixel";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -78,6 +79,18 @@ const Pricing = () => {
       toast.info(`You are already on the ${planName} plan`);
       return;
     }
+
+    // Track InitiateCheckout and Subscribe events when user clicks Get Started
+    trackEvent("InitiateCheckout", {
+      content_name: planName,
+      value: parseFloat(price),
+      currency: "USD",
+    });
+    trackEvent("Subscribe", {
+      content_name: planName,
+      value: parseFloat(price),
+      currency: "USD",
+    });
 
     setLoadingPlan(planName);
 
