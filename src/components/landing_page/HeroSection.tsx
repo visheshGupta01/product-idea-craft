@@ -11,7 +11,6 @@ const HeroSection: React.FC = () => {
           alt="Imagine.bo Logo"
           className="h-12 md:h-16 w-auto object-contain"
           loading="eager"
-          fetchPriority="high"
         />
       </div>
 

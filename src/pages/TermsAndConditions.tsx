@@ -117,6 +117,11 @@ const TermsAndConditions: React.FC = () => {
                 Refunds are only issued under the performance guarantee clause
                 or as required by law.
               </li>
+              <h4 className="text-xl font-medium pt-4">Cancellation Policy:</h4>
+              You may cancel your subscription at any time. The cancellation
+              will apply at the end of your current billing term. Payments
+              already processed are non-refundable, and no prorated credits are
+              issued for partial use.
             </ul>
           </section>
 
