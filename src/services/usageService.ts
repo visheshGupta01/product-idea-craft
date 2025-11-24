@@ -2,8 +2,8 @@ import apiClient from "@/lib/apiClient";
 
 export interface DailyUsage {
   created_at: string;
-  token: number;
-  credits_deducted: number;
+  tokens: number;
+  credits: number;
 }
 
 export interface UsageData {
