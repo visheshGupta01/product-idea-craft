@@ -10,7 +10,10 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import imagineboLogo from "@/assets/ImagineboIcon.svg";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-import { initiateGoogleAuth, initiateGithubAuth } from "@/services/oauthService";
+import {
+  initiateGoogleAuth,
+  initiateGithubAuth,
+} from "@/services/oauthService";
 import { API_BASE_URL } from "@/config/api";
 import apiClient from "@/lib/apiClient";
 
@@ -46,23 +49,25 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     try {
       const result = await login(email, password);
       if (result.success) {
-       
         onClose();
         setEmail("");
         setPassword("");
-        
+
         // Role-based redirect
         setTimeout(() => {
-          if (result.role === 'admin') {
-            navigate('/admin');
+          if (result.role === "admin") {
+            navigate("/admin");
           } else {
-            navigate('/');
+            navigate("/");
           }
         }, 1000);
       } else {
         setError(result.message || "Login failed");
         // Check if error is due to unverified email
-        if (result.message?.toLowerCase().includes("verify") || result.message?.toLowerCase().includes("not verified")) {
+        if (
+          result.message?.toLowerCase().includes("verify") ||
+          result.message?.toLowerCase().includes("not verified")
+        ) {
           setShowResendButton(true);
         }
       }
@@ -89,11 +94,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
     setIsResending(true);
     try {
-      await apiClient.post(`${API_BASE_URL}/api/auth/resent-verification-link`, { email });
+      await apiClient.post(
+        `${API_BASE_URL}/api/auth/resent-verification-link`,
+        { email }
+      );
       setError("Verification link sent! Please check your email.");
       setShowResendButton(false);
     } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to resend verification link.");
+      setError(
+        error.response?.data?.message || "Failed to resend verification link."
+      );
     } finally {
       setIsResending(false);
     }
@@ -104,7 +114,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       <DialogContent className="sm:max-w-[400px] w-[95vw] max-h-[90vh] overflow-y-auto custom-scroll p-4 sm:p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
         {/* Logo */}
         <div className="flex justify-center mb-3 sm:mb-4">
-          <img src={imagineboLogo} alt="Imagine.bo" className="h-8 w-8 sm:h-10 sm:w-10" />
+          <img
+            src={imagineboLogo}
+            alt="Imagine.bo"
+            className="h-8 w-8 sm:h-10 sm:w-10"
+          />
         </div>
 
         {/* Title */}
@@ -162,7 +176,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           {/* Password Input */}
           <div className="relative">
             <Input
-              id="password" 
+              id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter password"
               value={password}
@@ -189,7 +203,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
           {error && (
             <div className="space-y-2">
-              <div className={`text-sm ${error.includes("sent") ? "text-green-500" : "text-destructive"}`}>
+              <div
+                className={`text-sm ${
+                  error.includes("sent") ? "text-green-500" : "text-destructive"
+                }`}
+              >
                 {error}
               </div>
               {showResendButton && (
@@ -241,11 +259,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         {/* Terms and Privacy */}
         <p className="text-xs text-gray-400 mt-4">
           By continuing you agree to our{" "}
-          <a href="#" className="underline hover:text-white">
+          <a href="/terms" className="underline hover:text-white">
             Terms
           </a>{" "}
           and{" "}
-          <a href="#" className="underline hover:text-white">
+          <a href="/privacy" className="underline hover:text-white">
             Privacy Policy
           </a>
           .

@@ -235,11 +235,11 @@ export const SignupModal: React.FC<SignupModalProps> = ({
           {/* Terms and Privacy */}
           <p className="text-xs text-gray-400 mt-4">
             By continuing you agree to our{" "}
-            <a href="#" className="underline hover:text-white">
+            <a href="/terms" className="underline hover:text-white">
               Terms
             </a>{" "}
             and{" "}
-            <a href="#" className="underline hover:text-white">
+            <a href="/privacy" className="underline hover:text-white">
               Privacy Policy
             </a>
             .

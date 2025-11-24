@@ -6,7 +6,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 const ContactUs: React.FC = () => {
 
   return (
-    <div className="min-h-screen pt-8 bg-background">
+    <div className="min-h-screen pt-8 bg-[#1B2123]">
       <Navbar />
       <div className="max-w-7xl mx-auto px-6 py-16 font-poppins">
         {/* Header Section */}
@@ -43,7 +43,7 @@ const ContactUs: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-medium text-foreground mb-1">Phone</h3>
-                  <p className="text-muted-foreground">(0124) 400-6215</p>
+                  <p className="text-muted-foreground">+91 9310406242</p>
                 </div>
               </div>
 
@@ -73,7 +73,6 @@ const ContactUs: React.FC = () => {
             </p>
           </div>
         </div>
-
       </div>
       <Footer />
     </div>

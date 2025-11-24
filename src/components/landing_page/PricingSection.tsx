@@ -180,12 +180,12 @@ const PricingSection: React.FC = () => {
       )}
       <p className="mt-12 text-sm text-gray-400">
         Don't find a plan that suits you?{" "}
-        <button
-          onClick={handleTalkToUs}
+        <a
+          href="/contact"
           className="text-pink-400 cursor-pointer hover:underline"
         >
           Talk to Us
-        </button>
+        </a>
       </p>
       {/* Support & Authentication Modals */}
       <ProfilePopup
