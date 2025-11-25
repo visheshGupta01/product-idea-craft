@@ -29,20 +29,76 @@ export const SignupModal: React.FC<SignupModalProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const { signup } = useUser();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !email.trim() || !password.trim()) return;
+  // Regex patterns
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const nameRegex = /^[a-zA-Z\s'-]{2,50}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+  const validateField = (field: string, value: string) => {
+    const errors = { ...validationErrors };
+
+    switch (field) {
+      case "name":
+        if (!value.trim()) {
+          errors.name = "Name is required";
+        } else if (!nameRegex.test(value)) {
+          errors.name = "Name should only contain letters, spaces, hyphens, and apostrophes";
+        } else {
+          delete errors.name;
+        }
+        break;
+      case "email":
+        if (!value.trim()) {
+          errors.email = "Email is required";
+        } else if (!emailRegex.test(value)) {
+          errors.email = "Please enter a valid email address";
+        } else {
+          delete errors.email;
+        }
+        break;
+      case "password":
+        if (!value) {
+          errors.password = "Password is required";
+        } else if (value.length < 6) {
+          errors.password = "Password must be at least 6 characters long";
+        } else if (!passwordRegex.test(value)) {
+          errors.password = "Password must contain uppercase, lowercase, and a number";
+        } else {
+          delete errors.password;
+        }
+        break;
+      case "confirmPassword":
+        if (value !== password) {
+          errors.confirmPassword = "Passwords do not match";
+        } else {
+          delete errors.confirmPassword;
+        }
+        break;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate all fields
+    const isNameValid = validateField("name", name);
+    const isEmailValid = validateField("email", email);
+    const isPasswordValid = validateField("password", password);
+    const isConfirmPasswordValid = validateField("confirmPassword", confirmPassword);
+
+    if (!isNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
       return;
     }
 
@@ -51,15 +107,15 @@ export const SignupModal: React.FC<SignupModalProps> = ({
 
     try {
       const result = await signup(name, email, password);
-      //console.log('Signup result:', result);
       if (result.success) {
-        // Show verification modal instead of closing immediately
         setShowVerificationModal(true);
       } else {
-        setError(result.message || "Signup failed");
+        // Display backend error message
+        setError(result.message || "Signup failed. Please try again.");
       }
-    } catch (error) {
-      setError("An unexpected error occurred");
+    } catch (error: any) {
+      // Display detailed error from backend if available
+      setError(error.response?.data?.message || error.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +127,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
     setPassword("");
     setConfirmPassword("");
     setError("");
+    setValidationErrors({});
     setShowVerificationModal(false);
     onClose();
   };
@@ -131,86 +188,123 @@ export const SignupModal: React.FC<SignupModalProps> = ({
 
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Name Input */}
-            <Input
-              id="name"
-              type="text"
-              placeholder="Enter your full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={isLoading}
-              required
-              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
-            />
-
-            {/* Email Input */}
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-              required
-              className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400"
-            />
-
-            {/* Password Input */}
-            <div className="relative">
+            <div>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="name"
+                type="text"
+                placeholder="Enter your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={(e) => validateField("name", e.target.value)}
                 disabled={isLoading}
                 required
-                className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 pr-10"
+                className={`h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 ${
+                  validationErrors.name ? "border-destructive" : ""
+                }`}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
+              {validationErrors.name && (
+                <p className="text-destructive text-xs mt-1">{validationErrors.name}</p>
+              )}
+            </div>
+
+            {/* Email Input */}
+            <div>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={(e) => validateField("email", e.target.value)}
                 disabled={isLoading}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-400" />
-                ) : (
-                  <Eye className="h-4 w-4 text-gray-400" />
-                )}
-              </Button>
+                required
+                className={`h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 ${
+                  validationErrors.email ? "border-destructive" : ""
+                }`}
+              />
+              {validationErrors.email && (
+                <p className="text-destructive text-xs mt-1">{validationErrors.email}</p>
+              )}
+            </div>
+
+            {/* Password Input */}
+            <div>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={(e) => validateField("password", e.target.value)}
+                  disabled={isLoading}
+                  required
+                  className={`h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 pr-10 ${
+                    validationErrors.password ? "border-destructive" : ""
+                  }`}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </div>
+              {validationErrors.password && (
+                <p className="text-destructive text-xs mt-1">{validationErrors.password}</p>
+              )}
             </div>
 
             {/* Confirm Password Input */}
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={isLoading}
-                required
-                className="h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 pr-10"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                disabled={isLoading}
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-400" />
-                ) : (
-                  <Eye className="h-4 w-4 text-gray-400" />
-                )}
-              </Button>
+            <div>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={(e) => validateField("confirmPassword", e.target.value)}
+                  disabled={isLoading}
+                  required
+                  className={`h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 pr-10 ${
+                    validationErrors.confirmPassword ? "border-destructive" : ""
+                  }`}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  disabled={isLoading}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </div>
+              {validationErrors.confirmPassword && (
+                <p className="text-destructive text-xs mt-1">{validationErrors.confirmPassword}</p>
+              )}
             </div>
 
-            {error && <div className="text-destructive text-sm">{error}</div>}
+            {/* Backend Error Message */}
+            {error && (
+              <div className="bg-destructive/10 border border-destructive/50 rounded-md p-3">
+                <p className="text-destructive text-sm">{error}</p>
+              </div>
+            )}
 
             {/* Continue Button */}
             <Button
