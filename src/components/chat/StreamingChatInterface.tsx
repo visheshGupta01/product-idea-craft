@@ -206,7 +206,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
             <div className="bg-[#1E1E1E] pb-6 border-t border-gray-800">
               <div className="max-w-5xl mx-auto mt-3 px-6">
                 <ChatInput
-                  onSendMessage={sendMessage}
+                  onSendMessage={(message, model) => sendMessage(message, model)}
                   isLoading={isStreaming}
                   onStopGeneration={stopGeneration}
                 />

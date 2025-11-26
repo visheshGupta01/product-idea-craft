@@ -18,7 +18,7 @@ export interface StreamingChatState {
 }
 
 export interface StreamingChatActions {
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, model?: string) => Promise<void>;
   addMessage: (message: Omit<Message, "id">) => Message;
   updateMessage: (messageId: string, content: string) => void;
   clearMessages: () => void;
@@ -120,7 +120,7 @@ export const useStreamingChat = (
   }, []);
 
   const sendMessage = useCallback(
-    async (content: string): Promise<void> => {
+    async (content: string, model: string = "claude"): Promise<void> => {
       if (!content.trim() || !wsClientRef.current) return;
 
       // Set streaming state
@@ -227,7 +227,7 @@ export const useStreamingChat = (
           },
         };
 
-        await wsClientRef.current.sendStreamingMessage(content, callbacks);
+        await wsClientRef.current.sendStreamingMessage(content, model, callbacks);
       } catch (error) {
         // Add error message
         addMessage({
