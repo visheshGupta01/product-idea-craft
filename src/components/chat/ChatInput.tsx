@@ -8,9 +8,16 @@ import { VoiceRecorder } from "@/components/ui/voice-recorder";
 import { FileUploader, UploadedFile } from "@/components/ui/file-uploader";
 import { cn } from "@/lib/utils";
 import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, model: string) => void;
   isLoading: boolean;
   onStopGeneration?: () => void;
 }
@@ -59,7 +66,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onStopGeneration,
 }) => {
   const [message, setMessage] = useState("");
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]); // State for uploaded files
+  const [selectedModel, setSelectedModel] = useState("claude");
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [showToolList, setShowToolList] = useState(false);
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [toolInput, setToolInput] = useState("");
@@ -133,9 +141,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           .join("\n");
         combinedMessage += fileContents;
       }
-      onSendMessage(combinedMessage);
+      onSendMessage(combinedMessage, selectedModel);
       setMessage("");
-      setUploadedFiles([]); // Clear uploaded files after sending
+      setUploadedFiles([]);
       setShowToolList(false);
       setToolInput("");
     }
@@ -156,6 +164,24 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     <div className="relative w-full">
       {/* Chat Input Container */}
       <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl p-3 shadow-lg">
+        {/* Model Selector */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-xs text-gray-400 font-medium">Model:</span>
+          <Select value={selectedModel} onValueChange={setSelectedModel}>
+            <SelectTrigger className="w-[140px] h-8 bg-[#1E1E1E] border-[#3A3A3A] text-white text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#2A2A2A] border-[#3A3A3A]">
+              <SelectItem value="claude" className="text-white hover:bg-[#3A3A3A]">
+                Claude
+              </SelectItem>
+              <SelectItem value="kimik2" className="text-white hover:bg-[#3A3A3A]">
+                Kimi K2
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Uploaded Files Display */}
         {uploadedFiles.length > 0 && (
           <div className="mb-3 space-y-2">
