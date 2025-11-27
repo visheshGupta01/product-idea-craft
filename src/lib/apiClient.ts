@@ -1,6 +1,7 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { API_BASE_URL } from "@/config/api";
 import { toast } from "sonner";
+import { storeJWTData } from "@/lib/jwtUtils";
 
 // Create axios instance
 const apiClient = axios.create({
@@ -72,11 +73,8 @@ apiClient.interceptors.response.use(
         //console.log(data);
 
         if (data.success && data.token) {
-          // Update tokens in localStorage
-          //console.log("Token refreshed successfully");
-          localStorage.setItem("auth_token", data.token);
-          localStorage.setItem("refresh_token", data.refreshToken);
-          localStorage.setItem("user_role", data.role);
+          // Parse JWT and store data from token
+          storeJWTData(data.token, data.refreshToken);
 
           // Update the authorization header for the original request
           originalRequest.headers.Authorization = `Bearer ${data.token}`;

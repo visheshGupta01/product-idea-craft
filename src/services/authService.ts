@@ -1,6 +1,7 @@
 import { User } from "@/types";
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from '@/config/api';
+import { parseJWT, extractUserDataFromJWT, extractRoleFromJWT, storeJWTData } from '@/lib/jwtUtils';
 
 export interface AuthResponse {
   success: boolean;
@@ -92,28 +93,26 @@ export class AuthService {
     try {
       const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, { email, password });
       const data: LoginResponse = response.data;
-   
 
       if (data.success && data.token) {
-        this.token = data.token;
-        this.refreshToken = data.refreshToken;
-        this.userrole = data.role as "admin" | "user";
-        this.user = data.user;
+        // Parse JWT and extract data from token
+        const jwtResult = storeJWTData(data.token, data.refreshToken);
+        
+        if (jwtResult) {
+          this.token = data.token;
+          this.refreshToken = data.refreshToken;
+          this.userrole = jwtResult.role as "admin" | "user";
+          this.user = jwtResult.user;
 
-        // Save to localStorage
-        localStorage.setItem("auth_token", data.token);
-        localStorage.setItem("refresh_token", data.refreshToken);
-        localStorage.setItem("user_role", data.role);
-        localStorage.setItem("user_data", JSON.stringify(data.user));
-
-        return {
-          success: true,
-          token: data.token,
-          refreshToken: data.refreshToken,
-          role: data.role as "admin" | "user",
-          message: data.message,
-          user: data.user,
-        };
+          return {
+            success: true,
+            token: data.token,
+            refreshToken: data.refreshToken,
+            role: jwtResult.role as "admin" | "user",
+            message: data.message,
+            user: jwtResult.user,
+          };
+        }
       }
 
       return {
@@ -121,7 +120,6 @@ export class AuthService {
         message: data.message || "Login failed",
       };
     } catch (error: any) {
-      
       // Check if error response contains error object with message
       if (error.response?.data?.error?.message) {
         return {
@@ -252,21 +250,22 @@ export class AuthService {
       const data: RefreshResponse = response.data;
 
       if (data.success && data.token) {
-        this.token = data.token;
-        this.refreshToken = data.refreshToken;
-        this.userrole = data.role as "admin" | "user";
+        // Parse JWT and extract data from token
+        const jwtResult = storeJWTData(data.token, data.refreshToken);
+        
+        if (jwtResult) {
+          this.token = data.token;
+          this.refreshToken = data.refreshToken;
+          this.userrole = jwtResult.role as "admin" | "user";
 
-        localStorage.setItem("auth_token", data.token);
-        localStorage.setItem("refresh_token", data.refreshToken);
-        localStorage.setItem("user_role", data.role);
-
-        return {
-          success: true,
-          token: data.token,
-          refreshToken: data.refreshToken,
-          role: data.role as "admin" | "user",
-          message: data.message,
-        };
+          return {
+            success: true,
+            token: data.token,
+            refreshToken: data.refreshToken,
+            role: jwtResult.role as "admin" | "user",
+            message: data.message,
+          };
+        }
       }
 
       return {
