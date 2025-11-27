@@ -66,7 +66,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onStopGeneration,
 }) => {
   const [message, setMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState("claude");
+  const [selectedModel, setSelectedModel] = useState("kimik2");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [showToolList, setShowToolList] = useState(false);
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);

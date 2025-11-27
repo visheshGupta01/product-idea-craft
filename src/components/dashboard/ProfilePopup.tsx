@@ -68,9 +68,8 @@ const ProfilePopup = ({
   onOpenChange,
   initialSection = "basic",
 }: ProfilePopupProps) => {
-  const { user, profile, updateProfile, fetchProfile } = useUser();
+  const { profile, fetchProfile } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
-  const [showPassword, setShowPassword] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const navigate = useNavigate();
 
@@ -106,12 +105,6 @@ const ProfilePopup = ({
   React.useEffect(() => {
     setActiveSection(initialSection);
   }, [initialSection]);
-
-  const handleSave = async () => {
-    // Save profile data
-    //console.log('Saving profile data:', formData);
-    onOpenChange(false);
-  };
 
   const handleCancel = () => {
     // Reset form data
@@ -333,15 +326,23 @@ const ProfilePopup = ({
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="font-medium">
-                          {userData?.plan_name || "Free Plan"}
+                          {userData?.plan_id === 1
+                            ? "Free Plan"
+                            : userData?.plan_id === 2
+                            ? "Pro Plan"
+                            : userData?.plan_id === 3
+                            ? "Enterprise Plan"
+                            : "Free Plan"}
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          {userData?.plan_expires_at
-                            ? `Expires: ${new Date(
-                                userData.plan_expires_at
-                              ).toLocaleDateString()}`
-                            : "No expiration"}
-                        </div>
+                        {userData?.plan_expires_at && (
+                          <div className="text-sm text-muted-foreground">
+                            {userData?.plan_started_at
+                              ? `Expired: ${new Date(
+                                  userData.plan_expires_at
+                                ).toLocaleDateString()}`
+                              : "Not expiration"}
+                          </div>
+                        )}
                       </div>
                       <Badge
                         variant="default"
@@ -354,13 +355,15 @@ const ProfilePopup = ({
                       {/* <div className="text-2xl font-bold">
                         ${userData?.price?.price || 0}
                       </div> */}
-                      <div className="text-sm text-muted-foreground">
-                        {userData?.plan_started_at
-                          ? `Started: ${new Date(
-                              userData.plan_started_at
-                            ).toLocaleDateString()}`
-                          : "Not started"}
-                      </div>
+                      {userData?.plan_started_at && (
+                        <div className="text-sm text-muted-foreground">
+                          {userData?.plan_started_at
+                            ? `Started: ${new Date(
+                                userData.plan_started_at
+                              ).toLocaleDateString()}`
+                            : "Not started"}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <Button

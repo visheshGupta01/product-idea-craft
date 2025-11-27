@@ -18,7 +18,6 @@ interface MainDashboardProps {
   sessionId?: string;
   deployUrl?: string;
   shouldOpenPreview?: boolean;
- 
 }
 
 type ActiveView = "main" | "team" | "my-projects";
@@ -59,7 +58,7 @@ const MainDashboard = ({
       // Clear preview immediately when switching sessions
       setPreviewUrl("");
       setIsFrontendCreated(false);
-      
+
       if (sessionId) {
         try {
           //console.log('📝 Fetching project details for sessionId:', sessionId);
@@ -112,7 +111,7 @@ const MainDashboard = ({
     setPreviewUrl(url);
     setIsFrontendCreated(true);
     //console.log("🎯 Preview URL set:", url);
-    
+
     // Refresh project details to update sitemap
     if (sessionId) {
       try {
@@ -127,7 +126,7 @@ const MainDashboard = ({
 
   const handleSitemapGenerated = (sitemap: any) => {
     //console.log("🗺️ Sitemap generated, updating sidebar:", sitemap);
-    
+
     // Update project details with the new sitemap
     if (projectDetails) {
       setProjectDetails({
@@ -222,7 +221,6 @@ const MainDashboard = ({
                 setSidebarCollapsed(!sidebarCollapsed);
               }
             }}
-           
             currentProject={currentProject}
             activeView={activeView}
             onViewChange={setActiveView}

@@ -11,20 +11,20 @@ interface ChatPanelPropsExtended extends ChatPanelProps {
   projectDetails?: ProjectDetails;
 }
 
-const ChatPanel = ({ 
-  userIdea, 
-  onFrontendGenerated, 
-  onSitemapGenerated, 
+const ChatPanel = ({
+  userIdea,
+  onFrontendGenerated,
+  onSitemapGenerated,
   sessionId,
   onStreamingStateChange,
   onToolProcessingChange,
-  projectDetails
+  projectDetails,
 }: ChatPanelPropsExtended) => {
   return (
     <div className="h-full w-full">
-      <StreamingChatInterface 
-        userIdea={userIdea} 
-        onFrontendGenerated={onFrontendGenerated} 
+      <StreamingChatInterface
+        userIdea={userIdea}
+        onFrontendGenerated={onFrontendGenerated}
         onSitemapGenerated={onSitemapGenerated}
         urlSessionId={sessionId}
         onStreamingStateChange={onStreamingStateChange}

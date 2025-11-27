@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Code,
+  CodeXml,
   Expand,
   Monitor,
   Tablet,
@@ -13,7 +13,12 @@ import {
   Rocket,
   User,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -72,7 +77,7 @@ const PreviewCodePanel = ({
       setIframeSrc(previewUrl);
     }
   }, [previewUrl]);
-
+  //<CodeXml />
   const hasValidPreview = iframeSrc && iframeSrc !== "";
 
   const handleFileSelect = (file: FileNode) => {
@@ -125,7 +130,6 @@ const PreviewCodePanel = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPage]); // we intentionally keep dependency to selectedPage only
-
 
   const handleCodeToggle = (checked: boolean) => {
     setShowCode(checked);
@@ -204,36 +208,37 @@ const PreviewCodePanel = ({
         {/* Preview Navbar */}
         <div className="h-14 min-h-[3.5rem] px-2 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525] flex-shrink-0">
           <TooltipProvider>
-            <div className="flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleCodeToggle(!showCode)}
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
-                  >
-                    <Code className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Toggle Code View</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleOpenInNewTab}
-                    disabled={!hasValidPreview}
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Open Preview in New Tab</TooltipContent>
-              </Tooltip>
+            {/* <div className="flex items-center gap-1"> */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleCodeToggle(!showCode)}
+                  className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
+                >
+                  <CodeXml className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Toggle Code View</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleOpenInNewTab}
+                  disabled={!hasValidPreview}
+                  className="h-8 px-2 text-white hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Preview
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Open Preview in New Tab</TooltipContent>
+            </Tooltip>
 
-              <Tooltip>
+            {/* <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
@@ -246,10 +251,10 @@ const PreviewCodePanel = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Refresh Preview</TooltipContent>
-              </Tooltip>
-            </div>
+              </Tooltip> */}
+            {/* </div> */}
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               {sessionId && (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -257,7 +262,7 @@ const PreviewCodePanel = ({
                       variant="outline"
                       size="sm"
                       onClick={() => setShowAssignModal(true)}
-                      className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                      className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-800 hover:text-white"
                     >
                       <User className="h-3.5 w-3.5" />
                       Assign to Dev
@@ -273,7 +278,7 @@ const PreviewCodePanel = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowGithubModal(true)}
-                    className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                    className="h-8 px-2 bg-transparent border-none  text-gray-300 hover:bg-gray-800 hover:text-white"
                   >
                     <Github className="h-3.5 w-3.5" />
                     Github
@@ -287,7 +292,7 @@ const PreviewCodePanel = ({
                   <Button
                     size="sm"
                     onClick={() => setShowPublishModal(true)}
-                    className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-md"
+                    className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-2xl"
                   >
                     <Rocket className="h-3.5 w-3.5" />
                     Publish
@@ -340,7 +345,7 @@ const PreviewCodePanel = ({
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                     activeDevice === "desktop"
-                      ? "bg-white/20 text-white"
+                      ? "bg-[#FF00A9] text-white"
                       : "text-white/70 hover:text-white"
                   )}
                 >
@@ -352,7 +357,7 @@ const PreviewCodePanel = ({
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                     activeDevice === "phone"
-                      ? "bg-white/20 text-white"
+                      ? "bg-[#FF00A9] text-white"
                       : "text-white/70 hover:text-white"
                   )}
                 >
@@ -364,7 +369,7 @@ const PreviewCodePanel = ({
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                     activeDevice === "tablet"
-                      ? "bg-white/20 text-white"
+                      ? "bg-[#FF00A9] text-white"
                       : "text-white/70 hover:text-white"
                   )}
                 >

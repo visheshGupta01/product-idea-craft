@@ -142,6 +142,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
       isInitialized
     ) {
       // Send the message (which will also add it to messages)
+      // console.log("Sending initial response message:", initialResponse.userMessage);
       sendMessage(initialResponse.userMessage);
 
       // Clear from context
