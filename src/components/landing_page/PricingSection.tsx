@@ -26,7 +26,13 @@ const PricingSection: React.FC = () => {
       try {
         setIsLoadingPlans(true);
         const fetchedPlans = await getPaymentPlans();
-        setPlans(fetchedPlans);
+        const sortedPlans = fetchedPlans.sort((a: any, b: any) => {
+          const sortA = a.sort_index ?? a.sortIndex ?? a.id ?? a.planid ?? 0;
+          const sortB = b.sort_index ?? b.sortIndex ?? b.id ?? b.planid ?? 0;
+          return sortA - sortB;
+        });
+
+        setPlans(sortedPlans);
       } catch (error) {
         //console.error('Error fetching plans:', error);
         toast({

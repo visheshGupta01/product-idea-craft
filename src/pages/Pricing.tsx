@@ -34,10 +34,11 @@ const Pricing = () => {
         console.log("Fetched plans:", fetchedPlans);
         // Sort plans by id
         const sortedPlans = fetchedPlans.sort((a: any, b: any) => {
-          const idA = a.id || a.planid || 0;
-          const idB = b.id || b.planid || 0;
-          return idA - idB;
+          const sortA = a.sort_index ?? a.sortIndex ?? a.id ?? a.planid ?? 0;
+          const sortB = b.sort_index ?? b.sortIndex ?? b.id ?? b.planid ?? 0;
+          return sortA - sortB;
         });
+
         setPlans(sortedPlans);
       } catch (error) {
         toast.error("Failed to fetch pricing plans.");
@@ -49,19 +50,19 @@ const Pricing = () => {
 
   const isCurrentPlan = (planName: string) => {
     if (!isAuthenticated) return false;
-    
+
     try {
       const userData = localStorage.getItem("user_data");
       if (!userData) return false;
-      
+
       const parsedUserData = JSON.parse(userData);
       const userPlanId = parsedUserData?.plan_id;
-      
+
       if (!userPlanId) return false;
-      
+
       const currentPlan = plans.find((p) => p.name === planName);
       const currentPlanId = currentPlan?.id || currentPlan?.planid;
-      
+
       return userPlanId === currentPlanId;
     } catch (error) {
       return false;
@@ -116,7 +117,7 @@ const Pricing = () => {
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
-  } 
+  }
 
   return (
     <div className="min-h-screen bg-[#0f1116]">
@@ -222,7 +223,9 @@ const Pricing = () => {
                       )
                     )
                   }
-                  disabled={loadingPlan === plan.name || isCurrentPlan(plan.name)}
+                  disabled={
+                    loadingPlan === plan.name || isCurrentPlan(plan.name)
+                  }
                 >
                   {loadingPlan === plan.name ? (
                     <>
