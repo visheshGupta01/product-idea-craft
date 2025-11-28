@@ -22,9 +22,9 @@ export type WebSocketEventType =
 
 // WebSocket message structure from backend
 export interface WebSocketMessage {
-  Event: WebSocketEventType;
-  Message: string;
-  CreatedAt: string;
+  event: WebSocketEventType;
+  message: string;
+  createdAt: string;
 }
 
 // UI Status types for different states

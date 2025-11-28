@@ -52,6 +52,7 @@ export class StreamingWebSocketClient {
       }, this.reconnectDelay);
     }
   }
+  private currentMessageHandler: ((event: MessageEvent) => void) | null = null;
 
   async sendStreamingMessage(
     message: string,
@@ -70,8 +71,13 @@ export class StreamingWebSocketClient {
 
       try {
         const data: WebSocketMessage = JSON.parse(event.data);
-        const eventType = data.Event;
-        const message = data.Message || "";
+        if (!data.event) {
+          console.warn("Received message without event:", data);
+          return;
+        }
+        const eventType = data.event;
+        const message = data.message || "";
+        console.log(data);
 
         switch (eventType) {
           case "pricing_low":
@@ -197,10 +203,8 @@ export class StreamingWebSocketClient {
               callbacks.onContent(message);
             }
         }
-      } catch (parseError) {
-        // Not valid JSON - could be raw text (fallback)
-        console.warn("Failed to parse WebSocket message:", event.data);
-        if (typeof event.data === "string" && !isComplete) {
+      } catch {
+        if (typeof event.data === "string" && event.data.trim() !== "") {
           fullContent += event.data;
           callbacks.onContent(event.data);
         }
@@ -208,7 +212,12 @@ export class StreamingWebSocketClient {
     };
 
     // Clean setup
-    this.cleanup(messageHandler);
+    // Clean previous handler only if exists
+    if (this.currentMessageHandler) {
+      this.ws?.removeEventListener("message", this.currentMessageHandler);
+    }
+
+    this.currentMessageHandler = messageHandler;
     this.ws.addEventListener("message", messageHandler);
 
     // Send message
