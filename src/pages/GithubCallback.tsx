@@ -72,7 +72,8 @@ const GithubCallback: React.FC = () => {
             developer: "/developer",
             user: "/",
           };
-          window.location.href = roleRedirects[jwtResult.role] || "/";
+        window.location.href =
+          roleRedirects[jwtResult.payload.user.user_type] || "/";
         }
 
         // CASE 2: Repository Authorization flow (sessionId or org)

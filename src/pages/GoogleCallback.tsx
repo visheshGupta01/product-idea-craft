@@ -68,7 +68,7 @@ const GoogleCallback: React.FC = () => {
           developer: "/developer",
           user: "/",
         };
-        window.location.href = roleRedirects[jwtResult.role] || "/";
+        window.location.href = roleRedirects[jwtResult.payload.user.user_type] || "/";
       } catch (error) {
         console.error("Google OAuth callback error:", error);
         toast({
