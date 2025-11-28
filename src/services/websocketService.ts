@@ -93,95 +93,106 @@ export class WebSocketService {
         // Prevent processing after completion
         if (isComplete) return;
 
-        //console.log("🔄 RAW WebSocket event.data:", event.data);
-        //console.log("🔄 WebSocket event.data type:", typeof event.data);
-
         try {
           const data = JSON.parse(event.data);
-          //console.log("✅ PARSED WebSocket message:", data);
-          //console.log("📊 Message type:", data.type);
-          //console.log("📊 Message content:", data.content);
-          //console.log("📊 Message text:", data.text);
+          const eventType = data.Event;
+          const message = data.Message;
 
-          // Handle different types of messages
-          if (data.type === "content" && data.text) {
-            // Regular text content - stream it immediately
-            onChunk(data.text);
-            fullResponseContent += data.text;
-          } else if (data.type === "tool_use") {
-            // Tool processing started - notify UI
-            onToolStart?.();
-          } else if (data.type === "tool_result") {
-            // Tool result - process and add to full response
-            onToolEnd?.(); // Tool finished processing
-            let toolOutput = "";
+          // Handle different event types
+          switch (eventType) {
+            case "text_body":
+              // Regular text content - stream it immediately
+              if (message) {
+                onChunk(message);
+                fullResponseContent += message;
+              }
+              break;
 
-            if (data.content && Array.isArray(data.content)) {
-              // Handle array of content blocks
-              data.content.forEach((block: any) => {
-                if (block.type === "text" && block.text) {
-                  toolOutput += block.text;
-                }
-                //console.log("🔧 Tool output block:", block);
-              });
-            } else if (data.content && typeof data.content === "string") {
-              toolOutput = data.content;
-              //console.log("🔧 Tool output content:", toolOutput);
-            }
+            case "tool_start":
+            case "process_progress":
+              // Tool/process started - notify UI
+              onToolStart?.();
+              break;
 
-            if (toolOutput) {
-              onChunk(toolOutput);
-              fullResponseContent += toolOutput;
-            }
-          } else if (data.type === "message_stop" || data.type === "complete") {
-            // Stream is complete - prevent duplicate processing
-            if (!isComplete) {
-              isComplete = true;
-              onToolEnd?.(); // Ensure tool state is cleared
-              onComplete(fullResponseContent);
-              this.ws?.removeEventListener("message", messageHandler);
-              resolve();
-            }
-          } else if (data.type === "error") {
-            // Handle error response
-            if (!isComplete) {
-              isComplete = true;
-              this.ws?.removeEventListener("message", messageHandler);
-              reject(new Error(data.message || "WebSocket error"));
-            }
-          } else if (data.text && !data.type) {
-            // Fallback for simple text messages without type
-            onChunk(data.text);
-            fullResponseContent += data.text;
+            case "tool_output":
+              // Tool output - add to response
+              if (message) {
+                onChunk(message);
+                fullResponseContent += message;
+              }
+              break;
+
+            case "tool_complete":
+            case "tool_error":
+            case "process_done":
+              // Tool/process finished - notify UI
+              onToolEnd?.();
+              break;
+
+            case "stream_end":
+            case "success":
+              // Stream is complete
+              if (!isComplete) {
+                isComplete = true;
+                onToolEnd?.();
+                onComplete(fullResponseContent);
+                this.ws?.removeEventListener("message", messageHandler);
+                resolve();
+              }
+              break;
+
+            case "stream_error":
+            case "error":
+              // Handle error response
+              if (!isComplete) {
+                isComplete = true;
+                this.ws?.removeEventListener("message", messageHandler);
+                reject(new Error(message || "WebSocket error"));
+              }
+              break;
+
+            case "pricing_low":
+              // Balance/pricing issue - treat as error
+              if (!isComplete) {
+                isComplete = true;
+                this.ws?.removeEventListener("message", messageHandler);
+                reject(new Error(message || "Insufficient balance"));
+              }
+              break;
+
+            case "thinking":
+            case "generating":
+            case "stream_start":
+              // Status updates - could be used for UI indicators
+              onToolStart?.();
+              break;
+
+            case "preview":
+            case "preview_done":
+              // Preview events - pass through as content if message exists
+              if (message) {
+                onChunk(message);
+                fullResponseContent += message;
+              }
+              break;
+
+            case "info":
+              // Info messages - pass through
+              if (message) {
+                onChunk(message);
+                fullResponseContent += message;
+              }
+              break;
+
+            default:
+              // Fallback for unknown events with message
+              if (message) {
+                onChunk(message);
+                fullResponseContent += message;
+              }
           }
         } catch (parseError) {
-          console.warn(
-            "Failed to parse WebSocket message:",
-            event.data,
-            parseError
-          );
-          // Try to handle as plain text only if it's actually text and not complete
-          if (typeof event.data === "string" && !isComplete) {
-            try {
-              // Check if it's a completion message in plain text
-              if (
-                event.data.includes("complete") ||
-                event.data.includes("message_stop")
-              ) {
-                if (!isComplete) {
-                  isComplete = true;
-                  onComplete(fullResponseContent);
-                  this.ws?.removeEventListener("message", messageHandler);
-                  resolve();
-                }
-              } else {
-                onChunk(event.data);
-                fullResponseContent += event.data;
-              }
-            } catch {
-              // Ignore parsing errors for non-JSON messages
-            }
-          }
+          console.warn("Failed to parse WebSocket message:", event.data, parseError);
         }
       };
 
