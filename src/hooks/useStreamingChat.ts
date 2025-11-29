@@ -18,7 +18,7 @@ export interface StreamingChatState {
 }
 
 export interface StreamingChatActions {
-  sendMessage: (content: string, model?: string) => Promise<void>;
+  sendMessage: (content: string) => Promise<void>;
   addMessage: (message: Omit<Message, "id">) => Message;
   updateMessage: (messageId: string, content: string) => void;
   clearMessages: () => void;
@@ -120,7 +120,8 @@ export const useStreamingChat = (
   }, []);
 
   const sendMessage = useCallback(
-    async (content: string, model: string = "kimik2"): Promise<void> => {
+    // async (content: string, model: string = "kimik2"): Promise<void> => {
+    async (content: string): Promise<void> => {
       if (!content.trim() || !wsClientRef.current) return;
 
       // Set streaming state
@@ -178,14 +179,18 @@ export const useStreamingChat = (
               if (urlMatch && onFrontendGenerated) {
                 const localUrl = urlMatch[0];
                 // Add timestamp to force reload
-                const urlWithTimestamp = `${localUrl}${localUrl.includes('?') ? '&' : '?'}_t=${Date.now()}`;
+                const urlWithTimestamp = `${localUrl}${
+                  localUrl.includes("?") ? "&" : "?"
+                }_t=${Date.now()}`;
                 setProjectUrl(urlWithTimestamp); // Store in session storage
                 onFrontendGenerated(urlWithTimestamp);
               }
             }
 
             // Check for sitemap_user_idea tool output
-            if (streamingContent.includes("[Tool Output for sitemap_user_idea]:")) {
+            if (
+              streamingContent.includes("[Tool Output for sitemap_user_idea]:")
+            ) {
               const sitemapMatch = streamingContent.match(
                 /\[Tool Output for sitemap_user_idea\]:\s*(\{[\s\S]*?\})\s*(?=\[Tool Output|\n\n|$)/
               );
@@ -226,8 +231,13 @@ export const useStreamingChat = (
             setIsProcessingTools(false);
           },
         };
+        await wsClientRef.current.sendStreamingMessage(content, callbacks);
 
-        await wsClientRef.current.sendStreamingMessage(content, model, callbacks);
+        // await wsClientRef.current.sendStreamingMessage(
+        //   content,
+        //   model,
+        //   callbacks
+        // );
       } catch (error) {
         // Add error message
         addMessage({
@@ -243,7 +253,15 @@ export const useStreamingChat = (
         setIsProcessingTools(false);
       }
     },
-    [addMessage, updateMessage, connect, onFrontendGenerated, onSitemapGenerated, onInsufficientBalance, setProjectUrl]
+    [
+      addMessage,
+      updateMessage,
+      connect,
+      onFrontendGenerated,
+      onSitemapGenerated,
+      onInsufficientBalance,
+      setProjectUrl,
+    ]
   );
 
   // Filter out empty messages before returning, but keep them during streaming

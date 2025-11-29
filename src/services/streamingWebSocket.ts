@@ -68,7 +68,7 @@ export class StreamingWebSocketClient {
 
   async sendStreamingMessage(
     message: string,
-    model: string,
+    // model: string,
     callbacks: StreamingCallbacks
   ): Promise<void> {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
@@ -150,7 +150,7 @@ export class StreamingWebSocketClient {
     try {
       this.ws.send(
         JSON.stringify({
-          model,
+          // model,
           message,
           session_id: this.sessionId,
           stream: true,
