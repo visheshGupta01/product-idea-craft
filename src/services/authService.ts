@@ -1,15 +1,14 @@
 import { User } from "@/types";
 import apiClient from "@/lib/apiClient";
-import { API_ENDPOINTS } from "@/config/api";
-import { parseJWT, storeJWTData } from "@/lib/jwtUtils";
-import { Console } from "console";
+import { API_ENDPOINTS } from '@/config/api';
+import { parseJWT, extractUserDataFromJWT, extractRoleFromJWT, storeJWTData } from '@/lib/jwtUtils';
 
 export interface AuthResponse {
   success: boolean;
   message?: string;
   token?: string;
   refreshToken?: string;
-  role?: "admin" | "user" | "developer";
+  role?: 'admin' | 'user';
   user?: {
     id: string;
     first_name: string;
@@ -69,19 +68,15 @@ export interface ResetPasswordResponse {
 export class AuthService {
   private token: string | null = null;
   private refreshToken: string | null = null;
-  private userrole: "admin" | "user" | "developer" | null = null;
+  private userrole: "admin" | "user" | null = null;
   private user: any = null;
 
   constructor() {
     // Load tokens and user data from localStorage on initialization
     this.token = localStorage.getItem("auth_token");
     this.refreshToken = localStorage.getItem("refresh_token");
-    this.userrole = localStorage.getItem("user_role") as
-      | "admin"
-      | "user"
-      | "developer"
-      | null;
-
+    this.userrole = localStorage.getItem("user_role") as "admin" | "user" | null;
+    
     // Load user data
     const storedUser = localStorage.getItem("user_data");
     if (storedUser) {
@@ -91,39 +86,31 @@ export class AuthService {
         localStorage.removeItem("user_data");
       }
     }
+    
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
-        email,
-        password,
-      });
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, { email, password });
       const data: LoginResponse = response.data;
 
       if (data.success && data.token) {
         // Parse JWT and extract data from token
         const jwtResult = storeJWTData(data.token, data.refreshToken);
-        console.log("Login JWT Result:", jwtResult);
+        
         if (jwtResult) {
           this.token = data.token;
           this.refreshToken = data.refreshToken;
-          this.userrole = jwtResult.payload.user.user_type as
-            | "admin"
-            | "user"
-            | "developer";
-          this.user = jwtResult.payload.user;
+          this.userrole = jwtResult.role as "admin" | "user";
+          this.user = jwtResult.user;
 
           return {
             success: true,
             token: data.token,
             refreshToken: data.refreshToken,
-            role: jwtResult.payload.user.user_type as
-              | "admin"
-              | "user"
-              | "developer",
+            role: jwtResult.role as "admin" | "user",
             message: data.message,
-            user: jwtResult.payload.user,
+            user: jwtResult.user,
           };
         }
       }
@@ -140,7 +127,7 @@ export class AuthService {
           message: error.response.data.error.message,
         };
       }
-
+      
       // Check if error response has direct message
       if (error.response?.data?.message) {
         return {
@@ -148,7 +135,7 @@ export class AuthService {
           message: error.response.data.message,
         };
       }
-
+      
       return {
         success: false,
         message: "Network error. Please try again.",
@@ -170,7 +157,7 @@ export class AuthService {
         first_name,
         last_name,
         email,
-        password,
+        password
       });
 
       const data: SignupResponse = response.data;
@@ -189,9 +176,7 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.get(
-        `${API_ENDPOINTS.AUTH.VERIFY}?token=${token}`
-      );
+      const response = await apiClient.get(`${API_ENDPOINTS.AUTH.VERIFY}?token=${token}`);
       const data: VerificationResponse = response.data;
       return {
         success: data.success,
@@ -207,12 +192,9 @@ export class AuthService {
 
   async forgotPassword(email: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post(
-        API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
-        {
-          email,
-        }
-      );
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
+        email,
+      });
       const data: ForgotPasswordResponse = response.data;
 
       return {
@@ -270,23 +252,17 @@ export class AuthService {
       if (data.success && data.token) {
         // Parse JWT and extract data from token
         const jwtResult = storeJWTData(data.token, data.refreshToken);
-        console.log("Refresh JWT Result:", jwtResult);
+        
         if (jwtResult) {
           this.token = data.token;
           this.refreshToken = data.refreshToken;
-          this.userrole = jwtResult.payload.user.user_type as
-            | "admin"
-            | "user"
-            | "developer";
+          this.userrole = jwtResult.role as "admin" | "user";
 
           return {
             success: true,
             token: data.token,
             refreshToken: data.refreshToken,
-            role: jwtResult.payload.user.user_type as
-              | "admin"
-              | "user"
-              | "developer",
+            role: jwtResult.role as "admin" | "user",
             message: data.message,
           };
         }
@@ -312,9 +288,7 @@ export class AuthService {
     }
 
     try {
-      const response = await apiClient.post(API_ENDPOINTS.CHAT.SESSION_CREATE, {
-        message: idea,
-      });
+      const response = await apiClient.post(API_ENDPOINTS.CHAT.SESSION_CREATE, { "message":idea });
       const data = response.data;
 
       if (data.success && data.session_id) {
@@ -336,21 +310,21 @@ export class AuthService {
     this.refreshToken = null;
     this.userrole = null;
     this.user = null;
-
+    
     // Clear all auth data from localStorage
     localStorage.removeItem("auth_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user_role");
     localStorage.removeItem("user_data");
-
+    
     // Clear session data
     sessionStorage.removeItem("session_id");
     sessionStorage.removeItem("user_idea");
-
+    
     // Clear all chat sessions
     const keys = Object.keys(sessionStorage);
-    keys.forEach((key) => {
-      if (key.startsWith("chat_session_")) {
+    keys.forEach(key => {
+      if (key.startsWith('chat_session_')) {
         sessionStorage.removeItem(key);
       }
     });
@@ -364,20 +338,13 @@ export class AuthService {
     return this.refreshToken || localStorage.getItem("refresh_token");
   }
 
-  getUserRole(): "admin" | "user" | null | "developer" {
-    return (
-      this.userrole ||
-      (localStorage.getItem("user_role") as
-        | "admin"
-        | "user"
-        | null
-        | "developer")
-    );
+  getUserRole(): "admin" | "user" | null {
+    return this.userrole || localStorage.getItem("user_role") as "admin" | "user" | null;
   }
 
   getUser(): any {
     if (this.user) return this.user;
-
+    
     const storedUser = localStorage.getItem("user_data");
     if (storedUser) {
       try {
