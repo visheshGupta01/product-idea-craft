@@ -51,10 +51,10 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
       case 'tablet':
         return {
           container:
-            "w-full h-full flex items-center justify-center bg-background p-6 overflow-hidden pt-14",
+            "w-full h-full flex items-center justify-center bg-background overflow-hidden p-2",
           frame:
-            "w-[768px] h-[600px] bg-white rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0",
-          iframe: "w-full h-full mt-6 border-0 bg-white",
+            "w-[768px] h-[540px] bg-white rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0",
+          iframe: "w-full h-full border-0 bg-white",
         };
       case 'phone':
         return {
