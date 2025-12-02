@@ -119,7 +119,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   const fetchDeveloperDetails = async (developerId: string) => {
     try {
       const details = await developerService.getDeveloperById(developerId);
-      //console.log('Fetched Developer Details:', details);
+      // console.log("Fetched Developer Details:", details);
       setDeveloperDetails(details);
     } catch (error) {
       //console.error("Error fetching developer details:", error);
@@ -404,7 +404,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
 
           <div className="bg-muted/30 p-4 rounded-lg">
             <h3 className="font-semibold mb-3">
-              Reviews ({developerDetails.rating_count || 0})
+              Reviews ({developerDetails.reviews.length || 0})
             </h3>
             <div className="space-y-3">
               {(developerDetails.reviews && developerDetails.reviews.length > 0
@@ -424,8 +424,19 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
                     </div>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Client: {review.client || review.reviewer || "Anonymous"} •{" "}
-                    {review.date || review.created_at || "Recent"}
+                    Client:{" "}
+                    {review.client || review.reviewer_name || "Anonymous"} •{" "}
+                    {review.date
+                      ? new Date(review.date).toLocaleString("en-IN", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
+                      : review.created_at
+                      ? new Date(review.created_at).toLocaleString("en-IN", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
+                      : "Recent"}{" "}
                   </div>
                 </div>
               ))}
@@ -629,3 +640,4 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
 };
 
 export default AssignToDeveloper;
+  
