@@ -34,9 +34,9 @@ const Pricing = () => {
         console.log("Fetched plans:", fetchedPlans);
         // Sort plans by id
         const sortedPlans = fetchedPlans.sort((a: any, b: any) => {
-          const idA = a.id || a.planid || 0;
-          const idB = b.id || b.planid || 0;
-          return idA - idB;
+          const sortA = a.sort_index ?? a.sortIndex ?? a.id ?? a.planid ?? 0;
+          const sortB = b.sort_index ?? b.sortIndex ?? b.id ?? b.planid ?? 0;
+          return sortA - sortB;
         });
         setPlans(sortedPlans);
       } catch (error) {

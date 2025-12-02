@@ -289,7 +289,7 @@ export class AuthService {
     }
 
     try {
-      const response = await apiClient.post(API_ENDPOINTS.CHAT.SESSION_CREATE, { "message":idea });
+      const response = await apiClient.post(API_ENDPOINTS.CHAT.SESSION_CREATE, {"message":idea });
       const data = response.data;
 
       if (data.success && data.session_id) {

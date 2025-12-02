@@ -76,7 +76,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate fields
     const isEmailValid = validateField("email", email);
     const isPasswordValid = validateField("password", password);
@@ -117,7 +117,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       }
     } catch (error: any) {
       // Display detailed error from backend if available
-      setError(error.response?.data?.message || error.message || "An unexpected error occurred");
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          "An unexpected error occurred"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -223,7 +227,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               }`}
             />
             {validationErrors.email && (
-              <p className="text-destructive text-xs mt-1">{validationErrors.email}</p>
+              <p className="text-destructive text-xs mt-1">
+                {validationErrors.email}
+              </p>
             )}
           </div>
 
@@ -259,7 +265,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </Button>
             </div>
             {validationErrors.password && (
-              <p className="text-destructive text-xs mt-1">{validationErrors.password}</p>
+              <p className="text-destructive text-xs mt-1">
+                {validationErrors.password}
+              </p>
             )}
           </div>
 

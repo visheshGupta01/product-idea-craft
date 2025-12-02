@@ -8,7 +8,10 @@ import { VerificationModal } from "./VerificationModal";
 import { Eye, EyeOff } from "lucide-react";
 import imagineboLogo from "@/assets/ImagineboIcon.svg";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-import { initiateGoogleAuth, initiateGithubAuth } from "@/services/oauthService";
+import {
+  initiateGoogleAuth,
+  initiateGithubAuth,
+} from "@/services/oauthService";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -51,7 +54,8 @@ export const SignupModal: React.FC<SignupModalProps> = ({
         if (!value.trim()) {
           errors.name = "Name is required";
         } else if (!nameRegex.test(value)) {
-          errors.name = "Name should only contain letters, spaces, hyphens, and apostrophes";
+          errors.name =
+            "Name should only contain letters, spaces, hyphens, and apostrophes";
         } else {
           delete errors.name;
         }
@@ -71,7 +75,8 @@ export const SignupModal: React.FC<SignupModalProps> = ({
         } else if (value.length < 6) {
           errors.password = "Password must be at least 6 characters long";
         } else if (!passwordRegex.test(value)) {
-          errors.password = "Password must contain uppercase, lowercase, and a number";
+          errors.password =
+            "Password must contain uppercase, lowercase, and a number";
         } else {
           delete errors.password;
         }
@@ -91,14 +96,22 @@ export const SignupModal: React.FC<SignupModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate all fields
     const isNameValid = validateField("name", name);
     const isEmailValid = validateField("email", email);
     const isPasswordValid = validateField("password", password);
-    const isConfirmPasswordValid = validateField("confirmPassword", confirmPassword);
+    const isConfirmPasswordValid = validateField(
+      "confirmPassword",
+      confirmPassword
+    );
 
-    if (!isNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
+    if (
+      !isNameValid ||
+      !isEmailValid ||
+      !isPasswordValid ||
+      !isConfirmPasswordValid
+    ) {
       return;
     }
 
@@ -115,7 +128,11 @@ export const SignupModal: React.FC<SignupModalProps> = ({
       }
     } catch (error: any) {
       // Display detailed error from backend if available
-      setError(error.response?.data?.message || error.message || "An unexpected error occurred");
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          "An unexpected error occurred"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +163,11 @@ export const SignupModal: React.FC<SignupModalProps> = ({
         <DialogContent className="sm:max-w-[400px] w-[95vw] max-h-[90vh] overflow-y-auto custom-scroll p-4 sm:p-6 text-center bg-[#0A0A0B] border-[#1E1E1E]">
           {/* Logo */}
           <div className="flex justify-center mb-3 sm:mb-4">
-            <img src={imagineboLogo} alt="Imagine.bo" className="h-8 w-8 sm:h-10 sm:w-10" />
+            <img
+              src={imagineboLogo}
+              alt="Imagine.bo"
+              className="h-8 w-8 sm:h-10 sm:w-10"
+            />
           </div>
 
           {/* Title */}
@@ -203,7 +224,9 @@ export const SignupModal: React.FC<SignupModalProps> = ({
                 }`}
               />
               {validationErrors.name && (
-                <p className="text-destructive text-xs mt-1">{validationErrors.name}</p>
+                <p className="text-destructive text-xs mt-1">
+                  {validationErrors.name}
+                </p>
               )}
             </div>
 
@@ -223,7 +246,9 @@ export const SignupModal: React.FC<SignupModalProps> = ({
                 }`}
               />
               {validationErrors.email && (
-                <p className="text-destructive text-xs mt-1">{validationErrors.email}</p>
+                <p className="text-destructive text-xs mt-1">
+                  {validationErrors.email}
+                </p>
               )}
             </div>
 
@@ -259,7 +284,9 @@ export const SignupModal: React.FC<SignupModalProps> = ({
                 </Button>
               </div>
               {validationErrors.password && (
-                <p className="text-destructive text-xs mt-1">{validationErrors.password}</p>
+                <p className="text-destructive text-xs mt-1">
+                  {validationErrors.password}
+                </p>
               )}
             </div>
 
@@ -272,7 +299,9 @@ export const SignupModal: React.FC<SignupModalProps> = ({
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  onBlur={(e) => validateField("confirmPassword", e.target.value)}
+                  onBlur={(e) =>
+                    validateField("confirmPassword", e.target.value)
+                  }
                   disabled={isLoading}
                   required
                   className={`h-10 bg-[#1A1A1A] border-[#2A2A2A] text-white placeholder:text-gray-400 pr-10 ${
@@ -295,7 +324,9 @@ export const SignupModal: React.FC<SignupModalProps> = ({
                 </Button>
               </div>
               {validationErrors.confirmPassword && (
-                <p className="text-destructive text-xs mt-1">{validationErrors.confirmPassword}</p>
+                <p className="text-destructive text-xs mt-1">
+                  {validationErrors.confirmPassword}
+                </p>
               )}
             </div>
 

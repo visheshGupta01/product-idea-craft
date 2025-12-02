@@ -6,6 +6,7 @@ import { useStreamingChat } from "@/hooks/useStreamingChat";
 import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
+import { ChatStatusIndicator } from "./ChatStatusIndicator";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -50,6 +51,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     isLoadingMessages,
     isStreaming,
     isProcessingTools,
+    chatStatus,
+    statusMessage,
     messagesEndRef,
     sendMessage,
     addMessage,
@@ -57,8 +60,8 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     connect,
     stopGeneration,
   } = useStreamingChat(
-    activeSessionId || "", 
-    onFrontendGenerated, 
+    activeSessionId || "",
+    onFrontendGenerated,
     onSitemapGenerated,
     () => setShowBalanceDialog(true)
   );
@@ -141,10 +144,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
       !isLoadingMessages &&
       isInitialized
     ) {
-      // Send the message (which will also add it to messages)
       sendMessage(initialResponse.userMessage);
-
-      // Clear from context
       clearInitialResponse();
     }
   }, [
@@ -155,6 +155,10 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     sendMessage,
     clearInitialResponse,
   ]);
+
+  // Check if we should show the status indicator
+  const showStatusIndicator =
+    chatStatus !== "idle" && chatStatus !== "streaming";
 
   return (
     <>
@@ -183,20 +187,15 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
                     />
                   </div>
                 ))}
-                
-                {/* Show AI responding indicator */}
-                {(isStreaming || isProcessingTools) && messages[messages.length - 1]?.type === "ai" && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm">🤖</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-4 py-2 border border-pink-500/20">
-                      <PinkLoadingDots />
-                      <span className="text-sm text-muted-foreground">
-                        {isProcessingTools ? "Running tools..." : "AI is thinking..."}
-                      </span>
-                    </div>
-                  </div>
+
+                {/* Show status indicator based on chatStatus */}
+                {(showStatusIndicator ||
+                  (isStreaming &&
+                    messages[messages.length - 1]?.type === "ai")) && (
+                  <ChatStatusIndicator
+                    status={chatStatus}
+                    message={statusMessage}
+                  />
                 )}
 
                 <div ref={messagesEndRef} />
@@ -206,7 +205,9 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
             <div className="bg-[#1E1E1E] pb-6 border-t border-gray-800">
               <div className="max-w-5xl mx-auto mt-3 px-6">
                 <ChatInput
-                  onSendMessage={sendMessage}
+                  onSendMessage={(message, model) =>
+                    sendMessage(message, model)
+                  }
                   isLoading={isStreaming}
                   onStopGeneration={stopGeneration}
                 />
