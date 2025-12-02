@@ -15,6 +15,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ChatInputProps {
   onSendMessage: (message: string, model: string) => void;
@@ -66,7 +73,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onStopGeneration,
 }) => {
   const [message, setMessage] = useState("");
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]); // State for uploaded files
+  const [selectedModel, setSelectedModel] = useState("kimik2");
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [showToolList, setShowToolList] = useState(false);
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
     const [selectedModel, setSelectedModel] = useState("Kimik2");
@@ -144,7 +152,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       }
       onSendMessage(combinedMessage, selectedModel);
       setMessage("");
-      setUploadedFiles([]); // Clear uploaded files after sending
+      setUploadedFiles([]);
       setShowToolList(false);
       setToolInput("");
     }

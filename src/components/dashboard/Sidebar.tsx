@@ -87,7 +87,7 @@ const Sidebar = ({
   projectDetails,
   sessionId,
   onProjectRenamed,
-  setSelectedPage
+  setSelectedPage,
 }: SidebarProps) => {
   //console.log("Sidebar: received projectDetails", projectDetails);
   const { user, isAuthenticated } = useUser();
@@ -125,7 +125,7 @@ const Sidebar = ({
   }, [isAuthenticated]);
 
   useEffect(() => {
-    const fetchInbox = async () => {  
+    const fetchInbox = async () => {
       if (!isAuthenticated) return;
 
       try {
@@ -211,7 +211,7 @@ const Sidebar = ({
               />
             </RouterLink>
           </div>
-          
+
           {/* Home button at very top (only show when not on main) */}
           {activeView !== "main" && (
             <div className="flex justify-center pt-2 pb-2">
@@ -262,7 +262,11 @@ const Sidebar = ({
           <div className="flex-1 flex flex-col bg-sidebar-background">
             {/* Sitemap Section - only show on main dashboard */}
             {activeView === "main" && (
-              <SitemapSection collapsed={true} projectDetails={projectDetails} setSelectedPage={setSelectedPage}/>
+              <SitemapSection
+                collapsed={true}
+                projectDetails={projectDetails}
+                setSelectedPage={setSelectedPage}
+              />
             )}
           </div>
 
@@ -375,7 +379,7 @@ const Sidebar = ({
               </svg>
             </button>
           </div>
-          
+
           {/* Home button (only show when not on main) */}
           {activeView !== "main" && (
             <div className="p-2 bg-sidebar-background flex justify-center border-b border-sidebar-border">
@@ -393,7 +397,11 @@ const Sidebar = ({
           {/* Sitemap Section - only show on main dashboard */}
           {activeView === "main" && (
             <div className="flex-1 min-h-0 overflow-y-auto bg-sidebar-background">
-              <SitemapSection collapsed={false} projectDetails={projectDetails} setSelectedPage={setSelectedPage}/>
+              <SitemapSection
+                collapsed={false}
+                projectDetails={projectDetails}
+                setSelectedPage={setSelectedPage}
+              />
             </div>
           )}
 

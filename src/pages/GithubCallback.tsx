@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "@/hooks/use-toast";
 import { API_BASE_URL } from "@/config/api";
+import { storeJWTData } from "@/lib/jwtUtils";
 
 const GithubCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -53,25 +54,25 @@ const GithubCallback: React.FC = () => {
 
           const data = await response.json();
 
-          // Store tokens & user info
-          localStorage.setItem("auth_token", data.token);
-          localStorage.setItem("refresh_token", data.refresh_token);
-          localStorage.setItem("user_role", data.role);
-          localStorage.setItem("user_data", JSON.stringify(data.user));
+          // Parse JWT and store data from token
+          const jwtResult = storeJWTData(data.token, data.refresh_token);
+
+          if (!jwtResult) {
+            throw new Error("Failed to parse authentication token");
+          }
 
           toast({
             title: "Success",
             description: "Successfully logged in with GitHub!",
           });
 
-          // Redirect based on user role
+          // Redirect based on role from JWT
           const roleRedirects: Record<string, string> = {
             admin: "/admin",
             developer: "/developer",
-            user: "/", // default
+            user: "/",
           };
-          window.location.href = roleRedirects[data.role] || "/";
-        }
+window.location.href = roleRedirects[jwtResult.payload.user.user_type] || "/";        }
 
         // CASE 2: Repository Authorization flow (sessionId or org)
         else {

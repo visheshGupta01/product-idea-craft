@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "@/hooks/use-toast";
 import { API_BASE_URL } from "@/config/api";
+import { storeJWTData } from "@/lib/jwtUtils";
 
 const GoogleCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -40,7 +41,8 @@ const GoogleCallback: React.FC = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-          }        });
+          }
+        });
 
         if (!response.ok) {
           throw new Error("Failed to authenticate with Google");
@@ -48,24 +50,25 @@ const GoogleCallback: React.FC = () => {
 
         const data = await response.json();
 
-        // Store authentication data
-localStorage.setItem("auth_token", data.token);
-localStorage.setItem("refresh_token", data.refresh_token);
-localStorage.setItem("user_role", data.role);
-localStorage.setItem("user_data", JSON.stringify(data.user));
+        // Parse JWT and store data from token
+        const jwtResult = storeJWTData(data.token, data.refresh_token);
+
+        if (!jwtResult) {
+          throw new Error("Failed to parse authentication token");
+        }
 
         toast({
           title: "Success",
           description: "Successfully logged in with Google!",
         });
 
-        // Redirect based on role
-const roleRedirects = {
-  admin: "/admin",
-  developer: "/developer",
-  user: "/", // default role
-};
-window.location.href = roleRedirects[data.role] || "/";      } catch (error) {
+        // Redirect based on role from JWT
+        const roleRedirects: Record<string, string> = {
+          admin: "/admin",
+          developer: "/developer",
+          user: "/",
+        };
+window.location.href = roleRedirects[jwtResult.payload.user.user_type] || "/";      } catch (error) {
         console.error("Google OAuth callback error:", error);
         toast({
           title: "Authentication Failed",

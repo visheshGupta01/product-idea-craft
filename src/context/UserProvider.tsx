@@ -148,6 +148,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const result = await authService.login(email, password);
+    // console.log(result);
     if (result.success && result.user) {
       setIsAuthenticated(true);
       setUserRole(result.role || null);

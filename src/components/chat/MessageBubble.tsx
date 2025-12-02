@@ -63,7 +63,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.type === "user";
   const showLoading = !isUser && isStreaming && message.content.trim() === "";
 
-
   return (
     <div className="mb-6 group">
       {/* Row 1: Avatar + Bubble */}

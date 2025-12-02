@@ -132,7 +132,7 @@ export const useStreamingChat = (
   }, []);
 
   const sendMessage = useCallback(
-    async (content: string, model: string = "kimik2"): Promise<void> => {
+    async (content: string, model: string = "Kimik2"): Promise<void> => {
       if (!content.trim() || !wsClientRef.current) return;
 
       // Set initial states
