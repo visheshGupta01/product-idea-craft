@@ -595,6 +595,9 @@ export const DeveloperOverview: React.FC = () => {
                               </p>
                             </div>
                             <div className="flex gap-2 ml-4">
+                              <Button onClick={()=>navigate("/developer/inbox")} size="sm" variant="outline">
+                                  Message
+                              </Button>
                               <Button
                                 size="sm"
                                 className="bg-pink-500 hover:bg-pink-600 text-white px-4"
@@ -730,6 +733,9 @@ export const DeveloperOverview: React.FC = () => {
                             <div className="flex items-center gap-2 ml-4">
                               {task.status === "todo" && (
                                 <>
+                                <Button onClick={()=>navigate("/developer/inbox")} size="sm" variant="outline">
+                                  Message
+                              </Button>
                                   <Button
                                     size="sm"
                                     className="bg-black text-white hover:bg-gray-800"
@@ -760,7 +766,7 @@ export const DeveloperOverview: React.FC = () => {
                                       ? "Completing..."
                                       : "Mark Complete"}
                                   </Button>
-                                  <Button size="sm" variant="outline">
+                                  <Button onClick={()=>navigate("/developer/inbox")} size="sm" variant="outline">
                                     Message
                                   </Button>
                                 </>
