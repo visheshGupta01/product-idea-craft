@@ -166,6 +166,15 @@ export const useStreamingChat = (
         const callbacks: StreamingCallbacks = {
           onContent: (text: string) => {
             streamingContent += text;
+            // Check for insufficient balance in message content
+             if (
+              streamingContent.toLowerCase().includes("insufficient balance")
+            ) {
+              onInsufficientBalance?.();
+              setIsStreaming(false);
+              setIsProcessingTools(false);
+              return;
+            }
             updateMessage(aiMessage.id, streamingContent);
 
             // Check for frontend_code_generator tool output with preview URL

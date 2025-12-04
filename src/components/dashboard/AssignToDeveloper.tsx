@@ -83,10 +83,10 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
         name:
           [dev.first_name, dev.last_name].filter(Boolean).join(" ") ||
           dev.email.split("@")[0],
-        avg_rating: dev.average_rating,
+        avg_rating: dev.avg_rating,
         total_done: dev.total_solved_tasks,
         bio: dev.bio,
-        hourpaid: dev.hour_paid,
+        hourpaid: dev.hourpaid,
         skills: dev.skills || [],
         linkedin_url: dev.linkedin_url || "",
         github_url: dev.github_url || "",
