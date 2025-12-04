@@ -31,7 +31,7 @@ const Pricing = () => {
     const fetchPlans = async () => {
       try {
         const fetchedPlans = await getPaymentPlans();
-        console.log("Fetched plans:", fetchedPlans);
+        // console.log("Fetched plans:", fetchedPlans);
         // Sort plans by id
         const sortedPlans = fetchedPlans.sort((a: any, b: any) => {
           const sortA = a.sort_index ?? a.sortIndex ?? a.id ?? a.planid ?? 0;
