@@ -69,7 +69,8 @@ const TasksPage: React.FC = () => {
         page,
         status === "" ? undefined : status
       );
-      setTasks(response?.tasks || []);
+      console.log("Fetched tasks response:", response);
+      setTasks(response || []);
       setTotalPages(response?.total_pages || 1);
       setCurrentPage(page);
     } catch (error) {
