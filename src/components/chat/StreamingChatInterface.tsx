@@ -7,6 +7,7 @@ import { useUser } from "@/context/UserContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
 import { ChatStatusIndicator } from "./ChatStatusIndicator";
+import PricingModal from "../pricing/PricingModel";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -217,7 +218,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
         )}
       </div>
 
-      <AlertDialog open={showBalanceDialog} onOpenChange={setShowBalanceDialog}>
+      {/* <AlertDialog open={showBalanceDialog} onOpenChange={setShowBalanceDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Balance Finished</AlertDialogTitle>
@@ -232,7 +233,15 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog> */}
+      <PricingModal
+        isOpen={showBalanceDialog}
+        onClose={() => setShowBalanceDialog(false)}
+        onUpgrade={(plan) => {
+          navigate("/pricing");
+          setShowBalanceDialog(false);
+        }}
+      />
     </>
   );
 };

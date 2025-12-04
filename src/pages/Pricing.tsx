@@ -12,8 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Check, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import {
-  createRazorpayPayment,
+  createPayment,
   getPaymentPlans,
+  isIndianUser,
 } from "@/services/paymentService";
 import { toast } from "sonner";
 import Navbar from "@/components/landing_page/Navbar";
@@ -49,19 +50,19 @@ const Pricing = () => {
 
   const isCurrentPlan = (planName: string) => {
     if (!isAuthenticated) return false;
-    
+
     try {
       const userData = localStorage.getItem("user_data");
       if (!userData) return false;
-      
+
       const parsedUserData = JSON.parse(userData);
       const userPlanId = parsedUserData?.plan_id;
-      
+
       if (!userPlanId) return false;
-      
+
       const currentPlan = plans.find((p) => p.name === planName);
       const currentPlanId = currentPlan?.id || currentPlan?.planid;
-      
+
       return userPlanId === currentPlanId;
     } catch (error) {
       return false;
@@ -96,9 +97,9 @@ const Pricing = () => {
 
     try {
       const selectedPlan = plans.find((p) => p.name === planName);
-      await createRazorpayPayment({
-        user_uuid: profile?.id || user?.id || "",
-        price: price,
+      await createPayment({
+        user_id: profile?.id || user?.id || "",
+        amount: price,
         plan_name: planName,
         credits: selectedPlan?.credits || 0,
         plan_id: selectedPlan?.id || selectedPlan?.planid || 0,
@@ -116,7 +117,7 @@ const Pricing = () => {
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
-  } 
+  }
 
   return (
     <div className="min-h-screen bg-[#0f1116]">
@@ -222,7 +223,9 @@ const Pricing = () => {
                       )
                     )
                   }
-                  disabled={loadingPlan === plan.name || isCurrentPlan(plan.name)}
+                  disabled={
+                    loadingPlan === plan.name || isCurrentPlan(plan.name)
+                  }
                 >
                   {loadingPlan === plan.name ? (
                     <>
@@ -241,7 +244,10 @@ const Pricing = () => {
         </div>
 
         <div className="text-center mt-12 text-sm text-muted-foreground">
-          <p>All plans include secure payments via Razorpay</p>
+          <p>
+            All plans include secure payments via{" "}
+            {isIndianUser() ? "Razorpay" : "Stripe"}
+          </p>
         </div>
       </div>
       <Footer />
