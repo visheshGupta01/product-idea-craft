@@ -25,6 +25,7 @@ export interface WebSocketMessage {
   event: WebSocketEventType;
   message: string;
   createdAt: string;
+  success:boolean
 }
 
 // UI Status types for different states

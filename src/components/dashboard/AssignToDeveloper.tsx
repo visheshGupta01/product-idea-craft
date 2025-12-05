@@ -64,9 +64,9 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const { toast } = useToast();
 
-  console.log(developerDetails,"details");
-  console.log(developers,"dev");
-  console.log(selectedDeveloper,"sele");
+  // console.log(developerDetails,"details");
+  // console.log(developers,"dev");
+  // console.log(selectedDeveloper,"sele");
   
   
   
