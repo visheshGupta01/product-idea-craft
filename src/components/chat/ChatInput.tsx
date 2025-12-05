@@ -166,7 +166,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       {/* Chat Input Container */}
       <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl p-3 shadow-lg">
         {/* Model Selector */}
-        <div className="mb-3 flex items-center gap-2">
+        {/* <div className="mb-3 flex items-center gap-2">
           <span className="text-xs text-gray-400 font-medium">Model:</span>
           <Select value={selectedModel} onValueChange={setSelectedModel}>
             <SelectTrigger className="w-[140px] h-8 bg-[#1E1E1E] border-[#3A3A3A] text-white text-sm">
@@ -187,7 +187,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               </SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
         {/* Uploaded Files Display */}
         {uploadedFiles.length > 0 && (
           <div className="mb-3 space-y-2">
