@@ -595,9 +595,9 @@ export const DeveloperOverview: React.FC = () => {
                               </p>
                             </div>
                             <div className="flex gap-2 ml-4">
-                              <Button onClick={()=>navigate("/developer/inbox")} size="sm" variant="outline">
+                              {/* <Button onClick={()=>navigate("/developer/inbox")} size="sm" variant="outline">
                                   Message
-                              </Button>
+                              </Button> */}
                               <Button
                                 size="sm"
                                 className="bg-pink-500 hover:bg-pink-600 text-white px-4"

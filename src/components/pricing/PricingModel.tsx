@@ -232,8 +232,8 @@ const PricingModal: React.FC<PricingModalProps> = ({
                     features={plan.features || []}
                     box={box}
                     onClick={() =>
-                      //handleSelectPlan(plan.name, String(displayPrice))
-                      navigate("/pricing")
+                      handleSelectPlan(plan.name, String(displayPrice))
+                    //   navigate("/pricing")
                     }
                   />
                 );
