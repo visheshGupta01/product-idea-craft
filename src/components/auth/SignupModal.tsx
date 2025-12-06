@@ -72,8 +72,8 @@ export const SignupModal: React.FC<SignupModalProps> = ({
       case "password":
         if (!value) {
           errors.password = "Password is required";
-        } else if (value.length < 6) {
-          errors.password = "Password must be at least 6 characters long";
+        } else if (value.length < 8) {
+          errors.password = "Password must be at least 8 characters long";
         } else if (!passwordRegex.test(value)) {
           errors.password =
             "Password must contain uppercase, lowercase, and a number";

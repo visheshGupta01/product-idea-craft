@@ -9,6 +9,7 @@ import { useUser } from "@/context/UserContext";
 import { Loader2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
+
 const DeveloperInbox: React.FC = () => {
   const [tasks, setTasks] = useState<InboxTask[]>([]);
   const [selectedTask, setSelectedTask] = useState<InboxTask | null>(null);
@@ -22,8 +23,8 @@ const DeveloperInbox: React.FC = () => {
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
-const location = useLocation();
-  const openTaskId = location.state?.openTaskId || null;
+   const location = useLocation();
+ const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
 
   const fetchInbox = useCallback(async () => {
     try {
@@ -66,20 +67,24 @@ const location = useLocation();
     [toast]
   );
 
-  useEffect(() => {
+   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);
 
-  useEffect(() => {
-    if (tasks.length === 0) return;
-    if (!openTaskId) return;
+ // Auto-select task if we came from "Message" button
+ useEffect(() => {
+   if (!preselectedTaskId || !tasks.length || selectedTask) return;
 
-    const found = tasks.find((t) => t.id === openTaskId);
-    if (found) {
-      setSelectedTask(found);
-      fetchMessages(found.id);
-    }
-  }, [tasks, openTaskId, fetchMessages]);
+   const taskToOpen = tasks.find((t) => t.id === preselectedTaskId);
+   if (taskToOpen) {
+     setSelectedTask(taskToOpen);
+     fetchMessages(taskToOpen.id);
+   }
+ }, [preselectedTaskId, tasks, selectedTask, fetchMessages]);
+  
+  useEffect(() => {
+    fetchInbox();
+  }, [fetchInbox]);
 
   useEffect(() => {
     const connectWebSocket = async () => {

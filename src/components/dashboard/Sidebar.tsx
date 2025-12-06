@@ -312,7 +312,7 @@ const Sidebar = ({
                   }}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
-                  Support & Feedback
+                  Report & Issue
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -463,7 +463,7 @@ const Sidebar = ({
                   }}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
-                  Support & Feedback
+                  Report & Issue
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

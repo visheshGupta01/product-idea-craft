@@ -33,7 +33,10 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to resend verification link.",
+        description:
+          error.response?.data?.error.message ||
+          "Failed to resend verification link.",
+
         variant: "destructive",
       });
     } finally {

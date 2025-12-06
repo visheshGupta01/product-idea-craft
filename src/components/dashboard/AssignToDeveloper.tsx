@@ -147,39 +147,63 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
     setCurrentView("assign");
   };
 
-  const handleAssignTask = async () => {
-    if (!selectedDeveloper || !taskTitle.trim() || !taskDescription.trim()) {
+  
+
+const handleAssignTask = async () => {
+  if (!selectedDeveloper || !taskTitle.trim() || !taskDescription.trim()) {
+    toast({
+      title: "Missing Information",
+      description: "Please fill in all required fields",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  if (dueDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const selected = new Date(dueDate);
+    selected.setHours(0, 0, 0, 0);
+
+    if (selected < today) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields",
+        title: "Invalid Due Date",
+        description: "Due date cannot be in the past.",
         variant: "destructive",
       });
       return;
     }
+  }
 
-    setLoading(true);
-    try {
-      const taskData: CreateTaskData = {
-        title: taskTitle.trim(),
-        description: taskDescription.trim(),
-        session_id: sessionId,
-        assignee_id: selectedDeveloper.id,
-        due_date: dueDate ? dueDate.toISOString() : undefined,
-      };
+  setLoading(true);
+  try {
+    const formatDateWithEndOfDay = (date: Date) => {
+      const adjustedDate = new Date(date);
+      adjustedDate.setHours(23, 59, 59, 999);
+      return adjustedDate.toISOString();
+    };
 
-      await developerService.createTask(taskData);
-      setCurrentView("success");
-    } catch (error) {
-      //console.error("Error creating task:", error);
-      toast({
-        title: "Error",
-        description: "Failed to assign task to developer",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    const taskData: CreateTaskData = {
+      title: taskTitle.trim(),
+      description: taskDescription.trim(),
+      session_id: sessionId,
+      assignee_id: selectedDeveloper.id,
+      due_date: dueDate ? formatDateWithEndOfDay(dueDate) : undefined,
+    };
+
+    await developerService.createTask(taskData);
+    setCurrentView("success");
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to assign task to developer",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleClose = () => {
     setCurrentView("list");
@@ -521,6 +545,13 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
                   onSelect={setDueDate}
                   initialFocus
                   className="pointer-events-auto"
+                  disabled={(date) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // start of today
+                    const d = new Date(date);
+                    d.setHours(0, 0, 0, 0);
+                    return d < today; // disable all dates before today
+                  }}
                 />
               </PopoverContent>
             </Popover>

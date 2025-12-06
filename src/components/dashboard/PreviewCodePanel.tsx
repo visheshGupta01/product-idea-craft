@@ -121,21 +121,21 @@ const PreviewCodePanel = ({
 
   // Fetch routes when sessionId changes
   useEffect(() => {
-    const fetchRoutes = async () => {
-      if (!sessionId) return;
-      try {
-        const response = await apiClient.get(
-          `/api/chat/pages-routes?session_id=${sessionId}`
-        );
-        if (response.data.success && response.data.routes) {
-          setRoutes(response.data.routes);
-        }
-      } catch (error) {
-        console.error("Failed to fetch routes:", error);
-        setRoutes([]);
-      }
-    };
-    fetchRoutes();
+    // const fetchRoutes = async () => {
+    //   if (!sessionId) return;
+    //   try {
+    //     const response = await apiClient.get(
+    //       `/api/chat/pages-routes?session_id=${sessionId}`
+    //     );
+    //     if (response.data.success && response.data.routes) {
+    //       setRoutes(response.data.routes);
+    //     }
+    //   } catch (error) {
+    //     console.error("Failed to fetch routes:", error);
+    //     setRoutes([]);
+    //   }
+    // };
+    // fetchRoutes();
   }, [sessionId]);
 
   const handleRouteChange = (route: string) => {
