@@ -14,6 +14,25 @@ interface PricingModalProps {
   onClose: () => void;
 }
 
+const getUsageLines = (plan: any): string[] => {
+  const usageRaw =
+    plan.typical_usage || plan.usage_desc || plan.usageDescription || "";
+
+  let usageLines: string[] = [];
+
+  if (Array.isArray(usageRaw)) {
+    usageLines = usageRaw.map((l: string) => l.trim()).filter(Boolean);
+  } else if (typeof usageRaw === "string" && usageRaw.length > 0) {
+    usageLines = usageRaw
+      .split(/\n|\|/)
+      .map((l: string) => l.trim())
+      .filter(Boolean);
+  }
+
+  return usageLines;
+};
+
+
 const PricingModal: React.FC<PricingModalProps> = ({
   isOpen,
   onClose,
@@ -211,13 +230,14 @@ const PricingModal: React.FC<PricingModalProps> = ({
                   : plan.price;
 
                 const description =
-                  plan.subtitle || plan.desc || "Best for builders";
+                  plan.subtitle || plan.desc;
 
-                const box = [
-                  "Typical usage capacity*",
-                  `${plan.credits ?? ""} credits`,
-                  description,
-                ];
+const usageLines = getUsageLines(plan);
+
+const box = [
+  "Typical usage capacity",
+  ...usageLines,];
+
 
                 return (
                   <PriceCard
@@ -347,14 +367,31 @@ const Box: React.FC<{ boxtext: string[] }> = ({ boxtext }) => {
   return (
     <div className="w-full p-3 mb-4 rounded-lg text-left bg-zinc-800/50 border border-zinc-700/50">
       <ul className="space-y-1">
-        {boxtext.map((text, index) => (
-          <li key={index} className="text-zinc-400 text-xs flex items-start">
-            {index > 0 && <span className="mr-2">•</span>}
-            <span className={index === 0 ? "font-bold text-zinc-300" : ""}>
-              {text}
-            </span>
-          </li>
-        ))}
+        {boxtext.map((text, index) => {
+          const isOR = text.trim().toUpperCase() === "OR";
+
+          return (
+            <li
+              key={index}
+              className={`text-xs flex items-start ${
+                isOR
+                  ? "justify-center text-zinc-500 font-semibold"
+                  : "text-zinc-400"
+              }`}
+            >
+              {/* No bullet for OR */}
+              {!isOR && index > 0 && <span className="mr-2">•</span>}
+
+              <span
+                className={
+                  index === 0 && !isOR ? "font-bold text-zinc-300" : ""
+                }
+              >
+                {text}
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
