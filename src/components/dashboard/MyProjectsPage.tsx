@@ -23,6 +23,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { fetchProjects, ProjectFromAPI } from "@/services/projectService";
+import {API_BASE_URL} from "@/config/api";
 
 interface Project {
   session_id: string;
@@ -34,7 +35,7 @@ interface Project {
   status: "active" | "completed" | "paused" | "draft";
 }
 
-export const S3_URL ="https://dev.imagine.bo/api/screenshot"
+export const S3_URL = API_BASE_URL+"/api/screenshot"
 
 const MyProjectsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
