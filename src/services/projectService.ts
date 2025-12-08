@@ -5,6 +5,7 @@ export interface ProjectFromAPI {
   session_id: string;
   title: string;
   project_url: string;
+  screen_shot:string;
   deploy_url: string;
   created_at: string;
 }
@@ -46,9 +47,15 @@ export interface ProjectDetails {
   title: string;
 }
 
-export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
+export const fetchProjects = async (
+  page: number = 1
+): Promise<
+   ProjectFromAPI[]> => {
   try {
-    const response = await apiClient.get(API_ENDPOINTS.PROJECT.LIST);
+    const response = await apiClient.get(
+      `${API_ENDPOINTS.PROJECT.LIST}?page=${page}`
+    );
+
     if (response.data.success) {
       // Empty array is a valid response, not an error
       return Array.isArray(response.data.projects) ? response.data.projects : [];
@@ -60,6 +67,7 @@ export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
     throw error;
   }
 };
+
 
 export const fetchProjectDetails = async (
   sessionId: string

@@ -77,7 +77,7 @@ export class StreamingWebSocketClient {
         }
         const eventType = data.event;
         const message = data.message || "";
-        console.log(data);
+        //console.log(data);
 
         switch (eventType) {
           case "pricing_low":
