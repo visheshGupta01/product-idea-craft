@@ -1,6 +1,5 @@
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
-import { log } from "console";
 
 export interface ProjectFromAPI {
   session_id: string;
