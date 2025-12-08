@@ -164,7 +164,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="relative w-full">
       {/* Chat Input Container */}
-      <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl p-3 shadow-lg">
+      <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl p-2 shadow-lg">
         {/* Model Selector */}
         <div className="mb-3 flex items-center gap-2">
           <span className="text-xs text-gray-400 font-medium">Model:</span>

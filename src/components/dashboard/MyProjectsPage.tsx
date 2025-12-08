@@ -28,10 +28,13 @@ interface Project {
   session_id: string;
   title: string;
   project_url: string;
+  screen_shot:string;
   deploy_url: string;
   created_at: string;
   status: "active" | "completed" | "paused" | "draft";
 }
+
+export const S3_URL ="https://dev.imagine.bo/api/screenshot"
 
 const MyProjectsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,6 +44,8 @@ const MyProjectsPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user, profile } = useUser();
+  const [page, setPage] = useState(1);
+  const [isLastPage, setIsLastPage] = useState(false);
 
   // Get user's display name
   const getUserName = () => {
@@ -54,14 +59,16 @@ const MyProjectsPage = () => {
   };
 
   useEffect(() => {
-    loadProjects();
-  }, []);
+    loadProjects(page);
+  }, [page]);
+//console.log(projects,"projects");
 
-  const loadProjects = async () => {
+  const loadProjects = async (pageNumber = page) => {
     try {
       setLoading(true);
-      const apiProjects = await fetchProjects();
-
+      const apiProjects = await fetchProjects(pageNumber);
+      //console.log(apiProjects,"api");
+      
       // Empty array is valid - no error needed
       if (!Array.isArray(apiProjects)) {
         setProjects([]);
@@ -74,7 +81,10 @@ const MyProjectsPage = () => {
           ? "active"
           : ("draft" as "active" | "completed" | "paused" | "draft"),
       }));
+      //console.log(formattedProjects,"format");
+      
       setProjects(formattedProjects);
+      setIsLastPage(apiProjects.length < 10);
     } catch (error) {
       console.error("Error fetching projects:", error);
       // Only show error toast on actual API failure
@@ -151,6 +161,21 @@ const MyProjectsPage = () => {
       activeFilter === "all" || project.status === activeFilter;
     return matchesSearch && matchesFilter;
   });
+
+  const normalizeScreenshotPath = (path: string) => {
+  if (!path) return "";
+  
+  // Remove leading slash
+  let clean = path.replace(/^\//, "");
+
+  // Remove only the wrong "screenshot/" prefix
+  if (clean.startsWith("screenshot/")) {
+    clean = clean.replace("screenshot/", "");
+  }
+
+  return clean; // final normalized path
+};
+
 
   return (
     <div className="h-full bg-[#1B2123]">
@@ -268,7 +293,8 @@ const MyProjectsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-              {filteredProjects.map((project) => (
+              {filteredProjects.map((project) => {
+                return(    
                 <Card
                   key={project.session_id}
                   className="hover:shadow-lg bg-black transition-all duration-200 cursor-pointer group border-border overflow-hidden"
@@ -277,11 +303,20 @@ const MyProjectsPage = () => {
                   <div className="relative">
                     <div className="aspect-video w-full rounded-t-lg overflow-hidden flex items-center justify-center bg-gray-900">
                       {project.session_id ? (
-                        <img
-                          src={`https://www.google.com/s2/favicons?sz=64&domain_url=${project.session_id}`}
+                        project.screen_shot ? (
+                          <img
+                          src={`${S3_URL}?key=${normalizeScreenshotPath(project.screen_shot)} `}
+                          loading="lazy"
                           alt={project.title || "Project Thumbnail"}
                           className="w-full h-full object-cover rounded-xl"
                         />
+                        ):(
+                          <img
+                          src='/android-chrome-192x192.png'
+                          alt={project.title || "Project Thumbnail"}
+                          className="w-full h-full object-contain rounded-xl"
+                        />
+                        )
                       ) : (
                         <img
                           src="/default-thumbnail.png" // fallback image in your /public folder
@@ -331,7 +366,7 @@ const MyProjectsPage = () => {
                     </div> */}
                   </div>
                 </Card>
-              ))}
+)})}
             </div>
           )}
 
@@ -357,6 +392,28 @@ const MyProjectsPage = () => {
               </a>
             </div>
           )}
+          {!loading && (
+  <div className="flex justify-center items-center gap-4 mt-10">
+    <Button
+      variant="outline"
+      disabled={page === 1}
+      onClick={() => setPage((prev) => prev - 1)}
+    >
+      Previous
+    </Button>
+
+    <span className="text-white"> {page}</span>
+
+    <Button
+      variant="outline"
+      disabled={isLastPage}
+      onClick={() => setPage((prev) => prev + 1)}
+    >
+      Next
+    </Button>
+  </div>
+)}
+
         </div>
       </div>
     </div>

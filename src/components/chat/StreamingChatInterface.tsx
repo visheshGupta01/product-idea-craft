@@ -177,7 +177,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="flex-1 p-6">
+            <ScrollArea className="flex-1 p-2">
               <div className="space-y-6 max-w-5xl mx-auto">
                 {messages.map((message, index) => (
                   <div key={message.id} className="group">
@@ -204,7 +204,7 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
             </ScrollArea>
 
             <div className="bg-[#1E1E1E] pb-6 border-t border-gray-800">
-              <div className="max-w-5xl mx-auto mt-3 px-6">
+              <div className="max-w-5xl mx-auto mt-3 px-2">
                 <ChatInput
                   onSendMessage={(message, model) =>
                     sendMessage(message, model)
