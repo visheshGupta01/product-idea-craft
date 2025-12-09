@@ -107,6 +107,7 @@ const MyProjectsPage = () => {
         previewUrl: project.project_url, // Use project_url for preview
         deployUrl: project.deploy_url, // Use deploy_url for Vercel deployment
         shouldOpenPreview: !!project.project_url,
+        pageNumber:page
       },
     });
   };
@@ -294,8 +295,7 @@ const MyProjectsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-              {filteredProjects.map((project) => {
-                return(    
+              {filteredProjects.map((project) => (
                 <Card
                   key={project.session_id}
                   className="hover:shadow-lg bg-black transition-all duration-200 cursor-pointer group border-border overflow-hidden"
@@ -306,7 +306,7 @@ const MyProjectsPage = () => {
                       {project.session_id ? (
                         project.screen_shot ? (
                           <img
-                          src={`${S3_URL}?key=${normalizeScreenshotPath(project.screen_shot)} `}
+                          src={`${S3_URL}?key=${normalizeScreenshotPath(project.screen_shot)}`}
                           loading="lazy"
                           alt={project.title || "Project Thumbnail"}
                           className="w-full h-full object-cover rounded-xl"
@@ -367,7 +367,7 @@ const MyProjectsPage = () => {
                     </div> */}
                   </div>
                 </Card>
-)})}
+))}
             </div>
           )}
 

@@ -16,6 +16,7 @@ const Dashboard = () => {
   // Get deploy URL and preview flag from navigation state
   const deployUrl = location.state?.deployUrl;
   const shouldOpenPreview = location.state?.shouldOpenPreview;
+  const pageNumber = location.state?.pageNumber;
 
   const handleValidationComplete = async (isValid: boolean) => {
     if (isValid && sessionid) {
@@ -50,6 +51,7 @@ const Dashboard = () => {
     <SessionValidator
       sessionId={sessionid}
       onValidationComplete={handleValidationComplete}
+      pageNumber={pageNumber}
     >
       <MainDashboard
         userIdea={projectTitle || userIdea || "My App"}
