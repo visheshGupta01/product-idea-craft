@@ -760,7 +760,9 @@ export const DeveloperOverview: React.FC = () => {
                                       ? "Completing..."
                                       : "Mark Complete"}
                                   </Button>
-                                  <Button size="sm" variant="outline">
+                                  <Button onClick={()=>navigate("/developer/inbox",{
+  state: { openTaskId: task.id }
+})} size="sm" variant="outline">
                                     Message
                                   </Button>
                                 </>

@@ -271,12 +271,14 @@ const IdeaBox: React.FC = () => {
               <VoiceRecorder
                 onTranscript={handleVoiceTranscript}
                 disabled={isProcessingIdea}
+                iconColor="text-gray-600"
               />
               <FileUploader
                 onFileUploaded={handleFileUploaded}
                 uploadedFiles={uploadedFiles}
                 onRemoveFile={handleRemoveFile}
                 disabled={isProcessingIdea}
+                iconColor="text-gray-600"
               />
             </div>
           </div>

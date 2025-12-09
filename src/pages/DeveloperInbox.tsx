@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
 import { Loader2 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const DeveloperInbox: React.FC = () => {
   const [tasks, setTasks] = useState<InboxTask[]>([]);
@@ -21,6 +22,8 @@ const DeveloperInbox: React.FC = () => {
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
+  const location = useLocation();
+  const openTaskId = location.state?.openTaskId || null;
 
   const fetchInbox = useCallback(async () => {
     try {
@@ -62,6 +65,16 @@ const DeveloperInbox: React.FC = () => {
     },
     [toast]
   );
+   useEffect(() => {
+    if (tasks.length === 0) return;
+    if (!openTaskId) return;
+
+    const found = tasks.find((t) => t.id === openTaskId);
+    if (found) {
+      setSelectedTask(found);
+      fetchMessages(found.id);
+    }
+  }, [tasks, openTaskId, fetchMessages]);
 
   useEffect(() => {
     fetchInbox();

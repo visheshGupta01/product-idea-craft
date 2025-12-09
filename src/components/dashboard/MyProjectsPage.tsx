@@ -22,7 +22,7 @@ import {
   Globe,
   ExternalLink,
 } from "lucide-react";
-import { fetchProjects, ProjectFromAPI } from "@/services/projectService";
+import { fetchProjects, ProjectFromAPI,lastHasMore } from "@/services/projectService";
 import {API_BASE_URL} from "@/config/api";
 
 interface Project {
@@ -85,7 +85,7 @@ const MyProjectsPage = () => {
       //console.log(formattedProjects,"format");
       
       setProjects(formattedProjects);
-      setIsLastPage(apiProjects.length < 10);
+      setIsLastPage(!lastHasMore);
     } catch (error) {
       console.error("Error fetching projects:", error);
       // Only show error toast on actual API failure
@@ -295,7 +295,8 @@ const MyProjectsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-              {filteredProjects.map((project) => (
+              {filteredProjects.map((project) => {
+                return(    
                 <Card
                   key={project.session_id}
                   className="hover:shadow-lg bg-black transition-all duration-200 cursor-pointer group border-border overflow-hidden"
@@ -306,7 +307,7 @@ const MyProjectsPage = () => {
                       {project.session_id ? (
                         project.screen_shot ? (
                           <img
-                          src={`${S3_URL}?key=${normalizeScreenshotPath(project.screen_shot)}`}
+                          src={`${S3_URL}?key=${normalizeScreenshotPath(project.screen_shot)} `}
                           loading="lazy"
                           alt={project.title || "Project Thumbnail"}
                           className="w-full h-full object-cover rounded-xl"
@@ -367,7 +368,7 @@ const MyProjectsPage = () => {
                     </div> */}
                   </div>
                 </Card>
-))}
+)})}
             </div>
           )}
 
