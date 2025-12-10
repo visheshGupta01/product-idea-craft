@@ -22,8 +22,8 @@ const DeveloperInbox: React.FC = () => {
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
-  const location = useLocation();
-  const openTaskId = location.state?.openTaskId || null;
+   const location = useLocation();
+ const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
 
   const fetchInbox = useCallback(async () => {
     try {
@@ -76,6 +76,21 @@ const DeveloperInbox: React.FC = () => {
     }
   }, [tasks, openTaskId, fetchMessages]);
 
+   useEffect(() => {
+    fetchInbox();
+  }, [fetchInbox]);
+
+ // Auto-select task if we came from "Message" button
+ useEffect(() => {
+   if (!preselectedTaskId || !tasks.length || selectedTask) return;
+
+   const taskToOpen = tasks.find((t) => t.id === preselectedTaskId);
+   if (taskToOpen) {
+     setSelectedTask(taskToOpen);
+     fetchMessages(taskToOpen.id);
+   }
+ }, [preselectedTaskId, tasks, selectedTask, fetchMessages]);
+  
   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);

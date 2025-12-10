@@ -18,6 +18,8 @@ const UserInbox: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+     const location = useLocation();
+   const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
   const [role, setRole] = useState("user");
   const { toast } = useToast();
   const { user } = useUser();
@@ -66,7 +68,17 @@ const UserInbox: React.FC = () => {
     },
     [toast]
   );
+// Auto-select task if we came from "Message" button
+ useEffect(() => {
+   if (!preselectedTaskId || !tasks.length || selectedTask) return;
 
+   const taskToOpen = tasks.find((t) => t.id === preselectedTaskId);
+   if (taskToOpen) {
+     setSelectedTask(taskToOpen);
+     fetchMessages(taskToOpen.id);
+   }
+ }, [preselectedTaskId, tasks, selectedTask, fetchMessages]);
+  
   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);

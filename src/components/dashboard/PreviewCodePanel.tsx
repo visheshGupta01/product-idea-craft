@@ -9,10 +9,18 @@ import {
   Save,
   ExternalLink,
   RefreshCw,
-  Github,
   Rocket,
   User,
+  Github,
+  ChevronDown,
+  Route,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -36,7 +44,6 @@ import DevicePreview, { DeviceType } from "./DevicePreview";
 import FullscreenPreview from "./FullscreenPreview";
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
-import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
 import { cn } from "@/lib/utils";
 import AssignToDeveloper from "./AssignToDeveloper";
 import GitHubIntegration from "./GitHubIntegration";
@@ -69,6 +76,8 @@ const PreviewCodePanel = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [originalContent, setOriginalContent] = useState<string>("");
   const [currentContent, setCurrentContent] = useState<string>("");
+  const [routes, setRoutes] = useState<string[]>([]);
+  const [currentRoute, setCurrentRoute] = useState("/");
   const [iframeSrc, setIframeSrc] = useState(previewUrl || "");
   const [fileContent, setFileContent] = useState<
     { path: string; content: string }[]
@@ -117,6 +126,41 @@ const navigate = useNavigate();
     };
     fetchFiles();
   }, [sessionId]);
+
+  // Fetch routes when sessionId changes
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      if (!sessionId) return;
+      try {
+        const response = await apiClient.get(
+          `/api/chat/pages-routes?session_id=${sessionId}`
+        );
+        if (response.data.success && response.data.routes) {
+          setRoutes(response.data.routes);
+        }
+      } catch (error) {
+        console.error("Failed to fetch routes:", error);
+        setRoutes([]);
+      }
+    };
+    fetchRoutes();
+  }, [sessionId]);
+
+  const handleRouteChange = (route: string) => {
+    setCurrentRoute(route);
+    if (previewUrl) {
+      try {
+        const url = new URL(previewUrl);
+        url.pathname = route;
+        url.searchParams.set("_t", Date.now().toString());
+        setIframeSrc(url.toString());
+      } catch (e) {
+        // fallback: append route to previewUrl
+        const baseUrl = previewUrl.split("?")[0].replace(/\/$/, "");
+        setIframeSrc(`${baseUrl}${route}?_t=${Date.now()}`);
+      }
+    }
+  };
 
   useEffect(() => {
     // console.log("Use effect working for selectedPage change");
@@ -216,37 +260,21 @@ const navigate = useNavigate();
         {/* Preview Navbar */}
         <div className="h-14 min-h-[3.5rem] px-2 border-b border-[#2A2A2A] flex items-center justify-between bg-[#252525] flex-shrink-0">
           <TooltipProvider>
-            {/* <div className="flex items-center gap-1"> */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleCodeToggle(!showCode)}
-                  className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
-                >
-                  <CodeXml className="h-3.5 w-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Toggle Code View</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleOpenInNewTab}
-                  disabled={!hasValidPreview}
-                  className="h-8 px-2 text-white hover:text-white hover:bg-gray-800 disabled:opacity-50"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Preview
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Open Preview in New Tab</TooltipContent>
-            </Tooltip>
-
-            {/* <Tooltip>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCodeToggle(!showCode)}
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
+                  >
+                    <CodeXml className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Toggle Code View</TooltipContent>
+              </Tooltip>
+              <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
@@ -259,8 +287,57 @@ const navigate = useNavigate();
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Refresh Preview</TooltipContent>
-              </Tooltip> */}
-            {/* </div> */}
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleOpenInNewTab}
+                    disabled={!hasValidPreview}
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Open Preview in New Tab</TooltipContent>
+              </Tooltip>
+            </div>
+            {/* Routes Dropdown */}
+            {routes.length > 0 && hasValidPreview && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 gap-1"
+                  >
+                    <Route className="h-3.5 w-3.5" />
+                    <span className="max-w-[100px] truncate">
+                      {currentRoute}
+                    </span>
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="bg-[#252525] border-[#2A2A2A] max-h-[300px] overflow-y-auto z-50"
+                >
+                  {routes.map((route) => (
+                    <DropdownMenuItem
+                      key={route}
+                      onClick={() => handleRouteChange(route)}
+                      className={cn(
+                        "text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer",
+                        currentRoute === route && "bg-gray-700 text-white"
+                      )}
+                    >
+                      {route}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
             
             <div className="flex items-center gap-2">

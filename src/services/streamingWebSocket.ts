@@ -72,6 +72,14 @@ export class StreamingWebSocketClient {
       try {
         const data: WebSocketMessage = JSON.parse(event.data);
         if (!data.event) {
+            if (data.success === true) {
+    // Treat as successful completion
+    isComplete = true;
+    callbacks.onSuccess?.("Stream completed");
+    this.cleanup(messageHandler);
+    return;
+  }
+
           console.warn("Received message without event:", data);
           return;
         }

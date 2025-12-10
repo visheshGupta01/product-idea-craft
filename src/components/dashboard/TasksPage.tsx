@@ -39,6 +39,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
+import { useNavigate } from "react-router-dom";
 
 interface Task {
   ID: number;
@@ -72,6 +73,7 @@ const UserTasksPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("DESC");
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const loadTasks = async (
     page: number = 1,
@@ -90,7 +92,7 @@ const UserTasksPage: React.FC = () => {
         `${API_ENDPOINTS.USER.TASKS}?${params.toString()}`
       );
       const data = response.data;
-      //console.log('Fetched tasks:', data);
+      console.log('Fetched tasks:', data);
       setTasks(data || []);
       setTotalPages(data.total_pages || 1);
       setCurrentPage(page);
@@ -300,20 +302,32 @@ const UserTasksPage: React.FC = () => {
                     <TableCell>{formatDate(task.due_date)}</TableCell>
                     <TableCell>{formatDate(task.created_at)}</TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
-                        {task.share_chat && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              window.open(task.share_chat, "_blank")
-                            }
-                          >
-                            View Chat
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
+                                          <div className="flex gap-2">
+                                            {task.share_chat && (
+                                              <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() =>
+                                                  window.open(task.share_chat, "_blank")
+                                                }
+                                              >
+                                                View Chat
+                                              </Button>
+                                            )}
+                    
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() =>
+                                                navigate("/inbox", {
+                                                  state: { taskId: task.id },
+                                                })
+                                              }
+                                            >
+                                              Message
+                                            </Button>
+                                          </div>
+                                        </TableCell>
                   </TableRow>
                 ))
               )}

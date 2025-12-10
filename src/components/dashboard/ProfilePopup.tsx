@@ -21,6 +21,7 @@ import {
   Settings,
   Eye,
   EyeOff,
+  Bug,
   Plus,
   BarChart3,
 } from "lucide-react";
@@ -131,7 +132,7 @@ const ProfilePopup = ({
     // { id: 'security', label: 'Security', icon: Shield },
     { id: "billing", label: "Credits and Billing", icon: CreditCard },
     { id: "usage", label: "Usage Stats", icon: BarChart3 },
-    { id: "support", label: "Report and Issue", icon: MessageCircle },
+    { id: "support", label: "Report and Issue", icon: Bug },
   ];
 
   const renderContent = () => {
