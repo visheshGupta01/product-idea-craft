@@ -22,7 +22,7 @@ import {
   Globe,
   ExternalLink,
 } from "lucide-react";
-import { fetchProjects, ProjectFromAPI } from "@/services/projectService";
+import { fetchProjects, ProjectFromAPI,lastHasMore } from "@/services/projectService";
 import {API_BASE_URL} from "@/config/api";
 
 interface Project {
@@ -85,7 +85,7 @@ const MyProjectsPage = () => {
       //console.log(formattedProjects,"format");
       
       setProjects(formattedProjects);
-      setIsLastPage(apiProjects.length < 10);
+      setIsLastPage(!lastHasMore);
     } catch (error) {
       console.error("Error fetching projects:", error);
       // Only show error toast on actual API failure
@@ -107,6 +107,7 @@ const MyProjectsPage = () => {
         previewUrl: project.project_url, // Use project_url for preview
         deployUrl: project.deploy_url, // Use deploy_url for Vercel deployment
         shouldOpenPreview: !!project.project_url,
+        pageNumber:page
       },
     });
   };

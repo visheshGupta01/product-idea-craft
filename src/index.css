@@ -433,3 +433,18 @@
   opacity: 0.9;
 }
 
+/* Force dark theme on autofill (Chrome/Safari/Edge) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #1A1A1A inset !important;
+  box-shadow: 0 0 0px 1000px #1A1A1A inset !important;
+
+  -webkit-text-fill-color: #ffffff !important; /* Text stays white */
+  caret-color: #ffffff !important;
+
+  background-color: #1A1A1A !important;
+  color: #ffffff !important;
+}
+

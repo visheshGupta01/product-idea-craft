@@ -15,6 +15,7 @@ interface FileUploaderProps {
   uploadedFiles: UploadedFile[];
   onRemoveFile: (fileName: string) => void;
   disabled?: boolean;
+  iconColor?: string;
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
@@ -22,6 +23,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   uploadedFiles,
   onRemoveFile,
   disabled = false,
+  iconColor
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -110,7 +112,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         {isUploading ? (
           <Loader2 className="w-4 h-4 text-sidebar-accent animate-spin text-white" />
         ) : (
-          <Paperclip className="w-4 h-4 text-sidebar-accent text-white" />
+          <Paperclip className={`w-5 h-5 text-[#5C5C5C] ${iconColor}`}/>
         )}
       </button>
     </>

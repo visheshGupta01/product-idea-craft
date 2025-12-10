@@ -131,7 +131,7 @@ const ProfilePopup = ({
     // { id: 'security', label: 'Security', icon: Shield },
     { id: "billing", label: "Credits and Billing", icon: CreditCard },
     { id: "usage", label: "Usage Stats", icon: BarChart3 },
-    { id: "support", label: "Support and feedback", icon: MessageCircle },
+    { id: "support", label: "Report and Issue", icon: MessageCircle },
   ];
 
   const renderContent = () => {
@@ -195,7 +195,7 @@ const ProfilePopup = ({
                     ? "Pro Plan"
                     : userData?.plan_id === 3
                     ? "Enterprise Plan"
-                    : "Free Plan"}
+                    : "Lite Plan"}
                 </Badge>
               </div>
             </div>
@@ -767,7 +767,7 @@ const FeedbackForm: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-xl font-semibold mb-2">Support & Feedback</h3>
+        <h3 className="text-xl font-semibold mb-2">Report & Issue</h3>
         <p className="text-muted-foreground text-sm">
           Get help or share your thoughts with our team
         </p>

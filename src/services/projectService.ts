@@ -45,7 +45,11 @@ export interface ProjectDetails {
     };
   };
   title: string;
+  has_assigned:boolean
+  task_id:number
 }
+
+export let lastHasMore: boolean = false;
 
 export const fetchProjects = async (
   page: number = 1
@@ -57,6 +61,9 @@ export const fetchProjects = async (
     );
 
     if (response.data.success) {
+       //  Store has_more and page without changing return type
+      lastHasMore = response.data.has_more ?? false;
+
       // Empty array is a valid response, not an error
       return Array.isArray(response.data.projects) ? response.data.projects : [];
     } else {

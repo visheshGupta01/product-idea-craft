@@ -8,12 +8,14 @@ interface SessionValidatorProps {
   sessionId: string;
   onValidationComplete: (isValid: boolean) => void;
   children?: React.ReactNode;
+  pageNumber?:number;
 }
 
 export const SessionValidator: React.FC<SessionValidatorProps> = ({
   sessionId,
   onValidationComplete,
   children,
+  pageNumber
 }) => {
   const [isValidating, setIsValidating] = useState(true);
   const navigate = useNavigate();
@@ -29,7 +31,7 @@ export const SessionValidator: React.FC<SessionValidatorProps> = ({
 
       try {
         // Check if user owns this session
-        const userProjects = await fetchProjects();
+        const userProjects = await fetchProjects(pageNumber);
         const ownsSession = userProjects.some(
           (project) => project.session_id === sessionId
         );
