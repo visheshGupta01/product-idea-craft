@@ -127,6 +127,7 @@ const PricingModal: React.FC<PricingModalProps> = ({
         plan_name: planName,
         credits: selectedPlan?.credits || 0,
         plan_id: selectedPlan?.id || selectedPlan?.planid || 0,
+        country: profile?.country || "US",
       });
     } catch (error) {
       toast.error("Failed to process payment. Please try again.");

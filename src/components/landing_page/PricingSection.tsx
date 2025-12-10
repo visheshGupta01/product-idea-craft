@@ -76,6 +76,7 @@ const PricingSection: React.FC = () => {
         plan_name: plan.name,
         credits: plan.credits || 0,
         plan_id: plan.id || plan.planid || 0,
+        country: profile?.country || "US",
       };
       await createRazorpayPayment(paymentData);
     } catch (error) {
