@@ -33,20 +33,23 @@ export const createRazorpayPayment = async (
     //console.log('Creating Razorpay order with data:', paymentData);
 
     // Create order on backend
-    const response = await apiClient.post<RazorpayOrderResponse>(
+    const res = await apiClient.post<RazorpayOrderResponse>(
       "/api/payment/pay",
       {
         user_id: paymentData.user_uuid,
         amount: parseFloat(paymentData.price),
         currency: "USD",
         credits: paymentData.credits,
-        planid: paymentData.plan_id,
+        plan_id: paymentData.plan_id,
         plan_name: paymentData.plan_name,
         country: paymentData.country,
       }
     );
 
-    //console.log('Razorpay order response:', response.data);
+    const response = res.data;
+
+    console.log('Razorpay order response:', response.data);
+    console.log('Razorpay order ID:', response.data.id);
 
     if (!response.data.id) {
       throw new Error("Failed to create order");
