@@ -351,7 +351,7 @@ const navigate = useNavigate();
                   //disabled={!hasValidPreview}
                   className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-800 hover:text-white"
                 >
-                  isAssigned
+                  Message Developer
                 </Button>
               </TooltipTrigger>
               {/* <TooltipContent>Open Preview in New Tab</TooltipContent> */}

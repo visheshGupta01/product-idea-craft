@@ -320,7 +320,7 @@ const UserTasksPage: React.FC = () => {
                                               size="sm"
                                               onClick={() =>
                                                 navigate("/inbox", {
-                                                  state: { taskId: task.id },
+                                                  state: { task: task.id },
                                                 })
                                               }
                                             >

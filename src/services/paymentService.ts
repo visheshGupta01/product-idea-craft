@@ -41,6 +41,8 @@ export const createRazorpayPayment = async (
         currency: "USD",
         credits: paymentData.credits,
         planid: paymentData.plan_id,
+        plan_name: paymentData.plan_name,
+        country: paymentData.country,
       }
     );
 

@@ -281,7 +281,7 @@ const TasksPage: React.FC = () => {
                           size="sm"
                           onClick={() =>
                             navigate("/developer/inbox", {
-                              state: { taskId: task.id },
+                              state: { task: task.id },
                             })
                           }
                         >

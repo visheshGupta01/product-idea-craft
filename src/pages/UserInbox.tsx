@@ -18,14 +18,13 @@ const UserInbox: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
-     const location = useLocation();
-   const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
   const [role, setRole] = useState("user");
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
-   const location = useLocation(); 
-    const openTaskId = location.state?.task || null;
+  const location = useLocation(); 
+  const openTaskId = location.state?.task || null;
+  const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
     //console.log(location.state,"hgf");
     
 
@@ -68,16 +67,6 @@ const UserInbox: React.FC = () => {
     },
     [toast]
   );
-// Auto-select task if we came from "Message" button
- useEffect(() => {
-   if (!preselectedTaskId || !tasks.length || selectedTask) return;
-
-   const taskToOpen = tasks.find((t) => t.id === preselectedTaskId);
-   if (taskToOpen) {
-     setSelectedTask(taskToOpen);
-     fetchMessages(taskToOpen.id);
-   }
- }, [preselectedTaskId, tasks, selectedTask, fetchMessages]);
   
   useEffect(() => {
     fetchInbox();
@@ -115,6 +104,11 @@ const UserInbox: React.FC = () => {
     };
   }, [wsService, selectedTask, fetchInbox]);
   useEffect(() => {
+    console.log("Tasks updated:", tasks);
+    console.log("Open Task ID:", openTaskId);
+    console.log("Selected Task:", selectedTask);
+    console.log("Messages:", messages);
+    console.log("Preselected Task ID:", preselectedTaskId);
     if (tasks.length === 0) return;
     if (!openTaskId) return;
 
