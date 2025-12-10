@@ -63,100 +63,106 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.type === "user";
   const showLoading = !isUser && isStreaming && message.content.trim() === "";
 
-
   return (
-    <div className="mb-6 group">
-      {/* Row 1: Avatar + Bubble */}
-      <div
-        className={`flex items-end ${
-          isUser ? "flex-row-reverse space-x-reverse" : ""
-        }`}
-      >
-        <Avatar className="w-8 h-8 flex-shrink-0">
-          <AvatarFallback
-            className={
-              isUser ? "bg-blue-500 text-white" : "bg-purple-500 text-white"
-            }
+    <div className="mb-6 w-full group">
+      {/* Center Chat Like Figma */}
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-[700px] px-6">
+          <div
+            className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
           >
-            {isUser ? (
-              <User className="w-4 h-4" />
-            ) : showLoading ? (
-              <LoadingSpinner size="sm" className="text-white" />
-            ) : (
-              <Bot className="w-4 h-4" />
-            )}
-          </AvatarFallback>
-        </Avatar>
+            {/* Avatar */}
+            <div className={`flex-shrink-0 mb-2`}>
+              <Avatar className="w-8 h-8">
+                <AvatarFallback
+                  className={
+                    isUser
+                      ? "bg-blue-500 text-white"
+                      : "bg-purple-500 text-white"
+                  }
+                >
+                  {isUser ? (
+                    <User className="w-4 h-4" />
+                  ) : showLoading ? (
+                    <LoadingSpinner size="sm" className="text-white" />
+                  ) : (
+                    <Bot className="w-4 h-4" />
+                  )}
+                </AvatarFallback>
+              </Avatar>
+            </div>
 
-        <div
-          className={`ml-3 px-4 py-3 rounded-2xl shadow-sm overflow-hidden break-words max-w-[75%] min-w-0 ${
-            isUser
-              ? "bg-[#FFB3E6] text-gray-900 rounded-br-sm mr-2"
-              : "bg-[#bfdbff] text-black rounded-bl-sm"
-          }`}
-        >
-          {isUser ? (
-            <div className="whitespace-pre-wrap text-sm leading-relaxed">
-              {message.content}
+            {/* Bubble - Figma Width */}
+            <div
+              className={`px-4 py-3 rounded-2xl shadow-sm break-words w-fit max-w-[100%] ${
+                isUser
+                  ? "bg-[#FFB3E6] text-gray-900 rounded-br-sm"
+                  : "bg-[#bfdbff] text-black rounded-bl-sm"
+              }`}
+            >
+              {isUser ? (
+                <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                  {message.content}
+                </div>
+              ) : showLoading ? (
+                <div className="flex items-center gap-2">
+                  <LoadingSpinner size="sm" />
+                  <span className="text-sm text-black">Thinking...</span>
+                </div>
+              ) : (
+                <div className="text-sm leading-relaxed">
+                  <MarkdownRenderer content={message.content} />
+                </div>
+              )}
             </div>
-          ) : showLoading ? (
-            <div className="flex items-center gap-2">
-              <LoadingSpinner size="sm" />
-              <span className="text-sm text-black">Thinking...</span>
-            </div>
-          ) : (
-            <div className="text-sm leading-relaxed">
-              <MarkdownRenderer content={message.content} />
-            </div>
-          )}
+
+            {/* Buttons */}
+            {!isWelcomeMessage && (
+              <div
+                className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-2`}
+              >
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 hover:bg-gray-500 text-white"
+                        onClick={() => copyToClipboard(message.content)}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="text-xs">
+                      Copy text
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {!isUser && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 hover:bg-gray-500 text-white"
+                          onClick={() =>
+                            downloadAsText(message.content, message.id)
+                          }
+                        >
+                          <Download className="h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs">
+                        Download as text
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </TooltipProvider>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
-      {/* Row 2: Buttons (outside bubble, does not affect avatar alignment) */}
-      {!isWelcomeMessage && (
-        <div
-          className={`flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1 ml-11 ${
-            isUser ? "justify-end mr-11 ml-0" : "justify-start"
-          }`}
-        >
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
-                  onClick={() => copyToClipboard(message.content)}
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                Copy text
-              </TooltipContent>
-            </Tooltip>
-
-            {!isUser && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-7 p-0 hover:bg-gray-500 text-white hover:text-white"
-                    onClick={() => downloadAsText(message.content, message.id)}
-                  >
-                    <Download className="h-3 w-3" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="text-xs">
-                  Download as text
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </TooltipProvider>
-        </div>
-      )}
     </div>
   );
 };

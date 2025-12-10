@@ -1,9 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Message } from "@/types";
-import {
-  StreamingWebSocketClient,
-  StreamingCallbacks,
-} from "@/services/streamingWebSocket";
+import { StreamingWebSocketClient } from "@/services/streamingWebSocket";
+import { StreamingCallbacks, ChatStatus } from "@/types/websocketEvents";
 import { useChatPersistence } from "./useChatPersistence";
 
 export interface StreamingChatState {
@@ -11,6 +9,8 @@ export interface StreamingChatState {
   isLoadingMessages: boolean;
   isStreaming: boolean;
   isProcessingTools: boolean;
+  chatStatus: ChatStatus;
+  statusMessage: string;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   projectUrl: string;
   sitemap: any;
@@ -18,7 +18,7 @@ export interface StreamingChatState {
 }
 
 export interface StreamingChatActions {
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, model?: string) => Promise<void>;
   addMessage: (message: Omit<Message, "id">) => Message;
   updateMessage: (messageId: string, content: string) => void;
   clearMessages: () => void;
@@ -49,8 +49,11 @@ export const useStreamingChat = (
     title,
     setProjectUrl,
   } = useChatPersistence(sessionId);
+
   const [isStreaming, setIsStreaming] = useState(false);
   const [isProcessingTools, setIsProcessingTools] = useState(false);
+  const [chatStatus, setChatStatus] = useState<ChatStatus>("idle");
+  const [statusMessage, setStatusMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsClientRef = useRef<StreamingWebSocketClient | null>(null);
 
@@ -59,7 +62,7 @@ export const useStreamingChat = (
     if (projectUrl && onFrontendGenerated && !isLoadingMessages) {
       onFrontendGenerated(projectUrl);
     }
-  }, [projectUrl, isLoadingMessages]);  //removed onFrontendGenerated from dependencies to avoid infinite loop
+  }, [projectUrl, isLoadingMessages]);
 
   // Initialize WebSocket client
   useEffect(() => {
@@ -116,15 +119,26 @@ export const useStreamingChat = (
       wsClientRef.current.stopGeneration();
       setIsStreaming(false);
       setIsProcessingTools(false);
+      setChatStatus("idle");
+      setStatusMessage("");
     }
   }, []);
 
+  const resetStates = useCallback(() => {
+    setIsStreaming(false);
+    setIsProcessingTools(false);
+    setChatStatus("idle");
+    setStatusMessage("");
+  }, []);
+
   const sendMessage = useCallback(
-    async (content: string): Promise<void> => {
+    async (content: string, model: string = "kimik2"): Promise<void> => {
       if (!content.trim() || !wsClientRef.current) return;
 
-      // Set streaming state
+      // Set initial states
       setIsStreaming(true);
+      setChatStatus("streaming");
+      setStatusMessage("");
 
       try {
         // Add user message after ensuring connection
@@ -152,9 +166,8 @@ export const useStreamingChat = (
         const callbacks: StreamingCallbacks = {
           onContent: (text: string) => {
             streamingContent += text;
-
             // Check for insufficient balance in message content
-            if (
+             if (
               streamingContent.toLowerCase().includes("insufficient balance")
             ) {
               onInsufficientBalance?.();
@@ -162,10 +175,9 @@ export const useStreamingChat = (
               setIsProcessingTools(false);
               return;
             }
-
             updateMessage(aiMessage.id, streamingContent);
 
-            // Check for frontend_code_generator tool output with ngrok URL
+            // Check for frontend_code_generator tool output with preview URL
             if (
               (text.includes("[Tool Output for frontend_code_generator]:") &&
                 text.includes("preview.imagine.bo")) ||
@@ -177,15 +189,18 @@ export const useStreamingChat = (
               );
               if (urlMatch && onFrontendGenerated) {
                 const localUrl = urlMatch[0];
-                // Add timestamp to force reload
-                const urlWithTimestamp = `${localUrl}${localUrl.includes('?') ? '&' : '?'}_t=${Date.now()}`;
-                setProjectUrl(urlWithTimestamp); // Store in session storage
+                const urlWithTimestamp = `${localUrl}${
+                  localUrl.includes("?") ? "&" : "?"
+                }_t=${Date.now()}`;
+                setProjectUrl(urlWithTimestamp);
                 onFrontendGenerated(urlWithTimestamp);
               }
             }
 
             // Check for sitemap_user_idea tool output
-            if (streamingContent.includes("[Tool Output for sitemap_user_idea]:")) {
+            if (
+              streamingContent.includes("[Tool Output for sitemap_user_idea]:")
+            ) {
               const sitemapMatch = streamingContent.match(
                 /\[Tool Output for sitemap_user_idea\]:\s*(\{[\s\S]*?\})\s*(?=\[Tool Output|\n\n|$)/
               );
@@ -194,40 +209,137 @@ export const useStreamingChat = (
                   const sitemapData = JSON.parse(sitemapMatch[1]);
                   onSitemapGenerated(sitemapData);
                 } catch (e) {
-                  //console.error("Failed to parse sitemap:", e);
+                  // Failed to parse sitemap
                 }
               }
             }
           },
-          onToolStart: () => {
+
+          onToolStart: (message?: string) => {
             setIsProcessingTools(true);
+            setChatStatus("tool_running");
+            setStatusMessage(message || "Running tool...");
           },
-          onToolEnd: () => {
+
+          onToolOutput: (message: string) => {
+            streamingContent += message;
+            updateMessage(aiMessage.id, streamingContent);
+          },
+
+          onToolComplete: (message?: string) => {
             setIsProcessingTools(false);
+            setChatStatus("streaming");
+            setStatusMessage("");
           },
-          onComplete: (fullContent: string) => {
-            // Use the accumulated streaming content if it's longer than fullContent
-            const finalContent =
-              streamingContent.length > fullContent.length
-                ? streamingContent
-                : fullContent;
-            // console.log("Final streamed content:", finalContent);
-            updateMessage(aiMessage.id, finalContent);
-            setIsStreaming(false);
+
+          onToolError: (message: string) => {
             setIsProcessingTools(false);
+            setChatStatus("error");
+            setStatusMessage(message || "Tool error occurred");
           },
+
+          onStreamStart: () => {
+            setIsStreaming(true);
+            setChatStatus("streaming");
+          },
+
+          onStreamEnd: () => {
+            updateMessage(aiMessage.id, streamingContent);
+            resetStates();
+          },
+
+          onStreamError: (message: string) => {
+            updateMessage(
+              aiMessage.id,
+              streamingContent || `Error: ${message}`
+            );
+            setChatStatus("error");
+            setStatusMessage(message);
+            setTimeout(resetStates, 2000);
+          },
+
+          onThinking: () => {
+            setChatStatus("thinking");
+            setStatusMessage("Thinking...");
+          },
+
+          onGenerating: () => {
+            setChatStatus("generating");
+            setStatusMessage("Generating frontend...");
+          },
+
+          onPreviewStart: (message?: string) => {
+            setChatStatus("preview_generating");
+            setStatusMessage(message || "Generating preview...");
+          },
+
+          onPreviewDone: (message?: string) => {
+            setChatStatus("streaming");
+            setStatusMessage("");
+            // If message contains URL, trigger preview
+            if (message && onFrontendGenerated) {
+              const urlMatch = message.match(
+                /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo|\.devpreview\.imagine\.bo)\/?/
+              );
+              if (urlMatch) {
+                const localUrl = urlMatch[0];
+                const urlWithTimestamp = `${localUrl}${
+                  localUrl.includes("?") ? "&" : "?"
+                }_t=${Date.now()}`;
+                setProjectUrl(urlWithTimestamp);
+                onFrontendGenerated(urlWithTimestamp);
+              }
+            }
+          },
+
+          onPreviewError: (message: string) => {
+            setChatStatus("error");
+            setStatusMessage(message || "Preview generation failed");
+          },
+
+          onProgressStart: (message?: string) => {
+            setChatStatus("generating");
+            setStatusMessage(message || "Processing...");
+          },
+
+          onProgressDone: (message?: string) => {
+            setChatStatus("streaming");
+            setStatusMessage("");
+          },
+
+          onPricingLow: (message: string) => {
+            // Trigger insufficient balance popup
+            onInsufficientBalance?.();
+            resetStates();
+          },
+
           onError: (error: Error) => {
             updateMessage(
               aiMessage.id,
-              `Sorry, I encountered an error while processing your message. Please try again.\n\nError: ${error.message}`
+              streamingContent ||
+                `Sorry, I encountered an error: ${error.message}`
             );
+            setChatStatus("error");
+            setStatusMessage(error.message);
+            setTimeout(resetStates, 2000);
+          },
 
-            setIsStreaming(false);
-            setIsProcessingTools(false);
+          onSuccess: (message?: string) => {
+            updateMessage(aiMessage.id, streamingContent);
+            resetStates();
+          },
+
+          onInfo: (message: string) => {
+            // Info messages can be shown as status or appended to content
+            setStatusMessage(message);
           },
         };
 
-        await wsClientRef.current.sendStreamingMessage(content, callbacks);
+        await wsClientRef.current.sendStreamingMessage(
+          content,
+          model,
+          callbacks
+        );
       } catch (error) {
         // Add error message
         addMessage({
@@ -238,17 +350,24 @@ export const useStreamingChat = (
           timestamp: new Date(),
         });
 
-        // Clear loading states
-        setIsStreaming(false);
-        setIsProcessingTools(false);
+        resetStates();
       }
     },
-    [addMessage, updateMessage, connect, onFrontendGenerated, onSitemapGenerated, onInsufficientBalance, setProjectUrl]
+    [
+      addMessage,
+      updateMessage,
+      connect,
+      onFrontendGenerated,
+      onSitemapGenerated,
+      onInsufficientBalance,
+      setProjectUrl,
+      resetStates,
+    ]
   );
 
   // Filter out empty messages before returning, but keep them during streaming
-  const filteredMessages = isStreaming 
-    ? messages 
+  const filteredMessages = isStreaming
+    ? messages
     : messages.filter((msg) => msg.content.trim() !== "");
 
   return {
@@ -256,6 +375,8 @@ export const useStreamingChat = (
     isLoadingMessages,
     isStreaming,
     isProcessingTools,
+    chatStatus,
+    statusMessage,
     messagesEndRef,
     sendMessage,
     addMessage,

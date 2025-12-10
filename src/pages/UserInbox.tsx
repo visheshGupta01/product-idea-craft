@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
 import { Loader2 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const UserInbox: React.FC = () => {
   const [tasks, setTasks] = useState<InboxTask[]>([]);
@@ -17,10 +18,16 @@ const UserInbox: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+     const location = useLocation();
+   const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
   const [role, setRole] = useState("user");
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
+   const location = useLocation(); 
+    const openTaskId = location.state?.task || null;
+    //console.log(location.state,"hgf");
+    
 
   const fetchInbox = useCallback(async () => {
     try {
@@ -61,7 +68,17 @@ const UserInbox: React.FC = () => {
     },
     [toast]
   );
+// Auto-select task if we came from "Message" button
+ useEffect(() => {
+   if (!preselectedTaskId || !tasks.length || selectedTask) return;
 
+   const taskToOpen = tasks.find((t) => t.id === preselectedTaskId);
+   if (taskToOpen) {
+     setSelectedTask(taskToOpen);
+     fetchMessages(taskToOpen.id);
+   }
+ }, [preselectedTaskId, tasks, selectedTask, fetchMessages]);
+  
   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);
@@ -97,7 +114,16 @@ const UserInbox: React.FC = () => {
       wsService.disconnect();
     };
   }, [wsService, selectedTask, fetchInbox]);
+  useEffect(() => {
+    if (tasks.length === 0) return;
+    if (!openTaskId) return;
 
+    const found = tasks.find((t) => t.id === openTaskId);
+    if (found) {
+      setSelectedTask(found);
+      fetchMessages(found.id);
+    }
+  }, [tasks, openTaskId, fetchMessages]);
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
     //console.log("Selected task:", task);

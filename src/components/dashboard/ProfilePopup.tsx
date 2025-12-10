@@ -21,6 +21,7 @@ import {
   Settings,
   Eye,
   EyeOff,
+  Bug,
   Plus,
   BarChart3,
 } from "lucide-react";
@@ -131,7 +132,7 @@ const ProfilePopup = ({
     // { id: 'security', label: 'Security', icon: Shield },
     { id: "billing", label: "Credits and Billing", icon: CreditCard },
     { id: "usage", label: "Usage Stats", icon: BarChart3 },
-    { id: "support", label: "Support and feedback", icon: MessageCircle },
+    { id: "support", label: "Report and Issue", icon: Bug },
   ];
 
   const renderContent = () => {
@@ -195,7 +196,7 @@ const ProfilePopup = ({
                     ? "Pro Plan"
                     : userData?.plan_id === 3
                     ? "Enterprise Plan"
-                    : "Free Plan"}
+                    : "Lite Plan"}
                 </Badge>
               </div>
             </div>
@@ -333,14 +334,26 @@ const ProfilePopup = ({
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="font-medium">
-                          {userData?.plan_name || "Free Plan"}
+                          <div className="font-medium">
+                            {userData?.plan_id === 1
+                              ? "Free Plan"
+                              : userData?.plan_id === 2
+                              ? "Pro Plan"
+                              : userData?.plan_id === 3
+                              ? "Enterprise Plan"
+                              : "Free Plan"}
+                          </div>{" "}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {userData?.plan_expires_at
-                            ? `Expires: ${new Date(
-                                userData.plan_expires_at
-                              ).toLocaleDateString()}`
-                            : "No expiration"}
+                          {userData?.plan_started_at && (
+                            <div className="text-sm text-muted-foreground">
+                              {userData?.plan_started_at
+                                ? `Started: ${new Date(
+                                    userData.plan_started_at
+                                  ).toLocaleDateString()}`
+                                : "Not started"}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <Badge
@@ -755,7 +768,7 @@ const FeedbackForm: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-xl font-semibold mb-2">Support & Feedback</h3>
+        <h3 className="text-xl font-semibold mb-2">Report & Issue</h3>
         <p className="text-muted-foreground text-sm">
           Get help or share your thoughts with our team
         </p>

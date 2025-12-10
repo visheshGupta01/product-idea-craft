@@ -38,6 +38,9 @@ export const DeveloperOverview: React.FC = () => {
     useState<DeveloperProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"tasks" | "reviews">("tasks");
+    const [taskSearch, setTaskSearch] = useState("");
+
+
   const [taskFilter, setTaskFilter] = useState<
     | "all"
     | "awaiting"
@@ -220,35 +223,40 @@ export const DeveloperOverview: React.FC = () => {
 
   const calculateProgress = () => {
     if (!profileData?.developer_info) return 0;
-    const { total_tasks, total_done } = profileData.developer_info;
-    return total_tasks > 0 ? Math.round((total_done / total_tasks) * 100) : 0;
+    const { total_tasks, total_done, total_pending } = profileData.developer_info;
+    return total_tasks> 0 ? Math.round((total_done / total_tasks) * 100) : 0;
   };
 
-  const loadReviews = async () => {
-    if (!profileData?.developer_info?.id) return;
+const loadReviews = async () => {
+  if (!profileData?.developer_info?.id) return;
 
-    try {
-      setLoadingReviews(true);
-      const response = await developerService.getReviews(
-        profileData.developer_info.id,
-        reviewPage
-      );
-      if (reviewPage === 1) {
-        setReviews(response.reviews || []);
-      } else {
-        setReviews((prev) => [...prev, ...(response.reviews || [])]);
-      }
-      setHasMoreReviews(reviewPage < (response.total_pages || 0));
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load reviews",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingReviews(false);
+  try {
+    setLoadingReviews(true);
+    const response = await developerService.getReviews(
+      profileData.developer_info.id,
+      reviewPage
+    );
+    // console.log(response,"response");
+
+    const reviewsArray = response.reviews || [];
+
+    if (reviewPage === 1) {
+      setReviews(reviewsArray);
+    } else {
+      setReviews((prev) => [...prev, ...reviewsArray]);
     }
-  };
+
+    setHasMoreReviews(reviewPage < (response.total_pages || 0));
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to load reviews",
+      variant: "destructive",
+    });
+  } finally {
+    setLoadingReviews(false);
+  }
+};
 
   const loadMoreTasks = async () => {
     if (!profileData?.developer_info?.id || loadingMoreTasks) return;
@@ -295,16 +303,37 @@ export const DeveloperOverview: React.FC = () => {
       ...additionalTasks,
     ];
 
-    if (taskFilter === "all") {
-      return tasks;
+    // if (taskFilter === "all") {
+    //   return tasks;
+    // }
+    // if (taskFilter === "awaiting") {
+    //   return profileData.null_status_tasks;
+    // }
+    // if (taskFilter === "pending") {
+    //   return profileData.active_tasks;
+    // }
+    // return tasks.filter((task) => task.status === taskFilter);
+
+    if (taskFilter !== "all") {
+      if (taskFilter === "awaiting") {
+        tasks = profileData.null_status_tasks;
+      } else if (taskFilter === "pending") {
+        tasks = profileData.active_tasks;
+      } else {
+        tasks = tasks.filter((task) => task.status === taskFilter);
+      }
     }
-    if (taskFilter === "awaiting") {
-      return profileData.null_status_tasks;
+
+    if (taskSearch.trim()) {
+      const s = taskSearch.toLowerCase();
+      tasks = tasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(s) ||
+          task.description.toLowerCase().includes(s)
+      );
     }
-    if (taskFilter === "pending") {
-      return profileData.active_tasks;
-    }
-    return tasks.filter((task) => task.status === taskFilter);
+
+    return tasks;
   };
 
   const getTaskFilterCount = (
@@ -596,14 +625,23 @@ export const DeveloperOverview: React.FC = () => {
                             </div>
                             <div className="flex gap-2 ml-4">
                               <Button
+                                onClick={() =>
+                                  navigate("/developer/inbox", {
+                                    state: { taskId: task.id },
+                                  })
+                                }
+                                size="sm"
+                                variant="outline"
+                              >
+                                Message
+                              </Button>
+                              <Button
                                 size="sm"
                                 className="bg-pink-500 hover:bg-pink-600 text-white px-4"
                                 onClick={() => handleAcceptTask(task.id)}
                                 disabled={updatingTasks.has(task.id)}
                               >
-                                {updatingTasks.has(task.id)
-                                  ? "Accepting..."
-                                  : "Accept"}
+                                Accept
                               </Button>
                               <Button
                                 size="sm"
@@ -612,9 +650,7 @@ export const DeveloperOverview: React.FC = () => {
                                 onClick={() => handleDenyTask(task.id)}
                                 disabled={updatingTasks.has(task.id)}
                               >
-                                {updatingTasks.has(task.id)
-                                  ? "Declining..."
-                                  : "Decline"}
+                                Decline
                               </Button>
                             </div>
                           </div>
@@ -626,7 +662,9 @@ export const DeveloperOverview: React.FC = () => {
                       (profileData.null_status_tasks?.length || 0) > 3 && (
                         <div className="flex justify-center pt-2">
                           <Button
-                            onClick={() => navigate("/developer/tasks")}
+                            onClick={() => {
+                              setShowAllNewTasks(true);
+                            }}
                             variant="outline"
                             className="w-full"
                           >
@@ -650,6 +688,8 @@ export const DeveloperOverview: React.FC = () => {
                         type="text"
                         placeholder="Search Projects"
                         className="px-3 py-1 text-sm border rounded-md"
+                        value={taskSearch}
+                        onChange={(e) => setTaskSearch(e.target.value)}
                       />
                     </div>
                   </div>
@@ -731,6 +771,17 @@ export const DeveloperOverview: React.FC = () => {
                               {task.status === "todo" && (
                                 <>
                                   <Button
+                                    onClick={() =>
+                                      navigate("/developer/inbox", {
+                                        state: { taskId: task.id },
+                                      })
+                                    }
+                                    size="sm"
+                                    variant="outline"
+                                  >
+                                    Message
+                                  </Button>
+                                  <Button
                                     size="sm"
                                     className="bg-black text-white hover:bg-gray-800"
                                     onClick={() => handleStartWorking(task.id)}
@@ -760,7 +811,15 @@ export const DeveloperOverview: React.FC = () => {
                                       ? "Completing..."
                                       : "Mark Complete"}
                                   </Button>
-                                  <Button size="sm" variant="outline">
+                                  <Button
+                                    onClick={() =>
+                                      navigate("/developer/inbox", {
+                                        state: { taskId: task.id },
+                                      })
+                                    }
+                                    size="sm"
+                                    variant="outline"
+                                  >
                                     Message
                                   </Button>
                                 </>

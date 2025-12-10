@@ -9,12 +9,14 @@ interface VoiceRecorderProps {
   onTranscript: (text: string) => void;
   disabled?: boolean;
   className?: string;
+  iconColor?: string;
 }
 
 export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   onTranscript,
   disabled = false,
   className,
+  iconColor
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -116,6 +118,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   };
 
   const getIconColor = () => {
+    if (iconColor) return iconColor;
     if (isProcessing || isRecording) return "text-black";
     return "text-white";
   };

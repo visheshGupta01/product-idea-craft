@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Mail, AlertCircle, CheckCircle } from "lucide-react";
@@ -19,6 +19,22 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
 }) => {
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+    const [timer, setTimer] = useState(0); // Timer in seconds
+
+  useEffect(() => {
+    let interval: number | undefined;
+
+    if (timer > 0) {
+      interval = window.setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timer]);
+
 
   const handleResendVerification = async () => {
     setIsResending(true);
@@ -30,10 +46,14 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
         title: "Success",
         description: "Verification link sent! Please check your email.",
       });
+      setTimer(60);
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to resend verification link.",
+        description:
+          error.response?.data?.error.message ||
+          "Failed to resend verification link.",
+
         variant: "destructive",
       });
     } finally {
@@ -68,16 +88,26 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
             </div>
           )}
 
+          {timer > 0 && (
+            <div className="text-sm text-muted-foreground">
+              You can resend in {timer} second{timer > 1 ? "s" : ""}
+            </div>
+          )}
           <div className="flex flex-col gap-3 pt-2">
             <Button
               onClick={handleResendVerification}
-              disabled={isResending || resendSuccess}
+              disabled={isResending || timer > 0}
               className="w-full"
             >
               {isResending ? (
                 <>
                   <Mail className="mr-2 h-4 w-4 animate-pulse" />
                   Sending...
+                </>
+              ) : timer > 0 ? (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Wait {timer}s
                 </>
               ) : (
                 <>

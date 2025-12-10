@@ -34,13 +34,15 @@ export const createRazorpayPayment = async (
 
     // Create order on backend
     const response = await apiClient.post<RazorpayOrderResponse>(
-      "/api/payment/create-order",
+      "/api/payment/pay",
       {
         user_id: paymentData.user_uuid,
         amount: parseFloat(paymentData.price),
         currency: "USD",
         credits: paymentData.credits,
         planid: paymentData.plan_id,
+        country: paymentData.country,
+        plan_name: paymentData.plan_name,
       }
     );
 

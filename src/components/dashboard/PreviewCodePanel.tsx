@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Code,
+  CodeXml,
   Expand,
   Monitor,
   Tablet,
@@ -9,11 +9,24 @@ import {
   Save,
   ExternalLink,
   RefreshCw,
-  Github,
   Rocket,
   User,
+  Github,
+  ChevronDown,
+  Route,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -31,11 +44,11 @@ import DevicePreview, { DeviceType } from "./DevicePreview";
 import FullscreenPreview from "./FullscreenPreview";
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
-import { PinkLoadingDots } from "@/components/ui/pink-loading-dots";
 import { cn } from "@/lib/utils";
 import AssignToDeveloper from "./AssignToDeveloper";
 import GitHubIntegration from "./GitHubIntegration";
 import VercelIntegration from "./VercelIntegration";
+import { useNavigate } from "react-router-dom";
 
 interface PreviewCodePanelProps {
   previewUrl?: string;
@@ -43,6 +56,8 @@ interface PreviewCodePanelProps {
   selectedPage: FileNode | null;
   isAiResponding?: boolean;
   isProcessingTools?: boolean;
+  isAssigned?:boolean
+  taskId?:number
 }
 
 const PreviewCodePanel = ({
@@ -51,6 +66,8 @@ const PreviewCodePanel = ({
   selectedPage,
   isAiResponding = false,
   isProcessingTools = false,
+  isAssigned,
+  taskId
 }: PreviewCodePanelProps) => {
   const [activeDevice, setActiveDevice] = useState<DeviceType>("desktop");
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
@@ -59,6 +76,8 @@ const PreviewCodePanel = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [originalContent, setOriginalContent] = useState<string>("");
   const [currentContent, setCurrentContent] = useState<string>("");
+  const [routes, setRoutes] = useState<string[]>([]);
+  const [currentRoute, setCurrentRoute] = useState("/");
   const [iframeSrc, setIframeSrc] = useState(previewUrl || "");
   const [fileContent, setFileContent] = useState<
     { path: string; content: string }[]
@@ -66,14 +85,17 @@ const PreviewCodePanel = ({
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showGithubModal, setShowGithubModal] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
+const navigate = useNavigate();
+//console.log(taskId,"tasuysd");
 
   useEffect(() => {
     if (previewUrl) {
       setIframeSrc(previewUrl);
     }
   }, [previewUrl]);
-
+  //<CodeXml />
   const hasValidPreview = iframeSrc && iframeSrc !== "";
+//console.log(isAssigned,"bool");
 
   const handleFileSelect = (file: FileNode) => {
     // console.log({ fileFromExp: file });
@@ -105,6 +127,41 @@ const PreviewCodePanel = ({
     fetchFiles();
   }, [sessionId]);
 
+  // Fetch routes when sessionId changes
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      if (!sessionId) return;
+      try {
+        const response = await apiClient.get(
+          `/api/chat/pages-routes?session_id=${sessionId}`
+        );
+        if (response.data.success && response.data.routes) {
+          setRoutes(response.data.routes);
+        }
+      } catch (error) {
+        console.error("Failed to fetch routes:", error);
+        setRoutes([]);
+      }
+    };
+    fetchRoutes();
+  }, [sessionId]);
+
+  const handleRouteChange = (route: string) => {
+    setCurrentRoute(route);
+    if (previewUrl) {
+      try {
+        const url = new URL(previewUrl);
+        url.pathname = route;
+        url.searchParams.set("_t", Date.now().toString());
+        setIframeSrc(url.toString());
+      } catch (e) {
+        // fallback: append route to previewUrl
+        const baseUrl = previewUrl.split("?")[0].replace(/\/$/, "");
+        setIframeSrc(`${baseUrl}${route}?_t=${Date.now()}`);
+      }
+    }
+  };
+
   useEffect(() => {
     // console.log("Use effect working for selectedPage change");
 
@@ -125,7 +182,6 @@ const PreviewCodePanel = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPage]); // we intentionally keep dependency to selectedPage only
-
 
   const handleCodeToggle = (checked: boolean) => {
     setShowCode(checked);
@@ -213,10 +269,24 @@ const PreviewCodePanel = ({
                     onClick={() => handleCodeToggle(!showCode)}
                     className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
                   >
-                    <Code className="h-3.5 w-3.5" />
+                    <CodeXml className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Toggle Code View</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleReload}
+                    disabled={!hasValidPreview}
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Refresh Preview</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -232,24 +302,61 @@ const PreviewCodePanel = ({
                 </TooltipTrigger>
                 <TooltipContent>Open Preview in New Tab</TooltipContent>
               </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
+            </div>
+            {/* Routes Dropdown */}
+            {routes.length > 0 && hasValidPreview && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={handleReload}
-                    disabled={!hasValidPreview}
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 gap-1"
                   >
-                    <RefreshCw className="h-3.5 w-3.5" />
+                    <Route className="h-3.5 w-3.5" />
+                    <span className="max-w-[100px] truncate">
+                      {currentRoute}
+                    </span>
+                    <ChevronDown className="h-3 w-3" />
                   </Button>
-                </TooltipTrigger>
-                <TooltipContent>Refresh Preview</TooltipContent>
-              </Tooltip>
-            </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="bg-[#252525] border-[#2A2A2A] max-h-[300px] overflow-y-auto z-50"
+                >
+                  {routes.map((route) => (
+                    <DropdownMenuItem
+                      key={route}
+                      onClick={() => handleRouteChange(route)}
+                      className={cn(
+                        "text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer",
+                        currentRoute === route && "bg-gray-700 text-white"
+                      )}
+                    >
+                      {route}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
-            <div className="flex items-center gap-1">
+            
+            <div className="flex items-center gap-2">
+              {isAssigned && (
+              <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={()=>navigate('/inbox',{state:{task:taskId}})}
+                  //disabled={!hasValidPreview}
+                  className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  isAssigned
+                </Button>
+              </TooltipTrigger>
+              {/* <TooltipContent>Open Preview in New Tab</TooltipContent> */}
+            </Tooltip>
+            )}
               {sessionId && (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -257,7 +364,7 @@ const PreviewCodePanel = ({
                       variant="outline"
                       size="sm"
                       onClick={() => setShowAssignModal(true)}
-                      className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                      className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-800 hover:text-white"
                     >
                       <User className="h-3.5 w-3.5" />
                       Assign to Dev
@@ -273,7 +380,7 @@ const PreviewCodePanel = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowGithubModal(true)}
-                    className="h-8 px-2 bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                    className="h-8 px-2 bg-transparent border-none  text-gray-300 hover:bg-gray-800 hover:text-white"
                   >
                     <Github className="h-3.5 w-3.5" />
                     Github
@@ -287,7 +394,7 @@ const PreviewCodePanel = ({
                   <Button
                     size="sm"
                     onClick={() => setShowPublishModal(true)}
-                    className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-md"
+                    className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-2xl"
                   >
                     <Rocket className="h-3.5 w-3.5" />
                     Publish
@@ -340,7 +447,7 @@ const PreviewCodePanel = ({
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                     activeDevice === "desktop"
-                      ? "bg-white/20 text-white"
+                      ? "bg-[#FF00A9] text-white"
                       : "text-white/70 hover:text-white"
                   )}
                 >
@@ -352,7 +459,7 @@ const PreviewCodePanel = ({
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                     activeDevice === "phone"
-                      ? "bg-white/20 text-white"
+                      ? "bg-[#FF00A9] text-white"
                       : "text-white/70 hover:text-white"
                   )}
                 >
@@ -364,7 +471,7 @@ const PreviewCodePanel = ({
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
                     activeDevice === "tablet"
-                      ? "bg-white/20 text-white"
+                      ? "bg-[#FF00A9] text-white"
                       : "text-white/70 hover:text-white"
                   )}
                 >
