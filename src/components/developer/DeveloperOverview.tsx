@@ -223,6 +223,7 @@ export const DeveloperOverview: React.FC = () => {
     const { total_tasks, total_done } = profileData.developer_info;
     return total_tasks > 0 ? Math.round((total_done / total_tasks) * 100) : 0;
   };
+console.log(profileData,"profile");
 
   const loadReviews = async () => {
     if (!profileData?.developer_info?.id) return;
@@ -233,8 +234,9 @@ export const DeveloperOverview: React.FC = () => {
         profileData.developer_info.id,
         reviewPage
       );
+      
       if (reviewPage === 1) {
-        setReviews(response.reviews || []);
+        setReviews(response || []);
       } else {
         setReviews((prev) => [...prev, ...(response.reviews || [])]);
       }

@@ -48,7 +48,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     if (!newPassword.trim() || !confirmPassword.trim()) {
       toast({
         title: "Error",
@@ -67,14 +67,16 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 6 characters long.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!passwordRegex.test(newPassword)) {
+    toast({
+      title: "Error",
+      description:
+        "Password must be at least 8 characters long and include at least one uppercase and one lowercase letter.",
+      variant: "destructive",
+    });
+    return;
+  }
+
 
     if (!resetToken) {
       toast({
@@ -194,7 +196,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
           </div>
 
           <div className="text-xs text-muted-foreground">
-            Password must be at least 6 characters long.
+            Password must be at least 8 characters long.
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
