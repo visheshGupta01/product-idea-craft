@@ -5,6 +5,7 @@ export interface ProjectFromAPI {
   session_id: string;
   title: string;
   project_url: string;
+  screen_shot:string;
   deploy_url: string;
   created_at: string;
 }
@@ -44,12 +45,25 @@ export interface ProjectDetails {
     };
   };
   title: string;
+  has_assigned:boolean
+  task_id:number
 }
 
-export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
+export let lastHasMore: boolean = false;
+
+export const fetchProjects = async (
+  page: number = 1
+): Promise<
+   ProjectFromAPI[]> => {
   try {
-    const response = await apiClient.get(API_ENDPOINTS.PROJECT.LIST);
+    const response = await apiClient.get(
+      `${API_ENDPOINTS.PROJECT.LIST}?page=${page}`
+    );
+
     if (response.data.success) {
+       //  Store has_more and page without changing return type
+      lastHasMore = response.data.has_more ?? false;
+
       // Empty array is a valid response, not an error
       return Array.isArray(response.data.projects) ? response.data.projects : [];
     } else {
@@ -60,6 +74,7 @@ export const fetchProjects = async (): Promise<ProjectFromAPI[]> => {
     throw error;
   }
 };
+
 
 export const fetchProjectDetails = async (
   sessionId: string

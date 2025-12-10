@@ -196,7 +196,7 @@ export class AuthService {
     } catch (error) {
       return {
         success: false,
-        message: "Email verification failed",
+        message:  error.response.data.error.message
       };
     }
   }
@@ -246,7 +246,7 @@ export class AuthService {
     } catch (error) {
       return {
         success: false,
-        message: "Network error. Please try again.",
+        message:  error.response.data.error.message,
       };
     }
   }

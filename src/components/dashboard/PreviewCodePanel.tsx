@@ -48,6 +48,7 @@ import { cn } from "@/lib/utils";
 import AssignToDeveloper from "./AssignToDeveloper";
 import GitHubIntegration from "./GitHubIntegration";
 import VercelIntegration from "./VercelIntegration";
+import { useNavigate } from "react-router-dom";
 
 interface PreviewCodePanelProps {
   previewUrl?: string;
@@ -55,6 +56,8 @@ interface PreviewCodePanelProps {
   selectedPage: FileNode | null;
   isAiResponding?: boolean;
   isProcessingTools?: boolean;
+  isAssigned?:boolean
+  taskId?:number
 }
 
 const PreviewCodePanel = ({
@@ -63,6 +66,8 @@ const PreviewCodePanel = ({
   selectedPage,
   isAiResponding = false,
   isProcessingTools = false,
+  isAssigned,
+  taskId
 }: PreviewCodePanelProps) => {
   const [activeDevice, setActiveDevice] = useState<DeviceType>("desktop");
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
@@ -80,6 +85,8 @@ const PreviewCodePanel = ({
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showGithubModal, setShowGithubModal] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
+const navigate = useNavigate();
+//console.log(taskId,"tasuysd");
 
   useEffect(() => {
     if (previewUrl) {
@@ -88,6 +95,7 @@ const PreviewCodePanel = ({
   }, [previewUrl]);
   //<CodeXml />
   const hasValidPreview = iframeSrc && iframeSrc !== "";
+//console.log(isAssigned,"bool");
 
   const handleFileSelect = (file: FileNode) => {
     // console.log({ fileFromExp: file });
@@ -331,7 +339,24 @@ const PreviewCodePanel = ({
               </DropdownMenu>
             )}
 
+            
             <div className="flex items-center gap-2">
+              {isAssigned && (
+              <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={()=>navigate('/inbox',{state:{task:taskId}})}
+                  //disabled={!hasValidPreview}
+                  className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  isAssigned
+                </Button>
+              </TooltipTrigger>
+              {/* <TooltipContent>Open Preview in New Tab</TooltipContent> */}
+            </Tooltip>
+            )}
               {sessionId && (
                 <Tooltip>
                   <TooltipTrigger asChild>

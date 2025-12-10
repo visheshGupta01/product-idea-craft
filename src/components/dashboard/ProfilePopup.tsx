@@ -196,7 +196,7 @@ const ProfilePopup = ({
                     ? "Pro Plan"
                     : userData?.plan_id === 3
                     ? "Enterprise Plan"
-                    : "Free Plan"}
+                    : "Lite Plan"}
                 </Badge>
               </div>
             </div>
@@ -769,7 +769,6 @@ const FeedbackForm: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h3 className="text-xl font-semibold mb-2">Report & Issue</h3>
-
         <p className="text-muted-foreground text-sm">
           Get help or share your thoughts with our team
         </p>

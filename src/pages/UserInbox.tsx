@@ -24,6 +24,10 @@ const UserInbox: React.FC = () => {
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
+   const location = useLocation(); 
+    const openTaskId = location.state?.task || null;
+    //console.log(location.state,"hgf");
+    
 
   const fetchInbox = useCallback(async () => {
     try {
@@ -110,7 +114,16 @@ const UserInbox: React.FC = () => {
       wsService.disconnect();
     };
   }, [wsService, selectedTask, fetchInbox]);
+  useEffect(() => {
+    if (tasks.length === 0) return;
+    if (!openTaskId) return;
 
+    const found = tasks.find((t) => t.id === openTaskId);
+    if (found) {
+      setSelectedTask(found);
+      fetchMessages(found.id);
+    }
+  }, [tasks, openTaskId, fetchMessages]);
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
     //console.log("Selected task:", task);

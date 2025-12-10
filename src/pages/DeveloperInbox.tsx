@@ -9,7 +9,6 @@ import { useUser } from "@/context/UserContext";
 import { Loader2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
-
 const DeveloperInbox: React.FC = () => {
   const [tasks, setTasks] = useState<InboxTask[]>([]);
   const [selectedTask, setSelectedTask] = useState<InboxTask | null>(null);
@@ -66,6 +65,16 @@ const DeveloperInbox: React.FC = () => {
     },
     [toast]
   );
+   useEffect(() => {
+    if (tasks.length === 0) return;
+    if (!openTaskId) return;
+
+    const found = tasks.find((t) => t.id === openTaskId);
+    if (found) {
+      setSelectedTask(found);
+      fetchMessages(found.id);
+    }
+  }, [tasks, openTaskId, fetchMessages]);
 
    useEffect(() => {
     fetchInbox();

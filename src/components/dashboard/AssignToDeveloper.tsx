@@ -37,6 +37,7 @@ import {
 } from "@/services/developerService";
 import { useToast } from "@/hooks/use-toast";
 import ReviewDialog from "./ReviewDialog";
+import { useNavigate } from "react-router-dom";
 
 interface AssignToDeveloperProps {
   isOpen: boolean;
@@ -62,6 +63,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   const [dueDate, setDueDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const { toast } = useToast();
 
   // console.log(developerDetails,"details");
@@ -70,6 +72,8 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   
   
   
+  const navigate=useNavigate()
+const [taskId,setTaskId] = useState(null);
   useEffect(() => {
     if (isOpen && currentView === "list") {
       fetchDevelopers();
@@ -167,6 +171,27 @@ const handleAssignTask = async () => {
     selected.setHours(0, 0, 0, 0);
 
     if (selected < today) {
+    setLoading(true);
+    try {
+      const formatDateWithEndOfDay = (date: Date) => {
+      const adjustedDate = new Date(date);
+      adjustedDate.setHours(23, 59, 59, 999);
+      return adjustedDate.toISOString();
+    };
+      const taskData: CreateTaskData = {
+        title: taskTitle.trim(),
+        description: taskDescription.trim(),
+        session_id: sessionId,
+        assignee_id: selectedDeveloper.id,
+        due_date: dueDate ? formatDateWithEndOfDay(dueDate): undefined,
+      };
+
+      const res = await developerService.createTask(taskData);
+      
+      setCurrentView("success");
+      setTaskId(res.id)
+    } catch (error) {
+      //console.error("Error creating task:", error);
       toast({
         title: "Invalid Due Date",
         description: "Due date cannot be in the past.",
@@ -215,6 +240,32 @@ const handleAssignTask = async () => {
     setCurrentPage(1);
     onClose();
   };
+
+  
+useEffect(() => {
+  if (currentView === "success") {
+    setCountdown(5); // reset timer every time success opens
+
+    const interval = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    const timer = setTimeout(() => {
+      handleClose();
+
+      navigate("/inbox", {
+        state: { task: taskId }
+      });
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+    };
+  }
+}, [currentView, taskId, navigate]);
+
+
 
   const renderStars = (rating: number | null) => {
     if (!rating) return null;
@@ -594,7 +645,12 @@ const handleAssignTask = async () => {
             </Avatar>
           </div>
         </div>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={()=>navigate("/inbox",{
+        state: { task: taskId }
+      })}>Message</Button>
+          <p className="text-sm text-muted-foreground">
+        Redirecting in <span className="font-semibold">{countdown}</span> seconds...
+      </p>
       </div>
     );
   };

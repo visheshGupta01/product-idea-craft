@@ -44,6 +44,7 @@ const MainDashboard = ({
   const [isToolProcessing, setIsToolProcessing] = useState(false);
 
   const { initialResponse } = useUser();
+//console.log(projectDetails,"pree");
 
   // Track if frontend creation task is completed (task id 6: "First Draft Generated")
   const [isFrontendCreated, setIsFrontendCreated] = useState(
@@ -83,6 +84,7 @@ const MainDashboard = ({
 
     loadProjectDetails();
   }, [sessionId]);
+//console.log(projectDetails,"oerref");
 
   // Auto-collapse sidebar on non-main screens and reset to main view when sessionId changes
   useEffect(() => {
@@ -195,6 +197,8 @@ const MainDashboard = ({
                   selectedPage={selectedPage}
                   isAiResponding={isAiStreaming}
                   isProcessingTools={isToolProcessing}
+                  isAssigned={projectDetails?.has_assigned}
+                  taskId={projectDetails?.task_id}
                 />
               </div>
             </ResizablePanel>
