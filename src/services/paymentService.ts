@@ -11,6 +11,7 @@ export interface PaymentRequest {
   plan_name: string;
   credits: number;
   plan_id: number;
+  country: string;
 }
 
 export interface RazorpayOrderResponse {
@@ -30,15 +31,15 @@ export const createRazorpayPayment = async (
   paymentData: PaymentRequest
 ): Promise<void> => {
   try {
-    //console.log('Creating Razorpay order with data:', paymentData);
+    console.log('Creating Razorpay order with data:', paymentData);
 
-    // Create order on backend
+    // FIXED: Let the backend decide the currency based on country
+    // Remove the hardcoded "USD" currency
     const res = await apiClient.post<RazorpayOrderResponse>(
       "/api/payment/pay",
       {
         user_id: paymentData.user_uuid,
         amount: parseFloat(paymentData.price),
-        currency: "USD",
         credits: paymentData.credits,
         plan_id: paymentData.plan_id,
         plan_name: paymentData.plan_name,
@@ -50,24 +51,60 @@ export const createRazorpayPayment = async (
 
     console.log('Razorpay order response:', response.data);
     console.log('Razorpay order ID:', response.data.id);
+    console.log('Currency from backend:', response.data.currency);
 
     if (!response.data.id) {
       throw new Error("Failed to create order");
     }
 
-    // Initialize Razorpay checkout
+    // Display currency conversion info to user if needed
+    const displayCurrency = response.data.currency === 'INR' ? '₹' : '$';
+    const displayAmount = response.data.currency === 'INR' 
+      ? (response.data.amount / 100).toFixed(2) 
+      : paymentData.price;
+
+    // Initialize Razorpay checkout with explicit config
     const options = {
       key: RAZORPAY_KEY,
-      amount: response.data.amount,
-      currency: response.data.currency,
+      amount: response.data.amount, // Amount from backend (in paise/cents)
+      currency: response.data.currency, // Currency from backend
       name: "imagine.bo",
-      description: `${paymentData.plan_name} Plan`,
+      description: `${paymentData.plan_name} Plan - ${displayCurrency}${displayAmount}`,
       order_id: response.data.id,
-      // inside createRazorpayPayment -> options.handler
+      // CRITICAL: Explicitly enable all payment methods
+      config: {
+        display: {
+          blocks: {
+            banks: {
+              name: 'Pay using',
+              instruments: [
+                {
+                  method: 'card',
+                },
+                {
+                  method: 'netbanking',
+                },
+                {
+                  method: 'wallet',
+                },
+                {
+                  method: 'upi',
+                }
+              ],
+            },
+          },
+          sequence: ['block.banks'],
+          preferences: {
+            show_default_blocks: true,
+          },
+        },
+      },
       handler: async function (razorpayResponse: any) {
         try {
           // Mark payment as attempted
           sessionStorage.setItem("payment_attempted", "true");
+
+          console.log('Payment successful, verifying...', razorpayResponse);
 
           // Verify payment on backend
           const verifyRes = await apiClient.post(
@@ -82,21 +119,30 @@ export const createRazorpayPayment = async (
             }
           );
 
+          console.log('Payment verified successfully');
+
           // Track Purchase and Subscribe events after successful payment
           try {
             const numericValue = parseFloat(String(paymentData.price)) || 0;
+            
+            // Use the actual currency for tracking
+            const trackingCurrency = response.data.currency === 'INR' ? 'INR' : 'USD';
+            const trackingValue = response.data.currency === 'INR' 
+              ? response.data.amount / 100 
+              : numericValue;
+
             trackEvent("Purchase", {
               content_name: paymentData.plan_name,
-              value: numericValue,
-              currency: "USD",
+              value: trackingValue,
+              currency: trackingCurrency,
             });
             trackEvent("Subscribe", {
               content_name: paymentData.plan_name,
-              value: numericValue,
-              currency: "USD",
+              value: trackingValue,
+              currency: trackingCurrency,
             });
           } catch (fbErr) {
-            // don't block flow if fb tracking fails
+            console.warn('Facebook tracking failed:', fbErr);
           }
 
           // Mark payment as completed
@@ -106,9 +152,16 @@ export const createRazorpayPayment = async (
           // Redirect to success page
           window.location.href = "/payment-success";
         } catch (err) {
+          console.error('Payment verification failed:', err);
           // Verification failed
           sessionStorage.setItem("payment_attempted", "true");
           window.location.href = "/payment-failed";
+        }
+      },
+      modal: {
+        ondismiss: function() {
+          console.log('Payment modal closed by user');
+          // Optional: Track when user closes the payment modal
         }
       },
       prefill: {
@@ -121,10 +174,23 @@ export const createRazorpayPayment = async (
       },
     };
 
+    console.log('Opening Razorpay checkout with options:', {
+      amount: options.amount,
+      currency: options.currency,
+      order_id: options.order_id
+    });
+
     const rzp = new window.Razorpay(options);
+    
+    rzp.on('payment.failed', function (response: any) {
+      console.error('Payment failed:', response.error);
+      sessionStorage.setItem("payment_attempted", "true");
+      window.location.href = "/payment-failed";
+    });
+
     rzp.open();
   } catch (error) {
-    //console.error("Error creating Razorpay payment:", error);
+    console.error("Error creating Razorpay payment:", error);
     throw error;
   }
 };
@@ -134,7 +200,7 @@ export const getPaymentPlans = async () => {
     const response = await apiClient.get(API_ENDPOINTS.PAYMENT.GET_PRICING);
     return response.data;
   } catch (error) {
-    //console.error("Error fetching payment plans:", error);
+    console.error("Error fetching payment plans:", error);
     throw error;
   }
 };
