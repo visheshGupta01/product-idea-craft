@@ -131,7 +131,7 @@ const ProfilePopup = ({
     // { id: 'security', label: 'Security', icon: Shield },
     { id: "billing", label: "Credits and Billing", icon: CreditCard },
     { id: "usage", label: "Usage Stats", icon: BarChart3 },
-    { id: "support", label: "Report and Issue", icon: MessageCircle },
+    { id: "support", label: "Report an Issue", icon: MessageCircle },
   ];
 
   const renderContent = () => {
@@ -767,7 +767,7 @@ const FeedbackForm: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-xl font-semibold mb-2">Report & Issue</h3>
+        <h3 className="text-xl font-semibold mb-2">Report an Issue</h3>
         <p className="text-muted-foreground text-sm">
           Get help or share your thoughts with our team
         </p>
