@@ -439,9 +439,20 @@ useEffect(() => {
           </div>
 
           <div className="bg-muted/30 p-4 rounded-lg">
-            <h3 className="font-semibold mb-3">
-              Reviews ({developerDetails.reviews.length || 0})
-            </h3>
+            <div className="flex justify-between items-center mb-3">
+    <h3 className="font-semibold">
+      Reviews ({developerDetails.reviews.length || 0})
+    </h3>
+
+    <Button
+      variant="outline"
+      onClick={() => setShowReviewDialog(true)}
+      className="flex items-center gap-2"
+    >
+      <MessageSquare className="h-4 w-4" />
+      Write a Review
+    </Button>
+  </div>
             <div className="space-y-3">
               {(developerDetails.reviews && developerDetails.reviews.length > 0
                 ? developerDetails.reviews
@@ -485,7 +496,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className="flex gap-2 mt-4">
+          {/* <div className="flex gap-2 mt-4">
             <Button
               variant="outline"
               className="flex-1"
@@ -494,7 +505,7 @@ useEffect(() => {
               <MessageSquare className="h-4 w-4 mr-2" />
               Write a Review
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     );
@@ -509,7 +520,7 @@ useEffect(() => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setCurrentView("profile")}
+            onClick={() => setCurrentView("list")}
             className="p-1"
           >
             <ArrowLeft className="h-4 w-4" />
