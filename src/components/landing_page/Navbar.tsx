@@ -7,9 +7,15 @@ import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
 import { DeveloperEnrollmentForm } from '../developer/DeveloperEnrollmentForm';
 import ProfilePopup from '../dashboard/ProfilePopup';
-import { User, FolderOpen, Settings, LogOut, CreditCard, CheckSquare, Inbox } from 'lucide-react';
+import { User, FolderOpen, Settings, LogOut, CreditCard, CheckSquare, Inbox, BellDot } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../..//assets/ImagineboDarkBackground.svg"; // Adjust if needed
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Navbar: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -19,6 +25,24 @@ const Navbar: React.FC = () => {
   const [profileSection, setProfileSection] = useState<string>('basic-info');
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
+  const [notifications] = useState([
+  {
+    id: 1,
+    title: "New project assigned",
+    time: "2 minutes ago",
+  },
+  {
+    id: 2,
+    title: "Subscription renewed successfully",
+    time: "1 hour ago",
+  },
+  {
+    id: 3,
+    title: "You have a new message",
+    time: "Yesterday",
+  },
+]);
+
   return (
     <nav className="bg-[#1B2123] border-b border-white rounded-lg fixed top-0 left-0 w-full z-50">
       <div className="max-w-[1732px] mx-auto h-[60px] px-4 md:px-6 flex items-center justify-between">
@@ -51,7 +75,67 @@ const Navbar: React.FC = () => {
           </a>
         </div>
 
-        {/* Authentication block - Responsive */}
+        <div className='flex gap-2'>
+          {isAuthenticated && (
+  <DropdownMenu>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="h-11 w-11 border-none rounded-full text-gray-300 hover:text-white hover:bg-gray-800"
+            >
+              <BellDot className="h-6 w-6" />
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Notifications</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+
+    <DropdownMenuContent
+      align="end"
+      className="w-80 bg-[#1B2123] text-white border border-gray-700 p-0"
+    >
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-gray-700 text-sm font-medium">
+        Notifications
+      </div>
+
+      {/* Notifications list */}
+      <div className="max-h-80 overflow-y-auto">
+        {notifications.length > 0 ? (
+          notifications.map((item) => (
+            <DropdownMenuItem
+              key={item.id}
+              className="flex flex-col items-start gap-1 px-4 py-3 cursor-pointer hover:bg-gray-800"
+            >
+              <span className="text-sm">{item.title}</span>
+              <span className="text-xs text-gray-400">{item.time}</span>
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <div className="px-4 py-8 text-center text-sm text-gray-400">
+            No notifications
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-gray-700">
+        <button
+          onClick={() => navigate("/notifications")}
+          className="w-full py-2 text-sm text-pink-400 hover:bg-gray-800"
+        >
+          View all
+        </button>
+      </div>
+    </DropdownMenuContent>
+  </DropdownMenu>
+)}
+
+           {/* Authentication block - Responsive */}
         {isAuthenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -146,6 +230,8 @@ const Navbar: React.FC = () => {
             </div>
           </div>
         )}
+        </div>
+       
       </div>
 
       {/* Authentication Modals */}

@@ -223,7 +223,10 @@ const UserTasksPage: React.FC = () => {
             className="pl-10 w-72"
           />
         </div>
-        <Select value={statusFilter} onValueChange={handleStatusChange}>
+        <Select value={
+    statusFilter === "not_accepted" ? "pending" :
+    statusFilter
+  } onValueChange={handleStatusChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
