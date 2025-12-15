@@ -51,13 +51,12 @@ const Pricing = () => {
 
     try {
       const userData = localStorage.getItem("user_data");
-      if (!userData) return false;
+      if (!userData) return console.warn("No user data found in localStorage"), false;
 
       const parsedUserData = JSON.parse(userData);
       const userPlanId = parsedUserData?.plan_id;
 
       if (!userPlanId) return false;
-
       const currentPlan = plans.find((p) => p.name === planName);
       const currentPlanId = currentPlan?.id || currentPlan?.planid;
 
@@ -96,12 +95,11 @@ const Pricing = () => {
     try {
       const selectedPlan = plans.find((p) => p.name === planName);
       await createRazorpayPayment({
-        user_uuid: profile?.id || user?.id || "",
-        price: price,
+        user_id: profile?.id || user?.id || "",
+        amount: price,
         plan_name: planName,
         credits: selectedPlan?.credits || 0,
         plan_id: selectedPlan?.id || selectedPlan?.planid || 0,
-        country: profile?.country || "US",
       });
     } catch (error) {
       toast.error("Failed to process payment. Please try again.");

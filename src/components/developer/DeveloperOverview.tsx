@@ -38,8 +38,7 @@ export const DeveloperOverview: React.FC = () => {
     useState<DeveloperProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"tasks" | "reviews">("tasks");
-    const [taskSearch, setTaskSearch] = useState("");
-
+  const [taskSearch, setTaskSearch] = useState("");
 
   const [taskFilter, setTaskFilter] = useState<
     | "all"
@@ -223,40 +222,41 @@ export const DeveloperOverview: React.FC = () => {
 
   const calculateProgress = () => {
     if (!profileData?.developer_info) return 0;
-    const { total_tasks, total_done, total_pending } = profileData.developer_info;
-    return total_tasks> 0 ? Math.round((total_done / total_tasks) * 100) : 0;
+    const { total_tasks, total_done, total_pending } =
+      profileData.developer_info;
+    return total_tasks > 0 ? Math.round((total_done / total_tasks) * 100) : 0;
   };
 
-const loadReviews = async () => {
-  if (!profileData?.developer_info?.id) return;
+  const loadReviews = async () => {
+    if (!profileData?.developer_info?.id) return;
 
-  try {
-    setLoadingReviews(true);
-    const response = await developerService.getReviews(
-      profileData.developer_info.id,
-      reviewPage
-    );
-    // console.log(response,"response");
+    try {
+      setLoadingReviews(true);
+      const response = await developerService.getReviews(
+        profileData.developer_info.id,
+        reviewPage
+      );
+      // console.log(response,"response");
 
-    const reviewsArray = response.reviews || [];
+      const reviewsArray = response.reviews || [];
 
-    if (reviewPage === 1) {
-      setReviews(reviewsArray);
-    } else {
-      setReviews((prev) => [...prev, ...reviewsArray]);
+      if (reviewPage === 1) {
+        setReviews(reviewsArray);
+      } else {
+        setReviews((prev) => [...prev, ...reviewsArray]);
+      }
+
+      setHasMoreReviews(reviewPage < (response.total_pages || 0));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load reviews",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingReviews(false);
     }
-
-    setHasMoreReviews(reviewPage < (response.total_pages || 0));
-  } catch (error) {
-    toast({
-      title: "Error",
-      description: "Failed to load reviews",
-      variant: "destructive",
-    });
-  } finally {
-    setLoadingReviews(false);
-  }
-};
+  };
 
   const loadMoreTasks = async () => {
     if (!profileData?.developer_info?.id || loadingMoreTasks) return;
@@ -431,7 +431,7 @@ const loadReviews = async () => {
 
               <h2 className="text-xl font-semibold mb-1">{profile.name}</h2>
               <p className="text-sm text-muted-foreground mb-4">
-                {profile.email}
+                <i href={`mailto:${profile.email}`}>{profile.email}</i>
               </p>
 
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
@@ -468,7 +468,16 @@ const loadReviews = async () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Github className="w-4 h-4" />
                       <span className="truncate">
-                        {profile.github_url.replace("https://github.com/", "")}
+                        <i
+                          href={profile.github_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {profile.github_url.replace(
+                            "https://github.com/",
+                            ""
+                          )}
+                        </i>
                       </span>
                     </div>
                   )}
@@ -476,10 +485,16 @@ const loadReviews = async () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Linkedin className="w-4 h-4" />
                       <span className="truncate">
-                        {profile.linkedin_url.replace(
-                          "https://linkedin.com/in/",
-                          ""
-                        )}
+                        <i
+                          href={profile.linkedin_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {profile.linkedin_url.replace(
+                            "https://linkedin.com/in/",
+                            ""
+                          )}
+                        </i>
                       </span>
                     </div>
                   )}
@@ -961,4 +976,3 @@ const loadReviews = async () => {
     </div>
   );
 };
-
