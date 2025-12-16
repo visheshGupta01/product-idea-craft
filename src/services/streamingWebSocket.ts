@@ -250,7 +250,10 @@ export class StreamingWebSocketClient {
 
   stopGeneration() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ message: "stop" }));
+      this.ws.send(JSON.stringify({ 
+        message: "stop",
+        model: "Kimik2"
+     }));
     }
   }
 

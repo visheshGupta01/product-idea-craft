@@ -1,4 +1,3 @@
-// src/pages/PaypalCancel.tsx
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
