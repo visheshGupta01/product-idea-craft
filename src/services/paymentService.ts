@@ -87,7 +87,7 @@ export const createPayment = async (
     amount: Math.round(parseFloat(paymentData.amount)),
     plan_name: paymentData.plan_name,
     plan_id: paymentData.plan_id,
-    country: "US",
+    country: paymentData.country || getUserCountry(),
     credits: paymentData.credits,
   };
 
