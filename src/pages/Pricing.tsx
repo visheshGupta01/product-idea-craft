@@ -190,7 +190,6 @@ const Pricing = () => {
               "";
 
             // Normalize into an array of lines
-            // Normalize into an array of lines
             let usageLines: string[] = [];
 
             if (Array.isArray(usageRaw)) {
@@ -203,67 +202,70 @@ const Pricing = () => {
             } else {
               usageLines = [];
             }
-
-            // ❌ Remove any "OR" or "or" items entirely
-            const processedUsageLines = usageLines.filter(
-              (line) => !/^or$/i.test(line)
-            );
-
             return (
               <Card
                 key={plan.name}
-                className={`relative flex flex-col bg-[#16171d] border rounded-3xl shadow-lg overflow-hidden ${
+                className={`relative flex flex-col bg-[#16171d] border rounded-3xl overflow-hidden transition-transform ${
                   isRecommended
-                    ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/40 scale-[1.02]"
+                    ? "border-[#ff2fb3] shadow-[0_0_0_2px_#ff2fb3]"
                     : "border-white/10"
                 }`}
               >
-                {/* Recommended ribbon */}
                 {isRecommended && (
-                  <div className="absolute top-2 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold font-poppins bg-[hsl(var(--primary))] text-white shadow-md">
+                  <div className="absolute top-0 left-0 right-0 h-9 flex items-center justify-center bg-[#ff2fb3] text-xs font-bold tracking-wide font-poppins text-white rounded-t-3xl">
                     Recommended
                   </div>
                 )}
-
-                <CardHeader className="text-center pb-4 pt-8">
+                <CardHeader className="text-center pb-4 pt-12">
                   <CardTitle className="text-xl md:text-2xl font-bold mb-2 font-poppins">
                     {plan.name}
                   </CardTitle>
                   <CardDescription className="flex flex-col items-center justify-center gap-1 text-muted-foreground">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-3xl md:text-4xl font-bold font-poppins">
+                      <span className="text-5xl font-extrabold font-poppins text-white">
                         ${displayPrice}
                       </span>
-                      <span className="text-xs md:text-sm font-poppins text-muted-foreground">
+                      <span className="text-sm text-white/70 font-poppins">
                         /month
                       </span>
                     </div>
-                    <p className="text-xs md:text-sm font-poppins mt-1 text-[#ff4db8]">
+
+                    <p className="text-sm font-semibold mt-1 font-poppins text-[#ff2fb3]">
                       {plan.credits} credits
                     </p>
                   </CardDescription>
                 </CardHeader>
 
-                {/* Usage capacity grey box */}
-                {(usageLines.length > 0 || plan.usage || plan.usage_desc) && (
+                {usageLines.length > 0 && (
                   <div className="mx-6 mb-4 rounded-xl bg-[#262933] px-4 py-3 text-left">
-                    <p className="text-[11px] font-semibold mb-1 text-gray-100">
+                    <p className="text-xs font-poppins font-bold mb-1 text-gray-200">
                       Typical usage capacity*
                     </p>
-                    {processedUsageLines.length > 0 ? (
-                      <ul className="text-[11px] space-y-1 text-gray-200">
-                        {processedUsageLines.map((line: string, idx: number) => (
-                          <li key={idx} className="flex gap-2">
-                            <span>•</span>
-                            <span>{line.trim()}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-[11px] text-gray-200">
-                        {plan.usage || plan.usage_desc}
-                      </p>
-                    )}
+
+                    <div className="space-y-1 text-xs">
+                      {usageLines.map((line, idx) => {
+                        const isOr = /^or$/i.test(line);
+
+                        return isOr ? (
+                          // 🔹 OR styling
+                          <div
+                            key={idx}
+                            className="text-center text-gray-200 font-semibold italic tracking-wide"
+                          >
+                            OR
+                          </div>
+                        ) : (
+                          // 🔹 Normal usage item
+                          <div
+                            key={idx}
+                            className="text-[11px] space-y-1 font-poppins text-gray-200"
+                          >
+                            <span>• </span>
+                            <span>{line}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
@@ -281,7 +283,7 @@ const Pricing = () => {
 
                 <CardFooter className="px-6 pb-6 pt-2 mt-auto">
                   <Button
-                    className={`w-full font-semibold font-poppins rounded-full ${
+                    className={`w-full font-bold font-poppins rounded-xl ${
                       current
                         ? "bg-transparent border border-white/20 text-foreground hover:bg-white/5"
                         : "text-white"
@@ -315,7 +317,7 @@ const Pricing = () => {
         </section>
 
         <p className="text-center mt-10 text-xs md:text-sm text-muted-foreground font-poppins">
-          All plans include secure payments via Stripe & Razorpay
+          All plans include secure payments via PayPal & Razorpay
         </p>
       </main>
 

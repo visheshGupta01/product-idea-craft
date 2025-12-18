@@ -61,7 +61,7 @@ export const InboxList: React.FC<InboxListProps> = ({
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                      {task.description}
+                      {unreadCount > 0 ? (`You have ${unreadCount} unread message${unreadCount !== 1 ? "s" : ""}`) : task.description}
                     </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <MessageCircle className="h-3 w-3" />

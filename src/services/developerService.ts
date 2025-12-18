@@ -14,7 +14,7 @@ export interface DeveloperInfo {
   total_pending: number;
   total_done: number;
   bio: string;
-  experience: string;
+  experience: number;
   avg_rating: number;
   rating_count: number;
   email: string;
@@ -55,7 +55,7 @@ export interface UpdateProfileData {
   linkedin_url?: string;
   skills?: string[];
   company_name?: string;
-  experience?: string;
+  experience?: number;
   bio?: string;
   hourpaid?: number;
 }
@@ -91,7 +91,7 @@ export interface CreateDeveloperData {
   linkedin_url: string;
   skills: string[];
   company_name: string;
-  experience: string;
+  experience: number;
   bio: string;
   hourpaid: number;
 }
@@ -252,7 +252,7 @@ class DeveloperService {
     Available: boolean;
     Skills: string[];
     Bio: string;
-    Experience: string;
+    Experience: number;
     Reviews: any[];
   }> {
     try {
@@ -302,26 +302,8 @@ class DeveloperService {
       const res = await apiClient.get(
         `/api/reviews?dev_id=${developerId}&page=${page}`
       );
-
-      const array = Array.isArray(res.data) ? res.data : [];
-
-      // Convert raw backend review array → your Review type
-      const formatted = array.map((r: any) => ({
-        id: r.ID,
-        developer_id: r.developer_id,
-        reviewer_name: r.reviewer_name,
-        rating: r.rating,
-        comment: r.comment,
-        created_at: r.created_at,
-      }));
-
-      return {
-        reviews: formatted,
-        total: formatted.length,
-        page,
-        per_page: formatted.length,
-        total_pages: 1, // backend doesn’t paginate
-      };
+console.log("Raw reviews response:", res.data);
+      return res.data;  
     } catch (error) {
       throw error;
     }

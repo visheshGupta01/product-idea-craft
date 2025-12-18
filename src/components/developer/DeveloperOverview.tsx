@@ -7,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { Star, Github, Linkedin, Edit, Loader2, Pencil } from "lucide-react";
 import {
   developerService,
-  DeveloperInfo,
   DeveloperProfileResponse,
   Review,
 } from "@/services/developerService";
@@ -236,7 +235,6 @@ export const DeveloperOverview: React.FC = () => {
         profileData.developer_info.id,
         reviewPage
       );
-      // console.log(response,"response");
 
       const reviewsArray = response.reviews || [];
 
@@ -431,7 +429,7 @@ export const DeveloperOverview: React.FC = () => {
 
               <h2 className="text-xl font-semibold mb-1">{profile.name}</h2>
               <p className="text-sm text-muted-foreground mb-4">
-                <i href={`mailto:${profile.email}`}>{profile.email}</i>
+                <a href={`mailto:${profile.email}`}>{profile.email}</a>
               </p>
 
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
@@ -468,7 +466,7 @@ export const DeveloperOverview: React.FC = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Github className="w-4 h-4" />
                       <span className="truncate">
-                        <i
+                        <a
                           href={profile.github_url}
                           target="_blank"
                           rel="noreferrer"
@@ -477,7 +475,7 @@ export const DeveloperOverview: React.FC = () => {
                             "https://github.com/",
                             ""
                           )}
-                        </i>
+                        </a>
                       </span>
                     </div>
                   )}
@@ -485,7 +483,7 @@ export const DeveloperOverview: React.FC = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Linkedin className="w-4 h-4" />
                       <span className="truncate">
-                        <i
+                        <a
                           href={profile.linkedin_url}
                           target="_blank"
                           rel="noreferrer"
@@ -494,7 +492,7 @@ export const DeveloperOverview: React.FC = () => {
                             "https://linkedin.com/in/",
                             ""
                           )}
-                        </i>
+                        </a>
                       </span>
                     </div>
                   )}

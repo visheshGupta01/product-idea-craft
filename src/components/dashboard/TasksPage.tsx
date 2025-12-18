@@ -72,6 +72,18 @@ const UserTasksPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("DESC");
+  type SortKey =
+    | "title"
+    | "assignee_name"
+    | "status"
+    | "due_date"
+    | "created_at";
+
+  const [sortConfig, setSortConfig] = useState<{
+    key: SortKey;
+    direction: "ASC" | "DESC";
+  } | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -88,6 +100,7 @@ const UserTasksPage: React.FC = () => {
         sort,
       });
 
+      console.log('Loading tasks with params:', params.toString());
       const response = await apiClient.get(
         `${API_ENDPOINTS.USER.TASKS}?${params.toString()}`
       );
@@ -103,6 +116,39 @@ const UserTasksPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+const sortTasks = (tasks: Task[]) => {
+  if (!sortConfig) return tasks; // ⬅ let API sorting win
+
+  const { key, direction } = sortConfig;
+  return [...tasks].sort((a, b) => {
+    const aVal = a[key] ?? "";
+    const bVal = b[key] ?? "";
+
+    if (key.includes("date") || key.includes("created")) {
+      return direction === "ASC"
+        ? new Date(aVal).getTime() - new Date(bVal).getTime()
+        : new Date(bVal).getTime() - new Date(aVal).getTime();
+    }
+
+    return direction === "ASC"
+      ? String(aVal).localeCompare(String(bVal))
+      : String(bVal).localeCompare(String(aVal));
+  });
+};
+
+const handleColumnSort = (key: SortKey) => {
+  setSortConfig((prev) => {
+    if (prev?.key === key) {
+      return {
+        key,
+        direction: prev.direction === "ASC" ? "DESC" : "ASC",
+      };
+    }
+    return { key, direction: "ASC" };
+  });
+};
+
 
   useEffect(() => {
     loadTasks(1, statusFilter, sortOrder);
@@ -123,10 +169,14 @@ const UserTasksPage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleSortChange = (sort: string) => {
-    setSortOrder(sort);
-    setCurrentPage(1);
-  };
+const handleSortChange = (sort: "ASC" | "DESC") => {
+  setSortOrder(sort);
+  setSortConfig(null); // 🔑 reset table sorting
+  setCurrentPage(1);
+  loadTasks(1, statusFilter, sort);
+};
+
+
 
   const handlePageChange = (page: number) => {
     loadTasks(page, statusFilter, sortOrder);
@@ -171,14 +221,17 @@ const UserTasksPage: React.FC = () => {
     });
   };
 
-  const filteredTasks = searchQuery
+const filteredTasks = sortTasks(
+  searchQuery
     ? tasks.filter(
         (task) =>
           task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
           task.assignee_name.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : tasks;
+    : tasks
+);
+
 
   const getTaskStats = () => {
     const total = tasks.length;
@@ -239,11 +292,11 @@ const UserTasksPage: React.FC = () => {
         </Select>
         <Select value={sortOrder} onValueChange={handleSortChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort by date" />
+            <SelectValue placeholder="Sort by created date" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="DESC">Newest First</SelectItem>
-            <SelectItem value="ASC">Oldest First</SelectItem>
+            <SelectItem value="DESC">Due Date: Latest First</SelectItem>
+            <SelectItem value="ASC">Due Date: Earliest First</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -254,21 +307,53 @@ const UserTasksPage: React.FC = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleColumnSort("title")}
+                >
                   <div className="flex items-center gap-2">
                     Task
                     <ArrowUpDown className="h-4 w-4" />
                   </div>
                 </TableHead>
-                <TableHead>Assigned To</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>
+
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleColumnSort("assignee_name")}
+                >
+                  <div className="flex items-center gap-2">
+                    Assigned To
+                    <ArrowUpDown className="h-4 w-4" />
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleColumnSort("status")}
+                >
+                  <div className="flex items-center gap-2">
+                    Status
+                    <ArrowUpDown className="h-4 w-4" />
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleColumnSort("due_date")}
+                >
+                  <div className="flex items-center gap-2">
+                    Due Date
+                    <ArrowUpDown className="h-4 w-4" />
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleColumnSort("created_at")}
+                >
                   <div className="flex items-center gap-2">
                     Created
                     <ArrowUpDown className="h-4 w-4" />
                   </div>
                 </TableHead>
+
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -302,32 +387,32 @@ const UserTasksPage: React.FC = () => {
                     <TableCell>{formatDate(task.due_date)}</TableCell>
                     <TableCell>{formatDate(task.created_at)}</TableCell>
                     <TableCell>
-                                          <div className="flex gap-2">
-                                            {task.share_chat && (
-                                              <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() =>
-                                                  window.open(task.share_chat, "_blank")
-                                                }
-                                              >
-                                                View Chat
-                                              </Button>
-                                            )}
-                    
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() =>
-                                                navigate("/inbox", {
-                                                  state: { task: task.id },
-                                                })
-                                              }
-                                            >
-                                              Message
-                                            </Button>
-                                          </div>
-                                        </TableCell>
+                      <div className="flex gap-2">
+                        {task.share_chat && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              window.open(task.share_chat, "_blank")
+                            }
+                          >
+                            View Chat
+                          </Button>
+                        )}
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            navigate("/inbox", {
+                              state: { task: task.id },
+                            })
+                          }
+                        >
+                          Message
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))
               )}

@@ -118,7 +118,7 @@ export interface Developer {
   hour_paid: number;
   bio?: string;
   skills?: string;
-  experience?: string;
+  experience?: number;
   total_in_progress_task: number;
   company_name?: string;
   total_pending_task: number;

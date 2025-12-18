@@ -64,6 +64,9 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   const [countdown, setCountdown] = useState(5);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [developerReviews, setDeveloperReviews] = useState<any[]>([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [selectedReviewPage, setSelectedReviewPage] = useState(1);
   const [taskId, setTaskId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -100,7 +103,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
         created_at: dev.created_at || new Date().toISOString(),
         total_in_progress: dev.total_in_progress || 0,
         total_pending: dev.total_pending || 0,
-        experience: dev.experience || "",
+        experience: dev.experience || 0,
         rating_count: dev.rating_count || 0,
         email: dev.email || "",
       }));
@@ -115,6 +118,15 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
       setLoading(false);
     }
   };
+
+  const handleReviewAdded = (newReview: any) => {
+    setDeveloperReviews((prev: any) => ({
+      ...prev,
+      total_review: (prev.total_review || 0) + 1,
+      review: [newReview, ...(prev.review || [])], // 👈 prepend
+    }));
+  };
+
 
   const fetchDeveloperDetails = async (developerId: string) => {
     setLoading(true);
@@ -132,10 +144,44 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
     }
   };
 
+  const fetchDeveloperReviews = async (developerId: string, page: number) => {
+    setReviewLoading(true);
+    try {
+      const reviews = await developerService.getReviews(developerId, page);
+      console.log("Fetched reviews:", reviews);
+      return reviews
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load developer details",
+        variant: "destructive",
+      });
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const handleReviewViewMore = async (page: number) => {
+    if (selectedDeveloper) {
+      const reviews = await fetchDeveloperReviews(selectedDeveloper.id, page);
+      setSelectedReviewPage(page);
+      setDeveloperReviews((prev: any) => ({
+        ...prev,
+        review: [...(prev.review || []), ...(reviews?.review || [])],
+        HasMore: reviews?.HasMore,
+      }));
+      console.log("Fetched reviews:", reviews);
+      console.log("Updated reviews state:", developerReviews);
+    }
+  };
+
   const handleDeveloperSelect = async (developer: DeveloperInfo) => {
     setSelectedDeveloper(developer);
     setCurrentView("profile");
     await fetchDeveloperDetails(developer.id);
+    setSelectedReviewPage(1);
+    const reviews = await fetchDeveloperReviews(developer.id, 1);
+    setDeveloperReviews(reviews);
   };
 
   const handleAssignClick = () => {
@@ -401,7 +447,10 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
               {developerDetails.image ? (
-                <AvatarImage src={developerDetails.image} alt={developerDetails.name} />
+                <AvatarImage
+                  src={developerDetails.image}
+                  alt={developerDetails.name}
+                />
               ) : (
                 <AvatarFallback className="text-xl">
                   {selectedDeveloper.name
@@ -413,19 +462,28 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
               )}
             </Avatar>
             <div>
-              <h2 className="text-2xl font-semibold">{developerDetails.name}</h2>
+              <h2 className="text-2xl font-semibold">
+                {developerDetails.name}
+              </h2>
               <div className="flex items-center gap-2 mt-1">
                 {renderStars(developerDetails.rating)}
                 <span className="text-sm text-muted-foreground">
-                  ({developerDetails.rating || 0}) • {developerDetails.task_complete || 0} Projects
+                  ({developerDetails.rating || 0}) •{" "}
+                  {developerDetails.task_complete || 0} Projects
                 </span>
               </div>
             </div>
           </div>
           <div className="ml-auto text-right">
-            <div className="font-semibold text-lg">${developerDetails.hour_paid || 0}/hr</div>
+            <div className="font-semibold text-lg">
+              ${developerDetails.hour_paid || 0}/hr
+            </div>
             <div className="flex items-center gap-1 text-sm">
-              <div className={`h-2 w-2 rounded-full ${developerDetails.available ? "bg-green-500" : "bg-red-500"}`} />
+              <div
+                className={`h-2 w-2 rounded-full ${
+                  developerDetails.available ? "bg-green-500" : "bg-red-500"
+                }`}
+              />
               <span className="text-sm text-muted-foreground">
                 {developerDetails.available ? "Available Now" : "Unavailable"}
               </span>
@@ -434,44 +492,87 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
         </div>
 
         <div className="space-y-4">
-          <p className="text-muted-foreground">{developerDetails.bio || "Full-stack developer with 6+ years..."}</p>
+          <p className="text-muted-foreground">
+            {developerDetails.bio || "Full-stack developer with 6+ years..."}
+          </p>
 
           <div className="flex gap-1 flex-wrap">
             {(developerDetails.skills || []).map((skill: string) => (
-              <Badge key={skill} variant="secondary" className="bg-pink-500 text-white">
+              <Badge
+                key={skill}
+                variant="secondary"
+                className="bg-pink-500 text-white"
+              >
                 {skill}
               </Badge>
             ))}
           </div>
 
           <div className="bg-muted/30 p-4 rounded-lg">
-            <h3 className="font-semibold mb-3">Reviews ({developerDetails.reviews?.length || 0})</h3>
-            <div className="space-y-3">
-              {(developerDetails.reviews && developerDetails.reviews.length > 0
-                ? developerDetails.reviews
-                : []
-              ).map((review: any, index: number) => (
-                <div key={index} className="bg-background p-3 rounded-lg border">
-                  <div className="flex justify-between items-start mb-2">
-                    <p className="text-sm">{review.description || review.comment || "Great work!"}</p>
-                    <div className="flex ml-2">{renderStars(review.rating || 5)}</div>
+            <h3 className="font-semibold mb-3">
+              Reviews ({developerReviews?.total_review || 0})
+            </h3>
+
+            {reviewLoading ? (
+              <div className="text-center py-4 text-muted-foreground">
+                Loading reviews...
+              </div>
+            ) : developerReviews?.review?.length > 0 ? (
+              <div className="space-y-3">
+                {developerReviews.review.map((review: any, index: number) => (
+                  <div
+                    key={index}
+                    className="bg-background p-3 rounded-lg border"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-sm">
+                        {review.description || review.comment || "Great work!"}
+                      </p>
+                      <div className="flex ml-2">
+                        {renderStars(review.rating || 5)}
+                      </div>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground">
+                      Client:{" "}
+                      {review.client || review.reviewer_name || "Anonymous"} •{" "}
+                      {review.created_at
+                        ? new Date(review.created_at).toLocaleString("en-IN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })
+                        : "Recent"}
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    Client: {review.client || review.reviewer_name || "Anonymous"} •{" "}
-                    {review.date ? new Date(review.date).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })
-                      : review.created_at ? new Date(review.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })
-                      : "Recent"}
+                ))}
+
+                {developerReviews?.HasMore && (
+                  <div className="text-center mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        handleReviewViewMore(selectedReviewPage + 1)
+                      }
+                    >
+                      Load More Reviews
+                    </Button>
                   </div>
-                </div>
-              ))}
-              {(!developerDetails.reviews || developerDetails.reviews.length === 0) && (
-                <div className="text-center text-sm text-muted-foreground py-4">No reviews yet</div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center text-sm text-muted-foreground py-4">
+                No reviews yet
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Button variant="outline" className="flex-1" onClick={() => setShowReviewDialog(true)}>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setShowReviewDialog(true)}
+            >
               <MessageSquare className="h-4 w-4 mr-2" /> Write a Review
             </Button>
           </div>
@@ -586,7 +687,12 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose();
+      }}
+    >
       <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
@@ -603,11 +709,19 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
 
         {(currentView === "profile" || currentView === "assign") && (
           <div className="border-t pt-4 mt-4 flex justify-between">
-            <Button variant="outline" onClick={() => setCurrentView("list")}>
+            <Button variant="outline" onClick={() => {
+              setDeveloperDetails(null);
+              setSelectedDeveloper(null);
+              setDeveloperReviews(null);
+              setCurrentView("list")
+            }}>
               {currentView === "profile" ? "Collapse" : "Back"}
             </Button>
             {currentView === "profile" && (
-              <Button className="bg-black text-white hover:bg-black/90" onClick={handleAssignClick}>
+              <Button
+                className="bg-black text-white hover:bg-black/90"
+                onClick={handleAssignClick}
+              >
                 <User className="h-4 w-4 mr-2" />
                 Assign
               </Button>
@@ -616,7 +730,9 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
               <Button
                 className="bg-black text-white hover:bg-black/90"
                 onClick={handleAssignTask}
-                disabled={loading || !taskTitle.trim() || !taskDescription.trim()}
+                disabled={
+                  loading || !taskTitle.trim() || !taskDescription.trim()
+                }
               >
                 <User className="h-4 w-4 mr-2" />
                 {loading ? "Assigning Task..." : "Assign Task"}
@@ -632,6 +748,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
           onClose={() => setShowReviewDialog(false)}
           developerId={selectedDeveloper.id}
           developerName={selectedDeveloper.name}
+          onReviewAdded={handleReviewAdded} // ✅
         />
       )}
     </Dialog>

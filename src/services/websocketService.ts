@@ -35,7 +35,7 @@ export class WebSocketService {
         };
 
         this.ws.onclose = () => {
-          //console.log("WebSocket disconnected");
+          console.log("WebSocket disconnected");
           this.handleReconnect();
         };
       } catch (error) {
@@ -48,7 +48,7 @@ export class WebSocketService {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      // console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
 
       setTimeout(() => {
         this.connect().catch((error) => console.error(error));
