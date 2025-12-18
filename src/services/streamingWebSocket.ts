@@ -9,6 +9,7 @@ export class StreamingWebSocketClient {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3;
   private reconnectDelay = 2000;
+  private pingInterval: number | null = null; // Added for heartbeat
 
   constructor(sessionId: string) {
     this.sessionId = sessionId;
@@ -27,6 +28,7 @@ export class StreamingWebSocketClient {
 
         this.ws.onopen = () => {
           this.reconnectAttempts = 0;
+          this.startHeartbeat(); // Start pinging when connected
           resolve();
         };
 
@@ -35,6 +37,7 @@ export class StreamingWebSocketClient {
         };
 
         this.ws.onclose = () => {
+          this.stopHeartbeat(); // Stop pinging when closed
           this.handleReconnect();
         };
       } catch (error) {
@@ -43,15 +46,35 @@ export class StreamingWebSocketClient {
     });
   }
 
+  private startHeartbeat() {
+    this.stopHeartbeat();
+    // Send a ping every 20 seconds (Backend timeout is 60s)
+    this.pingInterval = window.setInterval(() => {
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ 
+          model: "heartbeat", 
+          message: "ping" 
+        }));
+      }
+    }, 20000);
+  }
+
+  private stopHeartbeat() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
+  }
+
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-
       setTimeout(() => {
         this.connect().catch();
       }, this.reconnectDelay);
     }
   }
+
   private currentMessageHandler: ((event: MessageEvent) => void) | null = null;
 
   async sendStreamingMessage(
@@ -71,144 +94,105 @@ export class StreamingWebSocketClient {
 
       try {
         const data: WebSocketMessage = JSON.parse(event.data);
+        
+        // Ignore heartbeat responses from server if any
+        if ((data.event as string) === "heartbeat") return;
+
         if (!data.event) {
             if (data.success === true) {
-    // Treat as successful completion
-    isComplete = true;
-    callbacks.onSuccess?.("Stream completed");
-    this.cleanup(messageHandler);
-    return;
-  }
-
-          console.warn("Received message without event:", data);
+                isComplete = true;
+                callbacks.onSuccess?.("Stream completed");
+                this.cleanup(messageHandler);
+                return;
+            }
           return;
         }
+
         const eventType = data.event;
-        const message = data.message || "";
-        //console.log(data);
+        const msgText = data.message || "";
 
         switch (eventType) {
           case "pricing_low":
-            // Insufficient balance - trigger popup
             isComplete = true;
-            callbacks.onPricingLow(message);
+            callbacks.onPricingLow(msgText);
             this.cleanup(messageHandler);
             break;
-
           case "text_body":
-            // Normal text streaming
-            fullContent += message;
-            callbacks.onContent(message);
+            fullContent += msgText;
+            callbacks.onContent(msgText);
             break;
-
           case "process_progress":
-            // Frontend generation in progress
-            callbacks.onProgressStart(message);
+            callbacks.onProgressStart(msgText);
             break;
-
           case "process_done":
-            // Frontend generation completed
-            callbacks.onProgressDone(message);
+            callbacks.onProgressDone(msgText);
             break;
-
           case "tool_start":
-            // Tool is called and working
-            callbacks.onToolStart(message);
+            callbacks.onToolStart(msgText);
             break;
-
           case "tool_output":
-            // Output from a tool
-            fullContent += message;
-            callbacks.onToolOutput(message);
+            fullContent += msgText;
+            callbacks.onToolOutput(msgText);
             break;
-
           case "tool_complete":
-            // Tool call completed
-            callbacks.onToolComplete(message);
+            callbacks.onToolComplete(msgText);
             break;
-
           case "tool_error":
-            // Tool error
-            callbacks.onToolError(message);
+            callbacks.onToolError(msgText);
             break;
-
           case "stream_start":
-            // Streaming should start
             callbacks.onStreamStart();
             break;
-
           case "stream_end":
-            // Streaming should end
             if (!isComplete) {
               isComplete = true;
               callbacks.onStreamEnd();
               this.cleanup(messageHandler);
             }
             break;
-
           case "stream_error":
-            // Streaming error
             if (!isComplete) {
               isComplete = true;
-              callbacks.onStreamError(message);
+              callbacks.onStreamError(msgText);
               this.cleanup(messageHandler);
             }
             break;
-
           case "thinking":
-            // MCP is thinking
             callbacks.onThinking();
             break;
-
           case "generating":
-            // Frontend is being generated
             callbacks.onGenerating();
             break;
-
           case "error":
-            // General error
             if (!isComplete) {
               isComplete = true;
-              callbacks.onError(new Error(message || "Unknown error"));
+              callbacks.onError(new Error(msgText || "Unknown error"));
               this.cleanup(messageHandler);
             }
             break;
-
           case "success":
-            // MCP response completed successfully
             if (!isComplete) {
               isComplete = true;
-              callbacks.onSuccess(message);
+              callbacks.onSuccess(msgText);
               this.cleanup(messageHandler);
             }
             break;
-
           case "info":
-            // Info message
-            callbacks.onInfo(message);
+            callbacks.onInfo(msgText);
             break;
-
           case "preview":
-            // Preview is being generated
-            callbacks.onPreviewStart(message);
+            callbacks.onPreviewStart(msgText);
             break;
-
           case "preview_done":
-            // Preview is generated
-            callbacks.onPreviewDone(message);
+            callbacks.onPreviewDone(msgText);
             break;
-
           case "preview_error":
-            // Error generating preview
-            callbacks.onPreviewError(message);
+            callbacks.onPreviewError(msgText);
             break;
-
           default:
-            // Unknown event - log and pass as content if has message
-            console.warn("Unknown WebSocket event:", eventType, message);
-            if (message) {
-              fullContent += message;
-              callbacks.onContent(message);
+            if (msgText) {
+              fullContent += msgText;
+              callbacks.onContent(msgText);
             }
         }
       } catch {
@@ -219,8 +203,6 @@ export class StreamingWebSocketClient {
       }
     };
 
-    // Clean setup
-    // Clean previous handler only if exists
     if (this.currentMessageHandler) {
       this.ws?.removeEventListener("message", this.currentMessageHandler);
     }
@@ -228,7 +210,6 @@ export class StreamingWebSocketClient {
     this.currentMessageHandler = messageHandler;
     this.ws.addEventListener("message", messageHandler);
 
-    // Send message
     try {
       this.ws.send(
         JSON.stringify({
@@ -258,6 +239,7 @@ export class StreamingWebSocketClient {
   }
 
   disconnect() {
+    this.stopHeartbeat();
     if (this.ws) {
       this.ws.close();
       this.ws = null;
