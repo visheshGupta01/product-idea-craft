@@ -567,7 +567,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
             )}
           </div>
 
-          <div className="flex gap-2 mt-4">
+          {/* <div className="flex gap-2 mt-4">
             <Button
               variant="outline"
               className="flex-1"
@@ -575,7 +575,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
             >
               <MessageSquare className="h-4 w-4 mr-2" /> Write a Review
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     );

@@ -59,6 +59,8 @@ const IdeaBox: React.FC = () => {
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [toolInput, setToolInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [selectedModel, setSelectedModel] = useState("Kimik2");
+console.log(selectedModel,"model");
 
   const { sendIdeaWithAuth, isProcessingIdea, isAuthenticated } =
     useUser();
@@ -213,7 +215,7 @@ const IdeaBox: React.FC = () => {
 
         {/* White Input Area */}
         {/* Added bottom padding (pb) so floating absolute button doesn't overlap content */}
-        <div className="bg-white w-full rounded-[25px] p-4 pb-[80px] flex flex-col border border-black items-center justify-between relative">
+        <div className="bg-white w-full rounded-[25px] p-4 pb-[76px] flex flex-col border border-black items-center justify-between relative">
           {/* Input area with floating buttons */}
           <div className="relative w-full mb-4 font-poppins text-gray-800">
             <textarea
@@ -266,22 +268,70 @@ const IdeaBox: React.FC = () => {
               </div>
             )}
 
-            {/* Floating buttons in top right */}
-            <div className="absolute top-3 right-3 flex gap-2 px-2">
-              <VoiceRecorder
-                onTranscript={handleVoiceTranscript}
-                disabled={isProcessingIdea}
-                iconColor="text-gray-600"
-              />
-              <FileUploader
-                onFileUploaded={handleFileUploaded}
-                uploadedFiles={uploadedFiles}
-                onRemoveFile={handleRemoveFile}
-                disabled={isProcessingIdea}
-                iconColor="text-gray-600"
-              />
-            </div>
+            {/* Floating buttons in top left */}
+  <div className="flex items-center gap-3">
+    <div className="
+      w-[40px] h-[40px]
+      flex items-center justify-center
+      rounded-[12px]
+      border border-[#D0D0D0]
+      bg-white
+      hover:bg-gray-100
+      transition
+      shadow-sm
+    ">
+      <VoiceRecorder
+      onTranscript={handleVoiceTranscript}
+      disabled={isProcessingIdea}
+      iconColor="text-gray-600"
+    />
+    </div>
+  
+
+  <div className="
+    w-[40px] h-[40px]
+    flex items-center justify-center
+    rounded-[12px]
+    border border-[#D0D0D0]
+    bg-white
+    hover:bg-gray-100
+    transition
+    shadow-sm
+  "
+>
+    <FileUploader
+      onFileUploaded={handleFileUploaded}
+      uploadedFiles={uploadedFiles}
+      onRemoveFile={handleRemoveFile}
+      disabled={isProcessingIdea}
+      iconColor="text-gray-600"
+    />
+  </div> 
+  </div>
           </div>
+          {/* MODEL SELECTOR */}
+<div className="absolute right-6 bottom-[100px] sm:bottom-24 flex items-center gap-2 text-[11px] text-gray-500 z-20">
+  <span>Select model:</span>
+
+  <div className="flex gap-2">
+    {["Kimik2","Claude" ].map((model) => (
+      <button
+        key={model}
+        onClick={() => setSelectedModel(model)}
+        className={cn(
+          "px-2 py-1 rounded-md border text-[10px] sm:text-xs font-medium transition",
+          selectedModel === model
+            ? "border-gray-900 bg-gray-100 text-gray-900"
+            : "border-gray-300 text-gray-700 hover:border-gray-500"
+        )}
+      >
+        {model}
+      </button>
+    ))}
+  </div>
+</div>
+
+
 
           {/* Pink Button - Responsive */}
           <button

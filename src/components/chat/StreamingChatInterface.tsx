@@ -18,6 +18,14 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { PencilLine } from "lucide-react";
 
 interface StreamingChatInterfaceProps {
   userIdea?: string;
@@ -29,7 +37,8 @@ interface StreamingChatInterfaceProps {
   projectDetails?: any;
 }
 
-export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
+export const 
+StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   userIdea,
   onFrontendGenerated,
   onSitemapGenerated,
@@ -165,11 +174,41 @@ export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     <>
       <div className="flex flex-col h-full bg-[#1E1E1E]">
         {/* Chat Navbar */}
-        <div className="h-14 flex items-center justify-center border-b border-[#2A2A2A] bg-[#1E1E1E] relative">
-          <span className="text-white text-lg font-poppins font-medium">
-            {projectDetails?.title || "Untitled Project"}
-          </span>
-        </div>
+  <div className="h-14 flex items-center justify-between px-4 border-b border-[#2A2A2A] bg-[#1E1E1E]">
+  
+  {/* LEFT — Project Name */}
+  <span className="text-white text-lg font-poppins font-medium">
+    {projectDetails?.title || "Untitled Project"}
+  </span>
+
+  {/* RIGHT — Edit Button + Credits */}
+  <div className="flex items-center gap-4">
+    
+    <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => console.log("hello")}
+                  className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
+                >
+                  <PencilLine className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Edit Name</TooltipContent>
+            </Tooltip>
+    </TooltipProvider>
+
+    {/* Credits */}
+    <span className="text-white/70 text-sm">
+      Credits: {projectDetails?.credits ?? 0}
+    </span>
+
+  </div>
+
+</div>
+
 
         {isLoadingMessages ? (
           <div className="flex-1 flex items-center justify-center">
