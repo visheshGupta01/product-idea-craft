@@ -57,6 +57,27 @@ export const useStreamingChat = (
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsClientRef = useRef<StreamingWebSocketClient | null>(null);
 
+  const showDesktopNotification = useCallback((content: string) => {
+    if (
+      "Notification" in window &&
+      Notification.permission === "granted" &&
+      document.hidden
+    ) {
+      new Notification("AI Response Complete", {
+        body: "Check the response now!",
+        icon: "/logo.png", // Use an appropriate icon path
+      });
+    }
+  }, []);
+
+  // [ADD] Request notification permission on component mount
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission !== "denied") {
+      // We don't need to await this, just trigger the request
+      Notification.requestPermission();
+    }
+  }, []);
+
   // Trigger onFrontendGenerated if projectUrl is available on load
   useEffect(() => {
     if (projectUrl && onFrontendGenerated && !isLoadingMessages) {
@@ -166,6 +187,15 @@ export const useStreamingChat = (
         const callbacks: StreamingCallbacks = {
           onContent: (text: string) => {
             streamingContent += text;
+            // Check for insufficient balance in message content
+             if (
+              streamingContent.toLowerCase().includes("insufficient balance")
+            ) {
+              onInsufficientBalance?.();
+              setIsStreaming(false);
+              setIsProcessingTools(false);
+              return;
+            }
             updateMessage(aiMessage.id, streamingContent);
 
             // Check for frontend_code_generator tool output with preview URL
@@ -237,6 +267,9 @@ export const useStreamingChat = (
           onStreamEnd: () => {
             updateMessage(aiMessage.id, streamingContent);
             resetStates();
+            if (document.hidden && streamingContent.trim()) {
+              showDesktopNotification(streamingContent);
+            }
           },
 
           onStreamError: (message: string) => {

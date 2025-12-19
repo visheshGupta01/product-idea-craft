@@ -23,7 +23,8 @@ const DeveloperInbox: React.FC = () => {
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
   const location = useLocation();
-  const openTaskId = location.state?.openTaskId || null;
+  const openTaskId = location.state?.task || null;
+ const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
 
   const fetchInbox = useCallback(async () => {
     try {
@@ -75,7 +76,7 @@ const DeveloperInbox: React.FC = () => {
       fetchMessages(found.id);
     }
   }, [tasks, openTaskId, fetchMessages]);
-
+  
   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);

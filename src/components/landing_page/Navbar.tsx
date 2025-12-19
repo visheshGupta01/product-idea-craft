@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
           >
             About Us
           </a>
-          <a href="#community" className="hover:text-pink-400 transition">
+          <a href="https://blog.imagine.bo/community/" className="hover:text-pink-400 transition">
             Community
           </a>
           <a href="/pricing" className="hover:text-pink-400 transition">

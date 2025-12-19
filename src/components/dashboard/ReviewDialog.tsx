@@ -20,6 +20,7 @@ interface ReviewDialogProps {
   onClose: () => void;
   developerId: string;
   developerName: string;
+  onReviewAdded: (review: any) => void; // ✅ NEW
 }
 
 const ReviewDialog: React.FC<ReviewDialogProps> = ({
@@ -27,6 +28,7 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({
   onClose,
   developerId,
   developerName,
+  onReviewAdded,
 }) => {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -47,12 +49,22 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({
 
     setIsSubmitting(true);
     try {
-      await developerService.submitReview({
+      const res = await developerService.submitReview({
         developer_id: developerId,
         reviewer_name: reviewerName.trim(),
         rating,
         comment: comment.trim(),
       });
+      // 👇 Construct review object (use backend response if available)
+      const newReview = {
+        reviewer_name: reviewerName.trim(),
+        rating,
+        comment: comment.trim(),
+        created_at: new Date().toISOString(),
+        ...res, // if backend returns id, etc.
+      };
+
+      onReviewAdded(newReview); // ✅ notify parent
 
       toast({
         title: "Review Submitted",

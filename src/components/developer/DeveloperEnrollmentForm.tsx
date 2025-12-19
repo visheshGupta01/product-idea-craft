@@ -64,7 +64,7 @@ const developerSchema = z.object({
     .optional()
     .or(z.literal("")),
   company_name: z.string().max(255).optional(),
-  experience: z.string().max(1000).optional(),
+  experience: z.number().min(0).optional(),
   bio: z.string().max(1000).optional(),
   hourpaid: z
     .number()
@@ -385,11 +385,11 @@ export const DeveloperEnrollmentForm: React.FC<
 
           <div>
             <Label htmlFor="experience">Experience</Label>
-            <Textarea
+            <Input
+              type="number"
               id="experience"
-              {...register("experience")}
+              {...register("experience", { valueAsNumber: true })}
               placeholder="Describe your professional experience..."
-              rows={3}
             />
           </div>
 

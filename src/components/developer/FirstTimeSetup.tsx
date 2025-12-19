@@ -67,7 +67,7 @@ const FirstTimeSetup: React.FC<FirstTimeSetupProps> = ({ onComplete }) => {
         bio: formData.bio,
         skills: formData.skills,
         company_name: '',
-        experience: '',
+        experience: 0,
         hourpaid: 0,
       });
 

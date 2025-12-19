@@ -100,7 +100,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         setTimeout(() => {
           if (result.role === "admin") {
             navigate("/admin");
-          } else {
+          }
+          else if (result.role === "developer") {
+            navigate("/developer");
+          }
+          else
+             {
             navigate("/");
           }
         }, 1000);

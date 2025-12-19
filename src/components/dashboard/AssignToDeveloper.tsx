@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -21,8 +21,6 @@ import {
 import {
   CalendarIcon,
   Star,
-  Github,
-  Linkedin,
   User,
   ArrowLeft,
   CheckCircle2,
@@ -60,24 +58,28 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   const [loading, setLoading] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
-  const [dueDate, setDueDate] = useState<Date>();
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const { toast } = useToast();
-  const navigate=useNavigate()
-const [taskId,setTaskId] = useState(null);
+  const navigate = useNavigate();
+  const [developerReviews, setDeveloperReviews] = useState<any[]>([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [selectedReviewPage, setSelectedReviewPage] = useState(1);
+  const [taskId, setTaskId] = useState<string | null>(null);
+
   useEffect(() => {
     if (isOpen && currentView === "list") {
       fetchDevelopers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, currentView, currentPage]);
 
   const fetchDevelopers = async () => {
     setLoading(true);
     try {
       const response = await developerService.getAllDevelopers(currentPage);
-      //console.log('Developer Service Response:', response);
 
       const mapped = (
         Array.isArray(response) ? response : response?.data || []
@@ -85,7 +87,7 @@ const [taskId,setTaskId] = useState(null);
         id: dev.id,
         name:
           [dev.first_name, dev.last_name].filter(Boolean).join(" ") ||
-          dev.email.split("@")[0],
+          (dev.email ? dev.email.split("@")[0] : "Unknown"),
         avg_rating: dev.average_rating,
         total_done: dev.total_solved_tasks,
         bio: dev.bio,
@@ -101,14 +103,12 @@ const [taskId,setTaskId] = useState(null);
         created_at: dev.created_at || new Date().toISOString(),
         total_in_progress: dev.total_in_progress || 0,
         total_pending: dev.total_pending || 0,
-        experience: dev.experience || "",
+        experience: dev.experience || 0,
         rating_count: dev.rating_count || 0,
         email: dev.email || "",
       }));
       setDevelopers(mapped);
-      //console.log('Fetched Developers:', Array.isArray(response) ? response : response?.data);
     } catch (error) {
-      //console.error("Error fetching developers:", error);
       toast({
         title: "Error",
         description: "Failed to load developers",
@@ -119,18 +119,59 @@ const [taskId,setTaskId] = useState(null);
     }
   };
 
+  const handleReviewAdded = (newReview: any) => {
+    setDeveloperReviews((prev: any) => ({
+      ...prev,
+      total_review: (prev.total_review || 0) + 1,
+      review: [newReview, ...(prev.review || [])], // 👈 prepend
+    }));
+  };
+
+
   const fetchDeveloperDetails = async (developerId: string) => {
+    setLoading(true);
     try {
       const details = await developerService.getDeveloperById(developerId);
-      // console.log("Fetched Developer Details:", details);
       setDeveloperDetails(details);
     } catch (error) {
-      //console.error("Error fetching developer details:", error);
       toast({
         title: "Error",
         description: "Failed to load developer details",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDeveloperReviews = async (developerId: string, page: number) => {
+    setReviewLoading(true);
+    try {
+      const reviews = await developerService.getReviews(developerId, page);
+      console.log("Fetched reviews:", reviews);
+      return reviews
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load developer details",
+        variant: "destructive",
+      });
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const handleReviewViewMore = async (page: number) => {
+    if (selectedDeveloper) {
+      const reviews = await fetchDeveloperReviews(selectedDeveloper.id, page);
+      setSelectedReviewPage(page);
+      setDeveloperReviews((prev: any) => ({
+        ...prev,
+        review: [...(prev.review || []), ...(reviews?.review || [])],
+        HasMore: reviews?.HasMore,
+      }));
+      console.log("Fetched reviews:", reviews);
+      console.log("Updated reviews state:", developerReviews);
     }
   };
 
@@ -138,10 +179,27 @@ const [taskId,setTaskId] = useState(null);
     setSelectedDeveloper(developer);
     setCurrentView("profile");
     await fetchDeveloperDetails(developer.id);
+    setSelectedReviewPage(1);
+    const reviews = await fetchDeveloperReviews(developer.id, 1);
+    setDeveloperReviews(reviews);
   };
 
   const handleAssignClick = () => {
     setCurrentView("assign");
+  };
+
+  const isDateInPast = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d < today;
+  };
+
+  const formatDateWithEndOfDay = (date: Date) => {
+    const adjustedDate = new Date(date);
+    adjustedDate.setHours(23, 59, 59, 999);
+    return adjustedDate.toISOString();
   };
 
   const handleAssignTask = async () => {
@@ -154,27 +212,36 @@ const [taskId,setTaskId] = useState(null);
       return;
     }
 
+    if (dueDate && isDateInPast(dueDate)) {
+      toast({
+        title: "Invalid Due Date",
+        description: "Due date cannot be in the past.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const formatDateWithEndOfDay = (date: Date) => {
-      const adjustedDate = new Date(date);
-      adjustedDate.setHours(23, 59, 59, 999);
-      return adjustedDate.toISOString();
-    };
       const taskData: CreateTaskData = {
         title: taskTitle.trim(),
         description: taskDescription.trim(),
         session_id: sessionId,
         assignee_id: selectedDeveloper.id,
-        due_date: dueDate ? formatDateWithEndOfDay(dueDate): undefined,
+        due_date: dueDate ? formatDateWithEndOfDay(dueDate) : undefined,
       };
 
       const res = await developerService.createTask(taskData);
-      
+
+      // Expect response to contain id
+      if (res && (res.id || res.task_id || res._id)) {
+        const id = (res.id || res.task_id || res._id) as string;
+        setTaskId(id);
+      }
+
       setCurrentView("success");
-      setTaskId(res.id)
+      setCountdown(5);
     } catch (error) {
-      //console.error("Error creating task:", error);
       toast({
         title: "Error",
         description: "Failed to assign task to developer",
@@ -193,45 +260,42 @@ const [taskId,setTaskId] = useState(null);
     setTaskDescription("");
     setDueDate(undefined);
     setCurrentPage(1);
+    setTaskId(null);
     onClose();
   };
 
-  
-useEffect(() => {
-  if (currentView === "success") {
-    setCountdown(5); // reset timer every time success opens
+  useEffect(() => {
+    if (currentView === "success") {
+      setCountdown(5);
 
-    const interval = setInterval(() => {
-      setCountdown((prev) => prev - 1);
-    }, 1000);
+      const interval = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
 
-    const timer = setTimeout(() => {
-      handleClose();
+      const timer = setTimeout(() => {
+        handleClose();
+        navigate("/inbox", {
+          state: { task: taskId },
+        });
+      }, 5000);
 
-      navigate("/inbox", {
-        state: { task: taskId }
-      });
-    }, 5000);
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timer);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentView, taskId, navigate]);
 
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
-  }
-}, [currentView, taskId, navigate]);
-
-
-
-  const renderStars = (rating: number | null) => {
-    if (!rating) return null;
+  const renderStars = (rating: number | null | undefined) => {
+    if (rating == null) return null;
+    const r = Math.round(rating);
     return Array.from({ length: 5 }).map((_, i) => (
       <Star
         key={i}
         className={cn(
           "h-4 w-4",
-          i < rating
-            ? "fill-yellow-400 text-yellow-400"
-            : "text-muted-foreground"
+          i < r ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"
         )}
       />
     ));
@@ -257,28 +321,30 @@ useEffect(() => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarFallback>
-                      {developer?.name
-                        ? developer.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()
-                        : ""}
-                    </AvatarFallback>
+                    {developer.image ? (
+                      <AvatarImage src={developer.image} alt={developer.name} />
+                    ) : (
+                      <AvatarFallback>
+                        {developer?.name
+                          ? developer.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()
+                          : ""}
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   <div className="flex-1">
                     <h3 className="font-semibold">{developer.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
                       {renderStars(developer.avg_rating)}
                       <span className="text-sm text-muted-foreground">
-                        ({developer.avg_rating || 0}) • {developer.total_done}{" "}
-                        Projects
+                        ({developer.avg_rating || 0}) • {developer.total_done} Projects
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                      {developer.bio ||
-                        "Full-stack developer with experience building scalable web applications."}
+                      {developer.bio || "Full-stack developer with experience building scalable web applications."}
                     </p>
                     <div className="flex gap-1 mt-2 flex-wrap">
                       {(
@@ -288,7 +354,7 @@ useEffect(() => {
                           "MongoDB",
                           "AWS",
                         ]
-                      ).map((skill) => (
+                      ).map((skill: any) => (
                         <Badge
                           key={skill}
                           variant="secondary"
@@ -302,11 +368,9 @@ useEffect(() => {
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <div className="text-right">
-                    <div className="font-semibold">
-                      ${developer.hourpaid || 0}/hr
-                    </div>
+                    <div className="font-semibold">${developer.hourpaid || 0}/hr</div>
                     <div className="flex items-center gap-1 text-sm text-green-600">
-                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <div className="h-2 w-2 rounded-full bg-green-500" />
                       Available Now
                     </div>
                   </div>
@@ -341,9 +405,7 @@ useEffect(() => {
 
           {/* Pagination */}
           <div className="flex items-center justify-between pt-4 border-t">
-            <span className="text-sm text-muted-foreground">
-              Page {currentPage}
-            </span>
+            <span className="text-sm text-muted-foreground">Page {currentPage}</span>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -384,13 +446,20 @@ useEffect(() => {
           </Button>
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarFallback className="text-xl">
-                {selectedDeveloper.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
-              </AvatarFallback>
+              {developerDetails.image ? (
+                <AvatarImage
+                  src={developerDetails.image}
+                  alt={developerDetails.name}
+                />
+              ) : (
+                <AvatarFallback className="text-xl">
+                  {selectedDeveloper.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()}
+                </AvatarFallback>
+              )}
             </Avatar>
             <div>
               <h2 className="text-2xl font-semibold">
@@ -400,7 +469,7 @@ useEffect(() => {
                 {renderStars(developerDetails.rating)}
                 <span className="text-sm text-muted-foreground">
                   ({developerDetails.rating || 0}) •{" "}
-                  {developerDetails.task_complete} Projects
+                  {developerDetails.task_complete || 0} Projects
                 </span>
               </div>
             </div>
@@ -409,21 +478,22 @@ useEffect(() => {
             <div className="font-semibold text-lg">
               ${developerDetails.hour_paid || 0}/hr
             </div>
-            <div className="flex items-center gap-1 text-sm text-green-600">
+            <div className="flex items-center gap-1 text-sm">
               <div
                 className={`h-2 w-2 rounded-full ${
                   developerDetails.available ? "bg-green-500" : "bg-red-500"
                 }`}
-              ></div>
-              {developerDetails.available ? "Available Now" : "Unavailable"}
+              />
+              <span className="text-sm text-muted-foreground">
+                {developerDetails.available ? "Available Now" : "Unavailable"}
+              </span>
             </div>
           </div>
         </div>
 
         <div className="space-y-4">
           <p className="text-muted-foreground">
-            {developerDetails.bio ||
-              "Full-stack developer with 6+ years of experience building scalable web applications. Passionate about technology and innovation, with experience in web development and design. Always eager to learn new skills and collaborate on exciting projects."}
+            {developerDetails.bio || "Full-stack developer with 6+ years..."}
           </p>
 
           <div className="flex gap-1 flex-wrap">
@@ -439,61 +509,62 @@ useEffect(() => {
           </div>
 
           <div className="bg-muted/30 p-4 rounded-lg">
-            <div className="flex justify-between items-center mb-3">
-    <h3 className="font-semibold">
-      Reviews ({developerDetails.reviews.length || 0})
-    </h3>
+            <h3 className="font-semibold mb-3">
+              Reviews ({developerReviews?.total_review || 0})
+            </h3>
 
-    <Button
-      variant="outline"
-      onClick={() => setShowReviewDialog(true)}
-      className="flex items-center gap-2"
-    >
-      <MessageSquare className="h-4 w-4" />
-      Write a Review
-    </Button>
-  </div>
-            <div className="space-y-3">
-              {(developerDetails.reviews && developerDetails.reviews.length > 0
-                ? developerDetails.reviews
-                : []
-              ).map((review: any, index: number) => (
-                <div
-                  key={index}
-                  className="bg-background p-3 rounded-lg border"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <p className="text-sm">
-                      {review.description || review.comment || "Great work!"}
-                    </p>
-                    <div className="flex ml-2">
-                      {renderStars(review.rating || 5)}
+            {reviewLoading ? (
+              <div className="text-center py-4 text-muted-foreground">
+                Loading reviews...
+              </div>
+            ) : developerReviews?.review?.length > 0 ? (
+              <div className="space-y-3">
+                {developerReviews.review.map((review: any, index: number) => (
+                  <div
+                    key={index}
+                    className="bg-background p-3 rounded-lg border"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-sm">
+                        {review.description || review.comment || "Great work!"}
+                      </p>
+                      <div className="flex ml-2">
+                        {renderStars(review.rating || 5)}
+                      </div>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground">
+                      Client:{" "}
+                      {review.client || review.reviewer_name || "Anonymous"} •{" "}
+                      {review.created_at
+                        ? new Date(review.created_at).toLocaleString("en-IN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })
+                        : "Recent"}
                     </div>
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    Client:{" "}
-                    {review.client || review.reviewer_name || "Anonymous"} •{" "}
-                    {review.date
-                      ? new Date(review.date).toLocaleString("en-IN", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })
-                      : review.created_at
-                      ? new Date(review.created_at).toLocaleString("en-IN", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })
-                      : "Recent"}{" "}
+                ))}
+
+                {developerReviews?.HasMore && (
+                  <div className="text-center mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        handleReviewViewMore(selectedReviewPage + 1)
+                      }
+                    >
+                      Load More Reviews
+                    </Button>
                   </div>
-                </div>
-              ))}
-              {(!developerDetails.reviews ||
-                developerDetails.reviews.length === 0) && (
-                <div className="text-center text-sm text-muted-foreground py-4">
-                  No reviews yet
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center text-sm text-muted-foreground py-4">
+                No reviews yet
+              </div>
+            )}
           </div>
 
           {/* <div className="flex gap-2 mt-4">
@@ -502,8 +573,7 @@ useEffect(() => {
               className="flex-1"
               onClick={() => setShowReviewDialog(true)}
             >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Write a Review
+              <MessageSquare className="h-4 w-4 mr-2" /> Write a Review
             </Button>
           </div> */}
         </div>
@@ -517,28 +587,16 @@ useEffect(() => {
     return (
       <div className="space-y-6 flex-1 overflow-y-auto">
         <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCurrentView("list")}
-            className="p-1"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setCurrentView("profile")} className="p-1">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-xl font-semibold">
-            Assign to {selectedDeveloper.name}
-          </h2>
+          <h2 className="text-xl font-semibold">Assign to {selectedDeveloper.name}</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="taskTitle">Task Title *</Label>
-            <Input
-              id="taskTitle"
-              placeholder="Enter Task Details"
-              value={taskTitle}
-              onChange={(e) => setTaskTitle(e.target.value)}
-            />
+            <Input id="taskTitle" placeholder="Enter Task Details" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>Deadline (Optional)</Label>
@@ -562,6 +620,13 @@ useEffect(() => {
                   onSelect={setDueDate}
                   initialFocus
                   className="pointer-events-auto"
+                  disabled={(date) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const d = new Date(date);
+                    d.setHours(0, 0, 0, 0);
+                    return d < today;
+                  }}
                 />
               </PopoverContent>
             </Popover>
@@ -590,26 +655,18 @@ useEffect(() => {
         <div className="flex justify-center">
           <div className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full">
             <CheckCircle2 className="h-5 w-5" />
-            <span className="font-medium">
-              Request sent to {selectedDeveloper.name}
-            </span>
+            <span className="font-medium">Request sent to {selectedDeveloper.name}</span>
             <Avatar className="h-6 w-6 ml-2">
               <AvatarFallback className="text-xs">
-                {selectedDeveloper.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
+                {selectedDeveloper.name.split(" ").map((n) => n[0]).join("").toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
         </div>
-        <Button onClick={()=>navigate("/inbox",{
-        state: { task: taskId }
-      })}>Message</Button>
-          <p className="text-sm text-muted-foreground">
-        Redirecting in <span className="font-semibold">{countdown}</span> seconds...
-      </p>
+        <Button onClick={() => navigate("/inbox", { state: { task: taskId } })}>Message</Button>
+        <p className="text-sm text-muted-foreground">
+          Redirecting in <span className="font-semibold">{countdown}</span> seconds...
+        </p>
       </div>
     );
   };
@@ -630,7 +687,12 @@ useEffect(() => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose();
+      }}
+    >
       <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
@@ -642,16 +704,17 @@ useEffect(() => {
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden flex flex-col">
-          {currentView === "list" && renderDeveloperList()}
-          {currentView === "profile" && renderDeveloperProfile()}
-          {currentView === "assign" && renderAssignForm()}
-          {currentView === "success" && renderSuccess()}
+          {renderCurrentView()}
         </div>
 
-        {/* Fixed bottom buttons for profile and assign views */}
         {(currentView === "profile" || currentView === "assign") && (
           <div className="border-t pt-4 mt-4 flex justify-between">
-            <Button variant="outline" onClick={() => setCurrentView("list")}>
+            <Button variant="outline" onClick={() => {
+              setDeveloperDetails(null);
+              setSelectedDeveloper(null);
+              setDeveloperReviews(null);
+              setCurrentView("list")
+            }}>
               {currentView === "profile" ? "Collapse" : "Back"}
             </Button>
             {currentView === "profile" && (
@@ -685,6 +748,7 @@ useEffect(() => {
           onClose={() => setShowReviewDialog(false)}
           developerId={selectedDeveloper.id}
           developerName={selectedDeveloper.name}
+          onReviewAdded={handleReviewAdded} // ✅
         />
       )}
     </Dialog>

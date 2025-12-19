@@ -21,6 +21,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const MyProjects = lazy(() => import("./pages/MyProjects"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentFailed = lazy(() => import("./pages/PaymentFailed"));
+const PaypalSuccess = lazy(() => import("./pages/PaypalSuccess"));
+const PaypalCancel = lazy(() => import("./pages/Paypalcancel"));
 const SharedChat = lazy(() => import("./pages/SharedChat"));
 const UserTasks = lazy(() => import("./pages/UserTasks"));
 const UserInbox = lazy(() => import("./pages/UserInbox"));
@@ -97,6 +99,8 @@ const AppContent = () => {
         } />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
+        <Route path="/paypal/success" element={<PaypalSuccess />}/>
+        <Route path="/paypal/cancel" element={<PaypalCancel />}/>
         <Route path="/inbox" element={
           <ProtectedRoute>
             <UserInbox />

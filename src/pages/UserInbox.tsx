@@ -22,8 +22,9 @@ const UserInbox: React.FC = () => {
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
-   const location = useLocation(); 
-    const openTaskId = location.state?.task || null;
+  const location = useLocation(); 
+  const openTaskId = location.state?.task || null;
+  const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
     //console.log(location.state,"hgf");
     
 
@@ -66,7 +67,7 @@ const UserInbox: React.FC = () => {
     },
     [toast]
   );
-
+  
   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);
@@ -103,6 +104,11 @@ const UserInbox: React.FC = () => {
     };
   }, [wsService, selectedTask, fetchInbox]);
   useEffect(() => {
+    console.log("Tasks updated:", tasks);
+    console.log("Open Task ID:", openTaskId);
+    console.log("Selected Task:", selectedTask);
+    console.log("Messages:", messages);
+    console.log("Preselected Task ID:", preselectedTaskId);
     if (tasks.length === 0) return;
     if (!openTaskId) return;
 

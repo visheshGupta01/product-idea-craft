@@ -7,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { Star, Github, Linkedin, Edit, Loader2, Pencil } from "lucide-react";
 import {
   developerService,
-  DeveloperInfo,
   DeveloperProfileResponse,
   Review,
 } from "@/services/developerService";
@@ -38,6 +37,8 @@ export const DeveloperOverview: React.FC = () => {
     useState<DeveloperProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"tasks" | "reviews">("tasks");
+  const [taskSearch, setTaskSearch] = useState("");
+
   const [taskFilter, setTaskFilter] = useState<
     | "all"
     | "awaiting"
@@ -220,7 +221,8 @@ export const DeveloperOverview: React.FC = () => {
 
   const calculateProgress = () => {
     if (!profileData?.developer_info) return 0;
-    const { total_tasks, total_done } = profileData.developer_info;
+    const { total_tasks, total_done, total_pending } =
+      profileData.developer_info;
     return total_tasks > 0 ? Math.round((total_done / total_tasks) * 100) : 0;
   };
 console.log(profileData,"profile");
@@ -234,12 +236,15 @@ console.log(profileData,"profile");
         profileData.developer_info.id,
         reviewPage
       );
-      
+
+      const reviewsArray = response.reviews || [];
+
       if (reviewPage === 1) {
-        setReviews(response || []);
+        setReviews(reviewsArray);
       } else {
-        setReviews((prev) => [...prev, ...(response.reviews || [])]);
+        setReviews((prev) => [...prev, ...reviewsArray]);
       }
+
       setHasMoreReviews(reviewPage < (response.total_pages || 0));
     } catch (error) {
       toast({
@@ -297,16 +302,37 @@ console.log(profileData,"profile");
       ...additionalTasks,
     ];
 
-    if (taskFilter === "all") {
-      return tasks;
+    // if (taskFilter === "all") {
+    //   return tasks;
+    // }
+    // if (taskFilter === "awaiting") {
+    //   return profileData.null_status_tasks;
+    // }
+    // if (taskFilter === "pending") {
+    //   return profileData.active_tasks;
+    // }
+    // return tasks.filter((task) => task.status === taskFilter);
+
+    if (taskFilter !== "all") {
+      if (taskFilter === "awaiting") {
+        tasks = profileData.null_status_tasks;
+      } else if (taskFilter === "pending") {
+        tasks = profileData.active_tasks;
+      } else {
+        tasks = tasks.filter((task) => task.status === taskFilter);
+      }
     }
-    if (taskFilter === "awaiting") {
-      return profileData.null_status_tasks;
+
+    if (taskSearch.trim()) {
+      const s = taskSearch.toLowerCase();
+      tasks = tasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(s) ||
+          task.description.toLowerCase().includes(s)
+      );
     }
-    if (taskFilter === "pending") {
-      return profileData.active_tasks;
-    }
-    return tasks.filter((task) => task.status === taskFilter);
+
+    return tasks;
   };
 
   const getTaskFilterCount = (
@@ -404,7 +430,7 @@ console.log(profileData,"profile");
 
               <h2 className="text-xl font-semibold mb-1">{profile.name}</h2>
               <p className="text-sm text-muted-foreground mb-4">
-                {profile.email}
+                <a href={`mailto:${profile.email}`}>{profile.email}</a>
               </p>
 
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
@@ -441,7 +467,16 @@ console.log(profileData,"profile");
                     <div className="flex items-center gap-2 text-sm">
                       <Github className="w-4 h-4" />
                       <span className="truncate">
-                        {profile.github_url.replace("https://github.com/", "")}
+                        <a
+                          href={profile.github_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {profile.github_url.replace(
+                            "https://github.com/",
+                            ""
+                          )}
+                        </a>
                       </span>
                     </div>
                   )}
@@ -449,10 +484,16 @@ console.log(profileData,"profile");
                     <div className="flex items-center gap-2 text-sm">
                       <Linkedin className="w-4 h-4" />
                       <span className="truncate">
-                        {profile.linkedin_url.replace(
-                          "https://linkedin.com/in/",
-                          ""
-                        )}
+                        <a
+                          href={profile.linkedin_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {profile.linkedin_url.replace(
+                            "https://linkedin.com/in/",
+                            ""
+                          )}
+                        </a>
                       </span>
                     </div>
                   )}
@@ -598,14 +639,23 @@ console.log(profileData,"profile");
                             </div>
                             <div className="flex gap-2 ml-4">
                               <Button
+                                onClick={() =>
+                                  navigate("/developer/inbox", {
+                                    state: { taskId: task.id },
+                                  })
+                                }
+                                size="sm"
+                                variant="outline"
+                              >
+                                Message
+                              </Button>
+                              <Button
                                 size="sm"
                                 className="bg-pink-500 hover:bg-pink-600 text-white px-4"
                                 onClick={() => handleAcceptTask(task.id)}
                                 disabled={updatingTasks.has(task.id)}
                               >
-                                {updatingTasks.has(task.id)
-                                  ? "Accepting..."
-                                  : "Accept"}
+                                Accept
                               </Button>
                               <Button
                                 size="sm"
@@ -614,9 +664,7 @@ console.log(profileData,"profile");
                                 onClick={() => handleDenyTask(task.id)}
                                 disabled={updatingTasks.has(task.id)}
                               >
-                                {updatingTasks.has(task.id)
-                                  ? "Declining..."
-                                  : "Decline"}
+                                Decline
                               </Button>
                             </div>
                           </div>
@@ -628,7 +676,9 @@ console.log(profileData,"profile");
                       (profileData.null_status_tasks?.length || 0) > 3 && (
                         <div className="flex justify-center pt-2">
                           <Button
-                            onClick={() => navigate("/developer/tasks")}
+                            onClick={() => {
+                              setShowAllNewTasks(true);
+                            }}
                             variant="outline"
                             className="w-full"
                           >
@@ -652,6 +702,8 @@ console.log(profileData,"profile");
                         type="text"
                         placeholder="Search Projects"
                         className="px-3 py-1 text-sm border rounded-md"
+                        value={taskSearch}
+                        onChange={(e) => setTaskSearch(e.target.value)}
                       />
                     </div>
                   </div>
@@ -733,6 +785,17 @@ console.log(profileData,"profile");
                               {task.status === "todo" && (
                                 <>
                                   <Button
+                                    onClick={() =>
+                                      navigate("/developer/inbox", {
+                                        state: { taskId: task.id },
+                                      })
+                                    }
+                                    size="sm"
+                                    variant="outline"
+                                  >
+                                    Message
+                                  </Button>
+                                  <Button
                                     size="sm"
                                     className="bg-black text-white hover:bg-gray-800"
                                     onClick={() => handleStartWorking(task.id)}
@@ -762,9 +825,15 @@ console.log(profileData,"profile");
                                       ? "Completing..."
                                       : "Mark Complete"}
                                   </Button>
-                                  <Button onClick={()=>navigate("/developer/inbox",{
-  state: { openTaskId: task.id }
-})} size="sm" variant="outline">
+                                  <Button
+                                    onClick={() =>
+                                      navigate("/developer/inbox", {
+                                        state: { taskId: task.id },
+                                      })
+                                    }
+                                    size="sm"
+                                    variant="outline"
+                                  >
                                     Message
                                   </Button>
                                 </>
@@ -906,4 +975,3 @@ console.log(profileData,"profile");
     </div>
   );
 };
-

@@ -14,7 +14,7 @@ export interface DeveloperInfo {
   total_pending: number;
   total_done: number;
   bio: string;
-  experience: string;
+  experience: number;
   avg_rating: number;
   rating_count: number;
   email: string;
@@ -55,7 +55,7 @@ export interface UpdateProfileData {
   linkedin_url?: string;
   skills?: string[];
   company_name?: string;
-  experience?: string;
+  experience?: number;
   bio?: string;
   hourpaid?: number;
 }
@@ -91,7 +91,7 @@ export interface CreateDeveloperData {
   linkedin_url: string;
   skills: string[];
   company_name: string;
-  experience: string;
+  experience: number;
   bio: string;
   hourpaid: number;
 }
@@ -156,12 +156,37 @@ class DeveloperService {
       if (status && status !== "") {
         params.append("status", status);
       }
-      const response = await apiClient.get(
+      const res = await apiClient.get(
         `${API_ENDPOINTS.TASK.GET_TASKS}?${params.toString()}`
       );
-      return response.data;
+
+      const array = Array.isArray(res.data) ? res.data : [];
+
+      // Map backend response to frontend Task type
+      const tasks: Task[] = array.map((t: any) => ({
+        id: t.id,
+        title: t.title,
+        description: t.description,
+        session_id: t.session_id,
+        assignee_id: t.assignee_id,
+        assigner_id: t.assigner_id,
+        status: t.status,
+        share_chat: t.share_chat,
+        chat_mode: t.chat_mode,
+        due_date: t.due_date,
+        created_at: t.created_at,
+        assigner_name: t.assigner_name,
+        assignee_name: t.assignee_name,
+      }));
+
+      return {
+        tasks,
+        total: tasks.length,
+        page,
+        per_page: tasks.length,
+        total_pages: 1, // adjust if backend pagination exists
+      };
     } catch (error) {
-      //console.error('Error fetching developer tasks:', error);
       throw error;
     }
   }
@@ -227,7 +252,7 @@ class DeveloperService {
     Available: boolean;
     Skills: string[];
     Bio: string;
-    Experience: string;
+    Experience: number;
     Reviews: any[];
   }> {
     try {
@@ -274,12 +299,12 @@ class DeveloperService {
     page: number = 1
   ): Promise<ReviewsResponse> {
     try {
-      const response = await apiClient.get(
+      const res = await apiClient.get(
         `/api/reviews?dev_id=${developerId}&page=${page}`
       );
-      return response.data;
+console.log("Raw reviews response:", res.data);
+      return res.data;  
     } catch (error) {
-      //console.error('Error fetching reviews:', error);
       throw error;
     }
   }

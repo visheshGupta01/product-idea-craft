@@ -38,7 +38,7 @@ export interface ProfileData {
   total_pending_task: number;
   total_in_progress_task: number;
   company_name: string;
-  experience: string;
+  experience: number;
   skills: string[] | null;
   bio: string;
   hourpaid: number;

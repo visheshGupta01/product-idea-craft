@@ -37,7 +37,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { developerService, TasksResponse } from "@/services/developerService";
 import { toast } from "sonner";
-
+import { useNavigate } from "react-router-dom"; 
 interface Task {
   id: number;
   title: string;
@@ -61,6 +61,8 @@ const TasksPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+ const navigate = useNavigate();
+  //console.log(tasks,"tasks");
 
   const loadTasks = async (page: number = 1, status: string = "") => {
     try {
@@ -69,8 +71,9 @@ const TasksPage: React.FC = () => {
         page,
         status === "" ? undefined : status
       );
-      console.log("Fetched tasks response:", response);
-      setTasks(response || []);
+      //console.log(response,"taskResponse");
+
+      setTasks(response.tasks || []);
       setTotalPages(response?.total_pages || 1);
       setCurrentPage(page);
     } catch (error) {
@@ -272,6 +275,18 @@ const TasksPage: React.FC = () => {
                             View Chat
                           </Button>
                         )}
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            navigate("/developer/inbox", {
+                              state: { task: task.id },
+                            })
+                          }
+                        >
+                          Message
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>

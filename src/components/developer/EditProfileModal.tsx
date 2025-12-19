@@ -31,7 +31,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     github_url: profile.github_url || "",
     linkedin_url: profile.linkedin_url || "",
     bio: profile.bio || "",
-    experience: profile.experience || "",
+    experience: profile.experience || 0,
     hourpaid: profile.hourpaid || 0,
     skills: profile.skills || [],
   });
@@ -45,7 +45,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
         github_url: profile.github_url || "",
         linkedin_url: profile.linkedin_url || "",
         bio: profile.bio || "",
-        experience: profile.experience || "",
+        experience: profile.experience || 0,
         hourpaid: profile.hourpaid || 0,
         skills: profile.skills || [],
       });
@@ -144,6 +144,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <Label htmlFor="experience">Experience</Label>
             <Input
               id="experience"
+              type="number"
               placeholder="e.g., 5 years"
               value={formData.experience}
               onChange={(e) =>

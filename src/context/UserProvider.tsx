@@ -99,7 +99,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               total_in_progress_task:
                 (userData as any).total_in_progress_task || 0,
               company_name: (userData as any).company_name || "",
-              experience: (userData as any).experience || "",
+              experience: (userData as any).experience || 0,
               skills: (userData as any).skills || null,
               bio: (userData as any).bio || "",
               hourpaid: (userData as any).hourpaid || 0,
@@ -208,7 +208,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         total_in_progress_task:
           (result.user as any).total_in_progress_task || 0,
         company_name: (result.user as any).company_name || "",
-        experience: (result.user as any).experience || "",
+        experience: (result.user as any).experience || 0,
         skills: (result.user as any).skills || null,
         bio: (result.user as any).bio || "",
         hourpaid: (result.user as any).hourpaid || 0,

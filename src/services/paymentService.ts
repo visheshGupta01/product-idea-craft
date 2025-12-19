@@ -1,24 +1,59 @@
+// src/services/paymentService.ts
+
 import apiClient from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/config/api";
 import { trackEvent } from "@/utils/metaPixel";
 
-// Razorpay key
 const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY;
 
+/* -------------------------------------------------------------------------- */
+/*                                   TYPES                                    */
+/* -------------------------------------------------------------------------- */
+
 export interface PaymentRequest {
-  user_uuid: string;
-  price: string;
+  user_id: string;
+  amount: string; // display amount (e.g. "499")
   plan_name: string;
   credits: number;
   plan_id: number;
+  country?: string;
 }
 
-export interface RazorpayOrderResponse {
-  id: string;
-  amount: number;
-  currency: string;
+export interface UnifiedPaymentRequest {
   user_id: string;
+  amount: number; // paise / cents
+  plan_name: string;
+  plan_id: number;
+  country: string;
+  credits: number;
 }
+
+export interface ProcessResult<T> {
+  provider: "razorpay" | "paypal";
+  data: T;
+}
+
+/* ------------------------- Razorpay ORDER response ------------------------- */
+export interface RazorpayOrderData {
+  id: string; // order_id
+  amount: number; // paise
+  currency: string; // "INR"
+  receipt: string;
+  status: string;
+}
+
+/* --------------------------- PayPal response ------------------------------- */
+export interface PaypalSessionResponse {
+  id: string;
+  approve_link: string;
+  status: string;
+  amount: number;
+  currency_code: string;
+}
+
+export type PayResponse =
+  | ProcessResult<RazorpayOrderData>
+  | ProcessResult<PaypalSessionResponse>;
 
 declare global {
   interface Window {
@@ -26,110 +61,178 @@ declare global {
   }
 }
 
-export const createRazorpayPayment = async (
+/* -------------------------------------------------------------------------- */
+/*                                  HELPERS                                   */
+/* -------------------------------------------------------------------------- */
+
+export const getUserCountry = (): string => {
+  try {
+    const raw = localStorage.getItem("user_data");
+    if (!raw) return "";
+    return JSON.parse(raw)?.country || "";
+  } catch {
+    return "";
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              MAIN ENTRY POINT                              */
+/* -------------------------------------------------------------------------- */
+
+export const createPayment = async (
   paymentData: PaymentRequest
 ): Promise<void> => {
-  try {
-    //console.log('Creating Razorpay order with data:', paymentData);
+  const unifiedRequest: UnifiedPaymentRequest = {
+    user_id: paymentData.user_id,
+    amount: Math.round(parseFloat(paymentData.amount)),
+    plan_name: paymentData.plan_name,
+    plan_id: paymentData.plan_id,
+    country: paymentData.country || getUserCountry() || "Unknown",
+    credits: paymentData.credits,
+  };
 
-    // Create order on backend
-    const response = await apiClient.post<RazorpayOrderResponse>(
-      "/api/payment/create-order",
-      {
-        user_id: paymentData.user_uuid,
-        amount: parseFloat(paymentData.price),
-        currency: "USD",
-        credits: paymentData.credits,
-        planid: paymentData.plan_id,
-      }
+  console.log("Initiating payment with data:", unifiedRequest);
+
+  try {
+    const response = await apiClient.post<PayResponse>(
+      "/api/payment/pay",
+      unifiedRequest
     );
 
-    //console.log('Razorpay order response:', response.data);
+    const result = response.data;
 
-    if (!response.data.id) {
-      throw new Error("Failed to create order");
+    console.log("Payment provider response:", result);
+
+    if (result.provider === "razorpay") {
+      await handleRazorpayOrder(result.data as RazorpayOrderData, paymentData);
+      return;
     }
 
-    // Initialize Razorpay checkout
-    const options = {
-      key: RAZORPAY_KEY,
-      amount: response.data.amount,
-      currency: response.data.currency,
-      name: "imagine.bo",
-      description: `${paymentData.plan_name} Plan`,
-      order_id: response.data.id,
-      // inside createRazorpayPayment -> options.handler
-      handler: async function (razorpayResponse: any) {
-        try {
-          // Mark payment as attempted
-          sessionStorage.setItem("payment_attempted", "true");
+    if (result.provider === "paypal") {
+      await handlePaypalFlow(
+        result.data as PaypalSessionResponse,
+        unifiedRequest
+      );
+      return;
+    }
 
-          // Verify payment on backend
-          const verifyRes = await apiClient.post(
-            "/api/payment/verify-payment",
-            {
-              razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-              razorpay_order_id: razorpayResponse.razorpay_order_id,
-              razorpay_signature: razorpayResponse.razorpay_signature,
-              user_id: paymentData.user_uuid,
-              plan_id: paymentData.plan_id,
-              credits: paymentData.credits,
-            }
-          );
-
-          // Track Purchase and Subscribe events after successful payment
-          try {
-            const numericValue = parseFloat(String(paymentData.price)) || 0;
-            trackEvent("Purchase", {
-              content_name: paymentData.plan_name,
-              value: numericValue,
-              currency: "USD",
-            });
-            trackEvent("Subscribe", {
-              content_name: paymentData.plan_name,
-              value: numericValue,
-              currency: "USD",
-            });
-          } catch (fbErr) {
-            // don't block flow if fb tracking fails
-          }
-
-          // Mark payment as completed
-          sessionStorage.setItem("payment_completed", "true");
-          sessionStorage.removeItem("payment_attempted");
-
-          // Redirect to success page
-          window.location.href = "/payment-success";
-        } catch (err) {
-          // Verification failed
-          sessionStorage.setItem("payment_attempted", "true");
-          window.location.href = "/payment-failed";
-        }
-      },
-      prefill: {
-        name: "",
-        email: "",
-        contact: "",
-      },
-      theme: {
-        color: "#fb02a5",
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    throw new Error("Unsupported payment provider");
   } catch (error) {
-    //console.error("Error creating Razorpay payment:", error);
+    console.error("Payment initiation failed:", error);
     throw error;
   }
 };
 
-export const getPaymentPlans = async () => {
-  try {
-    const response = await apiClient.get(API_ENDPOINTS.PAYMENT.GET_PRICING);
-    return response.data;
-  } catch (error) {
-    //console.error("Error fetching payment plans:", error);
-    throw error;
+/* -------------------------------------------------------------------------- */
+/*                           RAZORPAY ORDER FLOW                               */
+/* -------------------------------------------------------------------------- */
+
+const handleRazorpayOrder = async (
+  order: RazorpayOrderData,
+  originalData: PaymentRequest
+): Promise<void> => {
+  if (!window.Razorpay) {
+    throw new Error("Razorpay SDK not loaded");
   }
+
+  const displayAmount = order.amount / 100;
+  console.log("Opening Razorpay checkout for amount:", displayAmount);
+
+  const options = {
+    key: RAZORPAY_KEY,
+    order_id: order.id,
+    amount: order.amount,
+    currency: order.currency,
+    name: "imagine.bo",
+    description: `${originalData.plan_name} Plan`,
+
+    handler: async (response: any) => {
+      try {
+        sessionStorage.setItem("payment_attempted", "true");
+
+        trackEvent("Purchase", {
+          content_name: originalData.plan_name,
+          value: displayAmount,
+          currency: order.currency,
+        });
+
+        trackEvent("Subscribe", {
+          content_name: originalData.plan_name,
+          value: displayAmount,
+          currency: order.currency,
+        });
+
+        sessionStorage.setItem("payment_completed", "true");
+        window.location.href = "/payment-success";
+      } catch (err) {
+        console.error("Razorpay success handler error:", err);
+        window.location.href = "/payment-failed";
+      }
+    },
+
+    theme: {
+      color: "#fb02a5",
+    },
+
+    modal: {
+      ondismiss: () => {
+        console.log("Razorpay modal closed");
+      },
+    },
+  };
+
+  const rzp = new window.Razorpay(options);
+  rzp.open();
+
+  rzp.on("payment.failed", () => {
+    sessionStorage.setItem("payment_attempted", "true");
+    window.location.href = "/payment-failed";
+  });
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              PAYPAL FLOW                                   */
+/* -------------------------------------------------------------------------- */
+
+const handlePaypalFlow = async (
+  paypal: PaypalSessionResponse,
+  unifiedRequest: UnifiedPaymentRequest
+): Promise<void> => {
+  if (!paypal.approve_link) {
+    throw new Error("PayPal approval link missing");
+  }
+
+  try {
+    trackEvent("Purchase", {
+      content_name: unifiedRequest.plan_name,
+      value: unifiedRequest.amount / 100,
+      currency: paypal.currency_code || "USD",
+    });
+
+    trackEvent("Subscribe", {
+      content_name: unifiedRequest.plan_name,
+      value: unifiedRequest.amount / 100,
+      currency: paypal.currency_code || "USD",
+    });
+  } catch (err) {
+    console.warn("Tracking failed (PayPal):", err);
+  }
+
+  sessionStorage.setItem("payment_attempted", "true");
+  window.location.href = paypal.approve_link;
+};
+
+/* -------------------------------------------------------------------------- */
+/*                           BACKWARD COMPAT                                  */
+/* -------------------------------------------------------------------------- */
+
+export const createRazorpayPayment = async (
+  paymentData: PaymentRequest
+): Promise<void> => {
+  return createPayment(paymentData);
+};
+
+export const getPaymentPlans = async () => {
+  const response = await apiClient.get(API_ENDPOINTS.PAYMENT.GET_PRICING);
+  return response.data;
 };
