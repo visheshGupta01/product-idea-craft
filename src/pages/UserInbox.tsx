@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
 import { Loader2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import AssignToDeveloper from "@/components/dashboard/AssignToDeveloper";
 
 const UserInbox: React.FC = () => {
   const [tasks, setTasks] = useState<InboxTask[]>([]);
@@ -19,24 +20,27 @@ const UserInbox: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [role, setRole] = useState("user");
+
   const { toast } = useToast();
   const { user } = useUser();
   const [wsService] = useState(() => new SupportWebSocketService());
-  const location = useLocation(); 
-  const openTaskId = location.state?.task || null;
-  const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
-    //console.log(location.state,"hgf");
-    
+  const location = useLocation();
 
+  const preselectedTaskId = (location.state as { taskId?: number })?.taskId;
+
+  // ✅ New state for AssignToDeveloper modal
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [selectedDeveloperId, setSelectedDeveloperId] = useState<string | null>(null);
+
+  /* -------------------- Inbox -------------------- */
   const fetchInbox = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await inboxService.getUserInbox(currentPage);
-      setTasks(data.tasks || []);
-      setRole(data.Role);
-      setTotalPages(Math.ceil((data.total || 0) / 20));
-    } catch (error) {
-      //console.error("Failed to fetch inbox:", error);
+      setTasks(Array.isArray(data?.tasks) ? data.tasks : []);
+      setRole(data?.Role || "user");
+      setTotalPages(Math.ceil((data?.total || 0) / 20));
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load inbox",
@@ -47,15 +51,20 @@ const UserInbox: React.FC = () => {
     }
   }, [currentPage, toast]);
 
+  /* -------------------- Messages -------------------- */
   const fetchMessages = useCallback(
     async (taskId: number) => {
       try {
         setIsLoadingMessages(true);
-        const data = await inboxService.getChatMessages(taskId);
-        //console.log(data);
-        setMessages(data || []);
-      } catch (error) {
-        //console.error("Failed to fetch messages:", error);
+        const response = await inboxService.getChatMessages(taskId);
+        const normalizedMessages: ChatMessage[] = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.messages)
+          ? response.messages
+          : [];
+        setMessages(normalizedMessages);
+      } catch {
+        setMessages([]);
         toast({
           title: "Error",
           description: "Failed to load messages",
@@ -67,17 +76,19 @@ const UserInbox: React.FC = () => {
     },
     [toast]
   );
-  
+
   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);
 
+  /* -------------------- WebSocket -------------------- */
   useEffect(() => {
     const connectWebSocket = async () => {
       try {
         const token = localStorage.getItem("auth_token") || "";
         wsService.setToken(token);
         await wsService.connect(token);
+
         wsService.onMessage((data: any) => {
           if (
             data &&
@@ -87,77 +98,70 @@ const UserInbox: React.FC = () => {
             selectedTask &&
             data.task_id === selectedTask.id
           ) {
-            setMessages((prev) => [...prev, data as ChatMessage]);
+            setMessages((prev) =>
+              Array.isArray(prev) ? [...prev, data] : [data]
+            );
+          } else {
+            fetchInbox();
           }
-          // Refresh inbox to update unread counts
-          fetchInbox();
         });
-      } catch (error) {
-        //console.error("Failed to connect WebSocket:", error);
-      }
+      } catch {}
     };
 
     connectWebSocket();
-
-    return () => {
-      wsService.disconnect();
-    };
+    return () => wsService.disconnect();
   }, [wsService, selectedTask, fetchInbox]);
-  useEffect(() => {
-    console.log("Tasks updated:", tasks);
-    console.log("Open Task ID:", openTaskId);
-    console.log("Selected Task:", selectedTask);
-    console.log("Messages:", messages);
-    console.log("Preselected Task ID:", preselectedTaskId);
-    if (tasks.length === 0) return;
-    if (!openTaskId) return;
 
-    const found = tasks.find((t) => t.id === openTaskId);
+  /* -------------------- Preselect -------------------- */
+  useEffect(() => {
+    if (!preselectedTaskId || tasks.length === 0 || selectedTask) return;
+
+    const found = tasks.find((t) => t.id === preselectedTaskId);
     if (found) {
       setSelectedTask(found);
       fetchMessages(found.id);
     }
-  }, [tasks, openTaskId, fetchMessages]);
+  }, [tasks, preselectedTaskId, selectedTask, fetchMessages]);
+
   const handleSelectTask = (task: InboxTask) => {
     setSelectedTask(task);
-    //console.log("Selected task:", task);
+    setMessages([]);
     fetchMessages(task.id);
   };
 
+  /* -------------------- Send Message -------------------- */
   const handleSendMessage = async (content: string) => {
     if (!selectedTask || !user?.id) return;
 
     setIsSending(true);
-    //console.log("Sending message:", content);
     try {
       const receiverId =
         role === "user" || role === "admin"
           ? selectedTask.assignee_id
           : selectedTask.assigner_id;
-      //console.log("Receiver ID:", receiverId);
-      //console.log("Sender ID:", user.id);
-      //console.log("Role:", role);
+
       wsService.sendMessage({
-        content: content,
+        content,
         task_id: selectedTask.id,
         sender_id: user.id,
         receiver_id: receiverId,
-        role: role,
+        role,
       });
 
-      // Optimistically add message
       const newMessage: ChatMessage = {
         id: Date.now(),
         task_id: selectedTask.id,
-        role: role,
+        role,
         sender_id: user.id,
         receiver_id: receiverId,
-        content: content,
+        content,
         created_at: new Date().toISOString(),
       };
-      setMessages((prev) => [...prev, newMessage]);
-    } catch (error) {
-      //console.error("Failed to send message:", error);
+
+      setMessages((prev) =>
+        Array.isArray(prev) ? [...prev, newMessage] : [newMessage]
+      );
+    } catch {
       toast({
         title: "Error",
         description: "Failed to send message",
@@ -168,6 +172,13 @@ const UserInbox: React.FC = () => {
     }
   };
 
+  /* -------------------- Handle Developer Profile -------------------- */
+  const handleViewDeveloperProfile = (developerId: string) => {
+    setSelectedDeveloperId(developerId);
+    setIsAssignModalOpen(true);
+  };
+
+  /* -------------------- Loading -------------------- */
   if (isLoading && tasks.length === 0) {
     return (
       <div className="pt-[60px] flex items-center justify-center h-screen">
@@ -180,19 +191,17 @@ const UserInbox: React.FC = () => {
     <div className="pt-[90px] container mx-auto p-6 h-screen flex flex-col">
       <h1 className="text-3xl font-bold mb-6">Inbox</h1>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden min-h-0">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
         <div className="lg:col-span-1 flex flex-col min-h-0">
-          <div className="flex-1 overflow-auto">
-            <InboxList
-              tasks={tasks}
-              selectedTaskId={selectedTask?.id || null}
-              onSelectTask={handleSelectTask}
-              role={role}
-            />
-          </div>
+          <InboxList
+            tasks={tasks}
+            selectedTaskId={selectedTask?.id || null}
+            onSelectTask={handleSelectTask}
+            role={role}
+          />
 
           {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-4 pt-4 border-t">
+            <div className="flex justify-center gap-2 mt-4 border-t pt-4">
               <Button
                 variant="outline"
                 size="sm"
@@ -228,6 +237,7 @@ const UserInbox: React.FC = () => {
               onSendMessage={handleSendMessage}
               isLoading={isSending}
               isLoadingMessages={isLoadingMessages}
+              onViewDeveloperProfile={handleViewDeveloperProfile} // ✅ add this
             />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground border rounded-lg bg-muted/20">
@@ -236,6 +246,16 @@ const UserInbox: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* ✅ AssignToDeveloper Modal */}
+      {selectedTask &&  (
+        <AssignToDeveloper
+          isOpen={isAssignModalOpen}
+          onClose={() => setIsAssignModalOpen(false)}
+          sessionId={selectedTask.id.toString()}
+          initialDeveloperId={selectedDeveloperId} // pass developerId from chat
+        />
+      )}
     </div>
   );
 };
