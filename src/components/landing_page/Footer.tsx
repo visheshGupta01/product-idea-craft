@@ -3,8 +3,16 @@ import { FaYoutube, FaInstagram } from "react-icons/fa";
 import LogoIcon from "../../assets/ImagineboIcon.svg";
 
 const socialLinks = [
-  { icon: FaYoutube, url: "https://www.youtube.com/@imagine_bold", label: "YouTube" },
-  { icon: FaInstagram, url: "https://www.instagram.com/imagine.bold", label: "Instagram" }
+  {
+    icon: FaYoutube,
+    url: "https://www.youtube.com/@imagine_bold/shorts",
+    label: "YouTube",
+  },
+  {
+    icon: FaInstagram,
+    url: "https://www.instagram.com/imagine.bold",
+    label: "Instagram",
+  },
 ];
 
 const Footer: React.FC = () => {
@@ -41,11 +49,7 @@ const Footer: React.FC = () => {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <img
-            src={LogoIcon}
-            alt="Imagine Logo"
-            className="h-6 w-auto"
-          />
+          <img src={LogoIcon} alt="Imagine Logo" className="h-6 w-auto" />
           <span>imagine.bo</span>
         </div>
 
