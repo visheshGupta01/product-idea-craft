@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Send, Loader2, MessageCircle } from "lucide-react";
+import { Send, Loader2, MessageCircle, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getInitials } from "@/lib/avatarUtils";
@@ -18,6 +18,9 @@ interface ChatWindowProps {
   onSendMessage: (content: string) => void;
   isLoading: boolean;
   isLoadingMessages: boolean;
+
+  // ✅ NEW PROP
+  onViewDeveloperProfile: (developerId: string) => void;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -28,21 +31,35 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   onSendMessage,
   isLoading,
   isLoadingMessages,
+  onViewDeveloperProfile,
 }) => {
   const [messageInput, setMessageInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  /** ✅ HARD SAFETY GUARD */
+  const safeMessages: ChatMessage[] = Array.isArray(messages) ? messages : [];
+
+  /** ✅ Determine the OTHER person (developer) */
+  const developerName =
+    currentUserId === task.assignee_id
+      ? task.assigner_name
+      : task.assignee_name;
+
+  const developerId =
+    currentUserId === task.assignee_id
+      ? task.assigner_id
+      : task.assignee_id;
+
+  const developerInitials = getInitials(developerName);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [safeMessages]);
 
   const handleSend = () => {
-    if (messageInput.trim()) {
-      onSendMessage(messageInput.trim());
-      setMessageInput("");
-    }
+    if (!messageInput.trim()) return;
+    onSendMessage(messageInput.trim());
+    setMessageInput("");
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -52,18 +69,40 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     }
   };
 
+  // ✅ EMIT developer id to parent
+  const handleViewProfile = () => {
+     
+
+    onViewDeveloperProfile(developerId);
+  };
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="border-b">
-        <CardTitle className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold">{task.title}</h3>
-            <p className="text-sm text-muted-foreground font-normal">
-              {currentRole === "user" || currentRole === "admin"
-                ? `Chatting with ${task.assignee_name}`
-                : `Chatting with ${task.assigner_name}`}
-            </p>
+        <CardTitle className="flex items-center justify-between gap-3">
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={handleViewProfile}
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarFallback>{developerInitials}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="font-semibold">{task.title}</h3>
+              <p className="text-sm text-muted-foreground">
+                Chatting with {developerName}
+              </p>
+            </div>
           </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleViewProfile}
+          >
+            <User className="h-4 w-4 mr-1" />
+            View Profile
+          </Button>
         </CardTitle>
       </CardHeader>
 
@@ -71,49 +110,51 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-4">
             {isLoadingMessages ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full shrink-0" />
-                    <div className="flex flex-col gap-2 flex-1">
-                      <Skeleton className="h-16 w-3/4 rounded-lg" />
-                      <Skeleton className="h-3 w-20" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : messages.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                    <MessageCircle className="h-6 w-6" />
-                  </div>
-                  <p className="font-medium">No messages yet</p>
-                  <p className="text-sm">Start the conversation!</p>
+              [1, 2, 3].map((i) => (
+                <div key={i} className="flex gap-3">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-16 w-3/4 rounded-lg" />
                 </div>
+              ))
+            ) : safeMessages.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <MessageCircle className="mx-auto h-8 w-8 mb-2" />
+                No messages yet
               </div>
             ) : (
-              messages.map((message) => {
-                const isCurrentUser = message.sender_id === currentUserId;
+              safeMessages.map((message) => {
+                const isCurrentUser =
+                  message.sender_id === currentUserId;
+
                 return (
                   <div
                     key={message.id}
                     className={`flex gap-3 ${
-                      isCurrentUser ? "flex-row-reverse" : "flex-row"
+                      isCurrentUser ? "flex-row-reverse" : ""
                     }`}
                   >
-                    <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback className={isCurrentUser ? "bg-primary text-primary-foreground" : "bg-accent"}>
-                        {isCurrentUser 
-                          ? getInitials(currentRole === "user" || currentRole === "admin" ? task.assigner_name : task.assignee_name)
-                          : getInitials(currentRole === "user" || currentRole === "admin" ? task.assignee_name : task.assigner_name)
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback
+                        className={
+                          isCurrentUser
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-accent"
                         }
+                      >
+                        {isCurrentUser
+                          ? getInitials(
+                              currentUserId === task.assignee_id
+                                ? task.assignee_name
+                                : task.assigner_name
+                            )
+                          : developerInitials}
                       </AvatarFallback>
                     </Avatar>
+
                     <div
-                      className={`flex flex-col ${
-                        isCurrentUser ? "items-end" : "items-start"
-                      } max-w-[75%]`}
+                      className={`max-w-[75%] ${
+                        isCurrentUser ? "text-right" : ""
+                      }`}
                     >
                       <div
                         className={`rounded-lg px-4 py-2 ${
@@ -122,15 +163,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                             : "bg-accent"
                         }`}
                       >
-                        <p className="text-sm whitespace-pre-wrap break-words">
-                          {message.content}
-                        </p>
+                        {message.content}
                       </div>
-                      <span className="text-xs text-muted-foreground mt-1">
-                        {formatDistanceToNow(new Date(message.created_at), {
-                          addSuffix: true,
-                        })}
-                      </span>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {formatDistanceToNow(
+                          new Date(message.created_at),
+                          { addSuffix: true }
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -140,25 +180,23 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
         </ScrollArea>
 
-        <div className="border-t p-4 bg-background">
+        <div className="border-t p-4">
           <div className="flex gap-2">
             <Textarea
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="resize-none min-h-[40px] max-h-[40px]"
-              rows={2}
+              className="resize-none h-10"
               disabled={isLoading || isLoadingMessages}
             />
             <Button
               onClick={handleSend}
-              disabled={!messageInput.trim() || isLoading || isLoadingMessages}
+              disabled={!messageInput.trim() || isLoading}
               size="icon"
-              className="shrink-0 h-auto"
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="animate-spin h-4 w-4" />
               ) : (
                 <Send className="h-4 w-4" />
               )}

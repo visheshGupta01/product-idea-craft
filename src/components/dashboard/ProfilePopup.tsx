@@ -69,7 +69,7 @@ const ProfilePopup = ({
   onOpenChange,
   initialSection = "basic",
 }: ProfilePopupProps) => {
-  const { user, profile, updateProfile, fetchProfile } = useUser();
+  const { user, profile, updateProfile, fetchProfile,logout } = useUser();
   const [activeSection, setActiveSection] = useState(initialSection);
   const [showPassword, setShowPassword] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -341,7 +341,7 @@ const ProfilePopup = ({
                               ? "Pro Plan"
                               : userData?.plan_id === 3
                               ? "Enterprise Plan"
-                              : "Free Plan"}
+                              : "Lite Plan"}
                           </div>{" "}
                         </div>
                         <div className="text-sm text-muted-foreground">
@@ -368,15 +368,14 @@ const ProfilePopup = ({
                         ${userData?.price?.price || 0}
                       </div> */}
                       <div className="text-sm text-muted-foreground">
-                        {userData?.plan_started_at
-                          ? `Started: ${new Date(
-                              userData.plan_started_at
-                            ).toLocaleDateString()}`
+                        {userData?.is_plan_active
+                          ? `Started`
                           : "Not started"}
                       </div>
                     </div>
                   </div>
-                  <Button
+                  {
+                    userData?.plan_id!==3 && <Button
                     className="w-full"
                     size="lg"
                     onClick={() => navigate("/pricing")}
@@ -384,6 +383,8 @@ const ProfilePopup = ({
                     <span className="mr-2">✨</span>
                     Upgrade Plan
                   </Button>
+                  }
+                  
                   {userData?.is_plan_active && (
                     <Button
                       variant="destructive"
@@ -428,7 +429,7 @@ const ProfilePopup = ({
               <div className="font-medium">
                 {userData?.name || "User"}
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground truncate w-52">
                 {userData?.email || ""}
               </div>
             </div>
@@ -449,6 +450,10 @@ const ProfilePopup = ({
             </Button>
           );
         })}
+        <Button className="w-full justify-centre" onClick={()=>{
+          logout()
+          onOpenChange(false);
+        }}>Logout</Button>
       </div>
 
       {/* Main Content */}
@@ -473,7 +478,7 @@ const ProfilePopup = ({
           ? "Pro Plan"
           : userData?.plan_id === 3
           ? "Enterprise Plan"
-          : "Free Plan"
+          : "Lite Plan"
       }
       onConfirm={async (userId: string) => {
         try {
@@ -768,7 +773,7 @@ const FeedbackForm: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-xl font-semibold mb-2">Report & Issue</h3>
+        <h3 className="text-xl font-semibold mb-2">Report an Issue</h3>
         <p className="text-muted-foreground text-sm">
           Get help or share your thoughts with our team
         </p>

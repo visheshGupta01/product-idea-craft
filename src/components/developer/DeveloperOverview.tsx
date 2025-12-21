@@ -225,6 +225,7 @@ export const DeveloperOverview: React.FC = () => {
       profileData.developer_info;
     return total_tasks > 0 ? Math.round((total_done / total_tasks) * 100) : 0;
   };
+console.log(profileData,"profile");
 
   const loadReviews = async () => {
     if (!profileData?.developer_info?.id) return;

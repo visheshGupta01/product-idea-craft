@@ -32,15 +32,18 @@ import {
   developerService,
   DeveloperInfo,
   CreateTaskData,
+   ReviewsResponse,
 } from "@/services/developerService";
 import { useToast } from "@/hooks/use-toast";
 import ReviewDialog from "./ReviewDialog";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
 
 interface AssignToDeveloperProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: string;
+   initialDeveloperId?: string; // ✅ add this line
 }
 
 type ViewState = "list" | "profile" | "assign" | "success";
@@ -49,12 +52,17 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   isOpen,
   onClose,
   sessionId,
+   initialDeveloperId, // ✅ add this here
 }) => {
   const [currentView, setCurrentView] = useState<ViewState>("list");
   const [developers, setDevelopers] = useState<DeveloperInfo[]>([]);
   const [selectedDeveloper, setSelectedDeveloper] =
     useState<DeveloperInfo | null>(null);
   const [developerDetails, setDeveloperDetails] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+
+
+
   const [loading, setLoading] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -63,11 +71,40 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const { toast } = useToast();
+    const { id: developerIdFromRoute } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [developerReviews, setDeveloperReviews] = useState<any[]>([]);
+
+  
+  const [developerReviews, setDeveloperReviews] = useState<ReviewsResponse | null>(null);
+
   const [reviewLoading, setReviewLoading] = useState(false);
   const [selectedReviewPage, setSelectedReviewPage] = useState(1);
   const [taskId, setTaskId] = useState<string | null>(null);
+
+  // Add this mapping function somewhere at the top of your file
+// TypeScript-safe function to map backend developer data to DeveloperInfo
+const mapBackendDeveloperToFrontend = (details: any, id: string): DeveloperInfo => {
+  return {
+    id: id,
+    name: details.Name || "Unknown",
+    avg_rating: details.Rating ?? 0,
+    total_done: details.TaskComplete ?? 0,
+    bio: details.Bio ?? "",
+    hourpaid: details.HourPaid ?? 0,
+    skills: details.Skills ?? [],
+    status: details.Available ?? false, // map Available → status
+    experience: details.Experience ?? 0,
+    rating_count: details.RatingCount ?? 0,
+    linkedin_url: "", // default empty if backend doesn’t send
+    github_url: "",   // default empty if backend doesn’t send
+    total_tasks: 0,   // default empty if backend doesn’t send
+    total_in_progress: 0,
+    total_pending: 0,
+    email: "",
+  };
+};
+
+
 
   useEffect(() => {
     if (isOpen && currentView === "list") {
@@ -75,6 +112,54 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, currentView, currentPage]);
+
+useEffect(() => {
+  if (isOpen && initialDeveloperId) {
+    
+
+    const loadDeveloper = async () => {
+      setProfileLoading(true);
+      setDeveloperDetails(null);
+      setSelectedDeveloper(null);
+      setCurrentView("profile");
+
+      try {
+        const details = await developerService.getDeveloperById(initialDeveloperId);
+        console.log("Backend developer details:", details);
+
+        const reviews = await developerService.getReviews(initialDeveloperId, 1);
+
+        // Use the mapping function
+        const mappedDeveloper: DeveloperInfo = mapBackendDeveloperToFrontend(details, initialDeveloperId);
+
+        setSelectedDeveloper(mappedDeveloper);
+        setDeveloperDetails(details);
+        setDeveloperReviews(reviews);
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    loadDeveloper();
+  }
+}, [isOpen, initialDeveloperId]);
+
+
+
+
+
+
+  useEffect(() => {
+  if (developerIdFromRoute) {
+    const loadDeveloper = async () => {
+      setCurrentView("profile"); // show profile view
+      await fetchDeveloperDetails(developerIdFromRoute);
+      await fetchDeveloperReviews(developerIdFromRoute, 1);
+    };
+    loadDeveloper();
+  }
+}, [developerIdFromRoute]);
+
 
   const fetchDevelopers = async () => {
     setLoading(true);
@@ -129,20 +214,22 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
 
 
   const fetchDeveloperDetails = async (developerId: string) => {
-    setLoading(true);
-    try {
-      const details = await developerService.getDeveloperById(developerId);
-      setDeveloperDetails(details);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load developer details",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const details = await developerService.getDeveloperById(developerId);
+    setDeveloperDetails(details); // keep this
+    return details; // ✅ return details so the useEffect can set selectedDeveloper
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to load developer details",
+      variant: "destructive",
+    });
+    return null;
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchDeveloperReviews = async (developerId: string, page: number) => {
     setReviewLoading(true);
@@ -254,14 +341,14 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
 
   const handleClose = () => {
     setCurrentView("list");
-    setSelectedDeveloper(null);
-    setDeveloperDetails(null);
+    setSelectedDeveloper(null); // ✅ reset selected developer
+    setDeveloperDetails(null);  // ✅ reset developer details
     setTaskTitle("");
     setTaskDescription("");
     setDueDate(undefined);
     setCurrentPage(1);
     setTaskId(null);
-    onClose();
+    onClose(); // ✅ call parent close handler
   };
 
   useEffect(() => {
@@ -431,7 +518,21 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
   );
 
   const renderDeveloperProfile = () => {
-    if (!selectedDeveloper || !developerDetails) return null;
+    
+
+if (profileLoading) {
+  return (
+    <div className="text-center py-8 text-muted-foreground">
+      Loading developer...
+    </div>
+  );
+}
+
+if (!selectedDeveloper || !developerDetails) {
+  return null;
+}
+
+
 
     return (
       <div className="space-y-6 flex-1 overflow-y-auto">
@@ -452,27 +553,30 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
                   alt={developerDetails.name}
                 />
               ) : (
-                <AvatarFallback className="text-xl">
-                  {selectedDeveloper.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()}
-                </AvatarFallback>
-              )}
+               <AvatarFallback className="text-xl">
+  {(developerDetails?.name || developerDetails?.Name || selectedDeveloper.name)
+  .split(" ")
+  .map((n) => n[0])
+  .join("")
+  .toUpperCase()}
+
+</AvatarFallback>
+
+             )}
             </Avatar>
             <div>
-              <h2 className="text-2xl font-semibold">
-                {developerDetails.name}
-              </h2>
-              <div className="flex items-center gap-2 mt-1">
-                {renderStars(developerDetails.rating)}
-                <span className="text-sm text-muted-foreground">
-                  ({developerDetails.rating || 0}) •{" "}
-                  {developerDetails.task_complete || 0} Projects
-                </span>
-              </div>
-            </div>
+  <h2 className="text-2xl font-semibold">
+  {developerDetails?.name || selectedDeveloper.name}
+</h2>
+  <div className="flex items-center gap-2 mt-1">
+    {renderStars(developerDetails.rating)}
+    <span className="text-sm text-muted-foreground">
+      ({developerDetails.rating || 0}) •{" "}
+      {developerDetails.task_complete || 0} Projects
+    </span>
+  </div>
+</div>
+
           </div>
           <div className="ml-auto text-right">
             <div className="font-semibold text-lg">
@@ -567,7 +671,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
             )}
           </div>
 
-          <div className="flex gap-2 mt-4">
+          {/* <div className="flex gap-2 mt-4">
             <Button
               variant="outline"
               className="flex-1"
@@ -575,7 +679,7 @@ const AssignToDeveloper: React.FC<AssignToDeveloperProps> = ({
             >
               <MessageSquare className="h-4 w-4 mr-2" /> Write a Review
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     );

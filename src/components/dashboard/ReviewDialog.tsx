@@ -68,7 +68,7 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({
 
       toast({
         title: "Review Submitted",
-        description: "Thank you for your feedback!",
+        description: "Thank you! Your review has been submitted.",
       });
 
       handleClose();
