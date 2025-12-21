@@ -4,7 +4,6 @@ import MainDashboard from "../components/MainDashboard";
 import { useUser } from "@/context/UserContext";
 import { fetchProjectDetails } from "@/services/projectService";
 import { SessionValidator } from "@/components/auth/SessionValidator";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Dashboard = () => {
   const { sessionid } = useParams<{ sessionid: string }>();

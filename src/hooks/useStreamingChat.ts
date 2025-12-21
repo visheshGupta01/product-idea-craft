@@ -302,13 +302,10 @@ export const useStreamingChat = (
             setStatusMessage("");
             // If message contains URL, trigger preview
             if (message && onFrontendGenerated) {
-              const urlMatch = message.match(
-                /https?:\/\/[^\s"]+?(?:\.localhost:8000|\.preview\.imagine\.bo|\.devpreview\.imagine\.bo)\/?/
-              );
-              if (urlMatch) {
-                const localUrl = urlMatch[0];
-                const urlWithTimestamp = `${localUrl}${
-                  localUrl.includes("?") ? "&" : "?"
+              const url = message
+              if (url) {
+                const urlWithTimestamp = `${url}${
+                  url.includes("?") ? "&" : "?"
                 }_t=${Date.now()}`;
                 setProjectUrl(urlWithTimestamp);
                 onFrontendGenerated(urlWithTimestamp);

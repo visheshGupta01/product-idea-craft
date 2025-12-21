@@ -51,6 +51,14 @@ export interface PaypalSessionResponse {
   currency_code: string;
 }
 
+export interface StripeSessionResponse {
+  id: string;
+  session_url: object;
+  status: string;
+  amount: number;
+  currency_code: string;
+}
+
 export type PayResponse =
   | ProcessResult<RazorpayOrderData>
   | ProcessResult<PaypalSessionResponse>;
@@ -68,10 +76,10 @@ declare global {
 export const getUserCountry = (): string => {
   try {
     const raw = localStorage.getItem("user_data");
-    if (!raw) return "";
-    return JSON.parse(raw)?.country || "";
+    if (!raw) return "Unknown";
+    return JSON.parse(raw)?.country || "Unknown";
   } catch {
-    return "";
+    return "Unknown";
   }
 };
 
@@ -111,6 +119,13 @@ export const createPayment = async (
     if (result.provider === "paypal") {
       await handlePaypalFlow(
         result.data as PaypalSessionResponse,
+        unifiedRequest
+      );
+      return;
+    }
+    if (result.provider === "stripe") {
+      await handleStripeFlow(
+        result.data as StripeSessionResponse,
         unifiedRequest
       );
       return;
@@ -220,6 +235,34 @@ const handlePaypalFlow = async (
 
   sessionStorage.setItem("payment_attempted", "true");
   window.location.href = paypal.approve_link;
+};
+
+const handleStripeFlow = async (
+  stripe: StripeSessionResponse,
+  unifiedRequest: UnifiedPaymentRequest
+): Promise<void> => {
+  if (!stripe.session_url) {
+    throw new Error("Stripe session URL missing");
+  }
+
+  try {
+    trackEvent("Purchase", {
+      content_name: unifiedRequest.plan_name,
+      value: unifiedRequest.amount / 100,
+      currency: stripe.session_url.currency_code || "USD",
+    });
+
+    trackEvent("Subscribe", {
+      content_name: unifiedRequest.plan_name,
+      value: unifiedRequest.amount / 100,
+      currency: stripe.session_url.currency_code || "USD",
+    });
+  } catch (err) {
+    console.warn("Tracking failed (Stripe):", err);
+  }
+
+  sessionStorage.setItem("payment_attempted", "true");
+  window.location.href = stripe.session_url.session_url;
 };
 
 /* -------------------------------------------------------------------------- */
