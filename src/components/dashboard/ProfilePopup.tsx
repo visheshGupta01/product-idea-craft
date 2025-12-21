@@ -368,23 +368,25 @@ const ProfilePopup = ({
                         ${userData?.price?.price || 0}
                       </div> */}
                       <div className="text-sm text-muted-foreground">
-                        {userData?.is_plan_active
-                          ? `Started`
-                          : "Not started"}
+                        {userData?.plan_expires_at
+                          ? `Expires: ${new Date(
+                              userData.plan_expires_at
+                            ).toLocaleDateString()}`
+                          : ""}
                       </div>
                     </div>
                   </div>
-                  {
-                    userData?.plan_id!==3 && <Button
-                    className="w-full"
-                    size="lg"
-                    onClick={() => navigate("/pricing")}
-                  >
-                    <span className="mr-2">✨</span>
-                    Upgrade Plan
-                  </Button>
-                  }
-                  
+                  {userData?.plan_id !== 3 && (
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      onClick={() => navigate("/pricing")}
+                    >
+                      <span className="mr-2">✨</span>
+                      Upgrade Plan
+                    </Button>
+                  )}
+
                   {userData?.is_plan_active && (
                     <Button
                       variant="destructive"

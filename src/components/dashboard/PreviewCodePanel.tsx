@@ -492,17 +492,17 @@ const navigate = useNavigate();
           ) : (
             <div className="neon-bg h-full flex items-center justify-center overflow-hidden relative">
               <div className="text-center space-y-6 max-w-2xl px-6 relative z-10">
-                <h2 className="text-4xl font-semibold text-white">
+                <h2 className="text-4xl font-semibold text-white font-poppins">
                   Welcome to imagine.bo
                 </h2>
-                <p className="text-lg text-white/90 leading-relaxed">
+                <p className="text-lg text-white/90 leading-relaxed font-poppins">
                   Start a conversation with our AI to begin building
                   <br />
                   your project. Your preview will appear here once
                   <br />
                   generated.
                 </p>
-                <div className="flex items-center justify-center gap-2 text-base text-white/80">
+                <div className="flex items-center justify-center font-poppins gap-2 text-base text-white/80">
                   <span>Ready to create something amazing</span>
                 </div>
               </div>

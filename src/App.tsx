@@ -24,6 +24,7 @@ const PaymentFailed = lazy(() => import("./pages/PaymentFailed"));
 const PaypalSuccess = lazy(() => import("./pages/PaypalSuccess"));
 const PaypalCancel = lazy(() => import("./pages/Paypalcancel"));
 const SharedChat = lazy(() => import("./pages/SharedChat"));
+const AboutUs = lazy(() => import("./pages/AboutUs"));
 const UserTasks = lazy(() => import("./pages/UserTasks"));
 const UserInbox = lazy(() => import("./pages/UserInbox"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -64,79 +65,103 @@ const AppContent = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center bg-background">
-          <LoadingSpinner size="lg" text="Loading..." />
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <LoadingSpinner size="lg" text="Loading..." />
+          </div>
+        }
+      >
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/about-us" element={<AboutUs />} />
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/auth/google/callback" element={<GoogleCallback />} />
           <Route path="/github/callback" element={<GithubCallback />} />
-        <Route path="/chat/:sessionid" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/projects" element={
-          <ProtectedRoute>
-            <MyProjects />
-          </ProtectedRoute>
-        } />
-        <Route path="/tasks" element={
-          <ProtectedRoute>
-            <UserTasks />
-          </ProtectedRoute>
-        } />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/share-chat" element={
-          <ProtectedRoute>
-            <SharedChat />
-          </ProtectedRoute>
-        } />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-failed" element={<PaymentFailed />} />
-        <Route path="/paypal/success" element={<PaypalSuccess />}/>
-        <Route path="/paypal/cancel" element={<PaypalCancel />}/>
-        <Route path="/inbox" element={
-          <ProtectedRoute>
-            <UserInbox />
-          </ProtectedRoute>
-        } />
-        <Route path="/admin" element={
-          <ProtectedRoute requireAdmin>
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/developer/*" element={
-          <ProtectedRoute requireDeveloper>
-            <DeveloperDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/testing/*" element={<AuthTestPanel />} />
-        {/* Catch-all route for 404 Not Found */}
-        <Route path="*" element={<NotFound />} />
+          <Route
+            path="/chat/:sessionid"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute>
+                <MyProjects />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tasks"
+            element={
+              <ProtectedRoute>
+                <UserTasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route
+            path="/share-chat"
+            element={
+              <ProtectedRoute>
+                <SharedChat />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failed" element={<PaymentFailed />} />
+          <Route path="/paypal/success" element={<PaypalSuccess />} />
+          <Route path="/paypal/cancel" element={<PaypalCancel />} />
+          <Route
+            path="/inbox"
+            element={
+              <ProtectedRoute>
+                <UserInbox />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/developer/*"
+            element={
+              <ProtectedRoute requireDeveloper>
+                <DeveloperDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/testing/*" element={<AuthTestPanel />} />
+          {/* Catch-all route for 404 Not Found */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-      
+
       <Suspense fallback={null}>
         <ResetPasswordModal
           isOpen={showResetPassword}
           onClose={() => setShowResetPassword(false)}
           onSuccess={() => {
             setShowResetPassword(false);
-            window.history.replaceState({}, '', '/');
+            window.history.replaceState({}, "", "/");
           }}
         />
-        
+
         <EmailVerificationModal
           isOpen={showEmailVerification}
           onClose={() => {
             setShowEmailVerification(false);
-            window.history.replaceState({}, '', '/');
+            window.history.replaceState({}, "", "/");
           }}
           token={verificationToken}
         />

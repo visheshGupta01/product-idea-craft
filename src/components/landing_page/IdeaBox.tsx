@@ -310,7 +310,7 @@ console.log(selectedModel,"model");
   </div>
           </div>
           {/* MODEL SELECTOR */}
-<div className="absolute right-6 bottom-[100px] sm:bottom-24 flex items-center gap-2 text-[11px] text-gray-500 z-20">
+{/* <div className="absolute right-6 bottom-[100px] sm:bottom-24 flex items-center gap-2 text-[11px] text-gray-500 z-20">
   <span>Select model:</span>
 
   <div className="flex gap-2">
@@ -329,7 +329,7 @@ console.log(selectedModel,"model");
       </button>
     ))}
   </div>
-</div>
+</div> */}
 
 
 

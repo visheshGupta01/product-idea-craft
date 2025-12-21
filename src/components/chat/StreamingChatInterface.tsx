@@ -182,7 +182,7 @@ StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   </span>
 
   {/* RIGHT — Edit Button + Credits */}
-  <div className="flex items-center gap-4">
+  {/* <div className="flex items-center gap-4">
     
     <TooltipProvider>
             <Tooltip>
@@ -198,14 +198,12 @@ StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
               </TooltipTrigger>
               <TooltipContent>Edit Name</TooltipContent>
             </Tooltip>
-    </TooltipProvider>
-
+    </TooltipProvider> */}
     {/* Credits */}
-    <span className="text-white/70 text-sm">
+    {/* <span className="text-white/70 text-sm">
       Credits: {projectDetails?.credits ?? 0}
     </span>
-
-  </div>
+  </div> */}
 
 </div>
 
