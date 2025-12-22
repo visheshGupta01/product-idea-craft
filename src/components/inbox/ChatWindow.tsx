@@ -207,3 +207,4 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     </Card>
   );
 };
+
