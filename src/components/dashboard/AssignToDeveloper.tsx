@@ -115,48 +115,16 @@ const mapBackendDeveloperToFrontend = (details: any, id: string): DeveloperInfo 
 
 useEffect(() => {
   if (isOpen && initialDeveloperId) {
-    
-
-    const loadDeveloper = async () => {
-      setProfileLoading(true);
-      setDeveloperDetails(null);
-      setSelectedDeveloper(null);
-      setCurrentView("profile");
-
-      try {
-        const details = await developerService.getDeveloperById(initialDeveloperId);
-        console.log("Backend developer details:", details);
-
-        const reviews = await developerService.getReviews(initialDeveloperId, 1);
-
-        // Use the mapping function
-        const mappedDeveloper: DeveloperInfo = mapBackendDeveloperToFrontend(details, initialDeveloperId);
-
-        setSelectedDeveloper(mappedDeveloper);
-        setDeveloperDetails(details);
-        setDeveloperReviews(reviews);
-      } finally {
-        setProfileLoading(false);
-      }
-    };
-
-    loadDeveloper();
+    selectDeveloperById(initialDeveloperId);
   }
 }, [isOpen, initialDeveloperId]);
 
 
 
 
-
-
   useEffect(() => {
   if (developerIdFromRoute) {
-    const loadDeveloper = async () => {
-      setCurrentView("profile"); // show profile view
-      await fetchDeveloperDetails(developerIdFromRoute);
-      await fetchDeveloperReviews(developerIdFromRoute, 1);
-    };
-    loadDeveloper();
+    selectDeveloperById(developerIdFromRoute);
   }
 }, [developerIdFromRoute]);
 
@@ -262,14 +230,35 @@ useEffect(() => {
     }
   };
 
-  const handleDeveloperSelect = async (developer: DeveloperInfo) => {
-    setSelectedDeveloper(developer);
-    setCurrentView("profile");
-    await fetchDeveloperDetails(developer.id);
-    setSelectedReviewPage(1);
-    const reviews = await fetchDeveloperReviews(developer.id, 1);
+const selectDeveloperById = async (developerId: string) => {
+  setProfileLoading(true);
+  setCurrentView("profile");
+
+  setSelectedDeveloper(null);
+  setDeveloperDetails(null);
+  setDeveloperReviews(null);
+  setSelectedReviewPage(1);
+
+  try {
+    const details = await developerService.getDeveloperById(developerId);
+    const reviews = await developerService.getReviews(developerId, 1);
+
+    const mappedDeveloper = mapBackendDeveloperToFrontend(
+      details,
+      developerId
+    );
+
+    setSelectedDeveloper(mappedDeveloper);
+    setDeveloperDetails(details);
     setDeveloperReviews(reviews);
-  };
+  } finally {
+    setProfileLoading(false);
+  }
+};
+
+  const handleDeveloperSelect = (developer: DeveloperInfo) => {
+  selectDeveloperById(developer.id);
+};
 
   const handleAssignClick = () => {
     setCurrentView("assign");
