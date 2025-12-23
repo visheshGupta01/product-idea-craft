@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Monitor, Tablet, Smartphone } from 'lucide-react';
@@ -15,17 +14,14 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
   device,
   onDeviceChange,
   src,
-  onClose
+  onClose,
 }) => {
   const config = deviceConfigs[device];
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
+      if (event.key === 'Escape') onClose();
     };
-    
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
@@ -47,50 +43,45 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
         return <Smartphone className="w-3 h-3" />;
     }
   };
-  
-  const getPreviewContainerStyles = () => {
-    switch (device) {
-      case "desktop":
-        return "w-full h-full";
-      case "tablet":
-        return "w-full h-full flex items-center justify-center p-8 pt-16";
-      case "phone":
-        return "w-full h-full flex items-center justify-center p-8 pt-16";
-    }
-  };
 
-  const getIframeStyles = () => {
-    switch (device) {
-      case "desktop":
-        return "w-full h-full border-0";
-      case "tablet":
-        return "w-[768px] h-[600px] border-0 rounded-xl shadow-2xl bg-white max-w-full max-h-full";
-      case "phone":
-        return "w-[375px] h-[667px] border-0 rounded-[2rem] shadow-2xl bg-white max-w-full max-h-full";
-    }
+  // Scale the device to fit viewport
+const getScaledDimensions = () => {
+  if (device === 'desktop') {
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+  }
+
+  // For tablet and phone, scale to fit viewport while preserving aspect ratio
+  const maxWidth = window.innerWidth * 0.9;
+  const maxHeight = window.innerHeight * 0.8;
+  const widthRatio = maxWidth / config.width;
+  const heightRatio = maxHeight / config.height;
+  const scale = Math.min(widthRatio, heightRatio, 1);
+
+  return {
+    width: config.width * scale,
+    height: config.height * scale,
   };
+};
+
+
+  const { width, height } = getScaledDimensions();
 
   const getControlsPosition = () => {
-    switch (device) {
-      case "desktop":
-        return "fixed top-6 left-1/2 transform -translate-x-1/2 z-60 flex items-center gap-2";
-      case "tablet":
-      case "phone":
-        return "fixed top-3 left-1/2 transform -translate-x-1/2 z-60 flex items-center gap-1";
-    }
-  };
-
-  const getControlsSize = () => {
-    return device === "desktop" ? "default" : "compact";
+    return device === 'desktop'
+      ? 'fixed top-6 left-1/2 transform -translate-x-1/2 z-60 flex items-center gap-2'
+      : 'fixed top-3 left-1/2 transform -translate-x-1/2 z-60 flex items-center gap-1';
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background">
+    <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
       {/* Floating Controls */}
       <div className={getControlsPosition()}>
         <div
           className={`bg-background/95 backdrop-blur-md border border-border/50 rounded-lg shadow-lg ${
-            device === "desktop" ? "px-3 py-1.5" : "px-2 py-1"
+            device === 'desktop' ? 'px-3 py-1.5' : 'px-2 py-1'
           }`}
         >
           <Button
@@ -98,18 +89,18 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
             size="sm"
             onClick={toggleDevice}
             className={`flex items-center space-x-1.5 ${
-              device === "desktop" ? "h-7 px-2" : "h-6 px-1.5"
+              device === 'desktop' ? 'h-7 px-2' : 'h-6 px-1.5'
             }`}
           >
             {getDeviceIcon()}
             <span
               className={`capitalize font-medium ${
-                device === "desktop" ? "text-xs" : "text-[10px]"
+                device === 'desktop' ? 'text-xs' : 'text-[10px]'
               }`}
             >
               {device}
             </span>
-            {device === "desktop" && (
+            {device === 'desktop' && (
               <span className="text-xs opacity-60">
                 {config.width}×{config.height}
               </span>
@@ -119,7 +110,7 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
 
         <div
           className={`bg-background/95 backdrop-blur-md border border-border/50 rounded-lg shadow-lg ${
-            device === "desktop" ? "px-2.5 py-1.5" : "px-1.5 py-1"
+            device === 'desktop' ? 'px-2.5 py-1.5' : 'px-1.5 py-1'
           }`}
         >
           <Button
@@ -127,13 +118,11 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
             size="sm"
             onClick={onClose}
             className={`flex items-center space-x-1 ${
-              device === "desktop" ? "h-7 px-2" : "h-6 px-1.5"
+              device === 'desktop' ? 'h-7 px-2' : 'h-6 px-1.5'
             }`}
           >
             <X className="w-3 h-3" />
-            <span
-              className={`${device === "desktop" ? "text-xs" : "text-[10px]"}`}
-            >
+            <span className={`${device === 'desktop' ? 'text-xs' : 'text-[10px]'}`}>
               Exit
             </span>
           </Button>
@@ -141,15 +130,25 @@ const FullscreenPreview: React.FC<FullscreenPreviewProps> = ({
       </div>
 
       {/* Preview Container */}
-      <div className={getPreviewContainerStyles()}>
+<div
+  style={{
+    width,
+    height,
+    backgroundColor: device === 'desktop' ? 'transparent' : 'white',
+    borderRadius: device === 'desktop' ? 0 : device === 'tablet' ? 16 : 24,
+    boxShadow: device === 'desktop' ? 'none' : '0 10px 30px rgba(0,0,0,0.2)',
+    overflow: 'hidden',
+    display: 'flex',
+  }}
+>
+
         <iframe
-          key="stable-fullscreen-preview"
-          src={src}
-          className={getIframeStyles()}
-          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-popups-to-escape-sandbox allow-popups allow-downloads allow-storage-access-by-user-activation"
-          allow="accelerometer; autoplay; camera; encrypted-media; fullscreen; geolocation; gyroscope; microphone; midi; clipboard-read; clipboard-write; payment; usb; vr; xr-spatial-tracking; screen-wake-lock; magnetometer; ambient-light-sensor; battery; gamepad; picture-in-picture; display-capture; bluetooth"
-          title={`${config.label} Fullscreen Preview`}
-        />
+  src={src}
+  style={{ width: '100%', height: '100%', border: 0 }}
+  sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-pointer-lock allow-popups"
+  title={`${config.label} Fullscreen Preview`}
+/>
+
       </div>
     </div>
   );

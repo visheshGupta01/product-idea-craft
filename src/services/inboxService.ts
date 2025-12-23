@@ -25,6 +25,7 @@ export interface InboxResponse {
   total: number;
   page: number;
   page_size: number;
+  has_more:Boolean
 }
 
 export interface ChatMessage {
@@ -48,8 +49,8 @@ class InboxService {
     return response.data;
   }
 
-  async getChatMessages(taskId: number): Promise<ChatMessage[]> {
-    const response = await apiClient.get(`${API_ENDPOINTS.CHAT.READ}?task_id=${taskId}`);
+  async getChatMessages(taskId: number,page: number = 1): Promise<ChatMessage[]> {
+    const response = await apiClient.get(`${API_ENDPOINTS.CHAT.READ}?task_id=${taskId}&page=${page}`);
     return response.data;
   }
 }

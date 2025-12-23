@@ -18,6 +18,8 @@ interface ChatWindowProps {
   onSendMessage: (content: string) => void;
   isLoading: boolean;
   isLoadingMessages: boolean;
+    onLoadMore?: () => void;
+  hasMoreMessages?: boolean;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -28,6 +30,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   onSendMessage,
   isLoading,
   isLoadingMessages,
+  hasMoreMessages,
+  onLoadMore
 }) => {
   const [messageInput, setMessageInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -70,6 +74,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       <CardContent className="flex-1 flex flex-col p-0 min-h-0">
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-4">
+            {hasMoreMessages && !isLoadingMessages && (
+  <div className="flex justify-center mb-4">
+    <Button variant="outline" size="sm" onClick={onLoadMore}>
+      Load older messages
+    </Button>
+  </div>
+)}
+
             {isLoadingMessages ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -93,6 +105,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 </div>
               </div>
             ) : (
+              
               messages.map((message) => {
                 const isCurrentUser = message.sender_id === currentUserId;
                 return (

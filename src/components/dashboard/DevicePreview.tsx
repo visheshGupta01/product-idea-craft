@@ -20,13 +20,13 @@ export const deviceConfigs: Record<DeviceType, DeviceConfig> = {
   },
   tablet: {
     width: 768,
-    height: 600,
+    height: 1024,
     label: 'Tablet',
     icon: <Tablet className="w-4 h-4" />
   },
   phone: {
-    width: 375,
-    height: 667,
+    width: 414,
+    height: 896,
     label: 'Phone',
     icon: <Smartphone className="w-4 h-4" />
   }
@@ -36,53 +36,46 @@ interface DevicePreviewProps {
   device: DeviceType;
   src: string;
 }
+const getScaledDimensions = (device: DeviceType) => {
+  const config = deviceConfigs[device];
+  const maxWidth = window.innerWidth * 1; // max 90% of screen width
+  const maxHeight = window.innerHeight * 0.9; // max 80% of screen height
+
+  const widthRatio = maxWidth / config.width;
+  const heightRatio = maxHeight / config.height;
+  const scale = Math.min(widthRatio, heightRatio, 1); // scale down if necessary
+
+  return {
+    width: config.width * scale,
+    height: config.height * scale,
+  };
+};
 
 const DevicePreview: React.FC<DevicePreviewProps> = ({ device, src }) => {
-  const config = deviceConfigs[device];
-  
-  const getDeviceStyles = () => {
-    switch (device) {
-      case 'desktop':
-        return {
-          container: "w-full h-full flex items-center justify-center bg-background",
-          frame: "w-full max-w-full h-full bg-white shadow-2xl overflow-hidden relative",
-          iframe: "w-full h-full border-0 bg-white"
-        };
-      case 'tablet':
-        return {
-          container:
-            "w-full h-full flex items-center justify-center bg-background p-6 overflow-hidden pt-14",
-          frame:
-            "w-[768px] h-[600px] bg-white rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0",
-          iframe: "w-full h-full mt-6 border-0 bg-white",
-        };
-      case 'phone':
-        return {
-          container:
-            "w-full h-full flex items-center justify-center bg-background p-2",
-          frame:
-            "w-full max-w-sm mx-auto rounded-lg shadow-2xl overflow-hidden relative h-[540px]",
-          iframe: "w-full h-full border-0",
-        };
-    }
-  };
+  const { width, height } = getScaledDimensions(device);
 
-  const styles = getDeviceStyles();
-  
   return (
-    <div className={styles.container}>
-      <div className={styles.frame}>
+    <div className="w-full h-full flex items-center justify-center bg-background">
+      <div
+        style={{
+          width,
+          height,
+          backgroundColor: 'white',
+          borderRadius: device === 'desktop' ? 0 : device === 'tablet' ? 16 : 12,
+          boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+          overflow: 'hidden',
+        }}
+      >
         <iframe
-          key="stable-preview"
           src={src}
-          className={styles.iframe}
-          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-popups-to-escape-sandbox allow-popups allow-downloads allow-storage-access-by-user-activation"
-          allow="accelerometer; autoplay; camera; encrypted-media; fullscreen; geolocation; gyroscope; microphone; midi; clipboard-read; clipboard-write; payment; usb; vr; xr-spatial-tracking; screen-wake-lock; magnetometer; ambient-light-sensor; battery; gamepad; picture-in-picture; display-capture; bluetooth"
-          title={`${config.label} Preview`}
+          style={{ width: '100%', height: '100%', border: 0 }}
+          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-pointer-lock allow-popups"
+          title={`${deviceConfigs[device].label} Preview`}
         />
       </div>
     </div>
   );
 };
+
 
 export default DevicePreview;

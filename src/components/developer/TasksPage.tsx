@@ -61,6 +61,7 @@ const TasksPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasMore, setHasMore] = useState(true);
  const navigate = useNavigate();
   //console.log(tasks,"tasks");
 
@@ -71,10 +72,10 @@ const TasksPage: React.FC = () => {
         page,
         status === "" ? undefined : status
       );
-      //console.log(response,"taskResponse");
-
+      console.log("Fetched tasks response:", response);
       setTasks(response.tasks || []);
-      setTotalPages(response?.total_pages || 1);
+      setHasMore(response?.has_more)
+      //setTotalPages(response?.total_pages || 1);
       setCurrentPage(page);
     } catch (error) {
       //console.error('Failed to load tasks:', error);
@@ -297,61 +298,30 @@ const TasksPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage > 1) handlePageChange(currentPage - 1);
-                  }}
-                  className={
-                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-              </PaginationItem>
+    {!isLoading && tasks.length > 0 && (
+  <div className="flex justify-center items-center gap-4 mt-6">
+    <Button
+      variant="outline"
+      disabled={currentPage === 1}
+      onClick={() => handlePageChange(currentPage - 1)}
+    >
+      Previous
+    </Button>
 
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const page = i + 1;
-                return (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handlePageChange(page);
-                      }}
-                      isActive={currentPage === page}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
+    <span className="text-sm text-muted-foreground">
+      Page {currentPage}
+    </span>
 
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage < totalPages)
-                      handlePageChange(currentPage + 1);
-                  }}
-                  className={
-                    currentPage === totalPages
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+    <Button
+      variant="outline"
+      disabled={!hasMore}
+      onClick={() => handlePageChange(currentPage + 1)}
+    >
+      Next
+    </Button>
+  </div>
+)}
+
     </div>
   );
 };

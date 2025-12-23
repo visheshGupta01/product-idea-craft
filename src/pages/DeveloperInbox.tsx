@@ -14,7 +14,7 @@ const DeveloperInbox: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<InboxTask | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
@@ -33,7 +33,8 @@ const DeveloperInbox: React.FC = () => {
       //console.log(data);
       setTasks(data.tasks || []);
       setRole(data.Role);
-      setTotalPages(Math.ceil((data.total || 0) / 20));
+      //setTotalPages(Math.ceil((data.total || 0) / 20));
+      setHasMore(Boolean(data?.has_more)); 
     } catch (error) {
       //console.error("Failed to fetch inbox:", error);
       toast({
@@ -52,7 +53,7 @@ const DeveloperInbox: React.FC = () => {
         setIsLoadingMessages(true);
         const data = await inboxService.getChatMessages(taskId);
         //console.log(data);
-        setMessages(data || []);
+        setMessages(data.messages || []);
       } catch (error) {
         //console.error("Failed to fetch messages:", error);
         toast({
@@ -180,31 +181,32 @@ const DeveloperInbox: React.FC = () => {
             />
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-4 pt-4 border-t">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span className="px-4 py-2 text-sm">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          {!isLoading && tasks.length > 0 && (
+  <div className="flex justify-center gap-4 mt-4 pt-4 border-t">
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+    >
+      Previous
+    </Button>
+
+    <span className="px-4 py-2 text-sm text-muted-foreground">
+      Page {currentPage}
+    </span>
+
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={!hasMore}
+      onClick={() => setCurrentPage((p) => p + 1)}
+    >
+      Next
+    </Button>
+  </div>
+)}
+
         </div>
 
         <div className="lg:col-span-2 min-h-0">

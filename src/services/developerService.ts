@@ -156,8 +156,8 @@ class DeveloperService {
       if (status && status !== "") {
         params.append("status", status);
       }
-      const res = await apiClient.get(
-        `${API_ENDPOINTS.TASK.GET_TASKS}?${params.toString()}`
+      const response = await apiClient.get(
+        `${API_ENDPOINTS.DEVELOPER.TASKS}?${params.toString()}`
       );
 
       const array = Array.isArray(res.data) ? res.data : [];

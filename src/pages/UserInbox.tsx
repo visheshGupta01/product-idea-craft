@@ -14,10 +14,14 @@ const UserInbox: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<InboxTask | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+const [messagesPage, setMessagesPage] = useState(1);
+const [hasMoreMessages, setHasMoreMessages] = useState(true);
+
+
   const [role, setRole] = useState("user");
   const { toast } = useToast();
   const { user } = useUser();
@@ -34,7 +38,8 @@ const UserInbox: React.FC = () => {
       const data = await inboxService.getUserInbox(currentPage);
       setTasks(data.tasks || []);
       setRole(data.Role);
-      setTotalPages(Math.ceil((data.total || 0) / 20));
+      //setTotalPages(Math.ceil((data.total || 0) / 20));
+          setHasMore(Boolean(data?.has_more)); 
     } catch (error) {
       //console.error("Failed to fetch inbox:", error);
       toast({
@@ -48,12 +53,18 @@ const UserInbox: React.FC = () => {
   }, [currentPage, toast]);
 
   const fetchMessages = useCallback(
-    async (taskId: number) => {
+    async (taskId: number,page = 1, reset = false) => {
       try {
         setIsLoadingMessages(true);
-        const data = await inboxService.getChatMessages(taskId);
-        //console.log(data);
-        setMessages(data || []);
+        const data = await inboxService.getChatMessages(taskId,page);
+        console.log(data);
+        setMessages((prev) =>
+        reset ? data.messages : [...data.messages, ...prev]
+      );
+
+      setHasMoreMessages(Boolean(data.has_more));
+      setMessagesPage(page);
+
       } catch (error) {
         //console.error("Failed to fetch messages:", error);
         toast({
@@ -103,26 +114,34 @@ const UserInbox: React.FC = () => {
       wsService.disconnect();
     };
   }, [wsService, selectedTask, fetchInbox]);
+
   useEffect(() => {
     console.log("Tasks updated:", tasks);
     console.log("Open Task ID:", openTaskId);
     console.log("Selected Task:", selectedTask);
     console.log("Messages:", messages);
     console.log("Preselected Task ID:", preselectedTaskId);
-    if (tasks.length === 0) return;
-    if (!openTaskId) return;
+  if (!tasks.length || !openTaskId) return;
 
-    const found = tasks.find((t) => t.id === openTaskId);
-    if (found) {
-      setSelectedTask(found);
-      fetchMessages(found.id);
-    }
-  }, [tasks, openTaskId, fetchMessages]);
-  const handleSelectTask = (task: InboxTask) => {
-    setSelectedTask(task);
-    //console.log("Selected task:", task);
-    fetchMessages(task.id);
-  };
+  const found = tasks.find((t) => t.id === openTaskId);
+  if (found) {
+    setSelectedTask(found);
+    setMessages([]);
+    setMessagesPage(1);
+    setHasMoreMessages(true);
+    fetchMessages(found.id, 1, true);
+  }
+}, [tasks, openTaskId, fetchMessages]);
+
+
+ const handleSelectTask = (task: InboxTask) => {
+  setSelectedTask(task);
+  setMessages([]);
+  setMessagesPage(1);
+  setHasMoreMessages(true);
+  fetchMessages(task.id, 1, true);
+};
+
 
   const handleSendMessage = async (content: string) => {
     if (!selectedTask || !user?.id) return;
@@ -191,31 +210,32 @@ const UserInbox: React.FC = () => {
             />
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-4 pt-4 border-t">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span className="px-4 py-2 text-sm">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          {!isLoading && tasks.length > 0 && (
+  <div className="flex justify-center gap-4 mt-4 pt-4 border-t">
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+    >
+      Previous
+    </Button>
+
+    <span className="px-4 py-2 text-sm text-muted-foreground">
+      Page {currentPage}
+    </span>
+
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={!hasMore}
+      onClick={() => setCurrentPage((p) => p + 1)}
+    >
+      Next
+    </Button>
+  </div>
+)}
+
         </div>
 
         <div className="lg:col-span-2 min-h-0">
@@ -228,6 +248,14 @@ const UserInbox: React.FC = () => {
               onSendMessage={handleSendMessage}
               isLoading={isSending}
               isLoadingMessages={isLoadingMessages}
+              hasMoreMessages={hasMoreMessages}
+  onLoadMore={() =>
+    fetchMessages(
+      selectedTask.id,
+      messagesPage + 1,
+      false
+    )
+  }
             />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground border rounded-lg bg-muted/20">

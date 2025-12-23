@@ -85,6 +85,7 @@ const UserTasksPage: React.FC = () => {
   } | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
 
   const loadTasks = async (
@@ -106,8 +107,8 @@ const UserTasksPage: React.FC = () => {
       );
       const data = response.data;
       console.log('Fetched tasks:', data);
-      setTasks(data || []);
-      setTotalPages(data.total_pages || 1);
+      setTasks(data.tasks || []);
+      setHasMore(Boolean(data?.has_more));
       setCurrentPage(page);
     } catch (error) {
       //console.error("Failed to load tasks:", error);
@@ -151,7 +152,7 @@ const handleColumnSort = (key: SortKey) => {
 
 
   useEffect(() => {
-    loadTasks(1, statusFilter, sortOrder);
+    loadTasks(currentPage, statusFilter, sortOrder);
   }, [statusFilter, sortOrder]);
 
   const handleStatusChange = (status: string) => {
@@ -424,7 +425,7 @@ const filteredTasks = sortTasks(
         </CardContent>
       </Card>
 
-      {/* Pagination */}
+      {/* Pagination
       {totalPages > 1 && (
         <div className="flex justify-center">
           <Pagination>
@@ -478,7 +479,32 @@ const filteredTasks = sortTasks(
             </PaginationContent>
           </Pagination>
         </div>
-      )}
+      )} */}
+
+      {!isLoading && tasks.length > 0 && (
+  <div className="flex justify-center items-center gap-4 mt-6">
+    <Button
+      variant="outline"
+      disabled={currentPage === 1}
+      onClick={() => handlePageChange(currentPage - 1)}
+    >
+      Previous
+    </Button>
+
+    <span className="text-sm text-muted-foreground">
+      Page {currentPage}
+    </span>
+
+    <Button
+      variant="outline"
+      disabled={!hasMore}
+      onClick={() => handlePageChange(currentPage + 1)}
+    >
+      Next
+    </Button>
+  </div>
+)}
+
     </div>
   );
 };
