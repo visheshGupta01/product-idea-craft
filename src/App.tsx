@@ -11,6 +11,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { LoadingSpinner } from "./components/ui/loading-spinner";
 import Navbar from "./components/landing_page/Navbar";
 import RouteTracker from "./utils/routeTracker";
+import { TourProvider } from '@/components/Tour/tourContext';
+import Tour from "@/components/Tour/tour";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -36,6 +38,7 @@ const AuthTestPanel = lazy(() => import("./components/auth/AuthTestPanel").then(
 const ResetPasswordModal = lazy(() => import("./components/auth/ResetPasswordModal").then(m => ({ default: m.ResetPasswordModal })));
 const EmailVerificationModal = lazy(() => import("./components/auth/EmailVerificationModal").then(m => ({ default: m.EmailVerificationModal })));
 
+const DummyChatPage = lazy(() => import ("./pages/DummyChatPage"));
 
 const queryClient = new QueryClient();
 
@@ -63,12 +66,15 @@ const AppContent = () => {
 
   return (
     <>
+     
       {showNavbar && <Navbar />}
       <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center bg-background">
           <LoadingSpinner size="lg" text="Loading..." />
         </div>
       }>
+        <Tour /> {/* 👈 ALWAYS MOUNTED */}
+        
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/terms" element={<TermsAndConditions />} />
@@ -76,6 +82,8 @@ const AppContent = () => {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/auth/google/callback" element={<GoogleCallback />} />
           <Route path="/github/callback" element={<GithubCallback />} />
+          <Route path="/dummy-chat" element={<DummyChatPage/>} />
+          
         <Route path="/chat/:sessionid" element={
           <ProtectedRoute>
             <Dashboard />
@@ -147,6 +155,7 @@ const AppContent = () => {
 
 const App = () => {
   return (
+    <TourProvider>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <TooltipProvider>
@@ -161,6 +170,7 @@ const App = () => {
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
+    </TourProvider>
   );
 };
 

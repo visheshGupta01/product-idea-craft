@@ -104,6 +104,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         style={{ display: "none" }}
       />
       <button
+      
         onClick={handleClick}
         disabled={disabled || isUploading}
         className="  flex items-center justify-center rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

@@ -219,6 +219,7 @@ console.log(selectedModel,"model");
           {/* Input area with floating buttons */}
           <div className="relative w-full mb-4 font-poppins text-gray-800">
             <textarea
+            id="idea-input"
               ref={textareaRef}
               value={idea}
               onChange={handleIdeaChange}
@@ -270,7 +271,9 @@ console.log(selectedModel,"model");
 
             {/* Floating buttons in top left */}
   <div className="flex items-center gap-3">
-    <div className="
+    <div 
+     id="voice-input-btn"
+    className="
       w-[40px] h-[40px]
       flex items-center justify-center
       rounded-[12px]
@@ -288,7 +291,9 @@ console.log(selectedModel,"model");
     </div>
   
 
-  <div className="
+  <div 
+   id="file-upload-btn"
+  className="
     w-[40px] h-[40px]
     flex items-center justify-center
     rounded-[12px]
@@ -335,6 +340,7 @@ console.log(selectedModel,"model");
 
           {/* Pink Button - Responsive */}
           <button
+           id="start-building-btn"
             onClick={handleSubmit}
             disabled={!idea.trim() || isProcessingIdea}
             className="absolute bottom-6 left-6 right-6 h-[50px] sm:h-[60px] bg-[#FF00A9] hover:bg-pink-600 disabled:cursor-not-allowed text-white rounded-[20px] sm:rounded-[27px] font-normal font-supply text-base sm:text-lg transition flex items-center justify-center gap-2"

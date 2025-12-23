@@ -264,6 +264,7 @@ const navigate = useNavigate();
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                  
                     variant="ghost"
                     size="sm"
                     onClick={() => handleCodeToggle(!showCode)}
@@ -277,6 +278,7 @@ const navigate = useNavigate();
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                    
                     variant="ghost"
                     size="sm"
                     onClick={handleReload}
@@ -291,6 +293,7 @@ const navigate = useNavigate();
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                   
                     variant="ghost"
                     size="sm"
                     onClick={handleOpenInNewTab}
@@ -308,6 +311,7 @@ const navigate = useNavigate();
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
+                   
                     variant="ghost"
                     size="sm"
                     className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 gap-1"
@@ -345,6 +349,7 @@ const navigate = useNavigate();
               <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                 
                   variant="ghost"
                   size="lg"
                   onClick={()=>navigate('/inbox',{state:{task:taskId}})}
@@ -361,6 +366,7 @@ const navigate = useNavigate();
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
+                    
                       variant="outline"
                       size="sm"
                       onClick={() => setShowAssignModal(true)}
@@ -377,6 +383,7 @@ const navigate = useNavigate();
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                   
                     variant="outline"
                     size="sm"
                     onClick={() => setShowGithubModal(true)}
@@ -392,6 +399,7 @@ const navigate = useNavigate();
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                
                     size="sm"
                     onClick={() => setShowPublishModal(true)}
                     className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-2xl"
@@ -443,6 +451,7 @@ const navigate = useNavigate();
               {/* Device Toggle - Center Bottom */}
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-1.5 z-10">
                 <button
+                
                   onClick={() => setActiveDevice("desktop")}
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
@@ -455,6 +464,7 @@ const navigate = useNavigate();
                   <span>Web</span>
                 </button>
                 <button
+                
                   onClick={() => setActiveDevice("phone")}
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
@@ -467,6 +477,7 @@ const navigate = useNavigate();
                   <span>Mob</span>
                 </button>
                 <button
+                
                   onClick={() => setActiveDevice("tablet")}
                   className={cn(
                     "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors",
@@ -482,6 +493,7 @@ const navigate = useNavigate();
 
               {/* Fullscreen Button - Bottom Right */}
               <button
+          
                 onClick={() => setIsFullscreen(true)}
                 className="absolute bottom-6 right-6 p-2 bg-black/30 backdrop-blur-sm rounded-lg text-white/70 hover:text-white transition-colors z-10"
                 title="Fullscreen"

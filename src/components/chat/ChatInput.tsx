@@ -166,7 +166,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       {/* Chat Input Container */}
       <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl p-2 shadow-lg">
         {/* Model Selector */}
-        <div className="mb-3 flex items-center gap-2">
+        <div id="model-selector" className="mb-3 flex items-center gap-2">
           <span className="text-xs text-gray-400 font-medium">Model:</span>
           <Select value={selectedModel} onValueChange={setSelectedModel}>
             <SelectTrigger className="w-[140px] h-8 bg-[#1E1E1E] border-[#3A3A3A] text-white text-sm">
@@ -223,6 +223,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         {/* Input Area */}
         <div className="relative">
           <Textarea
+           id="chat-input"
             ref={textareaRef}
             value={message}
             onChange={handleInputChange}
@@ -240,16 +241,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           {/* Action Buttons */}
           <div className="absolute bottom-2 right-2 flex items-center space-x-2 px-2">
             <FileUploader
+              id="file-upload-btn" 
               onFileUploaded={handleFileUploaded}
               uploadedFiles={uploadedFiles}
               onRemoveFile={handleRemoveFile}
               disabled={isLoading}
             />
             <VoiceRecorder
+             id="voice-input-btn"
               onTranscript={handleTranscript}
               disabled={isLoading}
             />
             <Button
+             id="chat-send-btn"
               type="submit"
               size="icon"
               onClick={isLoading ? onStopGeneration : handleSendMessage}

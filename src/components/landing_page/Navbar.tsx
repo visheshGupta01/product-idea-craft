@@ -17,7 +17,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { useTour } from "@/components/Tour/tourContext";
+import { HelpCircle } from "lucide-react";
+
 const Navbar: React.FC = () => {
+  const { startTour } = useTour();
+
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showDeveloperForm, setShowDeveloperForm] = useState(false);
@@ -73,9 +78,31 @@ const Navbar: React.FC = () => {
           >
             Blog
           </a>
+           
         </div>
 
         <div className='flex gap-2'>
+
+      <TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button
+        variant="ghost"
+      onClick={() => {
+  localStorage.setItem("activeTourFlow", "home");
+  startTour();
+}}
+        className="h-11 w-11 rounded-full text-gray-300 hover:text-white hover:bg-gray-800"
+      >
+        <HelpCircle className="h-5 w-5" />
+      </Button>
+    </TooltipTrigger>
+    <TooltipContent>Take a quick tour</TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
+
+
           {isAuthenticated && (
   <DropdownMenu>
     <TooltipProvider>
@@ -260,6 +287,7 @@ const Navbar: React.FC = () => {
         onOpenChange={setShowProfilePopup}
         initialSection={profileSection}
       />
+      
     </nav>
   );
 };
