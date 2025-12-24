@@ -108,8 +108,10 @@ export class StreamingWebSocketClient {
           return;
         }
 
+        console.log("Received WebSocket event:", data.event, data);
         const eventType = data.event;
         const msgText = data.message || "";
+        const msgCredits = data.credits || 0;
 
         switch (eventType) {
           case "pricing_low":
@@ -188,6 +190,11 @@ export class StreamingWebSocketClient {
             break;
           case "preview_error":
             callbacks.onPreviewError(msgText);
+            break;
+          case "updated_credist":
+            if (!isNaN(msgCredits)) {
+              callbacks.onCreditsUpdated?.(msgCredits);
+            }
             break;
           default:
             if (msgText) {

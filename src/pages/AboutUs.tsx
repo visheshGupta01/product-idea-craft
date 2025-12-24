@@ -131,7 +131,7 @@ const AboutUs: React.FC = () => {
               <div className="flex items-start gap-4">
                 <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
                   <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"
+                    src="/sushil.avif"
                     alt="Sushil Kumar"
                     className="w-full h-full object-cover"
                   />
@@ -159,7 +159,7 @@ const AboutUs: React.FC = () => {
               <div className="flex items-start gap-4">
                 <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
                   <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face"
+                    src="/rahul.png"
                     alt="Raahull Leekha"
                     className="w-full h-full object-cover"
                   />

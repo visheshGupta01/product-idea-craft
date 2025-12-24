@@ -218,7 +218,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           (result.user as any).status !== undefined
             ? (result.user as any).status
             : true,
-        credits: (result.user as any).credits || 5,
+        credits: (result.user as any).credits || 0,
       });
 
       // Update user plan information if available
@@ -233,6 +233,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           expiresAt: (result.user as any).plan_expires_at || null,
         });
       }
+
+      fetchUserProfile();
 
       // Auto-redirect developers to developer dashboard
       if (result.user.user_type === "developer") {

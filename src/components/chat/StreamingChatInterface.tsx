@@ -37,8 +37,7 @@ interface StreamingChatInterfaceProps {
   projectDetails?: any;
 }
 
-export const 
-StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
+export const StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   userIdea,
   onFrontendGenerated,
   onSitemapGenerated,
@@ -55,6 +54,8 @@ StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
   const activeSessionId = urlSessionId || contextSessionId;
   const navigate = useNavigate();
   const [showBalanceDialog, setShowBalanceDialog] = useState(false);
+  const { profile } = useUser();
+  const [currentCredits, setCurrentCredits] = useState<number>(profile?.credits || 0);
 
   const {
     messages,
@@ -73,7 +74,8 @@ StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     activeSessionId || "",
     onFrontendGenerated,
     onSitemapGenerated,
-    () => setShowBalanceDialog(true)
+    () => setShowBalanceDialog(true),
+    (credits) => { setCurrentCredits(credits);  console.log("Credits updated:", credits); }
   );
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -174,16 +176,14 @@ StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
     <>
       <div className="flex flex-col h-full bg-[#1E1E1E]">
         {/* Chat Navbar */}
-  <div className="h-14 flex items-center justify-between px-4 border-b border-[#2A2A2A] bg-[#1E1E1E]">
-  
-  {/* LEFT — Project Name */}
-  <span className="text-white text-lg font-poppins font-medium">
-    {projectDetails?.title || "Untitled Project"}
-  </span>
+        <div className="h-14 flex items-center justify-between px-4 border-b border-[#2A2A2A] bg-[#1E1E1E]">
+          {/* LEFT — Project Name */}
+          <span className="text-white text-lg font-poppins font-medium">
+            {projectDetails?.title || "Untitled Project"}
+          </span>
 
-  {/* RIGHT — Edit Button + Credits */}
-  {/* <div className="flex items-center gap-4">
-    
+          {/* RIGHT — Edit Button + Credits */}
+          {/* <div className="flex items-center gap-4">
     <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -199,14 +199,11 @@ StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
               <TooltipContent>Edit Name</TooltipContent>
             </Tooltip>
     </TooltipProvider> */}
-    {/* Credits */}
-    {/* <span className="text-white/70 text-sm">
-      Credits: {projectDetails?.credits ?? 0}
-    </span>
-  </div> */}
-
-</div>
-
+          {/* Credits */}
+          <span className="text-white/70 text-sm">
+            Credits: {currentCredits}
+          </span>
+        </div>
 
         {isLoadingMessages ? (
           <div className="flex-1 flex items-center justify-center">
@@ -254,7 +251,6 @@ StreamingChatInterface: React.FC<StreamingChatInterfaceProps> = ({
           </>
         )}
       </div>
-
       {/* <AlertDialog open={showBalanceDialog} onOpenChange={setShowBalanceDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

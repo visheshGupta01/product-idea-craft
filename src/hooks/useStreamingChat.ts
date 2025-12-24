@@ -29,13 +29,15 @@ export interface StreamingChatActions {
   onFrontendGenerated?: (url: string) => void;
   onSitemapGenerated?: (sitemap: any) => void;
   onInsufficientBalance?: () => void;
+  onCreditsUpdated?: (credits: number) => void;
 }
 
 export const useStreamingChat = (
   sessionId: string,
   onFrontendGenerated?: (url: string) => void,
   onSitemapGenerated?: (sitemap: any) => void,
-  onInsufficientBalance?: () => void
+  onInsufficientBalance?: () => void,
+  onCreditsUpdated?: (credits: number) => void
 ): StreamingChatState & StreamingChatActions => {
   const {
     messages,
@@ -153,7 +155,7 @@ export const useStreamingChat = (
   }, []);
 
   const sendMessage = useCallback(
-    async (content: string, model: string = "kimik2"): Promise<void> => {
+    async (content: string, model: string = "Kimik2"): Promise<void> => {
       if (!content.trim() || !wsClientRef.current) return;
 
       // Set initial states
@@ -188,7 +190,7 @@ export const useStreamingChat = (
           onContent: (text: string) => {
             streamingContent += text;
             // Check for insufficient balance in message content
-             if (
+            if (
               streamingContent.toLowerCase().includes("insufficient balance")
             ) {
               onInsufficientBalance?.();
@@ -302,7 +304,7 @@ export const useStreamingChat = (
             setStatusMessage("");
             // If message contains URL, trigger preview
             if (message && onFrontendGenerated) {
-              const url = message
+              const url = message;
               if (url) {
                 const urlWithTimestamp = `${url}${
                   url.includes("?") ? "&" : "?"
@@ -353,6 +355,10 @@ export const useStreamingChat = (
           onInfo: (message: string) => {
             // Info messages can be shown as status or appended to content
             setStatusMessage(message);
+          },
+          onCreditsUpdated: (credits: number) => {
+            // If you have a prop or local state for credits, update it here
+            onCreditsUpdated?.(credits);
           },
         };
 

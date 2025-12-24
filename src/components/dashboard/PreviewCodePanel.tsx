@@ -267,7 +267,7 @@ const navigate = useNavigate();
                     variant="ghost"
                     size="sm"
                     onClick={() => handleCodeToggle(!showCode)}
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800"
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-500"
                   >
                     <CodeXml className="h-3.5 w-3.5" />
                   </Button>
@@ -281,7 +281,7 @@ const navigate = useNavigate();
                     size="sm"
                     onClick={handleReload}
                     disabled={!hasValidPreview}
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-500 disabled:opacity-50"
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                   </Button>
@@ -295,7 +295,7 @@ const navigate = useNavigate();
                     size="sm"
                     onClick={handleOpenInNewTab}
                     disabled={!hasValidPreview}
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 disabled:opacity-50"
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-500 disabled:opacity-50"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
@@ -310,7 +310,7 @@ const navigate = useNavigate();
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-800 gap-1"
+                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-500 gap-1"
                   >
                     <Route className="h-3.5 w-3.5" />
                     <span className="max-w-[100px] truncate">
@@ -349,7 +349,7 @@ const navigate = useNavigate();
                   size="lg"
                   onClick={()=>navigate('/inbox',{state:{task:taskId}})}
                   //disabled={!hasValidPreview}
-                  className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-800 hover:text-white"
+                  className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-500 hover:text-white"
                 >
                   Message Developer
                 </Button>
@@ -364,7 +364,7 @@ const navigate = useNavigate();
                       variant="outline"
                       size="sm"
                       onClick={() => setShowAssignModal(true)}
-                      className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-800 hover:text-white"
+                      className="h-8 px-2 bg-transparent border-none text-gray-300 hover:bg-gray-500 hover:text-white"
                     >
                       <User className="h-3.5 w-3.5" />
                       Assign to Dev
@@ -380,7 +380,7 @@ const navigate = useNavigate();
                     variant="outline"
                     size="sm"
                     onClick={() => setShowGithubModal(true)}
-                    className="h-8 px-2 bg-transparent border-none  text-gray-300 hover:bg-gray-800 hover:text-white"
+                    className="h-8 px-2 bg-transparent border-none  text-gray-300 hover:bg-gray-500 hover:text-white"
                   >
                     <Github className="h-3.5 w-3.5" />
                     Github
@@ -394,7 +394,7 @@ const navigate = useNavigate();
                   <Button
                     size="sm"
                     onClick={() => setShowPublishModal(true)}
-                    className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#E000A0] rounded-2xl"
+                    className="h-8 px-2 bg-[#FF00A9] text-white hover:bg-[#dd009e] rounded-2xl"
                   >
                     <Rocket className="h-3.5 w-3.5" />
                     Publish

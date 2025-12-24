@@ -18,7 +18,8 @@ export type WebSocketEventType =
   | "info"
   | "preview"
   | "preview_done"
-  | "preview_error";
+  | "preview_error"
+  | "updated_credist"; // New event type for credit updates
 
 // WebSocket message structure from backend
 export interface WebSocketMessage {
@@ -59,4 +60,5 @@ export interface StreamingCallbacks {
   onError: (error: Error) => void;
   onSuccess: (message?: string) => void;
   onInfo: (message: string) => void;
+  onCreditsUpdated?: (credits: number) => void; // Add this
 }
