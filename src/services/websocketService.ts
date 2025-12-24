@@ -1,4 +1,5 @@
 import { WS_BASE_URL } from "@/config/api";
+import { CreditCard } from "lucide-react";
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -98,9 +99,11 @@ export class WebSocketService {
         if (isComplete) return;
 
         try {
+          console.log("WebSocket message received:", event.data);
           const data = JSON.parse(event.data);
           const eventType = data.Event;
           const message = data.Message;
+          const credits = data.Credits;
 
           // Handle different event types
           switch (eventType) {
@@ -179,7 +182,12 @@ export class WebSocketService {
                 fullResponseContent += message;
               }
               break;
-
+            case "updated_credist":
+              
+              if (!isNaN(credits)) {
+                callbacks.onCreditsUpdated?.(credits);
+              }
+              break;
             case "info":
               // Info messages - pass through
               if (message) {
