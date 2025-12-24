@@ -55,6 +55,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             };
             setUser(mappedUser);
 
+            fetchUserProfile();
+
             // Create profile data from user data with defaults
             const planNames = { 1: "Free", 2: "Pro", 3: "Team" };
             const planId = (userData as any).plan_id || 1;
@@ -109,7 +111,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 (userData as any).status !== undefined
                   ? (userData as any).status
                   : true,
-              credits: (userData as any).credits || 5,
+              credits: (userData as any).credits || 0,
             });
 
             // Update user plan information if available
