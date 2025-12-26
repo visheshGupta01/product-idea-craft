@@ -42,7 +42,7 @@ import { API_ENDPOINTS } from "@/config/api";
 import { useNavigate } from "react-router-dom";
 
 interface Task {
-  ID: number;
+  id: number;
   title: string;
   description: string;
   session_id: string;
@@ -375,7 +375,7 @@ const filteredTasks = sortTasks(
                 </TableRow>
               ) : (
                 filteredTasks.map((task) => (
-                  <TableRow key={task.ID}>
+                  <TableRow key={task.id}>
                     <TableCell>
                       <div>
                         <div className="font-medium">{task.title}</div>

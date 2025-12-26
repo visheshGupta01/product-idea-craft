@@ -159,8 +159,9 @@ class DeveloperService {
       const response = await apiClient.get(
         `${API_ENDPOINTS.DEVELOPER.TASKS}?${params.toString()}`
       );
-
-      const array = Array.isArray(res.data) ? res.data : [];
+      //console.log(response.data,"res");
+      
+      const array = Array.isArray(response.data?.tasks) ? response.data?.tasks : [];
 
       // Map backend response to frontend Task type
       const tasks: Task[] = array.map((t: any) => ({

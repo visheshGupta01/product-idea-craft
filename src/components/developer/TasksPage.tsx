@@ -72,7 +72,7 @@ const TasksPage: React.FC = () => {
         page,
         status === "" ? undefined : status
       );
-      console.log("Fetched tasks response:", response);
+      //console.log("Fetched tasks response:", response);
       setTasks(response.tasks || []);
       setHasMore(response?.has_more)
       //setTotalPages(response?.total_pages || 1);
